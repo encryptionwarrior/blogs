@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+Add additional Tailwind styles to this file, for example with @layer:
+https://tailwindcss.com/docs/adding-custom-styles#using-css-and-layer
+*/
+
+
+    /* Container for the flowchart */
+  .flowchart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* margin: 20px; */
+  }
+
+  /* Common styles for shapes */
+  .flowchart-shape {
+    width: 200px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* margin: 20px 0; */
+    text-align: center;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+  }
+
+  /* Input/Output component as a parallelogram */
+  .input-output {
+    border: 2px solid rgba(0, 0, 255, 0.459);
+    background-color: #56738895;
+   border-radius: 50px;
+    padding: 10px;
+  }
+
+  .parallelogram {
+    transform: skew(-20deg); /* Makes the box look like a parallelogram */
+    border: 2px solid rgba(0, 0, 255, 0.411);
+    border-radius: 5px;
+    background-color: rgba(173, 216, 230, 0.427);
+    padding: 10px;
+  }
+
+  /* Process component */
+  .process {
+    border: 2px solid green;
+    border-radius: 5px;
+    background-color: rgba(144, 238, 144, 0.53);
+  }
+
+  /* Decision component */
+  .decision {
+    width: 150px;
+    height: 150px;
+    border: 2px solid orange;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 224, 0.402);
+    transform: rotate(45deg);
+    position: relative;
+  }
+
+  /* Correct the text position inside the decision component (rotate 45 degrees) */
+  .decision div {
+    transform: rotate(-45deg);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  /* Connector component (arrow) */
+  .connector {
+    width: 2px;
+    height: 40px;
+    background-color: gray;
+  }
+
+  /* Arrowhead for the connector */
+  .arrow {
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 15px solid gray;
+  }
+
+      /* Right connector for decision outcome */
+      .connector-right {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .arrow-right {
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 15px solid gray;
+        
+      }
+
+      .horizontal {
+        width: 20px;
+        height: 2px;
+        background-color: gray;
+        margin-top: 12px;
+      }
+
+      .right-output {
+        position: absolute;
+        right: -250px;
+        top: 40px;
+
+      }

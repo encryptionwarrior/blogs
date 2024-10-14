@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="flowchart-container" style="margin-right: 100px">
+        <!-- Input/Output: Input a = 5, b = 7 -->
+        <div class="flowchart-shape input-output">
+          <p>Start</p>
+        </div>
+      
+        <!-- Connector -->
+        <div class="connector"></div>
+        <div class="arrow"></div>
+      
+        <!-- Output for Yes (True) -->
+        <div class="flowchart-shape parallelogram">
+          <p>Read n</p>
+        </div>
+        <!-- Connector -->
+        <div class="connector"></div>
+        <div class="arrow"></div>
+      
+        <div class="flowchart-container">
+        <div class="flowchart-shape process">
+          <p>Let number = 5</p>
+        </div>
+        </div>
+      
+        <!-- Connector -->
+        <div class="connector"></div>
+        <div class="arrow"></div>
+        <!-- Decision: Is a < b? -->
+        <div style="position:relative;">
+        <div class="decision">
+          <div>is number  n ?</div>
+        </div>
+      
+        <div style="position: absolute; right: -50px; top: 38px;">
+        <div class="connector-right">
+          <div class="horizontal"></div>
+          <div class="arrow-right" style="transform: rotate(-90deg);"></div>
+        </div>
+        </div>
+      
+        <!-- Output for No (False) -->
+        <div class="right-output">
+       <div class="flowchart-shape input-output">
+          <p>End</p>
+        </div>
+        </div>
+        <!-- Connector for Yes -->
+       <!-- Decision: Is a < b? -->
+        <div style="position:relative;">
+        
+        <div style="position: absolute; right: 302px; top: -92px; width: 2px; height: 210px; background-color: gray;">
+        </div>
+          <div style="position: absolute; right: 235px; top: -112px; transform: rotate(30deg);"  class="arrow"></div>
+        <div style="position: absolute; right: 200px; top: 100px; width: 103px; height: 2px; background-color: gray;">
+        </div>
+        <div style="position: absolute; right: 253px; top: -108px; width: 50px; height: 2px; background-color: gray;">
+        </div>
+         </div>
+      
+        <div class="connector"></div>
+        <div class="arrow"></div>
+        <div class="flowchart-shape parallelogram">
+          <p>Print: Zero(0) (if false)</p>
+        </div>
+      </div>
+      
+</body>
+</html>
