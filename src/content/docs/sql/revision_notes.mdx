@@ -1,0 +1,520 @@
+---
+title: SQL Revision Notes
+description: A guide in my new Starlight docs site.
+---
+
+
+## Database
+Database is collection of data in a format that can be easily accessed (Digital)
+A software application used to manage our DB is called DBMS (Database Management System)
+
+### Types of Databases 
+- **Relational**: Data Stored in tables 
+    - Mysql
+    - ORACLE
+    - SQL SERVER
+    - PostGreSQL
+- **Non-Relational**: Data Stored in tables 
+    - MongoDB
+
+### What is SQL
+SQL(Structured Query Language) is a programming language used to interact with relational databases.
+
+It is used to perform CRUD operations :
+Create, Read, Update, Delete
+
+### Creating Our First Database 
+```sql
+CREATE DATABASE db_name;
+DROP DATABASE db_name;
+```
+
+### Creating Our First Table
+```sql 
+USE db_name;
+CREATE TABLE table_name (
+column_name1 datatype constraint,
+column_name2 datatype constraint,
+column_name2 datatype constraint
+);
+```
+
+### SQL Datatypes
+| Datatype      | Description                          | Usage                                   |
+|---------------|--------------------------------------|-----------------------------------------|
+| `INT`         | Integer type                         | For whole numbers                       |
+| `TINYINT`     | Very small integer                   | For small integer values (-128 to 127) |
+| `BIGINT`      | Large integer                        | For very large numbers                  |
+| `CHAR(n)`     | Fixed-length string                  | For text with a fixed length of `n`    |
+| `VARCHAR(n)`  | Variable-length string               | For text with a maximum length of `n`  |
+| `TEXT`        | Long text string                     | For large text data                     |
+| `BIT`         | Bit type                             | For storing bit values (0 or 1)        |
+| `DOUBLE`      | Double-precision floating-point      | For high-precision decimal values       |
+| `DATE`        | Date type                            | For storing dates                       |
+| `TIME`        | Time type                            | For storing time                        |
+| `DATETIME`    | Combination of date and time        | For full date and time                 |
+| `FLOAT`       | Floating-point number                | For decimal values                      |
+| `BOOLEAN`     | Boolean type                         | For true/false values                  |
+| `BLOB`        | Binary large object                  | For storing binary data                 |
+| `YEAR`        | Year type                            | For storing year values                 |
+
+
+## Types of SQL Commands 
+<span class="text-sky-500 font-bold">DDL</span>(Data Definition Language): create, alter, rename, truncate & drop
+
+<span class="text-sky-500 font-bold">DQL</span>(Data Query Language): select
+
+<span class="text-sky-500 font-bold">DML</span>(Data Manipulation Language): select, insert, update & delete
+
+<span class="text-sky-500 font-bold">DCL</span>(Data Control Language): grant & revoke permission to users
+
+## Database related Queries 
+```sql
+CREATE DATABASE db_name;
+CREATE DATABASE IF NOT EXISTS db_name;
+DROP DATABASE db_name;
+DROP DATABASE IF EXISTS db_name;
+SHOW DATABASES;
+SHOW TABLES;
+```
+
+## Table related Queries 
+- Create
+```sql
+CREATE TABLE table_name (
+column_name1 datatype constraint,
+column_name2 datatype constraint,
+);
+```
+
+- Select & View ALL columns
+```sql
+SELECT * FROM table_name;
+```
+- Insert
+```sql
+INSERT INTO table_name
+(colname1, colname2);
+VALUES
+(col1_v1, col2_v1),
+(col1_v2, col2_v2);
+```
+
+### Keys
+- **Primary Key**
+    - It is a column (or set of columns) in a table that uniquely identifies each row. (a unique id)
+    - There is only 1 PK & it should be NOT null.
+- **Foreign Key**
+    - A foreign key is a column (or set of columns) in a table that refers to the primary key in another table.
+    - There can be multiple FKs.
+    - FKs can have duplicate & null values.
+
+## Constraints
+SQL constraints are used to specify rules for data in a table.
+- **NOT NULL** : columns cannot have a null value
+- **UNIQUE** : all values in column are different
+- **PRIMARY KEY** : makes a column unique & not null but used only for one
+```sql
+col1 INT NOT NULL;
+col2 INT NOT UNIQUE;
+id INT PRIMARY KEY;
+
+CREATE TABLE temp (
+    id INT NOT NULL,
+    PRIMARY KEY (id)
+);
+```
+- **FOREIGN KEY** : prevent actions that would destroy links between tables
+- **DEFAULT** : sets the default value of a column
+```sql
+CREATE TABLE temp (
+    cust_id INT,
+    FOREIGN KEY (cust_id) REFERENCES customer(id)
+);
+
+salary INT DEFAULT 25000;
+```
+
+- **CHECK** : it can limit the values allowed in a column
+```sql
+CREATE TABLE city (
+    id INT PRIMARY KEY,
+    city VARCHAR(50),
+    age INT,
+    CONSTRAINT age_check CHECK (age >= 18 AND city="Delhi")
+);
+
+CREATE TABLE newMap(
+    age INT CHECK (age >= 18)
+);
+```
+
+### Select in Detail
+used to select any data from the database
+- Basic Syntax
+```sql
+SELECT col1, col2 FROM table_name;
+```
+- To select All
+```sql
+SELECT * FROM table_name;
+```
+
+### Where Clause
+To define some conditions
+- Basic Syntax
+
+```sql
+SELECT col1, col2 FROM table_name
+WHERE conditions;
+```
+```sql
+SELECT * FROM student WHERE marks > 80;
+SELECT * FROM student WHERE city = "Mumbai";
+```
+#### Using Operators in WHERE
+
+- **Arithmetic Operators** : `+(addition) , -(subtraction), *(multiplication), /(division), %(modulus)`
+- **Comparison Operators** : `= (equal to), != (not equal to), > , >=, <, <=`
+- **Logical Operators** : `AND, OR , NOT, IN, BETWEEN, ALL, LIKE, ANY`
+- **Bitwise Operators** : `& (Bitwise AND), | (Bitwise OR)`
+
+### Operators
+- **AND** (to check for both conditions to be true)
+```sql
+SELECT * FROM student WHERE marks > 80 AND city = "Mumbai";
+```
+- **OR** (to check for one of the conditions to be true)
+```sql
+SELECT * FROM student WHERE marks > 80 OR city = "Mumbai";
+```
+- **BETWEEN** (selects for a given range)
+```sql
+SELECT * FROM student WHERE marks BETWEEN 80 AND 90;
+```
+- **IN** (matches any value in the list)
+```sql
+SELECT * FROM student WHERE city IN("Delhi", "Mumbai");
+```
+- **NOT** (to negate the given condition)
+```sql
+SELECT * FROM student WHERE city NOT IN("Delhi", "Mumbai");
+```
+### Limit Clause
+Sets an upper limit on number of (tuples)rows to be returned
+```sql
+SELECT * FROM student LIMIT 3;
+
+SELECT col1, col2 FROM table_name LIMIT number;
+```
+### Order By Clause
+To sort in ascending (ASC) or descending order (DESC)
+```sql
+SELECT * FROM student ORDER BY city ASC;
+
+SELECT col1, col2 FROM table_name ORDER BY col_name(s) ASC;
+```
+### Aggragate Functions
+Aggregare functions perform a calculation on a set of values, and return a single value.
+- COUNT() 
+- MAX()
+- MIN()
+- SUM()
+- AVG()
+
+Get Maximum Marks
+```sql
+SELECT MAX(marks) FROM student;
+```
+ Get Average marks
+```sql
+SELECT AVG(marks) FROM student;
+```
+
+### Group By Clause
+Groups rows that have the same values into summary rows.\
+It collects data from multiple records and groups the result by one or more column.
+- Generally we use group by with some aggregation function.
+- Count number of students in each city
+```sql
+SELECT city, COUNT(name)
+FROM student 
+GROUP BY city;
+```
+
+### Having Clause
+Similar to Where i.e. applies some condition on rows.\
+Used when we want to apply any condition after grouping.
+- Count number of students in each city where max marks cross 90.
+```sql
+SELECT COUNT(name), city
+FROM student 
+GROUP BY city
+HAVING MAX(marks) > 90;
+```
+
+### General Order
+**SELECT** column(s)\
+**FROM** table_name\
+**WHERE** condition\
+**GROUP** BY column(s)\
+**HAVING** condition\
+**ORDER** BY column(s) ASC;\
+
+## Table Related Queries
+### Update (to update existing rows)
+```sql
+UPDATE table_name
+SET col1 = val1, col2 = val2
+WHERE condition;
+```
+```sql
+UPDATE student
+SET grade = "O"
+WHERE grade = "A";
+```
+### Delete (to delete existing rows)
+```sql
+DELETE FROM table_name
+WHERE condition;
+```
+```sql
+DELETE FROM student
+WHERE marks < 33;
+```
+### Alter (to change the schema)
+- ADD Column
+
+Syntax
+```sql
+ALTER TABLE table_name
+ADD COLUMN column_name datatype constraint;
+```
+Example
+```sql
+ALTER TABLE student
+ADD COLUMN age INT NOT NULL DEFAULT 19;
+```
+
+- DROP Column
+
+Syntax
+```sql
+ALTER TABLE table_name
+DROP COLUMN column_name;
+```
+Example
+```sql
+ALTER TABLE student
+DROP COLUMN stu_age;
+```
+- RENAME Table
+
+Syntax
+```sql
+ALTER TABLE table_name
+RENAME TO new_table_name;
+```
+Example
+```sql
+ALTER TABLE student
+RENAME TO stu;
+```
+- CHANGE Column (rename)
+
+Syntax
+```sql
+ALTER TABLE table_name
+CHANGE COLUMN old_name new_name new_datatype new_constraint;
+```
+Example
+```sql
+ALTER TABLE student
+CHANGE age stu_age INT;
+```
+- MODIFY Column (modify datatype/ constraint)
+
+Syntax
+```sql
+ALTER TABLE table_name
+MODIFY col_name new_datatype new_constraint;
+```
+Example
+```sql
+ALTER TABLE student
+MODIFY age VARCHAR(2);
+```
+- Truncate (to delete table's data)
+
+Syntax
+```sql
+TRUNCATE TABLE table_name;
+```
+Example
+```sql
+UPDATE student
+SET grade = "0"
+WHERE grade = "A";
+```
+
+## Joins in SQL
+Join is used to combine rows from two or more tables, based on a related column between them.
+### Types of Joins
+- Inner Join
+- Left Join
+- Right Join
+- Full Join
+
+#### Inner Join
+Returns records that have matching values in both tables
+
+Syntax
+```sql
+SELECT column(s)
+FROM tableA
+INNER JOIN tableB
+ON tableA.col_name = tableB.col_name;
+```
+Example
+```sql
+SELECT *
+FROM student
+INNER JOIN course
+ON student.student_id = course.student_id;
+```
+#### Left Join
+Returns all records from the left table, and the matched records from
+the right table
+
+Syntax
+```sql
+SELECT column(s)
+FROM tableA
+LEFT JOIN tableB
+ON tableA.col_name = tableB.col_name;
+```
+Example
+```sql
+SELECT *
+FROM student as s
+LEFT JOIN course as c
+ON s.student_id = c.student_id;
+```
+#### Right Join
+Returns all records from the left table, and the matched records from
+the right table
+
+Syntax
+```sql
+SELECT column(s)
+FROM tableA
+RIGHT JOIN tableB
+ON tableA.col_name = tableB.col_name;
+```
+Example
+```sql
+SELECT *
+FROM student as s
+RIGHT JOIN course as c
+ON s.student_id = c.student_id;
+```
+#### Full Join
+Returns all records when there is a match in either left or right table
+
+Syntax
+```sql
+LEFT JOIN
+UNION
+RIGHT JOIN
+
+SELECT column(s)
+FROM tableA 
+LEFT JOIN tableB
+ON tableA.col_name = tableB.col_name
+UNION
+SELECT column(s)
+FROM tableA
+LEFT JOIN tableB
+ON tableA.col_name = tableB.col_name;
+
+```
+Example
+```sql
+SELECT *
+FROM student as a
+LEFT JOIN course as b
+ON a.student_id = b.student_id
+UNION
+SELECT *
+FROM student as a
+RIGHT JOIN course as b
+ON a.student_id = b.student_id
+```
+#### Self Join
+It is a regular join but the table is joined with itself.
+
+Syntax
+```sql
+SELECT column(s)
+FROM table as a
+JOIN table as b
+ON a.col_name = b.col_name;
+```
+Example
+```sql
+SELECT a.name as manager_name, b.name
+FROM employee as a
+JOIN employee as b
+ON a.id = b.manager_id
+```
+#### Union
+It is used to combine the result-set of two or more SELECT statements.\
+Gives UNIQUE records
+
+To use it :
+- every SELECT should have same no. of columns
+- columns must have similar data types
+- columns in every SELECT should be in same order
+
+Syntax
+```sql
+SELECT column(s) FROM tableA
+UNION
+SELECT column(s) FROM tableB
+```
+
+## SQL Sub Queries
+A Subquery or Inner query or a Nested query is a query within another SQL query.\
+It involves 2 select statements.
+
+Syntax
+```sql
+SELECT column(s)
+FROM table_name
+WHERE col_name operator
+( subquery );
+```
+#### Example
+- Get names of all students who scored more than class average.
+    - Step 1. Find the avg of class
+    - Step 2. Find the names of students with marks > avg
+
+#### Example
+- Find the names of all students with even roll numbers.
+    - Step 1. Find the even roll numbers
+    - Step 2. Find the names of students with even roll no
+
+#### Example with FROM
+- Find the max marks from the students of Delhi
+    - Step 1. Find the students of Mumbai
+    - Step 2. Find their max marks using the sublist in 
+
+## MySQL Views
+A view is a virtual table based on the result-set of an SQL statement.
+Syntax
+```sql
+CREATE VIEW view1 AS
+SELECT rollno, name FROM student;
+
+SELECT * FROM view1;
+```

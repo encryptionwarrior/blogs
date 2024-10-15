@@ -1,0 +1,718 @@
+---
+title: Binary Search Questions
+description: A guide in my new Starlight docs site.
+---
+## Find first and last occurrence of the key in given array
+```c++
+// Function to find the first occurrence of the key in a sorted array
+int firstOcc(vector<int>& arr, int n, int key) {
+    int s = 0, e = n - 1; // Initialize start (s) and end (e) indices
+    int mid = s + (e - s) / 2; // Calculate the middle index
+    int ans = -1; // Variable to store the answer (position of the first occurrence)
+
+    // Binary search loop
+    while (s <= e) {
+        if (arr[mid] == key) { // If the middle element is the key
+            ans = mid; // Store the position
+            e = mid - 1; // Move to the left half to find the first occurrence
+        }
+        else if (key > arr[mid]) { // If key is greater, move to the right half
+            s = mid + 1;
+        }
+        else { // If key is smaller, move to the left half
+            e = mid - 1;
+        }
+        mid = s + (e - s) / 2; // Recalculate the middle index
+    }
+    return ans; // Return the position of the first occurrence (or -1 if not found)
+}
+
+// Function to find the last occurrence of the key in a sorted array
+int lastOcc(vector<int>& arr, int n, int key) {
+    int s = 0, e = n - 1; // Initialize start (s) and end (e) indices
+    int mid = s + (e - s) / 2; // Calculate the middle index
+    int ans = -1; // Variable to store the answer (position of the last occurrence)
+
+    // Binary search loop
+    while (s <= e) {
+        if (arr[mid] == key) { // If the middle element is the key
+            ans = mid; // Store the position
+            s = mid + 1; // Move to the right half to find the last occurrence
+        }
+        else if (key > arr[mid]) { // If key is greater, move to the right half
+            s = mid + 1;
+        }
+        else { // If key is smaller, move to the left half
+            e = mid - 1;
+        }
+        mid = s + (e - s) / 2; // Recalculate the middle index
+    }
+    return ans; // Return the position of the last occurrence (or -1 if not found)
+}
+
+// Function to find both the first and last occurrence of the key
+pair<int, int> firstAndLastPosition(vector<int>& arr, int n, int k) {
+    pair<int, int> p;
+    p.first = firstOcc(arr, n, k); // Get the first occurrence
+    p.second = lastOcc(arr, n, k); // Get the last occurrence
+
+    return p; // Return the pair of first and last positions
+}
+
+```
+#### Example
+For `arr = {1, 2, 3, 3, 3, 4, 5}` and `key = 3`:
+1. `firstOcc:`
+    - Starts with `s = 0`, `e = 6`.
+    - Iterates and finds the first occurrence of `3` at index `2`.
+2. `lastOcc:`
+    - Starts with `s = 0`, `e = 6`.
+    - Iterates and finds the last occurrence of `3` at index `4`.
+3. `firstAndLastPosition:`
+    - Returns the pair `(2, 4)` for the first and last positions of `3`.
+
+## find the peak or pivot element in the mountain array
+```c++
+class Solution {
+public:
+
+    // Function to find the peak or pivot element in the mountain array
+    int find_pivot(vector<int> v) {
+        int s = 0, e = v.size() - 1; // Initialize start (s) and end (e) indices
+        int mid = (s + e) / 2;       // Calculate the middle index
+
+        // Binary search loop
+        while (s < e) {
+            if (v[mid] < v[mid + 1]) { // If mid element is smaller than the next one
+                s = mid + 1;           // Move the start to the right (look for a larger element)
+            } else {                   // If mid element is larger than the next one
+                e = mid;               // Move the end to the left (since mid could be the peak)
+            }
+
+            mid = (s + e) / 2;         // Recalculate the middle index
+        }
+        return s; // The start and end will converge to the peak index
+    }
+
+    // Main function that calls find_pivot to get the peak index
+    int peakIndexInMountainArray(vector<int>& arr) {
+        return find_pivot(arr); // Find and return the peak index
+    }
+};
+```
+
+#### Example
+For `arr = {0, 2, 4, 6, 3, 1}:`
+1. Initial state:
+    - `s = 0`, `e = 5`, `mid = (0 + 5) / 2 = 2`.
+    - `v[mid] = 4`, and `v[mid + 1] = 6`.
+    - Since `v[mid] < v[mid + 1]`, move `s = mid + 1 = 3`.
+2. Next iteration:
+    - `s = 3`, `e = 5`, `mid = (3 + 5) / 2 = 4`.
+    - `v[mid] = 3`, and `v[mid + 1] = 1`.
+    - Since `v[mid] > v[mid + 1]`, move `e = mid = 4`.
+3. Next iteration:
+    - `s = 3`, `e = 4`, `mid = (3 + 4) / 2 = 3`.
+    - `v[mid] = 6`, and `v[mid + 1] = 3`.
+    - Since `v[mid] > v[mid + 1]`, move `e = mid = 3`.
+4. Final state:
+    - `s = e = 3`.
+    - The loop exits, and the peak index `3` is returned.
+
+## find the pivot index in a rotated sorted array
+```c++
+#include<iostream>
+using namespace std;
+
+// Function to find the pivot index in a rotated sorted array
+int getPivot(int arr[], int n) {
+
+    int s = 0;           // Initialize start index (s)
+    int e = n - 1;       // Initialize end index (e)
+    int mid = s + (e - s) / 2;  // Calculate the middle index
+
+    // Binary search loop to find the pivot
+    while (s < e) {
+
+        // If the mid element is greater than or equal to the first element
+        if (arr[mid] >= arr[0]) {
+            s = mid + 1;  // Move start to the right since pivot must be on the right
+        } else {
+            e = mid;      // Move end to the left (mid could be the pivot)
+        }
+
+        mid = s + (e - s) / 2;  // Recalculate the middle index
+    }
+
+    return s;  // When start and end converge, start will be the pivot index
+}
+
+int main() {
+    // Example array
+    int arr[5] = {1, 3, 8, 10, 17};
+
+    // Call the getPivot function and print the pivot index
+    cout << "Pivot is " << getPivot(arr, 5) << endl;
+
+    return 0;
+}
+```
+
+#### Example
+For `arr = {1, 3, 8, 10, 17}`:
+1. Initial state:
+    - `s = 0`, `e = 4`, `mid = (0 + 4) / 2 = 2`.
+    - `arr[mid] = 8` and `arr[0] = 1`.
+    - Since `arr[mid] >= arr[0] (8 >= 1)`, move `s = mid + 1 = 3`.
+2. Next iteration:
+    - `s = 3`, `e = 4`, `mid = (3 + 4) / 2 = 3`.
+    - `arr[mid] = 10` and `arr[0] = 1`.
+    - Since `arr[mid] >= arr[0] (10 >= 1)`, move `s = mid + 1 = 4`.
+3. Final state:
+    - `s = e = 4`.
+    - The loop exits, and the pivot index is `4`, which corresponds to the element `17`.
+##### Logic
+- The binary search looks at the middle element of the current range.
+- If the middle element is greater than or equal to the first element of the array, it means the left side is sorted, and the pivot is on the right.
+- If the middle element is less than the first element, the pivot is on the left side.
+- The search continues until the start index converges with the end index, which gives the pivot.
+
+## Find the position of a given element k in a rotated sorted array
+```c++
+#include<vector>
+using namespace std;
+
+// Function to find the pivot index where the array is rotated
+int getPivot(vector<int>& arr, int n) {
+    int s = 0;             // Initialize start index (s)
+    int e = n - 1;         // Initialize end index (e)
+    int mid = s + (e - s) / 2;  // Calculate the middle index
+
+    // Binary search loop to find the pivot
+    while (s < e) {
+        if (arr[mid] >= arr[0]) {  // If middle element is greater than or equal to the first element
+            s = mid + 1;           // Move start to the right (pivot is to the right)
+        } else {                   // If middle element is smaller than the first element
+            e = mid;               // Move end to the left (pivot is to the left)
+        }
+        mid = s + (e - s) / 2;     // Recalculate the middle index
+    }
+    return s;  // When start and end converge, start will be the pivot index
+}
+
+// Function to perform binary search on a portion of the array
+int binarySearch(vector<int>& arr, int s, int e, int key) {
+    int start = s;                  // Initialize the start index
+    int end = e;                    // Initialize the end index
+    int mid = start + (end - start) / 2;  // Calculate the middle index
+
+    // Binary search loop
+    while (start <= end) {
+        if (arr[mid] == key) {       // If middle element is equal to the key
+            return mid;              // Return the index of the key
+        }
+        if (key > arr[mid]) {        // If key is greater than the middle element
+            start = mid + 1;         // Move to the right half
+        } else {                     // If key is smaller than the middle element
+            end = mid - 1;           // Move to the left half
+        }
+        mid = start + (end - start) / 2;  // Recalculate the middle index
+    }
+    return -1;  // Return -1 if the key is not found
+}
+
+// Main function to find the position of the element k
+int findPosition(vector<int>& arr, int n, int k) {
+    int pivot = getPivot(arr, n);    // Find the pivot index where the array is rotated
+    
+    // If the key lies between the pivot and the last element, search the second half of the array
+    if (k >= arr[pivot] && k <= arr[n - 1]) {
+        return binarySearch(arr, pivot, n - 1, k);
+    } 
+    // If the key lies in the first half of the array, search the first half
+    else {
+        return binarySearch(arr, 0, pivot - 1, k);
+    }
+}
+```
+
+#### Example
+`Array = {7, 9, 1, 2, 3}`, `Key = 2`
+
+1. Finding the Pivot:
+
+    - `arr = {7, 9, 1, 2, 3}`, `n = 5`.
+    - Initial state: `s = 0`, `e = 4`, `mid = (0 + 4) / 2 = 2` → `arr[mid] = 1`.
+    - Since `arr[mid] < arr[0]`, move `e = mid = 2`.
+    - Next iteration: `s = 0`, `e = 2`, `mid = (0 + 2) / 2 = 1` → `arr[mid] = 9`.
+    - Since `arr[mid] >= arr[0]`, move `s = mid + 1 = 2`.
+    - Now, `s = e = 2`, the pivot index is `2`.
+2. Binary Search:
+    - Now that the pivot is `2`, check where the key `2` lies:
+    - Since `k = 2` is between `arr[pivot] = 1` and `arr[n - 1] = 3`, perform binary search in the range pivot to `n - 1`.
+    - Perform binary search on `arr = {1, 2, 3}`:
+    - Initial state: `s = 2`, `e = 4`, `mid = (2 + 4) / 2 = 3` → `arr[mid] = 2`.
+    - Since `arr[mid] == k`, return `mid = 3`.
+##### Output
+For the input `arr = {7, 9, 1, 2, 3}` and `k = 2`, the function returns `3` because `2` is at index `3` in the array.
+
+##### Logic
+1. getPivot:
+    - The pivot is found using binary search. If the middle element is greater than or equal to the first element, the pivot is in the right half; otherwise, it is in the left half.
+2. binarySearch:
+    - After finding the pivot, the appropriate half of the array is searched using binary search. If the key lies between the pivot and the last element, search the right half; otherwise, search the left half.
+
+## compute the square root of a given number n with a specified level of precision
+```c++
+#include<iostream>
+using namespace std;
+
+// Function to compute the integer part of the square root of `n` using binary search
+long long int sqrtInteger(int n) {
+    int s = 0;                      // Initialize start index
+    int e = n;                      // Initialize end index
+    long long int mid = s + (e - s) / 2; // Calculate the middle index
+
+    long long int ans = -1;          // To store the final integer result
+    while (s <= e) {                 // Continue the binary search until s <= e
+        long long int square = mid * mid;  // Calculate the square of mid
+        
+        if (square == n)             // If mid^2 == n, return mid as the square root
+            return mid;
+
+        if (square < n) {            // If mid^2 is less than n, store mid as a potential answer
+            ans = mid;
+            s = mid + 1;             // Search in the right half (larger values)
+        } else {
+            e = mid - 1;             // Search in the left half (smaller values)
+        }
+        mid = s + (e - s) / 2;       // Recalculate the middle index
+    }
+    return ans;                      // Return the integer part of the square root
+}
+
+// Function to compute a more precise square root, up to a specified number of decimal places
+double morePrecision(int n, int precision, int tempSol) {
+    double factor = 1;               // The factor by which precision increases (0.1, 0.01, 0.001, etc.)
+    double ans = tempSol;            // Initialize the answer with the integer part of the square root
+
+    // Loop to increase the precision
+    for (int i = 0; i < precision; i++) {
+        factor = factor / 10;        // Reduce the factor for each decimal place
+
+        // Refine the answer by incrementing by smaller and smaller factors
+        for (double j = ans; j * j < n; j = j + factor) {
+            ans = j;                 // Update the answer as long as j^2 < n
+        }
+    }
+    return ans;                      // Return the final answer with precision
+}
+
+int main() {
+    int n;                           // Variable to store the input number
+    cout << "Enter the number: " << endl;
+    cin >> n;                        // Input the number from the user
+
+    // Get the integer part of the square root
+    int tempSol = sqrtInteger(n);
+
+    // Calculate the square root with 3 decimal places of precision
+    cout << "Answer is " << morePrecision(n, 3, tempSol) << endl;
+
+    return 0;
+}
+```
+
+##### Example
+Input: `n = 50`
+- Step 1: Integer Square Root Calculation (`sqrtInteger`):
+
+    - Initial state: `s = 0`, `e = 50`, `mid = (0 + 50) / 2 = 25`.
+    - Calculate `mid^2 = 25^2 = 625`, which is greater than `50`, so set `e = mid - 1 = 24`.
+    - Next iteration: `s = 0`, `e = 24`, `mid = (0 + 24) / 2 = 12`.
+    - Calculate `mid^2 = 12^2 = 144`, which is greater than `50`, so set `e = mid - 1 = 11`.
+    - Continue the process until `s = 7`, `e = 7`, at which point `mid = 7`, and `7^2 = 49`.  - Since `49` is less than `50`, store `7` as the integer part of the square root.
+    - The result of `sqrtInteger(50)` is `7`.
+- Step 2: More Precision (morePrecision):
+    - The integer square root is `7`. Now, we refine it up to `3` decimal places.
+    - Start with `ans = 7` and incrementally add `0.1`, `0.01`, `0.001`, while ensuring the square of the result remains less than `50`.
+    - This gives a result close to `7.071`.
+##### Output for `n = 50`:
+- Answer is `7.071`
+
+###### Logic
+1. `sqrtInteger`:
+    - This function uses binary search to find the largest integer mid such that `mid^2 <= n`.
+    - It starts by initializing the range `[0, n]` and iteratively adjusts the search space based on whether `mid^2` is less than or greater than n.
+    - The time complexity of this function is `O(log n)` due to binary search.
+2. `morePrecision`:
+    - This function refines the result by adding small increments `(0.1, 0.01, 0.001, etc.) ` until the square of the result exceeds `n`.
+    - The precision is controlled by the loop that runs for precision number of iterations, with each iteration refining the result by reducing the increment size.
+
+## Book Allocation Problem
+- Each student gets a contiguous section of books.
+- The maximum number of pages allocated to a student is minimized.
+- No more than m students should be used to allocate the books.
+
+```c++
+#include<vector>
+using namespace std;
+
+// Function to check if it is possible to allocate books such that no student gets more than 'mid' pages
+bool isPossible(vector<int> arr, int n, int m, int mid) {
+    int studentCount = 1;   // Start by assigning books to the first student
+    int pageSum = 0;        // Variable to keep track of the sum of pages assigned to the current student
+    
+    for (int i = 0; i < n; i++) {
+        // If adding arr[i] (pages of the current book) to the current student's allocation keeps it <= mid
+        if (pageSum + arr[i] <= mid) {
+            pageSum += arr[i];   // Add the book to the current student's allocation
+        } else {
+            // If adding the current book exceeds 'mid', allocate it to a new student
+            studentCount++;
+            
+            // If the number of students exceeds 'm' or if any book has more pages than 'mid', return false
+            if (studentCount > m || arr[i] > mid) {
+                return false;
+            }
+
+            // Allocate the current book to the new student
+            pageSum = arr[i];
+        }
+
+        // If at any point, the number of students exceeds 'm', return false
+        if (studentCount > m) {
+            return false;
+        }
+    }
+    return true;   // If all books can be allocated within the given constraints, return true
+}
+
+// Function to find the minimum of the maximum number of pages a student can be allocated
+int allocateBooks(vector<int> arr, int n, int m) {
+    int s = 0;   // Start with the minimum possible number of pages (0)
+    int sum = 0; // Sum of all pages in the array (total number of pages in all books)
+
+    // Calculate the total number of pages
+    for (int i = 0; i < n; i++) {
+        sum += arr[i];
+    }
+    
+    int e = sum;   // The upper limit of the number of pages (the sum of all pages)
+    int ans = -1;  // Variable to store the result
+    int mid = s + (e - s) / 2;  // Calculate the middle point of the current range
+
+    // Perform binary search to minimize the maximum number of pages
+    while (s <= e) {
+        // Check if it's possible to allocate books with 'mid' as the maximum number of pages
+        if (isPossible(arr, n, m, mid)) {
+            ans = mid;   // If possible, store the current mid as a potential answer
+            e = mid - 1; // Try to find a smaller maximum by reducing the search space
+        } else {
+            s = mid + 1; // If not possible, increase the minimum number of pages
+        }
+        mid = s + (e - s) / 2;  // Recalculate the middle point
+    }
+    return ans;  // Return the minimum of the maximum number of pages a student can be allocated
+}
+```
+
+#### Example
+Consider the following input:\
+`arr = {10, 20, 30, 40}` (book pages)
+`m = 2` (number of students)
+- Step 1: Calculate the total sum of pages
+    - `sum = 10 + 20 + 30 + 40 = 100`.
+    - The minimum value for binary search (`s`) is `0`, and the maximum value (`e`) is `100`.
+- Step 2: Binary Search for the Optimal Solution
+    1. First Iteration:
+
+        - `mid = (0 + 100) / 2 = 50`.
+        - Check if it is possible to allocate books such that no student gets more than `50` pages.
+
+        **Allocation for** `mid = 50`:
+        - First student: `10 + 20 = 30` (next book exceeds 50).
+        - Second student: `30 + 40 = 70`.
+        - This allocation is possible, but there are exactly `2` students. So, the search space is reduced: `e = mid - 1 = 49`, and the current answer is `50`.
+    2. Second Iteration:
+
+        - `mid = (0 + 49) / 2 = 24`.
+
+        **Allocation for** `mid = 24`:
+
+        - First student: `10 + 20 = 30` (exceeds 24).
+        - Second student: `30` (exceeds 24).
+        - Third student: `40` (exceeds 24).
+        - This is not possible, so we increase the search space: `s = mid + 1 = 25`.
+    
+    3. Third Iteration:
+        - `mid = (25 + 49) / 2 = 37`.
+
+        **Allocation for** `mid = 37`:
+        - First student: `10 + 20 = 30` (next book exceeds 37).
+        - Second student: `30` (next book exceeds 37).
+        - Third student: `40` (exceeds 37).
+        - Since this allocation requires more than `2` students, it's not possible to allocate books with `37` pages as the maximum. So, we increase the search space: `s = mid + 1 = 38`.
+    4. Fourth Iteration:
+        - `mid = (38 + 49) / 2 = 43`.
+
+        **Allocation for** `mid = 43`:
+        - First student: `10 + 20 = 30` (next book exceeds 43).
+        - Second student: `30 + 40 = 70`.
+        - This allocation is possible with exactly `2` students, so we update our answer to `43` and reduce the search space: `e = mid - 1 = 42`.
+    5. Fifth Iteration:
+
+        - `mid = (38 + 42) / 2 = 40`.
+
+        **Allocation for** `mid = 40`:
+
+        - First student: `10 + 20 = 30` (next book exceeds 40).
+        - Second student: `30 + 40 = 70`.
+        - This allocation is possible with `2` students, so we update our answer to `40` and reduce the search space: `e = mid - 1 = 39`.
+
+    6. Sixth Iteration:
+
+        - `mid = (38 + 39) / 2 = 38`.
+
+        **Allocation for** `mid = 38`:
+
+        - First student: `10 + 20 = 30` (next book exceeds 38).
+        - Second student: `30 + 40 = 70`.
+        - This allocation is possible, but the result is higher than `38`. Therefore, we increase the search space: `s = mid + 1 = 39`.
+
+    7. Seventh Iteration:
+
+        - `mid = (39 + 39) / 2 = 39`.
+
+        **Allocation for** `mid = 39`:
+
+        - First student: `10 + 20 = 30` (next book exceeds 39).
+        - Second student: `30 + 40 = 70`.
+        - This allocation is possible, but the result is still higher than `39`. Therefore, we increase the search space again: `s = mid + 1 = 40`.
+
+At this point, `s = 40` and `e = 39`, so the loop exits. The final answer is the last valid value of ans, which is `40`.
+
+##### Explanation of Logic
+1. Setup:
+    - Use binary search to find the minimum possible maximum pages. Set the lower bound (`s`) to 0 and the upper bound (`e`) to the sum of all book pages.
+2. Binary Search:
+    - Calculate the mid-point (`mid`) as `(s + e) / 2`, representing the potential maximum pages per student.
+    - Use the isPossible function to check if books can be allocated without exceeding mid pages for any student.
+3. Allocation Check:
+    - In isPossible, iterate through the books and allocate them to students:
+    - If adding a book keeps the total pages below mid, allocate it to the current student.
+    - If it exceeds mid, assign it to a new student. If the required students exceed m, return false.
+3. Adjusting Search Space:
+    - If allocation is possible, reduce the upper bound (`e = mid - 1`) to find a smaller maximum.
+    - If not possible, increase the lower bound (`s = mid + 1`) to allow for more pages.
+4. Result:
+    - The loop continues until `s > e`, and the last valid mid value is returned as the minimum maximum pages per student.
+
+## Aggressive Cows
+we need to place cows in stalls such that the minimum distance between any two cows is maximized.
+```c++
+bool isPossible(vector<int> &stalls, int k, int mid, int n) {
+    int cowCount = 1; // Start by placing the first cow in the first stall
+    int lastPos = stalls[0]; // Track the last position where a cow was placed
+    
+    // Iterate through all stalls
+    for(int i=0; i<n; i++ ){
+        // Check if the current stall can accommodate a cow with at least 'mid' distance
+        if(stalls[i] - lastPos >= mid) {
+            cowCount++; // Place a cow
+            // If we've placed all k cows, return true
+            if(cowCount == k) {
+                return true;
+            }
+            lastPos = stalls[i]; // Update the last position
+        }
+    }
+    return false; // Not enough cows placed
+}
+
+
+int aggressiveCows(vector<int> &stalls, int k) {
+    // Sort the stall positions
+    sort(stalls.begin(), stalls.end());
+    
+    int s = 0; // Start of the search range
+    int n = stalls.size(); // Total number of stalls
+    int e = stalls[n - 1]; // End of the search range (last stall position)
+    int ans = -1; // To store the final answer
+    int mid = s + (e - s) / 2; // Calculate the mid-point for binary search
+    
+    // Perform binary search
+    while(s <= e) {
+        // Check if placing cows with at least 'mid' distance is possible
+        if(isPossible(stalls, k, mid, n)) {
+            ans = mid; // If possible, store the answer
+            s = mid + 1; // Try for a larger distance
+        }
+        else {
+            e = mid - 1; // Try for a smaller distance
+        }
+        mid = s + (e - s) / 2; // Update mid-point
+    }
+    return ans; // Return the maximum minimum distance
+}
+
+```
+
+#### Example
+```c++
+stalls = {1, 2, 4, 8, 9} // positions of stalls
+k = 3 // number of cows
+```
+1. Initial Setup:
+
+- Sort the stalls: `{1, 2, 4, 8, 9}`
+- Set search boundaries:
+    - `s = 0` (minimum possible distance)
+    - `e = 9` (maximum possible distance)
+    - `ans = -1`
+
+2. Binary Search Process:
+
+    - First Iteration:
+
+        - `mid = (0 + 9) / 2 = 4`
+        - Check if we can place 3 cows with a minimum distance of `4` using `isPossible`.
+        - Placement:
+            - Place first cow at `1`
+            - Next possible position for cow is 5, but it's not available. Thus, place second cow at `4`.
+            - Not enough cows placed.
+        - Result: not possible, update `e = mid - 1 = 3`.
+    - Second Iteration:
+        - `mid = (0 + 3) / 2 = 1`
+        - Check if we can place `3` cows with a minimum distance of `1`.
+        - Placement:
+            - Place first cow at `1`
+            - Place second cow at `2`
+            - Place third cow at `4`
+        - Result: possible, update `ans = 1` and `s = mid + 1 = 2`.
+    
+    - Third Iteration:
+        - `mid = (2 + 3) / 2 = 2`
+        - Check if we can place `3` cows with a minimum distance of `2`.
+        - Placement:
+            - Place first cow at `1`
+            - Place second cow at `4`
+            - Not enough cows placed.
+        - Result: not possible, update `e = mid - 1 = 1`
+    
+    - Fourth Iteration:
+        - `mid = (2 + 1) / 2 = 3`
+        - Check if we can place 3 cows with a minimum distance of `3`.
+        - Placement:
+            - Place first cow at `1`
+            - Next possible position for cow is `4` (place second cow here).
+            - Not enough cows placed.
+        - Result: not possible, update `e = mid - 1 = 2`.
+3. Final Result:
+    - The loop continues until `s > e`. The maximum minimum distance is found to be `1`.
+
+## Painter's Partition
+```c++
+#include <iostream>
+#include <vector>
+#include <numeric> // for std::accumulate
+using namespace std;
+
+// Function to check if it's possible to paint the boards within given maxTime
+bool isPossible(const vector<int>& boards, int k, long long maxTime) {
+    int painterCount = 1; // Start with one painter
+    long long timeSpent = 0; // Time spent by the current painter
+
+    for (int length : boards) {
+        // If the current board length exceeds maxTime, it's not possible
+        if (length > maxTime) return false;
+
+        timeSpent += length; // Add board length to the current painter's time
+        if (timeSpent > maxTime) { // If time exceeds maxTime, use a new painter
+            painterCount++;
+            timeSpent = length; // Reset time for the new painter
+        }
+    }
+    return painterCount <= k; // Check if the number of painters used is within limit
+}
+
+// Main function to find the minimum time required to paint the boards
+long long painterPartition(const vector<int>& boards, int k) {
+    long long s = *max_element(boards.begin(), boards.end()); // Lower bound
+    long long e = accumulate(boards.begin(), boards.end(), 0LL); // Upper bound
+    long long ans = e; // Initialize answer with upper bound
+
+    // Binary search for the optimal solution
+    while (s <= e) {
+        long long mid = s + (e - s) / 2; // Calculate mid-point
+
+        // Check if it's possible to paint within mid time
+        if (isPossible(boards, k, mid)) {
+            ans = mid; // Update answer
+            e = mid - 1; // Search for a smaller maximum time
+        } else {
+            s = mid + 1; // Increase minimum time
+        }
+    }
+    return ans; // Return the minimum maximum time
+}
+
+int main() {
+    vector<int> boards = {10, 20, 30, 40}; // Lengths of the boards
+    int k = 2; // Number of painters
+
+    long long minTime = painterPartition(boards, k); // Calculate minimum time
+    cout << "Minimum time required to paint all boards: " << minTime << endl;
+
+    return 0;
+}
+```
+
+#### Example
+Consider the following input:
+```c++
+stalls = {1, 2, 4, 8, 9} // positions of stalls
+k = 3 // number of cows
+```
+1. Initial Setup:
+
+    - Sort the stalls: `{1, 2, 4, 8, 9}`
+    - Set search boundaries:
+        - `s = 0` (minimum possible distance)
+        - `e = 9` (maximum possible distance)
+        - `ans = -1`
+2. Binary Search Process:
+    - First Iteration:
+        - `mid = (0 + 9) / 2 = 4`
+        - Check if we can place 3 cows with a minimum distance of `4` using isPossible.
+        - Placement:
+            - Place first cow at `1`
+            - Next possible position for cow is `5`, but it's not available. Thus, place second cow at `4`.
+            - Not enough cows placed.
+        - Result: not possible, update `e = mid - 1 = 3`.
+    - Second Iteration:
+        - `mid = (0 + 3) / 2 = 1`
+        - Check if we can place `3` cows with a minimum distance of `1`.
+        - Placement:
+            - Place first cow at `1`
+            - Place second cow at `2`
+            - Place third cow at `4`
+        - Result: possible, update `ans = 1` and `s = mid + 1 = 2`.
+    - Third Iteration:
+        - `mid = (2 + 3) / 2 = 2`
+        - Check if we can place `3` cows with a minimum distance of `2`.
+        - Placement:
+            - Place first cow at `1`
+            - Place second cow at `4`
+            - Not enough cows placed.
+        - Result: not possible, update `e = mid - 1 = 1`
+    - Fourth Iteration:
+        - `mid = (2 + 1) / 2 = 3`
+        - Check if we can place `3` cows with a minimum distance of `3`.
+        - Placement:
+            - Place first cow at `1`
+            - Next possible position for cow is `4` (place second cow here).
+            - Not enough cows placed.
+        - Result: not possible, update `e = mid - 1 = 2`.
+3. Final Result:
+    - The loop continues until s > e. The maximum minimum distance is found to be 1.

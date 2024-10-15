@@ -1,0 +1,382 @@
+---
+title: Array Questions
+description: A guide in my new Starlight docs site.
+---
+
+## Linear Search
+```c++
+bool search(int arr[], int size, int key) {
+    // Loop through the array from index 0 to size-1
+    for( int i = 0; i < size; i++ ) {
+        // Check if the current element matches the key
+        if( arr[i] == key) {
+            // If a match is found, return true (1)
+            return 1;
+        }
+    }
+    // If no match is found after checking all elements, return false (0)
+    return 0;
+}
+```
+#### Example
+- Input
+```c++
+int arr[] = {5, 8, 12, 20, 15};
+int size = 5;
+int key = 12;
+```
+##### Steps:
+- The array `arr[] = {5, 8, 12, 20, 15}` is of size 5.
+- The `key = 12`.
+1. First iteration (`i = 0`):
+
+    - `arr[0] = 5`. It's not equal to `key = 12`, so the loop continues.
+2. Second iteration (`i = 1`):
+
+    - `arr[1] = 8`. It's not equal to `key = 12`, so the loop continues.
+3. Third iteration (`i = 2`):
+
+    - `arr[2] = 12`. This is equal to the `key = 12`, so the function returns `1` (true) and the search stops.
+###### Output:
+Since the key `12` was found in the array, the function returns true (`1`).
+
+
+## Find maximum and Minimum in an array
+- Minimum
+```c++
+int getMin(int num[], int n) {
+
+    int mini = INT_MAX;  // Initialize 'mini' to the largest possible integer value
+
+    for(int i = 0; i < n; i++) {
+        // Compare the current element num[i] with the current minimum 'mini'
+        // Update 'mini' with the smaller value
+        mini = min(mini, num[i]);
+
+        // Equivalent manual comparison:
+        // if(num[i] < mini) {
+        //    mini = num[i];
+        // }
+    }
+
+    // Returning the minimum value found
+    return mini;
+}
+```
+- Maximum
+```c++
+int getMax(int num[], int n) {
+
+    int maxi = INT_MIN;  // Initialize 'maxi' to the smallest possible integer value
+
+    for(int i = 0; i < n; i++) {
+        // Compare the current element num[i] with the current maximum 'maxi'
+        // Update 'maxi' with the larger value
+        maxi = max(maxi, num[i]);
+
+        // Equivalent manual comparison:
+        // if(num[i] > maxi) {
+        //    maxi = num[i];
+        // }
+    }
+
+    // Returning the maximum value found
+    return maxi;
+}
+```
+##### Example:
+```c++
+int num[] = {4, 9, 2, 8, 6};
+int n = 5;
+```
+1. Calling `getMin(num, 5)`:
+- The array is `num[] = {4, 9, 2, 8, 6}`.
+- Initial `mini = INT_MAX`.
+###### Iterations:
+
+1. `mini = min(INT_MAX, 4)` → `mini = 4`.
+2. `mini = min(4, 9)` → `mini = 4`.
+3. `mini = min(4, 2)` → `mini = 2`.
+4. `mini = min(2, 8)` → `mini = 2`.
+5. `mini = min(2, 6)` → `mini = 2`.
+- The smallest value is 2.
+###### Output: 2
+
+2. Calling `getMax(num, 5)`:
+- The array is `num[] = {4, 9, 2, 8, 6}`.
+- Initial `maxi = INT_MIN`.
+###### Iterations:
+
+1. `maxi = max(INT_MIN, 4)` → `maxi = 4`.
+2. `maxi = max(4, 9)` → `maxi = 9`.
+3. `maxi = max(9, 2)` → `maxi = 9`.
+4. `maxi = max(9, 8)` → `maxi = 9`.
+5. `maxi = max(9, 6)` → `maxi = 9`.
+- The largest value is 9.
+###### Output: 9
+
+## Reverse Array
+```c++
+void reverse(int arr[], int n) {
+    // Initialize two pointers: start at the beginning and end at the last element
+    int start = 0;
+    int end = n-1;
+
+    // Continue the process until the start pointer crosses the end pointer
+    while(start<=end) {
+        // Swap the elements at the start and end positions
+        swap(arr[start], arr[end]);
+
+        // Move start pointer forward and end pointer backward
+        start++;
+        end--;
+    }
+}
+```
+##### Example
+```c++
+int arr[] = {1, 2, 3, 4, 5};
+int n = 5;
+reverse(arr, n);
+```
+- Initial array: `{1, 2, 3, 4, 5}`.
+- `start = 0`, `end = 4`.
+###### Iterations:
+1. First iteration:
+    - Swap `arr[0]` (`1`) and `arr[4]` (5).
+    - Array after swap: `{5, 2, 3, 4, 1}`.
+    - Move `start` to 1, and `end` to 3.
+2. Second iteration:
+    - Swap `arr[1]` (2) and `arr[3]` (4).
+    - Array after swap: `{5, 4, 3, 2, 1}`.
+    - Move `start` to 2, and `end` to 2.
+3. Third iteration:
+    - Since `start == end`, no swap is needed. Array remains `{5, 4, 3, 2, 1}`.
+- Final reversed array: `{5, 4, 3, 2, 1}`.
+###### Output:
+Reversed array: `{5, 4, 3, 2, 1}`
+
+
+## Swap Alternates in Array
+```c++
+// Function to swap alternate elements in the array
+void swapAlternate(int arr[], int size) { 
+    // Loop through the array with a step of 2 to swap every alternate element
+    for(int i = 0; i<size; i+=2 ) {
+        // Ensure we don't access out of bounds by checking if i+1 is within the array size
+        if(i+1 < size) {
+            // Swap the current element (arr[i]) with the next element (arr[i+1])
+            swap(arr[i], arr[i+1]);
+        }
+    }
+}
+```
+#### Example
+```c++
+int arr[] = {1, 2, 3, 4, 5, 6};
+int size = 6;
+swapAlternate(arr, size);
+```
+- Initial array: `{1, 2, 3, 4, 5, 6}`.
+###### Iterations:
+1. First iteration (`i = 0`):
+    - Swap `arr[0]` (1) with `arr[1]` (2).
+    - Array after swap: `{2, 1, 3, 4, 5, 6}`.
+2. Second iteration (`i = 2`):
+
+    - Swap `arr[2]` (3) with `arr[3]` (4).
+    - Array after swap: `{2, 1, 4, 3, 5, 6}`.
+3. Third iteration (`i = 4`):
+
+    - Swap `arr[4]` (5) with `arr[5]` (6).
+    - Array after swap: `{2, 1, 4, 3, 6, 5}`.
+###### Final Result:
+- After swapping alternate elements, the array becomes `{2, 1, 4, 3, 6, 5}`.
+###### Output:
+Swapped array: `{2, 1, 4, 3, 6, 5}`
+
+
+## Find Duplicates in Array
+```c++
+// Function to find the duplicate element in an array where all elements
+// are in the range [1, n-1], and only one element is repeated.
+int findDuplicate(vector<int> &arr)
+{
+    int ans = 0;
+    // XOR all array elements with ans
+    for(int i = 0; i < arr.size(); i++) {
+        ans = ans ^ arr[i];  // XOR each element with ans
+    }
+    // XOR ans with numbers from 1 to (n-1)
+    for(int i = 1; i < arr.size(); i++) {
+        ans = ans ^ i;  // XOR ans with each number in the range [1, n-1]
+    }
+    // Return the result, which will be the duplicate number
+    return ans;
+}
+```
+##### Example:
+```c++
+vector<int> arr = {1, 3, 4, 2, 2};
+```
+###### Step-by-Step Execution:
+1. First loop (XOR all elements of the array):
+
+    - Initial `ans = 0`.
+    - XOR ans with each element of the array:
+        1. `ans = 0 ^ 1` → `ans = 1`.
+        2. `ans = 1 ^ 3` → `ans = 2`.
+        3. `ans = 2 ^ 4` → `ans = 6`.
+        4. `ans = 6 ^ 2` → `ans = 4`.
+        5. `ans = 4 ^ 2` → `ans = 6`.
+2. Second loop (XOR with numbers from 1 to (n-1)):
+
+    - XOR `ans` with numbers from 1 to 4:
+        1. `ans = 6 ^ 1` → `ans = 7`.
+        2. `ans = 7 ^ 2` → `ans = 5`.
+        3. `ans = 5 ^ 3` → `ans = 6`.
+        4. `ans = 6 ^ 4` → `ans = 2`.
+3. Final Result:
+- The remaining value of `ans` is `2`, which is the duplicate number in the array.
+###### Output:
+- Duplicate number: 2
+
+
+## Find Intersection in Array
+```c++
+// Function to find the intersection of two sorted arrays
+vector<int> findArrayIntersection(vector<int> &arr1, int n, vector<int> &arr2, int m) {
+    int i = 0, j = 0;  // Two pointers for traversing arr1 and arr2
+    vector<int> ans;   // Vector to store the result (intersection elements)
+
+    // Loop through both arrays as long as pointers i and j are within bounds
+    while (i < n && j < m) {
+
+        // If elements at i and j are equal, it's part of the intersection
+        if (arr1[i] == arr2[j]) {
+            ans.push_back(arr1[i]);  // Add the common element to ans
+            i++;  // Move to the next element in arr1
+            j++;  // Move to the next element in arr2
+        }
+
+        // If arr1[i] is smaller than arr2[j], increment i to catch up
+        else if (arr1[i] < arr2[j]) {
+            i++;
+        }
+
+        // If arr1[i] is greater than arr2[j], increment j to catch up
+        else {
+            j++;
+        }
+    }
+
+    // Return the intersection elements found
+    return ans;
+}
+```
+##### Example:
+```c++
+vector<int> arr1 = {1, 2, 3, 4, 5};
+vector<int> arr2 = {3, 4, 5, 6, 7};
+int n = 5, m = 5;
+```
+###### Step-by-Step Execution:
+1. Initial Values:\
+`i = 0`, `j = 0`, `ans = []`.
+
+2. First Iteration:\
+Compare `arr1[0] = 1` and `arr2[0] = 3`.\
+Since `1 < 3`, increment `i`:\
+i = 1, j = 0.
+
+3. Second Iteration:\
+Compare `arr1[1] = 2` and `arr2[0] = 3`.\
+Since `2 < 3`, increment `i`:\
+`i = 2`, `j = 0`.
+
+4. Third Iteration:\
+Compare `arr1[2] = 3` and `arr2[0] = 3`.\
+Since `3 == 3`, add `3` to ans and increment both `i` and `j`:\
+`ans = [3]`, `i = 3`, `j = 1`.
+
+5. Fourth Iteration:\
+Compare `arr1[3] = 4` and `arr2[1] = 4`.\
+Since `4 == 4`, add `4` to ans and increment both `i` and `j`:\
+`ans = [3, 4]`, `i = 4`, `j = 2`.
+
+5. Fifth Iteration:\
+Compare `arr1[4] = 5` and `arr2[2] = 5`.\
+Since `5 == 5`, add `5` to ans and increment both `i` and `j`:\
+`ans = [3, 4, 5]`, `i = 5`, `j = 3`.
+
+7. Now, `i = 5` (which is equal to n), so the loop ends.
+
+###### Final Output:
+`ans = [3, 4, 5]`
+
+
+
+## Find Sum Of Pairs in Array
+```c++
+vector<vector<int> > pairSum(vector<int> &arr, int s){
+   vector< vector<int> > ans;
+   
+   for(int i=0;i<arr.size(); i++ )
+   {
+   		for(int j = i+1; j<arr.size(); j++) {
+        	if(arr[i] +arr[j] == s)
+            {
+            	vector<int> temp;
+                temp.push_back(min(arr[i], arr[j]));
+                temp.push_back(max(arr[i], arr[j]));
+				ans.push_back(temp);
+            }
+        }
+   }
+   sort(ans.begin(), ans.end());
+   return ans;
+}
+```
+
+## Sorting in Array
+```c++
+void sortOne(int arr[], int n) {
+
+    int left = 0, right = n-1;
+
+    while(left < right) {
+
+        while(arr[left] == 0 && left < right )  {
+            left++;
+        }
+
+        while(arr[right]==1 && left < right){
+            right--;
+        }
+
+        //agar yha pohoch gye ho, iska matlab
+        //arr[left]==1 and arr[right]==0
+        if(left<right)
+        {
+            swap(arr[left], arr[right]);
+            left++;
+            right--;
+        }
+    }
+
+}
+```
+
+## Find Elements in Array
+```c++
+int findUnique(int *arr, int size)
+{
+   	int ans = 0;
+    
+    for(int i = 0; i<size; i++) {
+        ans = ans^arr[i];
+    }
+    return ans;
+}
+```
+## Leetcode:  Find Sum Of Triplets in Arr
