@@ -63,14 +63,14 @@ description: A guide in my new Starlight docs site.
 ## 5. Time Complexity of Loops
 
 1.  Single loop:
-```
+```c++
 for(int i = 0; i < n; i++) {
     // O(1) operation
 }
 ```
 
 - Time complexity: O(n) (linear)
-```
+```c++
 for(int i = 0; i < n; i++) {
     for(int j = 0; j < n; j++) {
         // O(1) operation
@@ -81,7 +81,7 @@ for(int i = 0; i < n; i++) {
 
 ## 6.Example of Time Complexity:
 - Linear Search:
-```
+```c++
 int linearSearch(int arr[], int n, int key) {
     for (int i = 0; i < n; i++) {
         if (arr[i] == key) {
@@ -93,7 +93,7 @@ int linearSearch(int arr[], int n, int key) {
 ```
 
 - Time Complexity: O(n) (as it iterates through all elements in the worst case).
-```
+```c++
 int binarySearch(int arr[], int n, int key) {
     int left = 0, right = n - 1;
     while (left <= right) {

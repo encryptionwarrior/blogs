@@ -22,7 +22,7 @@ description: A guide in my new Starlight docs site.
 
 4. Binary Search Algorithm:
 - Iterative Approach:
-```
+```c++
 int binarySearch(int arr[], int n, int target) {
     int left = 0, right = n - 1;
     while (left <= right) {
@@ -39,7 +39,7 @@ int binarySearch(int arr[], int n, int target) {
 }
 ```
 - Recursive Approach
-```
+```c++
 int binarySearchRecursive(int arr[], int left, int right, int target) {
     if (left <= right) {
         int mid = left + (right - left) / 2;
@@ -57,14 +57,14 @@ int binarySearchRecursive(int arr[], int left, int right, int target) {
 
 5. Example:
 - Suppose we have a sorted array:
-```
+```c++
 int arr[] = {2, 5, 8, 12, 16, 23, 38, 45, 56, 72, 91};
 int n = sizeof(arr) / sizeof(arr[0]);
 int target = 23;
 ```
 
 - Using the Iterative Binary Search:
-```
+```c++
 int result = binarySearch(arr, n, target);
 if (result != -1)
     cout << "Element found at index: " << result;
@@ -80,7 +80,7 @@ else
 - Requires Random Access: Binary search works best with arrays or structures that allow random access.
 
 ### Find index in Odd and Even Arrays
-```
+```c++
 int binarySearch(int arr[], int size, int key) {
     int start = 0;
     int end = size-1;

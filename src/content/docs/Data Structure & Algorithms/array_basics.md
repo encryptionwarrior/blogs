@@ -8,7 +8,7 @@ description: A guide in my new Starlight docs site.
 - Arrays have a fixed size and allow random access to elements using an index.
 
 ##### Syntax:
-```
+```c++
 data_type array_name[size];
 ```
 - data_type: The type of data (e.g., int, float).
@@ -16,21 +16,21 @@ data_type array_name[size];
 - size: The number of elements the array can hold.
 ##### Array Initialization:
 - At Declaration:
-```
+```c++
 int arr[5] = {10, 20, 30, 40, 50};  // Initialize with values
 ```
 -  Default Initialization:
-```
+```c++
 int arr[5] = {};  // Initializes all elements to 0
 ```
 - Access Elements:
-```
+```c++
 cout << arr[0];  // Output: 10
 cout << arr[4];  // Output: 50
 ```
 #####  Looping Through an Array:
 You can use a loop (like for) to iterate over an array:
-```
+```c++
 int arr[5] = {10, 20, 30, 40, 50};
 for(int i = 0; i < 5; i++) {
     cout << arr[i] << " ";  // Output: 10 20 30 40 50
@@ -39,17 +39,17 @@ for(int i = 0; i < 5; i++) {
 
 #####  Array Size:
 The size of the array is defined when declared and cannot be changed dynamically.
-```
+```c++
 int arr[5];  // Fixed-size array
 ```
 #####  Multidimensional Arrays:
 Arrays can have more than one dimension, such as 2D arrays.
 - Syntax
-```
+```js
 data_type array_name[rows][columns];
 ```
 - Example
-```
+```c++
 int matrix[2][3] = {
     {1, 2, 3},
     {4, 5, 6}
@@ -58,18 +58,18 @@ cout << matrix[1][2];  // Output: 6
 ```
 #####  Array Methods (Common Operations):
 - Finding the Length of the Array:
-```
+```c++
 int arr[5] = {10, 20, 30, 40, 50};
 int size = sizeof(arr) / sizeof(arr[0]);  // Output: 5
 ```
 - Sorting the Array:
-```
+```c++
 #include <algorithm>
 int arr[5] = {30, 10, 50, 20, 40};
 sort(arr, arr + 5);  // Sorts the array in ascending order
 ```
 - Searching for an Element:
-```
+```c++
 int arr[5] = {10, 20, 30, 40, 50};
 int key = 30;
 bool found = false;
@@ -88,14 +88,14 @@ else
 ```
 
 - Reversing an Array:
-```
+```c++
 #include <algorithm>
 int arr[5] = {10, 20, 30, 40, 50};
 reverse(arr, arr + 5);  // Reverses the array
 ```
 
 - Sum of Elements:
-```
+```c++
 int arr[5] = {10, 20, 30, 40, 50};
 int sum = 0;
 
@@ -107,7 +107,7 @@ cout << "Sum is: " << sum;  // Output: 150
 ```
 
 ##### Example code
-```
+```c++
 #include<iostream>
 using namespace std;
 

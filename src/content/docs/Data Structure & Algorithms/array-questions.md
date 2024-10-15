@@ -4,7 +4,7 @@ description: A guide in my new Starlight docs site.
 ---
 
 ## Linear Search
-```
+```c++
 bool search(int arr[], int size, int key) {
     for( int i = 0; i<size; i++ ) {
         if( arr[i] == key) {
@@ -16,7 +16,7 @@ bool search(int arr[], int size, int key) {
 ```
 ## Find maximum and Minimum in an array
 - Minimum
-```
+```c++
 int getMin(int num[], int n) {
 
     int mini = INT_MAX;
@@ -35,7 +35,7 @@ int getMin(int num[], int n) {
 }
 ```
 - Maximum
-```
+```c++
 int getMax(int num[], int n) {
 
     int maxi = INT_MIN;
@@ -55,7 +55,7 @@ int getMax(int num[], int n) {
 ```
 
 ## Reverse Array
-```
+```c++
 void reverse(int arr[], int n) {
 
     int start = 0;
@@ -70,7 +70,7 @@ void reverse(int arr[], int n) {
 ```
 
 ## Swap Alternates in Array
-```
+```c++
 void swapAlternate(int arr[], int size) {
 
     for(int i = 0; i<size; i+=2 ) {
@@ -83,7 +83,7 @@ void swapAlternate(int arr[], int size) {
 ```
 
 ## Find Duplicates in Array
-```
+```c++
 int findDuplicate(vector<int> &arr) 
 {
     int ans = 0;
@@ -102,7 +102,7 @@ int findDuplicate(vector<int> &arr)
 ```
 
 ## Find Intersection in Array
-```
+```c++
 vector<int> findArrayIntersection(vector<int> &arr1, int n, vector<int> &arr2, int m)
 {
 	int i = 0, j = 0;
@@ -129,7 +129,7 @@ vector<int> findArrayIntersection(vector<int> &arr1, int n, vector<int> &arr2, i
 ```
 
 ## Find Sum Of Pairs in Array
-```
+```c++
 vector<vector<int> > pairSum(vector<int> &arr, int s){
    vector< vector<int> > ans;
    
@@ -151,7 +151,7 @@ vector<vector<int> > pairSum(vector<int> &arr, int s){
 ```
 
 ## Sorting in Array
-```
+```c++
 void sortOne(int arr[], int n) {
 
     int left = 0, right = n-1;
@@ -180,7 +180,7 @@ void sortOne(int arr[], int n) {
 ```
 
 ## Find Elements in Array
-```
+```c++
 int findUnique(int *arr, int size)
 {
    	int ans = 0;

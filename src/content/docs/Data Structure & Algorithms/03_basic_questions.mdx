@@ -1,0 +1,647 @@
+---
+title: Basic Questions
+description: A guide in my new Starlight docs site.
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+## Print number from 1 to n
+
+<Tabs>
+  <TabItem label="C++">
+
+        ```c++
+        int main() {
+            int n;
+            cin>>n;
+            int i = 1;
+            while(i<=n) {
+                cout<<i<<" ";
+                i = i+1;   
+            }
+        }
+        ```
+  </TabItem>
+  <TabItem label="Javascript">
+
+        ```c++
+        int main() {
+            int n;
+            cin>>n;
+            int i = 1;
+            while(i<=n) {
+                cout<<i<<" ";
+                i = i+1;   
+            }
+        }
+        ```
+  </TabItem>
+  <TabItem label="Python">
+
+        ```c++
+        int main() {
+            int n;
+            cin>>n;
+            int i = 1;
+            while(i<=n) {
+                cout<<i<<" ";
+                i = i+1;   
+            }
+        }
+        ```
+  </TabItem>
+</Tabs>
+
+## Print sum of number from 1 to n
+
+```c++
+int main() {
+   int n;
+    cin >> n;
+    int i = 1;
+    int sum = 0;
+    while(i<=n) {
+        sum = sum + i;
+        i = i + 1;
+    }
+    cout<< "value of sum is "<<sum<<endl;
+}
+```
+
+## Find sum of all even number from 1 to n
+
+```c++
+int main() {
+   int n;
+    cin >> n;
+    int i = 1;
+    int sum = 0;
+    while(i<=n) {
+         if(i % 2 == 0) {
+            sum = sum + i;  // Add 'i' to sum if it's even
+        }
+        i = i + 1;
+    }
+    cout<< "value of sum is "<<sum<<endl;
+}
+```
+
+## Convert fahrenheit to celcius
+
+```c++
+int main() {
+    float fahrenheit, celsius;
+
+    // Take input temperature in Fahrenheit from the user
+    cout << "Enter temperature in Fahrenheit: ";
+    cin >> fahrenheit;
+
+    // Formula to convert Fahrenheit to Celsius
+    celsius = (fahrenheit - 32) * 5 / 9;
+
+    // Output the temperature in Celsius
+    cout << "Temperature in Celsius: " << celsius << endl;
+
+    return 0;
+}
+```
+
+## Convert celcius to fahrenheit 
+
+```c++
+int main() {
+    float celsius, fahrenheit;
+    // Take input temperature in Celsius from the user
+    cout << "Enter temperature in Celsius: ";
+    cin >> celsius;
+    // Formula to convert Celsius to Fahrenheit
+    fahrenheit = (celsius * 9 / 5) + 32;
+    // Output the temperature in Fahrenheit
+    cout << "Temperature in Fahrenheit: " << fahrenheit << endl;
+    return 0;
+}
+```
+
+## Find all prime number from 1 to n
+
+```c++
+int main() {
+    int n;
+    // Take input from the user for the value of 'n'
+    cout << "Enter the value of n: ";
+    cin >> n;
+    int i = 2;  // Start from 2 since 1 is not a prime number
+    // Loop through numbers from 2 to 'n'
+    while(i <= n) {
+        bool isPrime = true;  // Assume 'i' is prime
+        // Check if 'i' is divisible by any number from 2 to i-1
+        int j = 2;
+        while(j <= i / 2) {  // Check up to i / 2 for factors
+            if(i % j == 0) {
+                isPrime = false;  // If divisible, it's not prime
+                break;  // No need to check further
+            }
+            j = j + 1;
+        }
+        // If 'i' is still considered prime, print it
+        if(isPrime) {
+            cout << i << " ";
+        }
+        i = i + 1;  // Increment 'i' for the next iteration
+    }
+
+    return 0;
+}
+```
+
+## Check given number is prime or not
+
+```c++
+int main() {
+    int n;
+    bool isPrime = true;  // Assume the number is prime initially
+    // Take input from the user for the value of 'n'
+    cout << "Enter a number: ";
+    cin >> n;
+    // Edge case: numbers less than or equal to 1 are not prime
+    if(n <= 1) {
+        isPrime = false;
+    } else {
+        // Check if 'n' is divisible by any number from 2 to sqrt(n)
+        for(int i = 2; i <= n / 2; i++) {
+            if(n % i == 0) {
+                isPrime = false;  // If divisible, it's not prime
+                break;  // No need to check further
+            }
+        }
+    }
+    // Output whether the number is prime or not
+    if(isPrime) {
+        cout << n << " is a prime number." << endl;
+    } else {
+        cout << n << " is not a prime number." << endl;
+    }
+    return 0;
+}
+```
+
+## Print fibonacci series of numbers from 1 to n
+
+```c++
+int main() {
+    int n = 10; // The number of Fibonacci numbers to generate
+
+    int a = 0; // Initialize the first number of the Fibonacci sequence (F(0))
+    int b = 1; // Initialize the second number of the Fibonacci sequence (F(1))
+
+    // Print the first two numbers of the Fibonacci sequence
+    cout << a << " " << b << " ";
+
+    // Loop to calculate and print the next n-2 Fibonacci numbers (since the first two are printed above)
+    for (int i = 1; i <= n; i++) {
+        int nextNumber = a + b; // Calculate the next Fibonacci number by summing the last two numbers
+
+        cout << nextNumber << " "; // Print the next Fibonacci number
+
+        a = b; // Update 'a' to the previous 'b' (move one step forward in the sequence)
+        b = nextNumber; // Update 'b' to the new Fibonacci number (next in the sequence)
+    }
+
+    return 0; // Indicate that the program finished successfully
+}
+```
+```c++
+0 1 1 2 3 5 8 13 21 34 55 89 
+```
+
+## Subtract product and sum from given number 1 to n.
+
+```c++
+// Function to calculate the difference between the product and the sum of digits of an integer
+int subtractProductAndSum(int n) {
+    int prod = 1; // Initialize product to 1 (multiplicative identity)
+    int sum = 0;  // Initialize sum to 0 (additive identity)
+    
+    // Loop until there are no digits left in n
+    while (n != 0) {
+        int digit = n % 10; // Get the last digit of n (using modulus operator)
+        prod = prod * digit; // Multiply the current product by the digit
+        sum = sum + digit;   // Add the digit to the sum
+        n = n / 10;          // Remove the last digit from n (using integer division)
+    }
+    
+    int answer = prod - sum; // Calculate the difference between product and sum
+    return answer;            // Return the result
+}
+```
+Example
+If you call subtractProductAndSum(234), the steps would be as follows:
+- Digits: 2, 3, and 4.
+- Product: 2×3×4=24.
+- Sum: 2+3+4=9
+- Result: 24−9=15
+
+## Convert Binary to Decimal
+
+```c++
+int main() {
+    int n; // Declare an integer variable to store the input
+    cin >> n; // Read an integer from standard input
+
+    int i = 0; // Initialize a variable to keep track of the digit's position (0 for the least significant digit)
+    int ans = 0; // Initialize the answer variable to store the decimal equivalent
+
+    // Loop until n becomes 0
+    while (n != 0) {
+        int digit = n % 10; // Extract the last digit of n using modulus operator
+        if (digit == 1) { // Check if the extracted digit is 1
+            ans = ans + pow(2, i); // If so, add 2 raised to the power of its position (i) to ans
+        }
+        n = n / 10; // Remove the last digit from n (using integer division)
+        i++; // Increment the position counter
+    }
+
+    cout << ans << endl; // Print the final result
+    return 0; // Return from the main function
+}
+```
+Example:
+Input: 111
+
+- Process:
+    - First Iteration:
+        - digit = 1, ans += pow(2, 0) → ans = 1
+        - n = 11, i = 1
+    - Second Iteration:
+        - digit = 1, ans += pow(2, 1) → ans = 1 + 2 = 3
+        - n = 1, i = 2
+    - Third Iteration:
+        - digit = 1, ans += pow(2, 2) → ans = 3 + 4 = 7
+        - n = 0, loop ends.
+- Output: 7 (the decimal equivalent of binary 111).
+
+## Convert Decimal to Binary
+
+```c++
+  int main() {
+    int n; // Declare an integer variable to store the input
+    cin >> n; // Read an integer from standard input
+
+    int ans = 0; // Initialize the answer variable to store the decimal equivalent
+    int i = 0; // Initialize a variable to keep track of the position of the bit
+
+    // Loop until n becomes 0
+    while (n != 0) {
+        int bit = n & 1; // Extract the least significant bit (LSB) using the bitwise AND operator
+        ans = (bit * pow(10, i)) + ans; // Add the bit at the current position to ans
+        n = n >> 1; // Right shift n to process the next bit
+        i++; // Increment the position counter
+    }
+
+    cout << " Answer is " << ans << endl; // Print the final result
+    return 0; // Return from the main function
+}
+```
+Example:
+Input: 10
+
+- The binary representation of 10 is 1010.
+Process:
+
+1. Initial state: n = 10, ans = 0, i = 0
+
+    - First Iteration:
+        - bit = 10 & 1 → bit = 0
+        - ans = (0 * pow(10, 0)) + 0 → ans = 0
+        - n = 10 >> 1 → n = 5, i = 1
+        - Current state: n = 5, ans = 0, i = 1
+
+    - Second Iteration:
+        - bit = 5 & 1 → bit = 1
+        - ans = (1 * pow(10, 1)) + 0 → ans = 10
+        - n = 5 >> 1 → n = 2, i = 2
+2. Current state: n = 2, ans = 10, i = 2
+
+    - Third Iteration:
+        - bit = 2 & 1 → bit = 0
+        - ans = (0 * pow(10, 2)) + 10 → ans = 10
+        - n = 2 >> 1 → n = 1, i = 3
+3. Current state: n = 1, ans = 10, i = 3
+
+    - Fourth Iteration:
+        - bit = 1 & 1 → bit = 1
+        - ans = (1 * pow(10, 3)) + 10 → ans = 1000 + 10 = 1010
+        - n = 1 >> 1 → n = 0, i = 4
+5. Loop ends since n is now 0.
+
+**Output**: Answer is 1010
+
+## Reverse Integer
+
+```c++
+#include <climits> // Include limits.h for INT_MAX and INT_MIN
+
+int reverse(int x) {
+    int ans = 0; // Initialize the result variable to store the reversed number
+
+    // Loop until x becomes 0
+    while (x != 0) {
+        int digit = x % 10; // Extract the last digit of x
+
+        // Check for overflow/underflow before updating ans
+        if ((ans > INT_MAX / 10) || (ans < INT_MIN / 10)) {
+            return 0; // Return 0 if reversing would cause overflow/underflow
+        }
+        
+        ans = (ans * 10) + digit; // Shift ans left and add the digit
+        x = x / 10; // Remove the last digit from x
+    }
+
+    return ans; // Return the reversed number
+}
+```
+**Example:**
+- Input: 123
+
+- Process:
+
+1. Initial state: x = 123, ans = 0
+    - First Iteration:
+        - digit = 123 % 10 → digit = 3
+        - Check for overflow: ans is 0, so it's safe.
+        - ans = (0 * 10) + 3 → ans = 3
+        - x = 123 / 10 → x = 12
+2. Current state: x = 12, ans = 3
+    - Second Iteration:
+        - digit = 12 % 10 → digit = 2
+        - Check for overflow: ans is 3, so it's safe.
+        - ans = (3 * 10) + 2 → ans = 32
+        - x = 12 / 10 → x = 1
+3. Current state: x = 1, ans = 32
+    - Third Iteration:
+        - digit = 1 % 10 → digit = 1
+        - Check for overflow: ans is 32, so it's safe.
+        - ans = (32 * 10) + 1 → ans = 321
+        - x = 1 / 10 → x = 0
+- The loop ends since x is now 0.
+
+**Output:** 321
+
+
+## Check given number is power of 2 or not
+
+```c++
+#include <limits.h> // Include limits.h for INT_MAX
+
+bool isPowerOfTwo(int n) {
+    int ans = 1; // Initialize ans to 1, which represents 2^0
+
+    // Loop from 0 to 30 (to cover powers of 2 from 2^0 to 2^30)
+    for (int i = 0; i <= 30; i++) {
+        // Check if the current power of 2 equals n
+        if (ans == n) {
+            return true; // Return true if n is a power of two
+        }
+        
+        // Check if doubling ans will not cause overflow
+        if (ans < INT_MAX / 2) {
+            ans = ans * 2; // Multiply ans by 2 to get the next power of two
+        }
+    }
+    return false; // Return false if n is not a power of two
+}
+```
+- **Example:**
+- Input: 8
+
+- Process:
+    - Iteration 0:
+
+        - ans = 1
+        - ans != 8, continue.
+        - ans = 2
+    - Iteration 1:
+        - ans = 2
+        - ans != 8, continue.
+        - ans = 4
+    - Iteration 2:
+        - ans = 4
+        - ans != 8, continue.
+        - ans = 8
+    - Iteration 3:
+        - ans = 8
+        - ans == 8, return true.
+- **Output:** true (8 is a power of 2, specifically 2<sup>3</sup>).
+
+## Compliment of base 10 Ineteger
+
+```c++
+int bitwiseComplement(int n) {
+    int m = n; // Create a copy of n to work with
+    int mask = 0; // Initialize mask to zero
+
+    // Handle the special case when n is 0
+    if (n == 0)
+        return 1; // The complement of 0 is 1
+
+    // Create a mask with all bits set to 1 for the length of n
+    while (m != 0) {
+        mask = (mask << 1) | 1; // Shift mask left and set the least significant bit to 1
+        m = m >> 1; // Right shift m to process the next bit
+    }
+
+    // Calculate the bitwise complement and apply the mask
+    int ans = (~n) & mask; 
+    return ans; // Return the computed bitwise complement
+}
+```
+- **Example**
+- **Input:** 5 (which is 101 in binary)
+
+- **Process:**
+    1. Initial values: `n = 5`, `m = 5`, `mask = 0`.
+    2. Build the mask:
+        - **First Iteration:**
+            - `mask = (0 << 1) | 1 → mask = 1` (binary 0001)
+            - `m = 5 >> 1 → m = 2` (binary 10)
+        - **Second Iteration:**
+            - `mask = (1 << 1) | 1 → mask = 3` (binary 0011)
+            - `m = 2 >> 1 → m = 1` (binary 1)
+        - **Third Iteration:**
+            - `mask = (3 << 1) | 1 → mask = 7` (binary 0111)
+            - `m = 1 >> 1 → m = 0` (binary 0)
+    3. Final values: `mask = 7` (binary 0111).
+    4. Calculate the bitwise complement:
+        - `~n = ~5 = -6` (binary: ...11111010 for a 32-bit integer).
+        - `ans = (-6) & 7 = (binary -6) & (binary 0111) = (binary 010)` which is 2 in decimal.
+
+**Output:** 2 (the bitwise complement of 5 is 2).
+
+
+## Find m<sup>n</sup> power
+
+```c++
+int power(int num1, int num2) {
+    int ans = 1; // Initialize ans to 1, which will hold the final result
+    for (int i = 1; i <= num2; i++) { // Loop from 1 to num2
+        ans = ans * num1; // Multiply ans by num1 in each iteration
+    }
+    return ans; // Return the final result
+}
+```
+### Example 1
+
+**Input**: 
+- `num1 = 2`
+- `num2 = 3`
+
+**Process**:
+1. Initialize `ans = 1`.
+2. Loop from `i = 1` to `3`:
+    - **Iteration 1 (i = 1)**:
+        - `ans = 1 * 2 = 2`
+    - **Iteration 2 (i = 2)**:
+        - `ans = 2 * 2 = 4`
+    - **Iteration 3 (i = 3)**:
+        - `ans = 4 * 2 = 8`
+3. The final value of `ans` is `8`.
+
+**Output**: 
+- `8` (since \( 2^3 = 8 \)).
+
+
+## Calculate Combination (nCr) Using Factorial
+
+```c++
+int factorial(int n) {
+    int fact = 1; // Initialize the factorial result to 1
+    for (int i = 1; i <= n; i++) { // Loop from 1 to n
+        fact = fact * i; // Multiply fact by i to calculate the factorial
+    }
+    return fact; // Return the computed factorial
+}
+
+int nCr(int n, int r) {
+    int num = factorial(n); // Calculate n!
+    int denom = factorial(r) * factorial(n - r); // Calculate r! * (n-r)!
+    return num / denom; // Return n! / (r! * (n-r)!)
+}
+
+int main() {
+    int n, r; // Declare variables for n and r
+    cin >> n >> r; // Input values for n and r
+    cout << "Answer is " << nCr(n, r) << endl; // Output the result of nCr
+    return 0; // End of the program
+}
+```
+### Example 1
+
+**Input**: 
+- `n = 5`
+- `r = 2`
+
+**Process**:
+1. **Calculate Factorials**:
+   - Calculate \( n! \):
+     - `factorial(5)`:
+       - `fact = 1`
+       - **Iteration 1**: `fact = 1 * 1 = 1`
+       - **Iteration 2**: `fact = 1 * 2 = 2`
+       - **Iteration 3**: `fact = 2 * 3 = 6`
+       - **Iteration 4**: `fact = 6 * 4 = 24`
+       - **Iteration 5**: `fact = 24 * 5 = 120`
+     - Result: `5! = 120`
+
+   - Calculate \( r! \):
+     - `factorial(2)`:
+       - `fact = 1`
+       - **Iteration 1**: `fact = 1 * 1 = 1`
+       - **Iteration 2**: `fact = 1 * 2 = 2`
+     - Result: `2! = 2`
+
+   - Calculate \( (n - r)! \):
+     - `factorial(3)` (since \( n - r = 5 - 2 = 3 \)):
+       - `fact = 1`
+       - **Iteration 1**: `fact = 1 * 1 = 1`
+       - **Iteration 2**: `fact = 1 * 2 = 2`
+       - **Iteration 3**: `fact = 2 * 3 = 6`
+     - Result: `3! = 6`
+
+2. **Calculate \( nCr \)**:
+   - Using the formula:
+   ```jsx
+   <Math>
+     C(5, 2) = \frac{5!}{2!(5 - 2)!} = \frac{120}{2 \times 6} = \frac{120}{12} = 10
+   </Math>
+**Output**: 
+- `Answer is 10`
+
+## Check given number is even or odd
+
+```c++
+bool isEven(int a) {
+    //odd
+    if (a & 1) {
+        return 0; // Return false (0) if the number is odd
+    }
+    else { // Even
+        return 1; // Return true (1) if the number is even
+    }
+}
+```
+### Example:
+
+**Input**: 
+- `a = 4`
+
+**Execution**:
+- Perform the bitwise operation:
+  - \( a \& 1 \) → \( 4 \& 1 \) → `0` (since `4` in binary is `100`, and `1` is `001`)
+
+- Evaluate the condition:
+  - The condition `if (a & 1)` evaluates to `false`, so the function returns `1`.
+
+**Output**: 
+- `1` (indicating that `4` is even)
+
+
+## Print count numbers for n
+
+```c++
+void printCounting(int num) {
+//    cout << n << endl;
+    //Function Body
+    for(int i=1; i<=num; i++) {
+        cout<< i << " ";
+    }
+    cout<<endl;
+}
+```
+
+## Make a basic calculator
+
+```c++
+ int a, b;
+    cout <<" Enter the value of a "<<endl;
+    cin >> a;
+    cout<<" Enter the value of b " <<endl;
+    cin >> b;
+    char op;
+    cout<<" Enter the Operation you want to perform" <<endl;
+    cin >> op;
+    switch( op ) {
+        case '+':  cout << (a+b) <<endl;
+                  break;
+        case '-': cout<< (a-b) <<endl;
+                  break;
+        case '*': cout<< (a*b) <<endl;
+                  break;
+        case '/': cout<< (a/b) <<endl;
+                  break;
+        case '%': cout<< (a%b) <<endl;
+                  break;
+        default: cout << "Please enter a valid Operation " << endl;
+
+    }
+
+```

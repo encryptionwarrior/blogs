@@ -6,14 +6,14 @@ description: A guide in my new Starlight docs site.
 ### AND - & (Bitwise AND)
 - Operation: Performs the AND operation on each pair of corresponding bits of two numbers. The result is 1 only if both bits are 1; otherwise, it results in 0.
 - Truth Table:
-```
+```c++
 0 & 0 = 0
 0 & 1 = 0
 1 & 0 = 0
 1 & 1 = 1
 ```
 Example
-```
+```c++
 int a = 5;   // Binary: 0101
 int b = 3;   // Binary: 0011
 int result = a & b;  // Performs bitwise AND: 0101 & 0011 = 0001 (Decimal: 1)
@@ -22,14 +22,14 @@ cout << "a & b = " << result << endl;
 ###  OR - | (Bitwise OR)
 - Operation: Performs the OR operation on each pair of corresponding bits. The result is 1 if at least one of the bits is 1; otherwise, it results in 0.
 - Truth Table:
-```
+```c++
 0 | 0 = 0
 0 | 1 = 1
 1 | 0 = 1
 1 | 1 = 1
 ```
 Example
-```
+```c++
 int a = 5;   // Binary: 0101
 int b = 3;   // Binary: 0011
 int result = a | b;  // Performs bitwise OR: 0101 | 0011 = 0111 (Decimal: 7)
@@ -38,12 +38,12 @@ cout << "a | b = " << result << endl;
 ###  NOT - ~ (Bitwise NOT)
 - Operation: Inverts the bits of the number. The bitwise NOT flips each bit: 0 becomes 1 and 1 becomes 0. It works on a single operand (unary operator).
 - Truth Table:
-```
+```c++
 ~0 = 1
 ~1 = 0
 ```
 Example
-```
+```c++
 int a = 5;     // Binary: 0101
 int result = ~a;  // Performs bitwise NOT: ~0101 = 1010 (Decimal: -6 in two's complement)
 cout << "~a = " << result << endl;
@@ -51,14 +51,14 @@ cout << "~a = " << result << endl;
 ###  XOR - ^ (Bitwise XOR)
 - Operation: Performs the XOR operation on each pair of corresponding bits. The result is 1 if the bits are different, and 0 if they are the same
 - Truth Table:
-```
+```c++
 0 ^ 0 = 0
 0 ^ 1 = 1
 1 ^ 0 = 1
 1 ^ 1 = 0
 ```
 Example
-```
+```c++
 int a = 5;   // Binary: 0101
 int b = 3;   // Binary: 0011
 int result = a ^ b;  // Performs bitwise XOR: 0101 ^ 0011 = 0110 (Decimal: 6)
@@ -67,11 +67,11 @@ cout << "a ^ b = " << result << endl;
 ###  Left Shift Operator (<<)
 - Operation: The left shift operator shifts the bits of a number to the left by a specified number of positions. Each shift to the left effectively multiplies the number by 2 for each position shifted.
 - Syntax:
-```
+```c++
 value << num_of_positions;
 ```
 Example
-```
+```c++
 int a = 5;  // Binary: 0101
 int result = a << 1;  // Shifts bits of 5 (0101) one position left: 1010 (binary for 10)
 cout << "a << 1 = " << result << endl;
@@ -79,11 +79,11 @@ cout << "a << 1 = " << result << endl;
 ###  Right Shift Operator (>>)
 - Operation: The right shift operator shifts the bits of a number to the right by a specified number of positions. Each shift to the right divides the number by 2 for each position shifted.
 - Syntax:
-```
+```c++
 value >> num_of_positions;
 ```
 Example
-```
+```c++
 int a = 10;  // Binary: 1010
 int result = a >> 1;  // Shifts bits of 10 (1010) one position right: 0101 (binary for 5)
 cout << "a >> 1 = " << result << endl;
@@ -99,7 +99,7 @@ Steps:
 4. The binary representation is the remainders read in reverse order.
 
 Example: Convert 13 (decimal) to binary:
-```
+```c++
 13 ÷ 2 = 6, remainder = 1
  6 ÷ 2 = 3, remainder = 0
  3 ÷ 2 = 1, remainder = 1
@@ -116,7 +116,7 @@ Steps:
 3. Sum the results to get the decimal value.
 
 Example: Convert 1101 (binary) to decimal:
-```
+```c++
 1 × 2³ = 8
 1 × 2² = 4
 0 × 2¹ = 0

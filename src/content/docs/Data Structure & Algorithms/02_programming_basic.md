@@ -55,29 +55,29 @@ An Integrated Development Environment (IDE) is a software suite that provides to
 - Purpose: Short for "character output," cout is used to print or display data to the console.
 - Usage: It is part of the iostream library and outputs text or variables to the screen.
 
-```
+```c++
 cout << "Hello, World!";
 ```
 ##### << (Stream Insertion Operator)
 - Purpose: This is the stream insertion operator used with cout to send data to the output stream (the console).
-```
+```c++
 cout << "Hello" << " World!";
 ```
 
 ##### endl
 - Purpose: Stands for "end line." It is used to move the cursor to the next line in the console.
 - Usage: It inserts a newline character and flushes the output buffer.
-```
+```c++
 cout << "Hello" << endl;
 ```
 ##### \n (Newline Character)
 - Purpose: This is an escape sequence that represents a newline. It moves the cursor to the next line, similar to endl, but it doesn't flush the buffer.
-```
+```c++
 cout << "Hello\n";
 ```
 ##### ; (Semicolon)
 - Purpose: In C++, every statement must end with a semicolon (;). It tells the compiler that the statement is complete.
-```
+```c++
 int x = 10;
 ```
 
@@ -88,7 +88,7 @@ int x = 10;
 
 Example:
 
-```
+```c++
 int age = 25;
 cout << "Age: " << age << endl;
 ```
@@ -98,7 +98,7 @@ cout << "Age: " << age << endl;
 
 Example:
 
-```
+```c++
 char grade = 'A';
 cout << "Grade: " << grade << endl;
 ```
@@ -109,7 +109,7 @@ cout << "Grade: " << grade << endl;
 
 Example:
 
-```
+```c++
 bool isPass = true;
 cout << "Passed the exam: " << isPass << endl;  // Outputs1 (true)
 ```
@@ -119,7 +119,7 @@ cout << "Passed the exam: " << isPass << endl;  // Outputs1 (true)
 
 Example:
 
-```
+```c++
 float temperature = 36.6;
 cout << "Body temperature: " << temperature << "°C" << endl;
 ```
@@ -129,7 +129,7 @@ cout << "Body temperature: " << temperature << "°C" << endl;
 
 Example:
 
-```
+```c++
 double pi = 3.14159265358979;
 cout << "Value of Pi: " << pi << endl;
 ```
@@ -152,7 +152,7 @@ int 1stNumber = 10;    // Incorrect, cannot start with a number
 
 Example:
 
-```
+```c++
 int x = 10; // 'x' is stored in memory and holds the value 10
 cout << "Value of x: " << x << endl;  // Accesses and displays the value stored in 'x'
 ```
@@ -161,7 +161,7 @@ cout << "Value of x: " << x << endl;  // Accesses and displays the value stored 
 
 Example:
 
-```
+```c++
 int negativeNum = -10;
 cout << "Negative number: " << negativeNum << endl;  // Displays -10
 ```
@@ -171,7 +171,7 @@ cout << "Negative number: " << negativeNum << endl;  // Displays -10
 
 Example:
 
-```
+```c++
 char letter = 'A';  // ASCII value of 'A' is 65
 cout << "ASCII value of A: " << int(letter) << endl;  // Outputs 65
 ```
@@ -180,7 +180,7 @@ cout << "ASCII value of A: " << int(letter) << endl;  // Outputs 65
 
 Example:
 
-```
+```c++
 int num = 10;
 float numFloat = (float)num;  // Explicit casting from int to float
 cout << "Number as float: " << numFloat << endl;
@@ -192,7 +192,7 @@ cout << "Number as float: " << numFloat << endl;
 
 Example:
 
-```
+```c++
 int num = -5;
 cout << "Negative number: " << num << endl;  // Internally stored using two's complement
 ```
@@ -202,7 +202,7 @@ cout << "Negative number: " << num << endl;  // Internally stored using two's co
 
 Example:
 
-```
+```c++
 int a = 10, b = 5;
 cout << "Addition: " << a + b << endl;  // Outputs 15
 cout << "Subtraction: " << a - b << endl;  // Outputs 5
@@ -221,7 +221,7 @@ cout << "Division: " << a / b << endl;  // Outputs 2
 
 Example:
 
-```
+```c++
 int x = 10, y = 20;
 cout << (x == y) << endl;  // Outputs 0 (false)
 cout << (x != y) << endl;  // Outputs 1 (true)
@@ -237,7 +237,7 @@ cout << (x < y) << endl;   // Outputs 1 (true)
 
 Example:
 
-```
+```c++
 bool a = true, b = false;
 cout << (a && b) << endl;  // Logical AND, outputs 0 (false)
 cout << (a || b) << endl;  // Logical OR, outputs 1 (true)
@@ -255,7 +255,7 @@ cout << (!a) << endl;      // Logical NOT, outputs 0 (false)
 
 Example:
 
-```
+```c++
 int x = 5;  // Binary: 0101
 int y = 3;  // Binary: 0011
 cout << (x & y) << endl;   // Bitwise AND, outputs 1 (0001)
@@ -271,7 +271,7 @@ cout << (x >> 1) << endl;  // Right shift, outputs 2 (0010)
 The if statement allows you to execute a block of code only if a specified condition is true.
 
 syntax:
-```
+```c++
 if (condition) {
     // code to execute if condition is true
 }
@@ -279,7 +279,7 @@ if (condition) {
 ```
 
 Example
-```
+```c++
 int num = 10;
 if (num > 5) {
     cout << "Number is greater than 5" << endl;
@@ -289,7 +289,7 @@ if (num > 5) {
 The else statement is used with if. It specifies a block of code to execute if the condition in the if statement is false.
 
 syntax:
-```
+```c++
 if (condition) {
     // code to execute if condition is true
 } else {
@@ -298,7 +298,7 @@ if (condition) {
 ```
 
 Example
-```
+```c++
 int num = 3;
 if (num > 5) {
     cout << "Number is greater than 5" << endl;
@@ -310,7 +310,7 @@ if (num > 5) {
 The else if statement is used to check multiple conditions. It is executed if the previous if condition is false but this condition is true.
 
 syntax:
-```
+```c++
 if (condition1) {
     // code to execute if condition1 is true
 } else if (condition2) {
@@ -321,7 +321,7 @@ if (condition1) {
 ```
 
 Example
-```
+```c++
 int num = 7;
 if (num > 10) {
     cout << "Number is greater than 10" << endl;
@@ -335,7 +335,7 @@ if (num > 10) {
 The switch statement allows you to execute one code block from many based on the value of a variable.
 
 syntax:
-```
+```c++
 switch (variable) {
     case value1:
         // code to execute if variable == value1
@@ -349,7 +349,7 @@ switch (variable) {
 ```
 
 Example
-```
+```c++
 int day = 2;
 switch (day) {
     case 1:
@@ -368,14 +368,14 @@ switch (day) {
 The while loop repeats a block of code as long as the given condition is true.
 
 syntax:
-```
+```c++
 while (condition) {
     // code to execute
 }
 ```
 
 Example
-```
+```c++
 int count = 1;
 while (count <= 5) {
     cout << "Count: " << count << endl;
@@ -386,14 +386,14 @@ while (count <= 5) {
 The do-while loop is similar to the while loop, but it guarantees that the code inside the loop will run at least once, even if the condition is false from the start.
 
 syntax:
-```
+```c++
 do {
     // code to execute
 } while (condition);
 ```
 
 Example
-```
+```c++
 int count = 1;
 do {
     cout << "Count: " << count << endl;
@@ -404,14 +404,14 @@ do {
 The for loop is commonly used when you know in advance how many times you want to execute a statement or block of code.
 
 syntax:
-```
+```c++
 for (initialization; condition; update) {
     // code to execute
 }
 ```
 
 Example
-```
+```c++
 for (int i = 1; i <= 5; i++) {
     cout << "i: " << i << endl;
 }
@@ -421,7 +421,7 @@ for (int i = 1; i <= 5; i++) {
 - continue: Skips the current iteration and continues with the next iteration.
 
 Example (break):
-```
+```c++
 for (int i = 1; i <= 5; i++) {
     if (i == 3) {
         break;  // Stops the loop when i equals 3
@@ -431,7 +431,7 @@ for (int i = 1; i <= 5; i++) {
 ```
 
 Example (continue):
-```
+```c++
 for (int i = 1; i <= 5; i++) {
     if (i == 3) {
         continue;  // Skips the rest of the loop when i equals 3
@@ -443,7 +443,7 @@ for (int i = 1; i <= 5; i++) {
 You can place one loop inside another. This is called nesting loops.
 
 Example:
-```
+```c++
 for (int i = 1; i <= 3; i++) {
     for (int j = 1; j <= 2; j++) {
         cout << "i: " << i << ", j: " << j << endl;
@@ -458,7 +458,7 @@ for (int i = 1; i <= 3; i++) {
 - Effect: Modifying the parameter inside the function does not affect the original argument in the calling function.
 - Usage: Used when you want to preserve the original value and do not want changes to the passed argument.
 
-```
+```c++
 #include <iostream>
 using namespace std;
 
@@ -479,7 +479,7 @@ int main() {
 - Definition: In pass by reference, the reference (or alias) to the actual argument is passed, meaning both the parameter and argument refer to the same memory location.
 - Effect: Modifying the parameter inside the function does affect the original argument in the calling function.
 - Usage: Used when you want the function to modify the original value or when you want to avoid the overhead of copying large data structures.
-```
+```c++
 #include <iostream>
 using namespace std;
 

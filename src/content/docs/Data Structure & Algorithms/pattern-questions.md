@@ -4,14 +4,14 @@ description: A guide in my new Starlight docs site.
 ---
 
 ### Print Below squre pattern
-```
+```c++
 ****
 ****
 ****
 ****
 ```
 code
-```
+```c++
  int side, i, j;
     cout << endl;
     cout << "Enter side of the square:";
@@ -31,14 +31,14 @@ code
 ```
 
 ### Print Number squre pattern
-```
+```c++
 1 1 1 1
 2 2 2 2
 3 3 3 3
 4 4 4 4
 ```
 code
-```
+```c++
   int side, i, j;
     cout << endl;
     cout << "Enter side of the square:";
@@ -58,14 +58,14 @@ code
 ```
 
 ### Print Number squre pattern - 2
-```
+```c++
 1 2 3 4
 1 2 3 4
 1 2 3 4
 1 2 3 4
 ```
 code
-```
+```c++
  int side, i, j;
     cout << endl;
     cout << "Enter side of the square:";
@@ -85,14 +85,14 @@ code
 ```
 
 ### Print Inverted Number squre pattern 
-```
+```c++
 4 3 2 1
 4 3 2 1
 4 3 2 1
 4 3 2 1
 ```
 code
-```
+```c++
 int side, i, j;
     cout << endl;
     cout << "Enter side of the square:";
@@ -111,14 +111,14 @@ int side, i, j;
     cout << endl;
 ```
 ### Print Counting squre pattern 
-```
+```c++
 4 3 2 1
 4 3 2 1
 4 3 2 1
 4 3 2 1
 ```
 code
-```
+```c++
   int side, i, j, counter = 1;
     cout << endl;
     cout << "Enter side of the square:";
@@ -139,14 +139,14 @@ code
 ```
 
 ### Print Right Angled Triangle Pattern 
-```
+```c++
 *
 * * 
 * * *
 * * * *
 ```
 code
-```
+```c++
    int height, i, j;
     char ch;
     cout << endl;
@@ -170,14 +170,14 @@ code
     cout << endl;
 ```
 ### Right Angled Counting Triangle Pattern
-```
+```c++
 1
 2 3 
 4 5 6
 7 8 9 10
 ```
 code
-```
+```c++
     int height, i, j, k, counting = 1;
     char ch;
     cout << endl;
@@ -203,14 +203,14 @@ code
     cout << endl;
 ```
 ### Right Angled Inverted Counting Triangle Pattern
-```
+```c++
 10
 9 8 
 7 6 5
 4 3 2 1
 ```
 code
-```
+```c++
     int height, i, j, val, k;
     char ch;
     cout << endl;
@@ -230,14 +230,14 @@ code
     cout << endl;
 ```
 ### Alphabetic Square Pattern
-```
+```c++
 A A A A
 B B B B
 C C C C
 D D D D
 ```
 code
-```
+```c++
     int side, i, j;
     char ch = 'A'; //* (For printing same alphabets in the rows)
     cout << endl;
@@ -260,14 +260,14 @@ code
     cout << endl;
 ```
 ### Alphabetic Triangle Pattern
-```
+```c++
 A 
 B B 
 C C C 
 D D D D
 ```
 code
-```
+```c++
     int height, i, j;
     char ch = 'A'; //* (For printing same alphabets in the rows)
     cout << endl;
@@ -290,14 +290,14 @@ code
     cout << endl;
 ```
 ### Inverted Alphabetic Triangle Pattern
-```
+```c++
 D 
 C C 
 B B B
 A A A A
 ```
 code
-```
+```c++
    int height, i, j;
     char value, ch = 'A';
     cout << endl;
@@ -320,14 +320,14 @@ code
 ```
 
 ### Inverted Right Angle Character Triangle Pattern
-```
+```c++
 D 
 C C 
 B B B
 A A A A
 ```
 code
-```
+```c++
     int height, i, j, k;
     char ch;
     cout << endl;
@@ -354,14 +354,14 @@ code
     }
 ```
 ### Reverse Right Angle Character Triangle Pattern
-```
+```c++
 D 
 C C 
 B B B
 A A A A
 ```
 code
-```
+```c++
     int height, i, j;
     char ch;
     cout << endl;
@@ -388,14 +388,14 @@ code
     }
 ```
 ### Number Pyramid Pattern
-```
+```c++
 D 
 C C 
 B B B
 A A A A
 ```
 code
-```
+```c++
    int height, i, j, k, l;
     cout << endl;
     cout << "Enter height of the pyramid:- ";
@@ -421,14 +421,14 @@ code
     }
 ```
 ### Dabangg Pattern
-```
+```c++
 D 
 C C 
 B B B
 A A A A
 ```
 code
-```
+```c++
   int height, i, j, k, l;
     cout << endl;
     cout << "Enter height of the pattern:- ";
