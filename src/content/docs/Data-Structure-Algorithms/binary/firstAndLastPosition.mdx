@@ -1,0 +1,74 @@
+---
+title: First and Last Position
+description: A guide in my new Starlight docs site.
+---
+
+## Find first and last occurrence of the key in given array
+
+```c++
+// Function to find the first occurrence of the key in a sorted array
+int firstOcc(vector<int>& arr, int n, int key) {
+    int s = 0, e = n - 1; // Initialize start (s) and end (e) indices
+    int mid = s + (e - s) / 2; // Calculate the middle index
+    int ans = -1; // Variable to store the answer (position of the first occurrence)
+
+    // Binary search loop
+    while (s <= e) {
+        if (arr[mid] == key) { // If the middle element is the key
+            ans = mid; // Store the position
+            e = mid - 1; // Move to the left half to find the first occurrence
+        }
+        else if (key > arr[mid]) { // If key is greater, move to the right half
+            s = mid + 1;
+        }
+        else { // If key is smaller, move to the left half
+            e = mid - 1;
+        }
+        mid = s + (e - s) / 2; // Recalculate the middle index
+    }
+    return ans; // Return the position of the first occurrence (or -1 if not found)
+}
+
+// Function to find the last occurrence of the key in a sorted array
+int lastOcc(vector<int>& arr, int n, int key) {
+    int s = 0, e = n - 1; // Initialize start (s) and end (e) indices
+    int mid = s + (e - s) / 2; // Calculate the middle index
+    int ans = -1; // Variable to store the answer (position of the last occurrence)
+
+    // Binary search loop
+    while (s <= e) {
+        if (arr[mid] == key) { // If the middle element is the key
+            ans = mid; // Store the position
+            s = mid + 1; // Move to the right half to find the last occurrence
+        }
+        else if (key > arr[mid]) { // If key is greater, move to the right half
+            s = mid + 1;
+        }
+        else { // If key is smaller, move to the left half
+            e = mid - 1;
+        }
+        mid = s + (e - s) / 2; // Recalculate the middle index
+    }
+    return ans; // Return the position of the last occurrence (or -1 if not found)
+}
+
+// Function to find both the first and last occurrence of the key
+pair<int, int> firstAndLastPosition(vector<int>& arr, int n, int k) {
+    pair<int, int> p;
+    p.first = firstOcc(arr, n, k); // Get the first occurrence
+    p.second = lastOcc(arr, n, k); // Get the last occurrence
+
+    return p; // Return the pair of first and last positions
+}
+
+```
+#### Example
+For `arr = {1, 2, 3, 3, 3, 4, 5}` and `key = 3`:
+1. `firstOcc:`
+    - Starts with `s = 0`, `e = 6`.
+    - Iterates and finds the first occurrence of `3` at index `2`.
+2. `lastOcc:`
+    - Starts with `s = 0`, `e = 6`.
+    - Iterates and finds the last occurrence of `3` at index `4`.
+3. `firstAndLastPosition:`
+    - Returns the pair `(2, 4)` for the first and last positions of `3`.

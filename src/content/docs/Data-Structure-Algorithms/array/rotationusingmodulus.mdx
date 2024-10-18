@@ -1,0 +1,97 @@
+---
+title: array rotation using modulus
+description: A guide in my new Starlight docs site.
+---
+
+### array rotation using modulus
+
+```c++
+class Solution {
+public:
+    void rotate(vector<int>& nums, int k) {
+      
+        // Get the size of the array
+        int n = nums.size();
+
+        // Create a temporary array of the same size to store rotated values
+        vector<int> temp(n);
+      
+        // Loop through each element in the original array
+        for(int i = 0; i < n; i++) {
+            // Calculate the new position using (i + k) % n
+            // This ensures that the index wraps around when it exceeds the array size
+            temp[(i + k) % n] = nums[i];
+        }
+      
+        // Copy the values from the temporary array back to the original array
+        for(int i = 0; i < n; i++) {
+            nums[i] = temp[i];
+        }
+    }
+};
+```
+
+### Logic:
+- **Modulus Operator**: The key idea is to use the modulus operator to compute the new index after the rotation. (i + k) % n ensures that the index wraps around to the beginning if it exceeds the array size n.
+- **Temporary Array**: A temporary array temp is used to store the rearranged elements based on their new positions.
+- **Final Step**: After calculating the rotated positions, the values in temp are copied back into the original nums array.
+
+### Example:
+```c++
+vector<int> nums = {1, 2, 3, 4, 5, 6, 7};
+int k = 3;
+```
+
+1. Initial Array:
+`nums[] = {1, 2, 3, 4, 5, 6, 7}`\
+`k = 3 `(rotate the array 3 positions to the right)
+
+2. Step-by-Step Execution:
+    - Array `size n = 7`.
+    - Create a temporary array temp of size `n`.
+      Loop to Rotate:
+
+    - For `i = 0`:\
+    `temp[(0 + 3) % 7] = nums[0]`
+    → `temp[3] = 1`
+    `temp[] = {_, _, _, 1, _, _, _}`
+
+    - For `i = 1`:\
+    `temp[(1 + 3) % 7] = nums[1]`\
+    → `temp[4] = 2`\
+    `temp[] = {_, _, _, 1, 2, _, _}`
+
+    - For `i = 2`:\
+    `temp[(2 + 3) % 7] = nums[2]`\
+    → `temp[5] = 3`\
+    `temp[] = {_, _, _, 1, 2, 3, _}`
+
+    - For `i = 3`:\
+    `temp[(3 + 3) % 7] = nums[3]`\
+    → `temp[6] = 4`\
+    `temp[] = {_, _, _, 1, 2, 3, 4}`
+
+    - For `i = 4`:\
+    `temp[(4 + 3) % 7] = nums[4]`\
+    → `temp[0] = 5`\
+    `temp[] = {5, _, _, 1, 2, 3, 4}`
+
+    - For `i = 5`:\
+    `temp[(5 + 3) % 7] = nums[5]`\
+    → `temp[1] = 6`\
+    `temp[] = {5, 6, _, 1, 2, 3, 4}`
+
+    - For `i = 6`:\
+    `temp[(6 + 3) % 7] = nums[6]`\
+    → `temp[2] = 7`\
+    `temp[] = {5, 6, 7, 1, 2, 3, 4}`
+
+3. Copy Back to Original Array:
+    - Now, copy `temp[]` back to `nums[]:`
+    - `nums[] = {5, 6, 7, 1, 2, 3, 4}`
+
+#### Final Output:
+After rotating the array 3 positions to the right, the result is:
+```c++
+nums[] = {5, 6, 7, 1, 2, 3, 4}
+```

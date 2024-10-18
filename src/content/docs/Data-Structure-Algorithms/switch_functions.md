@@ -1,5 +1,5 @@
 ---
-title: Pattern Questions
+title: Functions and Switch Statements
 description: A guide in my new Starlight docs site.
 ---
 

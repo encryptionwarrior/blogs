@@ -1,0 +1,193 @@
+---
+title: String Basic Questions 
+description: A guide in my new Starlight docs site.
+---
+
+### Convert to lowercase
+```c++
+char toLowerCase(char ch) {
+    // Check if the character is already in lowercase
+    if(ch >= 'a' && ch <= 'z')
+        return ch; // If it's lowercase, return it as is.
+    else {
+        // Convert uppercase letter to lowercase
+        char temp = ch - 'A' + 'a';
+        return temp; // Return the lowercase version
+    }
+}
+```
+##### Example:
+```c++
+char ch1 = 'A';
+char ch2 = 'm';
+char ch3 = 'Z';
+
+// Call the function for each character
+char res1 = toLowerCase(ch1); // 'A' -> 'a'
+char res2 = toLowerCase(ch2); // 'm' -> 'm' (already lowercase)
+char res3 = toLowerCase(ch3); // 'Z' -> 'z'
+```
+
+##### Iterations:
+1. For `ch1 = 'A'`:
+    - It is not lowercase (`'A' < 'a'`).
+    - Convert it: `'A' - 'A' + 'a' = 'a'`.
+    - Output: `'a'`.
+2. For `ch2 = 'm'`:
+    - It is already lowercase (`'m' >= 'a' && 'm' <= 'z'`).
+    - Return `'m'` as is.
+    - Output: `'m'`.
+3. For `ch3 = 'Z'`:
+    - It is not lowercase (`'Z' < 'a'`).
+    - Convert it: `'Z' - 'A' + 'a' = 'z'`.
+    - Output: `'z'`.
+
+
+### Get Length of String
+```c++
+int getLength(char name[]) {
+    int count = 0;
+    for(int i = 0; name[i] != '\0'; i++) {
+        count++;
+    }
+
+    return count;
+}
+```
+
+### Reverse String 
+```c++
+void reverse(char name[], int n) {
+    int s = 0; // Start pointer
+    int e = n - 1; // End pointer
+
+    // Continue swapping until the start pointer crosses the end pointer
+    while (s < e) {
+        swap(name[s++], name[e--]); // Swap and update pointers
+    }
+}
+```
+###### Example:
+```c++
+char name[] = "hello";
+int n = 5; // Length of the string
+reverse(name, n); // After reversing, name becomes "olleh"
+```
+##### Iterations:
+
+1. Initial Array: `['h', 'e', 'l', 'l', 'o']`
+    - `s = 0`, `e = 4`
+    - Swap `name[0]` (`h`) with `name[4]` (`o`).
+    - Array after swap: `['o', 'e', 'l', 'l', 'h']`
+    - `s` becomes `1`, `e` becomes `3`.
+2. Second Iteration:
+    - `s = 1`, `e = 3`
+    - Swap `name[1]` (`e`) with `name[3]` (`l`).
+    - Array after swap: `['o', 'l', 'l', 'e', 'h']`
+    - `s` becomes `2`, `e` becomes `2`.
+3. Termination:
+    - `s = 2`, `e = 2`
+    - Since `s` is no longer less than `e`, the loop terminates.
+4. Final Output:
+The reversed array is: `"olleh"`.
+
+
+### Check String is Palindrome or not
+```c++
+bool checkPalindrome(char a[], int n) {
+    int s = 0;        // Start pointer
+    int e = n - 1;    // End pointer
+    // Loop until the pointers meet or cross each other
+    while (s <= e) {
+        // Convert characters to lowercase and compare them
+        if (toLowerCase(a[s]) != toLowerCase(a[e])) {
+            return 0;  // Return false if any mismatch is found
+        } else {
+            // Move both pointers towards the center
+            s++;
+            e--;
+        }
+    }
+    // If the loop completes without mismatches, it's a palindrome
+    return 1;  // Return true
+}
+```
+
+#### Example:
+```c++
+char str[] = "Madam";
+int n = 5; // Length of the string
+bool result = checkPalindrome(str, n); // Result will be true (palindrome)
+```
+##### Iterations:
+
+1. Initial String: `"Madam"`
+    - Start pointer: `s = 0`, End pointer: `e = 4`\
+
+Iterations:
+1. Compare `a[0]` ('M') and `a[4]` ('m'):
+    - Convert both to lowercase: `toLowerCase('M') = 'm'` and `toLowerCase('m') = 'm'`.
+    - Characters match → move s to 1 and e to 3.
+2. Compare `a[1]` ('a') and `a[3]` ('a'):
+    - Convert both to lowercase: `toLowerCase('a') = 'a' and toLowerCase('a') = 'a'`.
+    - Characters match → move `s` to 2 and `e` to 2.
+3. Compare `a[2]` ('d') and `a[2]` ('d'):
+    - Convert both to lowercase: `toLowerCase('d') = 'd'`.
+    - Characters match → pointers now meet at the center (`s = 2, e = 2`).
+
+Since all characters match, the function will return `true` (1), indicating that the string is a palindrome.
+
+### Get Max occurrence character from string
+```c++
+char getMaxOccCharacter(string s) {
+    int arr[26] = {0};  // Array to store the frequency of each character (26 lowercase letters)
+    // Step 1: Count the occurrences of each character in the string
+    for(int i = 0; i < s.length(); i++) {
+        char ch = s[i];
+        int number = ch - 'a';  // Convert the character to its index (0 for 'a', 1 for 'b', etc.)
+        arr[number]++;  // Increment the frequency for that character
+    }
+    // Step 2: Find the character with the maximum occurrence
+    int maxi = -1;  // Variable to store the maximum frequency found
+    int ans = 0;    // Variable to store the index of the most frequent character
+    for(int i = 0; i < 26; i++) {
+        if(maxi < arr[i]) {
+            ans = i;    // Update the index of the most frequent character
+            maxi = arr[i];  // Update the maximum frequency value
+        }
+    }
+    // Step 3: Convert the index back to the corresponding character and return it
+    return 'a' + ans;  // Convert the index back to a character ('a' + 0 = 'a', 'a' + 1 = 'b', etc.)
+}
+```
+
+##### Example:
+```c++
+string s = "character";
+char result = getMaxOccCharacter(s);  // Result will be 'c'
+```
+1. Initial string: "character"
+
+Step 1: Counting frequencies
+- The frequency of each character in "character" is:
+    - 'c': 2 occurrences
+    - 'h': 1 occurrence
+    - 'a': 2 occurrences
+    - 'r': 2 occurrences
+    - 't': 1 occurrence
+    - 'e': 1 occurrence
+Array after counting frequencies:
+```c++
+arr[] = {2, 0, 2, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0}
+// Indices correspond to 'a' through 'z'
+```
+Step 2: Finding the maximum occurrence
+- The function finds the maximum frequency is 2, which occurs at index 2 (for 'c').
+
+Step 3: Returning the result
+- The function returns 'c' as it is the most frequent character.
+
+###### Output:
+Result: `'c'`
+
+

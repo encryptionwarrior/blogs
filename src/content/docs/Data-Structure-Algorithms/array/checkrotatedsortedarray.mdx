@@ -1,0 +1,54 @@
+---
+title: Rotated and sorted array
+description: A guide in my new Starlight docs site.
+---
+
+### Check if array is rotated and sorted
+
+```c++
+class Solution {
+public:
+    bool check(vector<int>& nums) {
+        int cnt = 0;  // To count the number of inversions (places where nums[i] < nums[i-1])
+        
+        // Loop to check for inversions in the array
+        for(int i = 1; i < nums.size(); i++) {
+            if(nums[i] < nums[i-1]) {
+                cnt++;  // Increment count if an inversion is found
+            }
+        }
+        
+        // Check if the last element is greater than the first element
+        // This would indicate an inversion between the end and start of the array
+        if(nums[nums.size()-1] > nums[0]) {
+            cnt++;  // Count this as an inversion as well
+        }
+        
+        // If there is 0 or 1 inversion, the array can be a rotated sorted array
+        return cnt <= 1;
+    }
+};
+```
+
+### Example:
+```c++
+vector<int> nums = {3, 4, 5, 1, 2};
+```
+
+1. Initial Array:
+`nums[] = {3, 4, 5, 1, 2}`
+2. Step-by-Step Execution:
+    - Loop over the array to count inversions:
+        - Compare `nums[1] (4)` with `nums[0] (3)` → No inversion.
+        - Compare `nums[2] (5)` with `nums[1] (4)` → No inversion.
+        - Compare `nums[3] (1)` with `nums[2] (5)` → Inversion! `(1 < 5)`, so `cnt = 1`.
+        - Compare `nums[4] (2)` with `nums[3] (1)` → No inversion.
+    - Boundary Check:
+        - Compare `nums[4] (2)` with `nums[0] (3)` → No inversion (`2 < 3`), so no increment in `cnt`.
+3. Final Count of Inversions:
+
+    - `cnt = 1` (1 inversion found).
+4. Return Value:
+
+    - Since `cnt <= 1`, the array is a valid rotated sorted array.
+    - Output: `true`.

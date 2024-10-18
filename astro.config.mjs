@@ -50,58 +50,133 @@ export default defineConfig({
         },
         {
           label: "Data Structure & Algorithms",
-        //   link: "data-structure--algorithms",
+          //   link: "data-structure-algorithms",
           // autogenerate: { directory: 'Data Structure & Algorithms' },
           items: [
             // Each item here is one entry in the navigation menu.
             {
               label: "Table Content",
-              slug: "data-structure--algorithms/table-content",
+              slug: "data-structure-algorithms/table-content",
             },
             {
               label: "Pseudo Code and Flow chart",
-              slug: "data-structure--algorithms/psuedo_flowchart",
+              slug: "data-structure-algorithms/psuedo_flowchart",
             },
             {
               label: "Programming Introduction",
-              slug: "data-structure--algorithms/programming_basic",
+              slug: "data-structure-algorithms/programming_basic",
             },
-			{
-			  label: "Bitwise Operators",
-			  slug: "data-structure--algorithms/bitwise_operators",
-			},
+            {
+              label: "Bitwise Operators",
+              slug: "data-structure-algorithms/bitwise_operators",
+            },
             {
               label: "Basic Questions",
-              slug: "data-structure--algorithms/basic_questions",
+              slug: "data-structure-algorithms/basic_questions",
             },
             {
               label: "Pattern Questions",
-              slug: "data-structure--algorithms/pattern-questions",
+              slug: "data-structure-algorithms/pattern-questions",
             },
             {
               label: "Array Basics",
-              slug: "data-structure--algorithms/array_basics",
+              slug: "data-structure-algorithms/array_basics",
             },
             {
               label: "Array Questions",
-              slug: "data-structure--algorithms/array-questions",
+              slug: "data-structure-algorithms/array-questions",
             },
             {
               label: "Space Time Complexity",
-              slug: "data-structure--algorithms/space_time_complexity",
+              slug: "data-structure-algorithms/space_time_complexity",
             },
             {
               label: "Binary Search",
-			  items: [
-				{
-					label: "Binary Search Fundamentals",
-					slug: "data-structure--algorithms/binary/binary_search_fundamentals",
-				},
-				{
-					label: "Binary Search Questions",
-					slug: "data-structure--algorithms/binary/binary_questions",
-				},
-			  ]
+              items: [
+                {
+                  label: "Binary Search Fundamentals",
+                  slug: "data-structure-algorithms/binary/binary_search_fundamentals",
+                },
+                // {
+                //   label: "Binary Search Questions",
+                //   slug: "data-structure-algorithms/binary/binary_questions",
+                // },
+                {
+                  label: "First and Last Position",
+                  slug: "data-structure-algorithms/binary/firstandlastposition",
+                },
+                {
+                  label: "Peak Index In Mountain Array",
+                  slug: "data-structure-algorithms/binary/peakindexinmountainarray",
+                },
+                {
+                  label: "Pivot Index In Rotated Array",
+                  slug: "data-structure-algorithms/binary/pivotindexinrotatedarray",
+                },
+                {
+                  label: "Element K Position",
+                  slug: "data-structure-algorithms/binary/elementkposition",
+                },
+                {
+                  label: "Square Root Precision",
+                  slug: "data-structure-algorithms/binary/squarerootprecision",
+                },
+                {
+                  label: "Book Allocation",
+                  slug: "data-structure-algorithms/binary/bookallocation",
+                },
+                {
+                  label: "Aggressive Cows",
+                  slug: "data-structure-algorithms/binary/aggressivecows",
+                },
+                {
+                  label: "Painter's Partition",
+                  slug: "data-structure-algorithms/binary/painterspartition",
+                },
+              ],
+            },
+            {
+              label: "Array Questions",
+              items: [
+                {
+                  label: "Check Rotated Sorted Array",
+                  slug: "data-structure-algorithms/array/checkrotatedsortedarray",
+                },
+                {
+                  label: "Rotation using modulus",
+                  slug: "data-structure-algorithms/array/rotationusingmodulus",
+                },
+              ]
+            },
+            {
+              label: "Strings",
+              items: [
+                {
+                  label: "String Fundamentals",
+                  slug: "data-structure-algorithms/strings/fundamentals",
+                },
+                {
+                  label: "Basic Questions",
+                  slug: "data-structure-algorithms/strings/basicquestions",
+                },
+              ]
+            },
+            {
+              label: "Sortings",
+              items: [
+                {
+                  label: "Selection Sort",
+                  slug: "data-structure-algorithms/sortings/selection-sort",
+                },
+                {
+                  label: "Bubble Sort",
+                  slug: "data-structure-algorithms/sortings/bubble-sort",
+                },
+                {
+                  label: "Insertion Sort",
+                  slug: "data-structure-algorithms/sortings/insertion-sort",
+                },
+              ],
             },
           ],
         },

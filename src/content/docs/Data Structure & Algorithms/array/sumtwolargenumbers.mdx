@@ -1,0 +1,104 @@
+---
+title: sum of two large numbers digit by digit
+description: A guide in my new Starlight docs site.
+---
+
+### Code:
+```c++
+// Function to reverse the elements of a vector
+vector<int> reverse(vector<int> v) {
+    
+    int s = 0;  // Start pointer at the beginning
+    int e = v.size() - 1;  // End pointer at the last element
+    
+    // Loop until start pointer is less than the end pointer
+    while(s < e) {
+        swap(v[s++], v[e--]);  // Swap the elements at s and e, then move pointers inward
+    }
+
+    return v;  // Return the reversed vector
+}
+
+// Function to find the sum of two vectors representing large numbers
+vector<int> findArraySum(vector<int>& a, int n, vector<int>& b, int m) {
+	
+    int i = n - 1;  // Pointer to the last element of vector a
+    int j = m - 1;  // Pointer to the last element of vector b
+    vector<int> ans;  // Vector to store the result (sum)
+    int carry = 0;    // Variable to hold the carry value during addition
+    
+    // Add elements of both arrays from the end until one of the arrays is fully traversed
+    while(i >= 0 && j >= 0) {
+        int val1 = a[i];  // Get the current element of vector a
+        int val2 = b[j];  // Get the current element of vector b
+            
+        int sum = val1 + val2 + carry;  // Add the two values and the carry
+        carry = sum / 10;  // Compute the new carry (sum divided by 10)
+        sum = sum % 10;    // Compute the digit to store (sum mod 10)
+        ans.push_back(sum);  // Append the digit to the result vector
+        i--;  // Move the pointer of vector a backward
+        j--;  // Move the pointer of vector b backward
+    }
+    
+    // If there are remaining elements in vector a, process them
+    while(i >= 0) {
+        int sum = a[i] + carry;  // Add the carry to the remaining element of vector a
+        carry = sum / 10;        // Update the carry
+        sum = sum % 10;          // Get the last digit
+        ans.push_back(sum);      // Add the digit to the result
+        i--;
+    }
+    
+    // If there are remaining elements in vector b, process them
+    while(j >= 0) {
+        int sum = b[j] + carry;  // Add the carry to the remaining element of vector b
+        carry = sum / 10;        // Update the carry
+        int value = sum % 10;    // Get the last digit
+        ans.push_back(value);    // Add the digit to the result
+        j--;
+    }
+    
+    // If there is still a carry left, add it to the result
+    while(carry != 0) {
+        int sum = carry;   // Since no more digits remain, just use the carry
+        carry = sum / 10;  // Update the carry
+        sum = sum % 10;    // Get the digit
+        ans.push_back(sum);  // Add the carry digit to the result
+    }
+    
+    // Reverse the result to get the correct order of digits and return it
+    return reverse(ans);
+}
+```
+
+### Example:
+```c++
+vector<int> a = {9, 9, 9};  // Represents the number 999
+vector<int> b = {1};        // Represents the number 1
+```
+
+Execution:
+1. Initialization:
+    - `i = 2` (points to last digit of a), `j = 0` (points to last digit of b), and `carry = 0`.
+2. First iteration:
+    - `val1 = 9` (from a), `val2 = 1` (from b), `sum = 9 + 1 + 0 = 10`.
+    - `carry = 10 / 10 = 1`, `sum = 10 % 10 = 0`.
+    - Add `0` to ans. Now, `ans = {0}`.
+3. Second iteration:
+    - `val1 = 9` (from a), `val2 = 0` (as b has no more digits),` sum = 9 + 0 + 1 = 10`.
+    - `carry = 1`, `sum = 0`.
+    - Add 0 to ans. Now, `ans = {0, 0}`.
+4. Third iteration:
+
+    - `val1 = 9 (from a)`, `sum = 9 + 0 + 1 = 10`.
+    - `carry = `1,` sum = 0`.
+    - Add 0 to ans. Now, `ans = {0, 0, 0}`.
+5. Final carry:
+
+    - As `carry = 1`, add 1 to ans. Now, `ans = {0, 0, 0, 1}`.
+6. Reverse the result:
+
+    - The sum is currently reversed, so we reverse ans to get `{1, 0, 0, 0}`.
+
+#### Output:
+The final output will be `{1, 0, 0, 0}`, which represents the number 1000 (999 + 1 = 1000).

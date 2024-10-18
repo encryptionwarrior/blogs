@@ -1,0 +1,87 @@
+---
+title: reverse the elements of a list using two pointers
+description: A guide in my new Starlight docs site.
+---
+
+### Code
+```c++
+#include<iostream>
+#include<vector>
+using namespace std;
+
+// Function to reverse the elements of a vector using two pointers
+vector<int> reverse(vector<int> v) {
+
+    int s = 0, e = v.size() - 1;  // Start pointer at the beginning and end pointer at the last element
+
+    // Loop until the two pointers meet or cross each other
+    while(s <= e) {
+        // Swap the elements at the start and end pointers
+        swap(v[s], v[e]);
+        s++;  // Move the start pointer forward
+        e--;  // Move the end pointer backward
+    }
+
+    return v;  // Return the reversed vector
+}
+
+// Function to print the elements of a vector
+void print(vector<int> v) {
+
+    // Loop through the vector and print each element
+    for(int i = 0; i < v.size(); i++) {
+        cout << v[i] << " ";  // Print each element followed by a space
+    }
+    cout << endl;  // Print a newline at the end
+}
+
+int main() {
+
+    vector<int> v;  // Declare an empty vector to store integers
+
+    // Add elements to the vector using push_back()
+    v.push_back(11);
+    v.push_back(7);
+    v.push_back(3);
+    v.push_back(12);
+    v.push_back(4);
+
+    // Call the reverse function to reverse the vector and store the result in 'ans'
+    vector<int> ans = reverse(v);
+
+    // Print the reversed vector
+    cout << "Printing reversed Array" << endl;
+    print(ans);  // Call the print function to display the elements
+
+    return 0;  // Return 0 to indicate successful execution
+}
+```
+
+### Example:
+```c++
+v = [11, 7, 3, 12, 4]
+```
+Execution:
+- Initial state:
+    - Start pointer `s = 0` (pointing to 11), end pointer `e = 4` (pointing to `4`).
+- First iteration:
+    - Swap `v[0] = 11` and `v[4] = 4`.
+    - The vector becomes: `{4, 7, 3, 12, 11}`.
+    - Move `s` to `1` and `e` to` 3`.
+- Second iteration:
+    - Swap `v[1] = 7` and `v[3] = 12`.
+    - The vector becomes: `{4, 12, 3, 7, 11}`.
+    - Move `s` to `2` and` e` to `2`.
+- Third iteration:
+    - `s` and `e` are both at index 2, so no further swapping is needed.
+
+##### Final Output:
+```c++
+{4, 12, 3, 7, 11}
+```
+
+##### Output:
+```c++
+Printing reversed Array
+4 12 3 7 11 
+```

@@ -1,0 +1,62 @@
+---
+title: Pivot Index In Rotated Array
+description: A guide in my new Starlight docs site.
+---
+
+## find the pivot index in a rotated sorted array
+```c++
+#include<iostream>
+using namespace std;
+
+// Function to find the pivot index in a rotated sorted array
+int getPivot(int arr[], int n) {
+
+    int s = 0;           // Initialize start index (s)
+    int e = n - 1;       // Initialize end index (e)
+    int mid = s + (e - s) / 2;  // Calculate the middle index
+
+    // Binary search loop to find the pivot
+    while (s < e) {
+
+        // If the mid element is greater than or equal to the first element
+        if (arr[mid] >= arr[0]) {
+            s = mid + 1;  // Move start to the right since pivot must be on the right
+        } else {
+            e = mid;      // Move end to the left (mid could be the pivot)
+        }
+
+        mid = s + (e - s) / 2;  // Recalculate the middle index
+    }
+
+    return s;  // When start and end converge, start will be the pivot index
+}
+
+int main() {
+    // Example array
+    int arr[5] = {1, 3, 8, 10, 17};
+
+    // Call the getPivot function and print the pivot index
+    cout << "Pivot is " << getPivot(arr, 5) << endl;
+
+    return 0;
+}
+```
+
+#### Example
+For `arr = {1, 3, 8, 10, 17}`:
+1. Initial state:
+    - `s = 0`, `e = 4`, `mid = (0 + 4) / 2 = 2`.
+    - `arr[mid] = 8` and `arr[0] = 1`.
+    - Since `arr[mid] >= arr[0] (8 >= 1)`, move `s = mid + 1 = 3`.
+2. Next iteration:
+    - `s = 3`, `e = 4`, `mid = (3 + 4) / 2 = 3`.
+    - `arr[mid] = 10` and `arr[0] = 1`.
+    - Since `arr[mid] >= arr[0] (10 >= 1)`, move `s = mid + 1 = 4`.
+3. Final state:
+    - `s = e = 4`.
+    - The loop exits, and the pivot index is `4`, which corresponds to the element `17`.
+##### Logic
+- The binary search looks at the middle element of the current range.
+- If the middle element is greater than or equal to the first element of the array, it means the left side is sorted, and the pivot is on the right.
+- If the middle element is less than the first element, the pivot is on the left side.
+- The search continues until the start index converges with the end index, which gives the pivot.

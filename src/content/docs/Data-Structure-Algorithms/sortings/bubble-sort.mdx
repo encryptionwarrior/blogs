@@ -1,0 +1,74 @@
+---
+title: Bubble Sort
+description: A guide in my new Starlight docs site.
+---
+
+### Code
+```c++
+void bubbleSort(vector<int>& arr, int n)
+{   
+    // Loop for each sorting round from 1 to n-1
+    for(int i = 1; i < n; i++) {
+        bool swapped = false;  // Track if any swap occurs in this round
+        
+        // Inner loop to compare adjacent elements and swap if needed
+        for(int j = 0; j < n - i; j++) {
+            
+            // If the current element is greater than the next, swap them
+            if(arr[j] > arr[j+1]) {
+                swap(arr[j], arr[j+1]);
+                swapped = true;  // Mark that a swap occurred
+            }
+        }
+        
+        // If no swap occurred, the array is already sorted
+        if(!swapped) {
+            break;  // Exit early to optimize
+        }
+    }
+}
+```
+
+### Example:
+```c++
+vector<int> arr = {64, 25, 12, 22, 11};
+int n = 5;
+```
+##### Step-by-Step Execution:
+1. Initial Array:\
+`arr[] = {64, 25, 12, 22, 11}`.
+
+2. Outer Loop (i = 1):
+    - Swapped = false.
+    - Inner Loop (comparing adjacent elements):
+        - Compare `arr[0] (64)` and `arr[1] (25)` → Swap → `arr[] = {25, 64, 12, 22, 11}`.
+        - Compare `arr[1] (64)` and `arr[2] (12)` → Swap → `arr[] = {25, 12, 64, 22, 11}`.
+        - Compare `arr[2] (64`) and `arr[3] (22)` → Swap → `arr[] = {25, 12, 22, 64, 11}`.
+        - Compare `arr[3] (64)` and `arr[4] (11)` → Swap → `arr[] = {25, 12, 22, 11, 64}`.
+    - Array after Round 1: `arr[] = {25, 12, 22, 11, 64}` (64 is in its correct position).
+3. Outer Loop (i = 2):
+
+    - Swapped = false.
+    - Inner Loop:
+        - Compare `arr[0] (25)` and `arr[1] (12)` → Swap → `arr[] = {12, 25, 22, 11, 64}`.
+        - Compare `arr[1] (25)` and `arr[2] (22)` → Swap → `arr[] = {12, 22, 25, 11, 64}`.
+        - Compare `arr[2] (25)` and `arr[3] (11)` → Swap → `arr[] = {12, 22, 11, 25, 64}`.
+    - Array after Round 2: `arr[] = {12, 22, 11, 25, 64}` (25 and 64 are in correct positions).
+4. Outer Loop (i = 3):
+
+    - Swapped = false.
+    - Inner Loop:
+         - Compare `arr[0] (12)` and `arr[1] (22)` → No Swap.
+         - Compare `arr[1] (22)` and `arr[2] (11)` → Swap → `arr[] = {12, 11, 22, 25, 64}`.
+    - Array after Round 3: `arr[] = {12, 11, 22, 25, 64}` (22, 25, 64 are in correct positions).
+5. Outer Loop (i = 4):
+
+    - Swapped = false.
+    - Inner Loop:
+        - Compare `arr[0] (12)` and `arr[1] (11)` → Swap → `arr[] = {11, 12, 22, 25, 64}`.
+    - Array after Round 4: `arr[] = {11, 12, 22, 25, 64}` (sorted).
+6. The algorithm ends after Round 4 because no swaps were made in the next round, indicating the array is sorted.
+
+###### Final Sorted Array:
+- After sorting, the array is:
+`arr[] = {11, 12, 22, 25, 64}`.
