@@ -49,6 +49,10 @@ export default defineConfig({
           autogenerate: { directory: "Troubleshooting and debugging" },
         },
         {
+          label: "Git & Github",
+          autogenerate: { directory: "git-github" },
+        },
+        {
           label: "Data Structure & Algorithms",
           //   link: "data-structure-algorithms",
           // autogenerate: { directory: 'Data Structure & Algorithms' },
@@ -175,6 +179,73 @@ export default defineConfig({
                 {
                   label: "Insertion Sort",
                   slug: "data-structure-algorithms/sortings/insertion-sort",
+                },
+              ],
+            },
+            {
+              label: "2D Array",
+              items: [
+                {
+                  label: "Introduction",
+                  slug: "data-structure-algorithms/2d-array/intro",
+                },
+                {
+                  label: "Basic Questions",
+                  slug: "data-structure-algorithms/2d-array/basic-questions",
+                },
+                {
+                  label: "Search In 2D Matrix",
+                  slug: "data-structure-algorithms/2d-array/searching-2d-matrix",
+                },
+                {
+                  label: "Binary Search In 2D Matrix",
+                  slug: "data-structure-algorithms/2d-array/binary-search-2d-matrix",
+                },
+                {
+                  label: "Spiral Order Traversal",
+                  slug: "data-structure-algorithms/2d-array/spiral-order-traversal",
+                },
+                {
+                  label: "Wave Print",
+                  slug: "data-structure-algorithms/2d-array/waveprint",
+                },
+              ],
+            },
+            {
+              label: "Maths",
+              items: [
+                {
+                  label: "Fast Exponentiation",
+                  slug: "data-structure-algorithms/maths/fast-exponentiation",
+                },
+                {
+                  label: "Greatest Common Divisor",
+                  slug: "data-structure-algorithms/maths/greatest-common-divisor",
+                },
+                {
+                  label: "Insertion Sort",
+                  slug: "data-structure-algorithms/maths/sieve-of-eratosthenes",
+                },
+              ],
+            },
+            {
+              label: "Pointers",
+              items: [
+                {
+                  label: "Introduction",
+                  slug: "data-structure-algorithms/pointers/introduction",
+                },
+                {
+                  label: "Pointers Array",
+                  slug: "data-structure-algorithms/pointers/pointerarrays",
+                },
+                {
+                  label: "Pointer Function",
+                  slug: "data-structure-algorithms/pointers/pointerfunction",
+                },
+                {
+                  label: "Pointer String",
+                  slug: "data-structure-algorithms/pointers/pointerstrings",
                 },
               ],
             },

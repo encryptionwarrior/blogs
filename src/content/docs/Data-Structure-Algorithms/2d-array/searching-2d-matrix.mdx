@@ -1,0 +1,66 @@
+---
+title: Searching in a 2D Matrix
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+bool searchMatrix(vector<vector<int>>& matrix, int target) {
+    int row = matrix.size();       // Number of rows
+    int col = matrix[0].size();    // Number of columns
+
+    int rowIndex = 0;              // Starting at the first row
+    int colIndex = col - 1;        // Starting at the last column (rightmost)
+
+    // Traverse until we are within the matrix bounds
+    while (rowIndex < row && colIndex >= 0) {
+        int element = matrix[rowIndex][colIndex];  // Current element
+
+        if (element == target) {
+            return true;  // Target found
+        }
+
+        if (element < target) {
+            rowIndex++;  // Move down to the next row if element is smaller than target
+        } else {
+            colIndex--;  // Move left to the next column if element is larger than target
+        }
+    }
+
+    return false;  // Target not found in the matrix
+}
+
+```
+
+### Example:
+```c++
+vector<vector<int>> matrix = {
+    {1, 4, 7, 11},
+    {2, 5, 8, 12},
+    {3, 6, 9, 16},
+    {10, 13, 14, 17}
+};
+
+int target = 9;
+bool found = searchMatrix(matrix, target);
+```
+
+###### Step-by-Step Example:
+Given the matrix:
+
+```c++
+1   4   7  11
+2   5   8  12
+3   6   9  16
+10  13  14 17
+```
+
+###### We want to find 9.
+
+1. Start at the top-right corner: Element = `11`.
+    - `11 > 9`, so move left.
+2. Now at matrix[0][2]: Element = `7`.
+    - `7 < 9`, so move down.
+3. Now at matrix[1][2]: Element = `8`.
+    - `8 < 9`, so move down.
+4. Now at matrix[2][2]: Element = `9`.
+    - `9 == 9`, target found!

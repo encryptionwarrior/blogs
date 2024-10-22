@@ -1,0 +1,87 @@
+---
+title: Spiral Order Traversal
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+vector<int> spiralOrder(vector<vector<int> >& matrix) {
+    vector<int> ans; // This will store the spiral order of elements
+    int row = matrix.size();  // Number of rows in the matrix
+    int col = matrix[0].size(); // Number of columns in the matrix
+
+    int count = 0;  // Keeps track of the number of elements added to the result
+    int total = row * col; // Total number of elements in the matrix
+
+    // Index initialization to keep track of boundaries of the spiral
+    int startingRow = 0;
+    int startingCol = 0;
+    int endingRow = row - 1;
+    int endingCol = col - 1;
+    
+    // The loop continues until all elements are processed
+    while(count < total) {
+        
+        // Traverse the starting row from left to right
+        for(int index = startingCol; count < total && index <= endingCol; index++) {
+            ans.push_back(matrix[startingRow][index]);
+            count++;
+        }
+        startingRow++;  // Move the starting row downwards (since it's already processed)
+
+        // Traverse the ending column from top to bottom
+        for(int index = startingRow; count < total && index <= endingRow; index++) {
+            ans.push_back(matrix[index][endingCol]);
+            count++;
+        }
+        endingCol--;  // Move the ending column leftwards
+
+        // Traverse the ending row from right to left (if elements remain)
+        for(int index = endingCol; count < total && index >= startingCol; index--) {
+            ans.push_back(matrix[endingRow][index]);
+            count++;
+        }
+        endingRow--;  // Move the ending row upwards
+
+        // Traverse the starting column from bottom to top (if elements remain)
+        for(int index = endingRow; count < total && index >= startingRow; index--) {
+            ans.push_back(matrix[index][startingCol]);
+            count++;
+        }
+        startingCol++;  // Move the starting column rightwards
+    }
+    
+    return ans;  // Return the result containing spiral order
+}
+```
+
+#### Example:
+```c++
+vector<vector<int>> matrix = {
+    {1, 2, 3},
+    {4, 5, 6},
+    {7, 8, 9}
+};
+
+vector<int> result = spiralOrder(matrix);
+```
+
+###### Step-by-Step Example:
+
+Given the matrix:
+```c++
+1  2  3
+4  5  6
+7  8  9
+```
+
+1. First layer:
+    - Traverse top row (`1, 2, 3`).
+    - Traverse right column (`6, 9`).
+    - Traverse bottom row (`8, 7`).
+    - Traverse left column (`4`).
+    - After the first layer: `ans = {1, 2, 3, 6, 9, 8, 7, 4}`.
+2. Second layer:
+    - Traverse the remaining single element in the center (`5`).
+    - After the second layer: `ans = {1, 2, 3, 6, 9, 8, 7, 4, 5}`.
+Final spiral order traversal is:
+`[1, 2, 3, 6, 9, 8, 7, 4, 5]`.

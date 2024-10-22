@@ -1,0 +1,70 @@
+---
+title: PSieve of Eratosthenes
+description: A guide in my new Starlight docs site.
+---
+
+### Sieve of Eratosthenes (Prime Number Algorithm):
+
+```c++
+// Function to implement the Sieve of Eratosthenes
+void sieve(bool prime[]) {
+    
+    // Step 1: Initialize all numbers as prime
+    // Initially, assume all numbers from 2 to 1,000,000 are prime.
+    for(int i=2; i<=1000000; i++){
+        prime[i] = 1;  // Set all indices to true (prime)
+    }
+
+    // Step 2: Mark non-prime numbers
+    // Loop through all numbers from 2 to 1,000,000
+    for(int i = 2; i<=1000000; i++) {
+
+        // If `i` is still marked as prime, process it
+        if(prime[i]){
+            // Mark all multiples of `i` as non-prime (set them to 0)
+            // Starting from 2*i, 3*i, ..., up to 1,000,000
+            for(int j = 2*i; j<=1000000; j+=i){
+                prime[j] = 0;  // Mark multiple `j` as non-prime
+            }
+        }
+    }
+
+    // Step 3: Special cases for 0 and 1
+    // Mark 0 and 1 as non-prime, because they are not prime by definition
+    prime[0] = prime[1] = 0;
+}
+```
+
+### Key Points:
+1. Initialization:
+    - All numbers are initially assumed to be prime by setting `prime[i] = 1` for all `i` from 2 to 1,000,000.
+2. Marking Non-Primes:
+    - For each number `i` starting from 2, if `prime[i]` is true, then mark all its multiples (`2*i, 3*i, ...`) as non-prime (set to 0).
+    - This works because a prime number's multiples are never prime.
+4. Special Case for 0 and 1:
+    - Numbers 0 and 1 are marked as non-prime explicitly, as they do not fit the definition of prime numbers.
+
+### Example:
+```c++
+int main() {
+    bool prime[1000001];  // Array to hold prime information for numbers from 0 to 1,000,000
+    sieve(prime);  // Call the sieve function to populate the prime array
+
+    // Check some prime numbers:
+    cout << "Is 11 prime? " << (prime[11] ? "Yes" : "No") << endl;  // Output: Yes
+    cout << "Is 15 prime? " << (prime[15] ? "Yes" : "No") << endl;  // Output: No
+    cout << "Is 29 prime? " << (prime[29] ? "Yes" : "No") << endl;  // Output: Yes
+    return 0;
+}
+```
+
+##### Explanation of Steps:
+1. Initialize all numbers:
+    - The algorithm first marks all numbers from 2 to 1,000,000 as potentially prime.
+2. Eliminate multiples:
+    - Starting from 2 (the smallest prime), the algorithm marks all multiples of 2 (like 4, 6, 8, ...) as non-prime.
+    - It then moves to the next number, 3, and marks its multiples (like 6, 9, 12, ...) as non-prime.
+    - This process repeats for all numbers up to 1,000,000.
+3. Check for prime status:
+    - After the sieve runs, you can check if any number `x` is prime by checking the `prime[x]` array. If `prime[x] == 1`, it means `x` is prime; otherwise, it is not.
+

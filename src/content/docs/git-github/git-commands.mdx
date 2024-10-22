@@ -1,0 +1,323 @@
+---
+title: Git commands
+description: A guide in my new Starlight docs site.
+---
+
+```Git
+mkdir gitone gittwo gitthree
+```
+```Git
+ls
+```
+```command
+git --version
+git -v
+```
+```command
+git status
+cd gitone
+```
+```Git
+ls -la
+```
+```command
+git init
+git status
+ls -la
+```
+
+```command
+cd .git
+cd ..
+ls
+```
+
+```command
+pwd
+git status
+touch testone.txt testtwo.txt
+git status
+```
+
+```command
+git add testone.txt
+git status
+```
+```command
+git commit -s -m "this is my first commit"
+```
+
+```command
+git add testtwo.txt
+git status
+```
+```command
+git commit
+```
+```command
+git log
+git log --online
+```
+```command
+git config --global user.name "sandeep kumar"
+git config --global user.email "abc@gmail.com"
+git config --global core.editor "code --wait"
+```
+
+```command
+touch .gitignore // write in this files and folders roots
+touch .env
+```
+
+```
+git status
+git add .
+git status
+git commit //commit file open
+git log --online
+```
+
+```
+cd 
+pwd
+cat .gitconfig
+```
+
+```
+git log --online 
+ls
+ls -la
+cd .git/
+ls
+ls -la
+```
+
+##### Video -03
+
+```
+cd gittwo/
+ls
+git status
+git init
+git status
+touch index.html
+git status
+git add index.html
+git status
+git commit -m "add index file"
+```
+
+```
+git branch
+{/* make changes in html file */}
+git add index.html
+git commit -m "update code for index file"
+```
+
+```
+git branch nav-bar
+git branch
+git checkout nav-bar
+touch nav-bar.html
+git status
+git add nav-bar.html
+git commit -m "add navrbar to codebase"
+```
+
+```
+git checkout master
+touch hero-section.html
+git add hero-section.html
+git commit -m "add hero section"
+```
+
+```
+git checkout nav-bar
+git checkout master
+```
+
+```
+git branch
+git log --oneline
+git checkout nav-bar
+git log --oneline
+```
+
+### other commands
+```
+git branch
+git branch bugfix
+git switch bugfix
+git log
+git switch master
+git switch -c dark-mode
+git checkout -b pink-mode
+```
+
+```
+git branch
+git checkout master
+git branch
+git merge nav-bar
+git log --oneline
+git branch -d nav-bar // danger
+git branch
+```
+
+```
+git checkout -b footer
+git branch
+touch footer.html
+git add footer.html
+git commit -s -m "add footer"
+git status
+git checkout master
+git branch
+git merge footer
+// change index.html
+git add index.html
+git commit -s -m "footer in index file"
+```
+
+```
+git checkout footer
+// change index.html at same line like master branch
+git add index.html
+git commit -s -m "update index file with footer"
+```
+
+```
+git checkout master
+git checkout footer
+git checkout master
+git merge footer
+git add index.html
+git commit -s -m "merge footer branch"
+```
+
+// Lac 06
+```
+git status
+//change navbar and add some code
+git add index.html
+git status
+git diff
+git diff index.html
+git diff --staged
+// add content in footer
+git diff footer.html
+git status
+git diff --staged
+git commit -s -m "change index and footer"
+git log --oneline
+git diff <commitId1> <commitId2>
+git diff <branch1name> <branch2name>
+git diff --oneline
+git diff <commitId1> <commitId2>
+```
+
+```
+git status
+git switch -c bugfix
+git branch
+// add code in footer.html
+git switch footer
+git stash
+git switch footer
+git switch bugfix
+git stash pop
+// add more content footer.html
+git switch master
+git stash pop
+git stash list
+git stash apply@{3}
+git log --oneline
+git checkout <commitId>
+git log --oneline
+git checkout HEAD
+git switch master
+git reflow
+git log --oneline
+git checkout HEAD~2
+```
+
+### Lac 07
+```
+git status
+git branch
+git checkout master
+// change on index.html code
+git status
+git commit -am "updated main website"
+git checkout bugfix
+// edit bugfix index.html
+git commit -am "updated navbar"
+git checkout master
+// change on index.html code
+git commit -am "images added"
+git checkout bugfix
+git branch
+git merge master
+// change on index.html code
+git commit -am "about us fixed"
+git checkout master
+// change on index.html code
+git commit -am "pricing card added"
+git log --oneline
+git checkout bugfix
+git log --oneline
+git branch
+git rebase master
+git checkout bugfix
+// change on index.html code
+git commit -am "home tab fixed"
+git checkout master
+// change on index.html code
+git commit -am "why us section added"
+git checkout bugfix
+// change on index.html code
+git commit -am "add card to index file"
+git branch
+git rebase master
+git add index.html
+git rebase --continue
+```
+
+### Lac 07
+```
+cd gitthree
+git init git status
+git commit -am "index file add"
+git branch -M main 
+git remove -v 
+git remote add origin https://.....
+git remove -v 
+git push -u origin main
+// change in index.html
+git add index.html
+git commit -m "list added"
+git push 
+git add readme.md
+git commit -m "readme added"
+
+git clone https://.....
+```
+
+##### Create fork
+```
+git clone https://...
+git status
+git branch
+git checkout -d navfeature
+touch navbar.html
+git add navbar.html
+git commit -m "add navbar feature to code"
+git remote -v
+git branch
+git push origin navbar
+
+// comare and make pull request on github
+// title, description
+make a pull request
+merge pull request
+```

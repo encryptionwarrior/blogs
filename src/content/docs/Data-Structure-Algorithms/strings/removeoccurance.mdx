@@ -1,0 +1,57 @@
+---
+title: Remove Occurance from string
+description: A guide in my new Starlight docs site.
+---
+
+### removes all occurrences of a substring part from a given string s
+```c++
+class Solution {
+public:
+    // Function to remove all occurrences of the substring `part` from the string `s`
+    string removeOccurrences(string s, string part) {
+        
+        // Keep running the loop as long as `s` is not empty and `part` is found within `s`
+        while (s.length() != 0 && s.find(part) < s.length()) {
+            
+            // Find the starting index of `part` in `s` and erase it
+            // s.find(part) returns the first occurrence of `part` in `s`
+            // s.erase(index, length) removes the substring starting from `index` with the length of `part`
+            s.erase(s.find(part), part.length());
+        }
+        
+        // Return the final modified string after removing all occurrences of `part`
+        return s;
+    }
+};
+```
+
+#### Example:
+```c++
+s = "daabcbaabcbc";
+part = "abc";
+```
+Execution:
+    - Initial String: `"daabcbaabcbc"`
+    - The substring `"abc"` is found at index 2:
+        - Erase `"abc"` from the string, which changes `s` to `"dabbaabcbc"`.
+    - Updated String: `"dabbaabcbc"`
+    - The substring `"abc"` is found again, this time at index 6:
+        - Erase `"abc"` from the string, which changes s to `"dabbbc"`.
+    - Updated String:` "dabbbc"`
+    - Now, the substring `"abc"` is no longer found in s.
+
+###### Output:
+`"dabbbc"`
+
+###### Step-by-Step Breakdown of the Example:
+1. First loop iteration:
+    - `s = "daabcbaabcbc"`, `s.find(part) = 2`.
+    - Remove `"abc"` from index 2.
+    - Updated `s = "dabbaabcbc"`.
+2. Second loop iteration:
+    - `s = "dabbaabcbc`", `s.find(part) = 6`.
+    - Remove `"abc"` from index 6.
+    - Updated `s = "dabbbc"`.
+3. Third loop iteration:
+    - `s = "dabbbc"`, `s.find(part)` does not find `"abc"`, so the loop ends.
+4. Final result:` "dabbbc"`

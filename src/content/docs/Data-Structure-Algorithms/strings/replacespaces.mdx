@@ -1,0 +1,55 @@
+---
+title: Replaces all spaces
+description: A guide in my new Starlight docs site.
+---
+
+### replaces all spaces (' ') in a given string with the string "@40"
+
+```c++
+// Function to replace all spaces in a string with '@40'
+string replaceSpaces(string &str) {
+    string temp = "";  // Initialize an empty string to store the result
+    // Iterate over each character of the input string
+    for(int i = 0; i < str.length(); i++) {
+        // If the current character is a space (' ')
+        if(str[i] == ' ') {
+            // Append "@40" to the result string
+            temp.push_back('@');
+            temp.push_back('4');
+            temp.push_back('0');
+        }
+        else {
+            // If the current character is not a space, append it as is to the result string
+            temp.push_back(str[i]);
+        }
+    }
+    
+    // Return the modified string with spaces replaced by "@40"
+    return temp;
+}
+```
+
+#### Example:
+```c++
+str = "Hello World"
+```
+Execution:
+1. Initialization:
+    - `temp = ""`
+2. Loop through the string:
+    - Iteration 1: `i = 0`, `str[0] = 'H'` → Append `'H'` to temp. Now, `temp = "H"`.
+    - Iteration 2: `i = 1`, `str[1] = 'e'` → Append `'e'` to temp. Now, `temp = "He"`.
+    - Iteration 3: `i = 2`, `str[2] = 'l'` → Append `'l'` to temp. Now, `temp = "Hel"`.
+    - Iteration 4:` i = 3`, `str[3] = 'l'` → Append `'l'` to temp. Now, `temp = "Hell"`.
+    - Iteration 5: `i = 4`, `str[4] = 'o'` → Append` 'o'` to temp. Now, `temp = "Hello"`.
+    - Iteration 6: `i = 5`,` str[5] = ' '` (space) → Append `"@40"` to temp. Now, `temp = "Hello@40"`.
+    - Iteration 7:` i = 6`,` str[6] = 'W'` → Append `'W'` to temp. Now, `temp = "Hello@40W"`.
+    - Iteration 8:` i = 7`, `str[7] = 'o'` → Append `'o'` to temp. Now, `temp = "Hello@40Wo"`.
+    - Iteration 9: `i = 8`, `str[8] = 'r'` → Append `'r'` to temp. Now, `temp = "Hello@40Wor"`.
+    - Iteration 10: `i = 9`, `str[9] = 'l'` → Append `'l'` to temp. Now, `temp = "Hello@40Worl"`.
+    - Iteration 11: `i = 10`, `str[10] = 'd'` → Append `'d'` to temp. Now, `temp = "Hello@40World"`.
+
+    ##### Output:
+    ```c++
+    "Hello@40World"
+    ```

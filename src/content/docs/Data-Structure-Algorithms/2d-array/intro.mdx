@@ -1,0 +1,92 @@
+---
+title: Introduction 2D Array
+description: A guide in my new Starlight docs site.
+---
+
+### What is a 2D Array?
+    - A 2D array is an array of arrays, where data is stored in a grid-like structure.
+    - It's like a table with rows and columns. Each element is accessed using two indices: one for the row and one for the column.
+
+### Declaration and Initialization:
+- Static Declaration
+```c++
+int arr[rows][cols];
+```
+
+- Initialization during Declaration
+```c++
+int arr[2][3] = {{1, 2, 3}, {4, 5, 6}};
+```
+
+### Accessing Elements:
+- Elements in a 2D array are accessed using arr[row][column].
+- Example: arr[1][2] refers to the element in the second row and third column.
+- Rows and columns are zero-indexed, meaning the first row is at index 0 and the first column is at index 0.
+
+### Input/Output for 2D Arrays:
+- Input: Values can be assigned using nested loops
+```c++
+for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+        cin >> arr[i][j];
+    }
+}
+```
+
+- Output: Printing a 2D array is done similarly
+```c++
+for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+        cout << arr[i][j] << " ";
+    }
+    cout << endl; // Newline after each row
+}
+```
+
+### Memory Representation:
+- Row-Major Order: The array is stored in memory row by row. All elements of the first row are stored first, followed by the elements of the second row, and so on.
+- Example: In a 2D array `arr[2][3] = {{1, 2, 3}, {4, 5, 6}}`, the memory layout is: `[1, 2, 3, 4, 5, 6]`.
+
+### Dynamic 2D Array:
+- You can dynamically allocate a 2D array using pointers and `new`
+```c++
+int** arr = new int*[rows]; // Create row pointers
+for (int i = 0; i < rows; i++) {
+    arr[i] = new int[cols]; // Create each row
+}
+```
+- To free this memory, use
+```c++
+for (int i = 0; i < rows; i++) {
+    delete[] arr[i]; // Delete each row
+}
+delete[] arr; // Delete the row pointers
+```
+
+### Common Operations:
+- Matrix Addition:
+    - Add corresponding elements from two matrices.
+    ```c++
+    for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+        result[i][j] = matrix1[i][j] + matrix2[i][j];
+    }
+    }
+    ```
+
+- Matrix Multiplication:
+    - Multiply two matrices using the formula:
+    ```c++
+    result[i][j] = sum(matrix1[i][k] * matrix2[k][j]); // Across rows and columns
+
+    ```
+
+### Applications of 2D Arrays:
+- Matrices: Mathematical operations (e.g., addition, multiplication, transposition).
+- Grids: Games like Tic-Tac-Toe, Sudoku, Minesweeper.
+- Image Processing: Representing pixels of an image.
+- Graph Representation: Adjacency matrix for representing graphs.
+
+### Limitations:
+- Static Size: If a 2D array is statically declared, the size must be known at compile-time. Use dynamic memory for flexibility.
+- Memory Usage: 2D arrays can consume a lot of memory for large matrices.
