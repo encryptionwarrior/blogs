@@ -1,0 +1,55 @@
+---
+title: Factorial
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include <iostream>
+using namespace std;
+
+int factorial(int n) {
+
+    // Base case: If n is 0, the factorial of 0 is defined as 1
+    if(n == 0)
+        return 1;
+
+    // Recursive call: Solve the smaller problem (factorial of n-1)
+    int smallerProblem = factorial(n - 1);
+    
+    // Combine the result of the smaller problem with the current n to solve the bigger problem
+    int biggerProblem = n * smallerProblem;
+
+    // Return the solution to the bigger problem
+    return biggerProblem;
+}
+
+int main() {
+    int number = 5;
+    cout << "Factorial of " << number << " is " << factorial(number) << endl;
+    return 0;
+}
+```
+
+##### Example Walkthrough
+- Call 1: `factorial(5)`
+    - Calls `factorial(4)` (recursive case)
+- Call 2: `factorial(4)`
+    - Calls `factorial(3)` (recursive case)
+- Call 3: `factorial(3)`
+    - Calls `factorial(2)` (recursive case)
+- Call 4: `factorial(2)`
+    - Calls `factorial(1)` (recursive case)
+- Call 5: `factorial(1)`
+    - Calls `factorial(0)` (recursive case)
+- Call 6: `factorial(0)`
+    - Reaches the base case and returns 1.
+
+
+Now, the function begins to return the values as follows:
+- `factorial(1)` returns `1 * 1 = 1`
+- `factorial(2)` returns `2 * 1 = 2`
+- `factorial(3)` returns `3 * 2 = 6`
+- `factorial(4)` returns `4 * 6 = 24`
+- `factorial(5)` returns `5 * 24 = 120`
+
+So, the factorial of 5 is 120.

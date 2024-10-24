@@ -1,0 +1,58 @@
+---
+title: Say Digits
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include <iostream>
+using namespace std;
+
+void sayDigit(int n, string arr[]) {
+    
+    // Base case: if the number becomes 0, stop the recursion
+    if(n == 0)
+        return ;
+
+    // Processing: Get the last digit of the number
+    int digit = n % 10;
+    n = n / 10;  // Remove the last digit from the number by integer division
+
+    // Recursive call: Call the function with the remaining digits
+    sayDigit(n, arr);
+
+    // Output the word corresponding to the current digit
+    cout << arr[digit] << " ";
+}
+```
+
+##### Example Walkthrough:
+```c++
+string arr[10] = {"zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
+```
+
+Now, we call `sayDigit(412, arr)`:
+
+1. First recursive call:
+    - `n = 412`
+    - `digit = 412 % 10 = 2`
+    - `n = 412 / 10 = 41`
+    - Recursion calls `sayDigit(41, arr)`.
+2. Second recursive call:
+    - `n = 41`
+    - `digit = 41 % 10 = 1`
+    - `n = 41 / 10 = 4`
+    - Recursion calls `sayDigit(4, arr)`.
+3. Third recursive call:
+    - `n = 4`
+    - `digit = 4 % 10 = 4`
+    - `n = 4 / 10 = 0`
+    - Recursion calls `sayDigit(0, arr)` (base case).
+4. The base case is hit (`n == 0`), so the recursion starts unwinding:
+    - First, `arr[4] = "four"` is printed.
+    - Then, `arr[1] = "one"` is printed.
+    - Finally, `arr[2] = "two"` is printed.
+
+###### Output:
+```c++
+four one two
+```
