@@ -260,4 +260,25 @@ export default GradeRangeAddEditForm
 
 
 ```
+### Hide Non-Numeric Characters
+```js
+<Controller
+  name="grade"
+  control={control}
+  render={({ field }) => (
+    <CustomTextField
+      fullWidth
+      {...field}
+      type="text" // Use text to allow validation; `number` doesn't restrict input like "-" or multiple decimals
+      label="Grade"
+      placeholder="Add Grade..."
+      error={!!errors.grade}
+      helperText={errors.grade?.message}
+      onInput={(e) => {
+        e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 2); // Remove non-digits and limit to 2 digits
+      }}
+    />
+  )}
+/>
+```
 
