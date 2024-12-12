@@ -1,0 +1,91 @@
+---
+title: Square Root Precision
+description: A guide in my new Starlight docs site.
+---
+
+## compute the square root of a given number n with a specified level of precision
+```c++
+#include<iostream>
+using namespace std;
+
+// Function to compute the integer part of the square root of `n` using binary search
+long long int sqrtInteger(int n) {
+    int s = 0;                      // Initialize start index
+    int e = n;                      // Initialize end index
+    long long int mid = s + (e - s) / 2; // Calculate the middle index
+
+    long long int ans = -1;          // To store the final integer result
+    while (s <= e) {                 // Continue the binary search until s <= e
+        long long int square = mid * mid;  // Calculate the square of mid
+        
+        if (square == n)             // If mid^2 == n, return mid as the square root
+            return mid;
+
+        if (square < n) {            // If mid^2 is less than n, store mid as a potential answer
+            ans = mid;
+            s = mid + 1;             // Search in the right half (larger values)
+        } else {
+            e = mid - 1;             // Search in the left half (smaller values)
+        }
+        mid = s + (e - s) / 2;       // Recalculate the middle index
+    }
+    return ans;                      // Return the integer part of the square root
+}
+
+// Function to compute a more precise square root, up to a specified number of decimal places
+double morePrecision(int n, int precision, int tempSol) {
+    double factor = 1;               // The factor by which precision increases (0.1, 0.01, 0.001, etc.)
+    double ans = tempSol;            // Initialize the answer with the integer part of the square root
+
+    // Loop to increase the precision
+    for (int i = 0; i < precision; i++) {
+        factor = factor / 10;        // Reduce the factor for each decimal place
+
+        // Refine the answer by incrementing by smaller and smaller factors
+        for (double j = ans; j * j < n; j = j + factor) {
+            ans = j;                 // Update the answer as long as j^2 < n
+        }
+    }
+    return ans;                      // Return the final answer with precision
+}
+
+int main() {
+    int n;                           // Variable to store the input number
+    cout << "Enter the number: " << endl;
+    cin >> n;                        // Input the number from the user
+
+    // Get the integer part of the square root
+    int tempSol = sqrtInteger(n);
+
+    // Calculate the square root with 3 decimal places of precision
+    cout << "Answer is " << morePrecision(n, 3, tempSol) << endl;
+
+    return 0;
+}
+```
+
+##### Example
+Input: `n = 50`
+- Step 1: Integer Square Root Calculation (`sqrtInteger`):
+
+    - Initial state: `s = 0`, `e = 50`, `mid = (0 + 50) / 2 = 25`.
+    - Calculate `mid^2 = 25^2 = 625`, which is greater than `50`, so set `e = mid - 1 = 24`.
+    - Next iteration: `s = 0`, `e = 24`, `mid = (0 + 24) / 2 = 12`.
+    - Calculate `mid^2 = 12^2 = 144`, which is greater than `50`, so set `e = mid - 1 = 11`.
+    - Continue the process until `s = 7`, `e = 7`, at which point `mid = 7`, and `7^2 = 49`.  - Since `49` is less than `50`, store `7` as the integer part of the square root.
+    - The result of `sqrtInteger(50)` is `7`.
+- Step 2: More Precision (morePrecision):
+    - The integer square root is `7`. Now, we refine it up to `3` decimal places.
+    - Start with `ans = 7` and incrementally add `0.1`, `0.01`, `0.001`, while ensuring the square of the result remains less than `50`.
+    - This gives a result close to `7.071`.
+##### Output for `n = 50`:
+- Answer is `7.071`
+
+###### Logic
+1. `sqrtInteger`:
+    - This function uses binary search to find the largest integer mid such that `mid^2 <= n`.
+    - It starts by initializing the range `[0, n]` and iteratively adjusts the search space based on whether `mid^2` is less than or greater than n.
+    - The time complexity of this function is `O(log n)` due to binary search.
+2. `morePrecision`:
+    - This function refines the result by adding small increments `(0.1, 0.01, 0.001, etc.) ` until the square of the result exceeds `n`.
+    - The precision is controlled by the loop that runs for precision number of iterations, with each iteration refining the result by reducing the increment size.

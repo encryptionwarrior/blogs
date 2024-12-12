@@ -1,0 +1,76 @@
+---
+title: Is Sorted
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include <iostream>
+using namespace std;
+
+bool isSorted(int arr[], int size) {
+    
+    // Base case: If the array is empty (size == 0) or has only one element (size == 1),
+    // it is considered sorted, so return true.
+    if(size == 0 || size == 1) {
+        return true;
+    }
+
+    // Check if the first element is greater than the second element.
+    // If so, the array is not sorted, so return false.
+    if(arr[0] > arr[1])
+        return false;
+
+    // Recursive case:
+    // If the first two elements are in order, recursively check the remaining part of the array
+    // (i.e., the array starting from the next element, `arr + 1`, with size reduced by 1).
+    bool remainingPart = isSorted(arr + 1, size - 1);
+
+    // Return the result of the recursive check for the remaining part of the array.
+    return remainingPart;
+}
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5};  // Example: sorted array
+    int size = sizeof(arr) / sizeof(arr[0]);
+
+    if(isSorted(arr, size)) {
+        cout << "Array is sorted." << endl;
+    } else {
+        cout << "Array is not sorted." << endl;
+    }
+
+    return 0;
+}
+```
+
+##### Example Walkthrough:
+Consider the input array `arr[] = {1, 2, 3, 4, 5}` and `size = 5`:
+
+1. First Call: `isSorted(arr, 5)`
+    - `arr[0] = 1`, `arr[1] = 2`, since `1 <= 2`, call `isSorted(arr + 1, 4)`.
+2. Second Call: `isSorted(arr + 1, 4)`
+    - Now `arr[0] = 2`, `arr[1] = 3`, since `2 <= 3`, call `isSorted(arr + 1, 3)`.
+3. Third Call: `isSorted(arr + 2, 3)`
+    - Now `arr[0] = 3`, `arr[1] = 4`, since `3 <= 4`, call `isSorted(arr + 1, 2)`.
+4. Fourth Call: `isSorted(arr + 3, 2)`
+    - Now `arr[0] = 4`, `arr[1] = 5`, since `4 <= 5`, call `isSorted(arr + 1, 1)`.
+5. Fifth Call: `isSorted(arr + 4, 1)`
+    - Base case: Since `size = 1`, return `true`.
+
+#### Output
+```c++
+Array is sorted.
+```
+
+###### Example with Unsorted Array:
+For `arr[] = {1, 3, 2, 4}` and `size = 4`:
+
+1. First Call: `isSorted(arr, 4)`
+    - `arr[0] = 1`, `arr[1] = 3`, since `1 <= 3`, call `isSorted(arr + 1, 3)`.
+2. Second Call: `isSorted(arr + 1, 3)`
+    - Now `arr[0] = 3`, `arr[1] = 2`, since `3 > 2`, return `false`
+
+###### Output
+```c++
+Array is not sorted.
+```

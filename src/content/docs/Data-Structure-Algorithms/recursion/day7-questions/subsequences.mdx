@@ -1,0 +1,55 @@
+---
+title: Sub Sequences
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Helper function to generate subsequences
+void solve(vector<string>& ans, string str, string output, int i) {
+    // Base case: if we've processed all characters in the input string
+    if (i >= str.length()) {
+        // If the current output (subsequence) is non-empty, add it to ans
+        if (output.length() > 0)
+            ans.push_back(output);
+        return;
+    }
+
+    // Recursive call to exclude the current character
+    solve(ans, str, output, i + 1);
+    
+    // Recursive call to include the current character
+    output.push_back(str[i]);
+    solve(ans, str, output, i + 1);
+}
+
+// Main function to initiate the recursive process
+vector<string> subsequences(string str) {
+    vector<string> ans;      // Store all subsequences
+    string output = "";      // Track the current subsequence being formed
+    solve(ans, str, output, 0);  // Start the recursion from index 0
+    return ans;
+}
+```
+
+#### Example:
+1. Initial Call: `subsequences("abc")` calls solve with `output = ""` and `i = 0`.
+2. First Character (`'a'`):
+    - Exclude `'a'`: Call `solve(ans, "abc", "", 1);`
+    - Include `'a'`: Call `solve(ans, "abc", "a", 1);`
+3. Second Character (`'b'`):
+    - For each of the above calls, we make two more calls:
+        - Exclude `'b'`: Calls `solve(ans, "abc", "", 2);` and `solve(ans, "abc", "a", 2);`
+        - Include `'b'`: Calls `solve(ans, "abc", "b", 2)`; and `solve(ans, "abc", "ab", 2);`
+4. Third Character (`'c'`):
+    - The pattern continues, with each call branching into two more calls, either excluding or including `'c'`.
+5. Base Case Reached:
+    - When `i == 3` (end of the string), `output` is added to `ans` if it's non-empty.
+
+##### Generated Subsequences
+```c++
+["a", "ab", "abc", "ac", "b", "bc", "c"]
+```

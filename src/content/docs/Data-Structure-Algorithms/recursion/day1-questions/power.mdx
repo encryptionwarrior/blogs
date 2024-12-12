@@ -1,0 +1,49 @@
+---
+title: Power
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include <iostream>
+using namespace std;
+
+int power(int n) {
+
+    // Base case: If n is 0, return 1 because 2^0 = 1
+    if(n == 0)
+        return 1;
+
+    // Recursive call: Calculate the power of 2^(n-1) and multiply by 2
+    return 2 * power(n - 1);
+}
+
+int main() {
+    int exponent = 5;
+    cout << "2^" << exponent << " = " << power(exponent) << endl;
+    return 0;
+}
+```
+
+###### Example Walkthrough:
+- Call 1: `power(5)`
+    - Calls `power(4)`
+- Call 2: `power(4)`
+    - Calls `power(3)`
+- Call 3: `power(3)`
+    - Calls `power(2)`
+- Call 4: `power(2)`
+    - Calls `power(1)`
+- Call 5: `power(1)`
+    - Calls `power(0)`
+- Call 6: `power(0)`
+    - Reaches the base case and returns 1.
+
+Now, the function starts returning values back through the recursive calls:
+
+`power(1)` returns `2 * 1 = 2`
+`power(2)` returns `2 * 2 = 4`
+`power(3)` returns `2 * 4 = 8`
+`power(4)` returns `2 * 8 = 16`
+`power(5)` returns `2 * 16 = 32`
+
+So, 2<sup>5</sup>=32.

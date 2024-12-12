@@ -1,0 +1,64 @@
+---
+title: Fast Exponentiation
+description: A guide in my new Starlight docs site.
+---
+
+## Fast Exponentiation (Exponentiation by Squaring)
+```c++
+int fastExpo(int a, int b ) {
+    int res = 1; // Result initialized to 1
+    // Loop until the exponent b becomes 0
+    while(b > 0) {
+        // Check if the current bit of b is set (odd number)
+        if(b & 1) {
+            // If b is odd, multiply the result by the base 'a'
+            res = res * a;
+        }
+        // Right shift b by 1 to process the next bit (equivalent to dividing b by 2)
+        b = b >> 1;
+        // Square the base 'a' for the next iteration
+        a = a * a; 
+    }
+    return res; // Return the result
+}
+```
+
+### Example:
+```c++
+int main() {
+    int a = 3, b = 5;
+    cout << "3^5 = " << fastExpo(a, b) << endl;
+    return 0;
+}
+```
+
+###### Step-by-Step Example: 3 <sup>5</sup>
+
+ 
+- Initial values: `a = 3`, `b = 5`, `res = 1`
+
+Iteration 1:
+- `b = 5` (binary `101`):
+    - The least significant bit of `b` is 1 (odd), so `res = res * a = 1 * 3 = 3`.
+    - Update `a = a * a = 3 * 3 = 9`.
+    - Right shift `b = b >> 1 = 2` (binary `10`).
+
+Iteration 2:
+- `b = 2` (binary `10`):
+    - The least significant bit of `b` is 0 (even), so we don't update `res`.
+    - Update `a = a * a = 9 * 9 = 81`.
+    - Right shift `b = b >> 1 = 1` (binary `1`).
+
+Iteration 3:
+- `b = 1` (binary `1`):
+    - The least significant bit of `b` is 1 (odd), so `res = res * a = 3 * 81 = 243`.
+    - Update `a = a * a = 81 * 81 = 6561`.
+    - Right shift `b = b >> 1 = 0` (binary `0`).
+
+Final:
+- `b = 0` (exit the loop).
+- The result is `res = 243`.
+
+Thus, 
+3<sup>5</sup>=243
+ 

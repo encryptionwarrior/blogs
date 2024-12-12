@@ -1,0 +1,59 @@
+---
+title: Sub sets
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include <vector>
+using namespace std;
+
+class Solution {
+private:
+    // Helper function to generate subsets recursively
+    void solve(vector<int> nums, vector<int> output, int index, vector<vector<int>>& ans) {
+        // Base case: if we've processed all elements in nums
+        if(index >= nums.size()) {
+            ans.push_back(output);  // Add the current subset to the answer
+            return;
+        }
+        
+        // Recursive call to exclude the current element
+        solve(nums, output, index + 1, ans);
+        
+        // Recursive call to include the current element
+        int element = nums[index];
+        output.push_back(element);  // Add the element to the subset
+        solve(nums, output, index + 1, ans);
+    }
+    
+public:
+    // Main function to initialize variables and start the recursive process
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> ans;    // To store all subsets
+        vector<int> output;         // To store the current subset
+        int index = 0;              // Start index for recursion
+        solve(nums, output, index, ans);  // Call recursive function
+        return ans;
+    }
+};
+```
+
+### Example:
+1. Initial Call: `subsets({1, 2})` initializes `output` and `ans`, then calls `solve(nums, output, index = 0, ans)`.
+
+2. First Element (`1`):
+    - Exclude `1`: Calls `solve(nums, {}, 1, ans);`
+    - Include `1`: Calls `solve(nums, {1}, 1, ans);`
+3. Second Element (`2`):
+    - For each of the above calls, solve is called twice again:
+        - Exclude `2`: Calls `solve(nums, {}, 2, ans);` and `solve(nums, {1}, 2, ans);`
+        - Include `2`: Calls `solve(nums, {2}, 2, ans);` and `solve(nums, {1, 2}, 2, ans);`
+4. Base Case:
+    - When `index` reaches the length of `nums` (i.e., `index == 2`), `output` is added to `ans` as a subset.
+
+##### Generated Subsets
+For input `[1, 2]`, the subsets are generated as follows:
+    - `[]` — Exclude both `1` and` 2`
+    - `[2]` — Include only `2`
+    - `[1]` — Include only `1`
+    - `[1, 2]` — Include both `1` and `2`

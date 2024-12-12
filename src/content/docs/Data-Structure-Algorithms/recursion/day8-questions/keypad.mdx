@@ -1,0 +1,74 @@
+---
+title: Keypad
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include <vector>
+#include <string>
+using namespace std;
+
+class Solution {
+private:
+    // Recursive function to generate letter combinations
+    void solve(string digit, string output, int index, vector<string>& ans, string mapping[]) {
+        
+        // Base case: If index has reached the end of digits, add the current output to ans
+        if(index >= digit.length()) {
+            ans.push_back(output);  // Store the combination
+            return;
+        }
+        
+        // Get the integer value of the current digit
+        int number = digit[index] - '0';
+        string value = mapping[number];  // Map the digit to corresponding letters
+
+        // Loop through each letter in the mapped value and recursively call `solve`
+        for(int i = 0; i < value.length(); i++) {
+            output.push_back(value[i]);      // Choose a letter for this position
+            solve(digit, output, index + 1, ans, mapping);  // Recursive call for the next digit
+            output.pop_back();               // Backtrack to explore the next letter
+        }
+    }
+
+public:
+    // Main function to generate letter combinations
+    vector<string> letterCombinations(string digits) {
+        vector<string> ans;   // To store all combinations
+
+        // Return an empty result if input digits are empty
+        if(digits.length() == 0)
+            return ans;
+
+        string output;   // To store the current combination
+        int index = 0;   // Starting index for recursion
+
+        // Mapping array where index corresponds to each digit's letters
+        string mapping[10] = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+
+        // Start the recursive function
+        solve(digits, output, index, ans, mapping);
+        return ans;
+    }
+};
+```
+
+#### Example with Input `"23"`
+1. Initial Call: letterCombinations(`"23"`) initializes variables and calls `solve("23", "", 0, ans, mapping)`.
+
+2. Recursive Processing for Each Digit:
+    - Digit '2' maps to `"abc"`:
+        - Choose 'a': Calls `solve("23", "a", 1, ans, mapping)`
+        - Choose 'b': Calls `solve("23", "b", 1, ans, mapping)`
+        - Choose 'c': Calls `solve("23", "c", 1, ans, mapping)`
+3. Digit '3' (within each of the above calls) maps to `"def"`:
+    - For `solve("23", "a", 1, ans, mapping)`:
+        - Choose 'd': Calls `solve("23", "ad", 2, ans, mapping)` and adds `"ad"` to `ans`
+        - Choose 'e': Calls `solve("23", "ae", 2, ans, mapping)` and adds `"ae"` to `ans`
+        - Choose 'f': Calls `solve("23", "af", 2, ans, mapping)` and adds `"af"` to `ans`
+    - Similar choices are made for `"b"` and `"c"`, creating combinations like `"bd", "be", "bf", "cd", "ce", "cf"`.
+
+For input "23", the code would output:
+```c++
+["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
+```

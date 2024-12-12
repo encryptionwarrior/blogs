@@ -1,0 +1,39 @@
+---
+title: Walking Example
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include <iostream>
+using namespace std;
+void reachHome(int src, int dest) {
+    // Display current position (source) and the target position (destination)
+    cout << "source: " << src << " destination: " << dest << endl;
+
+    // Base case: if the source (current position) is equal to the destination
+    if(src == dest) {
+        cout << "Pahuch gya (Reached home)" << endl;
+        return;
+    }
+
+    // Processing: Move one step forward (increment the source)
+    src++;
+
+    // Recursive call: Call the function again with the updated source
+    reachHome(src, dest);
+}
+```
+
+##### Example Walkthrough:
+starting position is src = 1 and the destination is dest = 5. We call the function reachHome(1, 5):
+
+1. First Call (`src = 1, dest = 5`):
+    - The current position is 1, and the destination is 5. Since `src` is not equal to `dest`, the function increments `src` by 1 and recursively calls `reachHome(2, 5)`.
+1. Second Call (`src = 2, dest = 5`):
+    - The current position is 2. It increments `src` by 1 and recursively calls `reachHome(3, 5)`.
+1. Third Call (`src = 3, dest = 5`):
+    - The current position is 3. It increments `src` by 1 and recursively calls `reachHome(4, 5)`.
+1. Fourth Call (`src = 4, dest = 5`):
+    - The current position is 4. It increments `src` by 1 and recursively calls `reachHome(5, 5)`.
+1. Fifth Call (`src = 5, dest = 5`):
+    - Now, src equals dest, so the base case is triggered, and the function prints `"Pahuch gya (Reached home)"` and stops the recursion.

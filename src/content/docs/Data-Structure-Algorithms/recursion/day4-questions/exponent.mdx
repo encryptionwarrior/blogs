@@ -1,0 +1,63 @@
+---
+title: Exponent
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include <iostream>
+using namespace std;
+
+int power(int a, int b) {
+    // Base case: when exponent is 0, a^0 = 1
+    if(b == 0)
+        return 1;
+
+    // Base case: when exponent is 1, a^1 = a
+    if(b == 1)
+        return a;
+
+    // Recursive call: calculate power of a with half the exponent
+    int ans = power(a, b / 2);
+
+    // If b is even, use the property (a^b) = (a^(b/2)) * (a^(b/2))
+    if(b % 2 == 0) {
+        return ans * ans;  // Return the square of the result from the recursive call
+    } else {
+        // If b is odd, use the property (a^b) = a * (a^(b/2)) * (a^(b/2))
+        return a * ans * ans;  // Multiply a with the square of the result from the recursive call
+    }
+}
+
+int main() {
+    int a = 2;  // Base
+    int b = 10; // Exponent
+    cout << a << "^" << b << " = " << power(a, b) << endl; // Output the result
+    return 0;
+}
+```
+
+##### Example Walkthrough:
+Let's see how this function works for calculating 2<sup>10</sup>:
+
+1. Call: `power(2, 10)`
+    - Calls `power(2, 5)` (because 10/2=5).
+2. Call: `power(2, 5)`
+    - Calls `power(2, 2)` (because 5/2=2).
+3. Call: `power(2, 2)`
+    - Calls `power(2, 1)` (because 2/2=1).
+4. Call: `power(2, 1)`
+    - Returns `2` (base case).
+5. Back to Call: `power(2, 2)`
+    - `ans=2` (result from `power(2, 1)`)
+    - Since `2` is even: returns `2×2=4`.
+6. Back to Call: `power(2, 5)`
+    - `ans=4` (result from `power(2, 2)`)
+    - Since `5` is odd: returns `2×4×4=32`.
+7. Back to Call: `power(2, 10)`
+    - `ans=32` (result from `power(2, 5)`)
+    - Since `10` is even: returns `32×32=1024`.
+
+#### Final Output:
+```c++
+2^10 = 1024
+```

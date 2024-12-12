@@ -1,0 +1,311 @@
+---
+title: Memory Allocations
+description: A guide in my new Starlight docs site.
+---
+
+### Memory Allocation Types: Static vs Dynamic
+#### Static Memory Allocation:
+- Compile-time allocation: Memory is allocated before program execution.
+- Lifetime: The memory persists for the entire duration of the program.
+- Example: Local variables, global variables, and static variables are statically allocated.
+- Memory Type: Allocated in the stack.
+
+###### Example:
+```c++
+int arr[10];  // Memory for 10 integers is statically allocated on the stack
+```
+
+#### Dynamic Memory Allocation:
+- Run-time allocation: Memory is allocated when the program runs.
+- Lifetime: Memory exists until it is explicitly deallocated using delete.
+- Example: Memory allocated using new or malloc (in C).
+- Memory Type: Allocated in the heap.
+###### Example:
+```c++
+int* ptr = new int[10];  // Memory for 10 integers is dynamically allocated on the heap
+```
+
+### Heap vs Stack:
+##### Stack
+- Fixed-size memory allocated at compile time.
+- Fast access and efficient memory management.
+- Local variables and function call data (such as parameters and return addresses) are stored here.
+- Automatically deallocated when a function call completes.
+- Limited size: Can lead to a stack overflow if overused (e.g., deep recursion)
+
+##### Heap:
+- Variable-size memory allocated at runtime.
+- Slower access due to the dynamic nature of the allocation.
+- Must be manually deallocated using delete or free.
+- The size of the heap is much larger than the stack, but it can get fragmented over time.
+
+##### Static vs Dynamic Allocation:
+| Criteria          | Static Allocation                     | Dynamic Allocation                    |
+|-------------------|---------------------------------------|---------------------------------------|
+| Memory Source     | Stack                                 | Heap                                  |
+| When allocated?   | Compile-time                          | Run-time                              |
+| Deallocation      | Automatic (when out of scope)         | Manual (`delete`/`free`)              |
+| Lifetime          | Entire program                        | As long as needed (until explicitly deleted) |
+| Size              | Fixed                                 | Flexible                              |
+
+
+##### Dynamic Memory Allocation with 2D Arrays:
+In dynamic memory allocation, we can allocate a 2D array where both dimensions are determined at runtime.
+
+###### Example 1: Allocating a 2D Array Using a Single Pointer
+```c++
+#include <iostream>
+using namespace std;
+
+int main() {
+    int rows = 3, cols = 4;
+    // Dynamically allocate memory for a 2D array using a single pointer
+    int* arr = new int[rows * cols];
+    
+    // Access elements using row-major order indexing
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            arr[i * cols + j] = i + j;  // Assign value
+        }
+    }
+
+    // Print the 2D array
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << arr[i * cols + j] << " ";
+        }
+        cout << endl;
+    }
+
+    // Deallocate memory
+    delete[] arr;
+
+    return 0;
+}
+```
+
+###### Example 2: Allocating a 2D Array Using Double Pointers
+```c++
+#include <iostream>
+using namespace std;
+
+int main() {
+    int rows = 3, cols = 4;
+    
+    // Dynamically allocate memory for a 2D array using double pointers
+    int** arr = new int*[rows];
+    for (int i = 0; i < rows; i++) {
+        arr[i] = new int[cols];  // Allocate memory for each row
+    }
+    
+    // Access elements and assign values
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            arr[i][j] = i + j;  // Assign value
+        }
+    }
+
+    // Print the 2D array
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << arr[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    // Deallocate memory
+    for (int i = 0; i < rows; i++) {
+        delete[] arr[i];  // Free each row
+    }
+    delete[] arr;  // Free the row pointers
+
+    return 0;
+}
+```
+
+### Common Dynamic Memory Functions
+- `new`: Allocates memory dynamically from the heap for a single variable or an array.
+    - Example:
+    ```c++
+    int* ptr = new int[5];  // Allocates memory for an array of 5 integers
+    ```
+
+- `delete`: Frees dynamically allocated memory for a single variable.
+    - Example:
+    ```c++
+    delete ptr;  // Deallocates memory for a single integer
+    ```
+
+- `delete[]`: Frees dynamically allocated memory for an array.
+    - Example:
+    ```c++
+    delete[] ptr;  // Deallocates memory for an array of integers
+    ```
+
+### Memory Leak:
+A memory leak occurs when dynamically allocated memory is not deallocated after use, causing a program to use more memory over time. This can result in slow performance or program crashes.
+
+##### Example of a Memory Leak:
+```c++
+int* ptr = new int;
+ptr = new int;  // Memory allocated by the first `new` is lost (leaked)
+```
+
+##### How to Prevent Memory Leaks:
+Always ensure that dynamically allocated memory is freed using delete or delete[] when it's no longer needed.
+
+
+###### Example with Full Explanation (Heap vs Stack):
+
+```c++
+#include <iostream>
+using namespace std;
+
+int main() {
+    // Static memory allocation (on stack)
+    int staticArr[5];  // Fixed size array
+    
+    // Dynamic memory allocation (on heap)
+    int* dynamicArr = new int[5];  // Dynamically allocate memory for an array of size 5
+
+    // Assign values to both arrays
+    for (int i = 0; i < 5; i++) {
+        staticArr[i] = i * 10;    // Static array
+        dynamicArr[i] = i * 20;   // Dynamic array
+    }
+
+    // Print static array
+    cout << "Static array: ";
+    for (int i = 0; i < 5; i++) {
+        cout << staticArr[i] << " ";
+    }
+    cout << endl;
+
+    // Print dynamic array
+    cout << "Dynamic array: ";
+    for (int i = 0; i < 5; i++) {
+        cout << dynamicArr[i] << " ";
+    }
+    cout << endl;
+
+    // Deallocate memory for dynamic array
+    delete[] dynamicArr;
+
+    return 0;
+}
+```
+
+#### Other Examples
+- Reference Variable
+```c++
+int& func(int a) {
+    int num = a;
+    int& ans = num;
+    return ans;
+}
+
+int* fun(int n) {
+    int* ptr = &n;
+    return ptr;
+}
+
+void update2(int& n) {
+    n++;
+}
+
+void update1(int n) {
+    n++;
+}
+
+int main() {
+    int i = 5;
+    //create a ref variable 
+    int& j = i;
+
+    cout << i << endl; 
+    i++;
+    cout << i << endl; 
+    j++;
+    cout << i << endl; 
+    cout << j << endl;
+   int n = 5;
+   
+   cout << "Before " << n << endl;
+   update2(n);
+   cout << "After " << n << endl;
+
+    fun(n);
+    return 0;
+}
+```
+
+- Dyanamic Array 
+```c++
+int getSum(int *arr, int n) {
+
+    int sum = 0;
+    for(int i=0; i<n; i++) {
+        sum += arr[i];
+    } 
+    return sum;
+}
+
+int main() {
+    int n;
+    cin >> n;
+    //variable size array
+    int* arr = new int[n];
+    //takign inputn in aray
+    for(int i=0; i<n; i++) {
+        cin >> arr[i];
+    }
+    int ans = getSum(arr, n);
+    cout << "answer is "<< ans << endl;
+//case 1
+    while(true) {
+        int i = 5;
+    }
+//case 2
+    while(true) {
+        int* ptr = new int;
+    }
+    return 0;
+}
+```
+
+- 2D Array
+```c++
+int main() {
+    int row;
+    cin >> row;
+    int col;
+    cin >> col;
+    //creating a 2D array
+    int** arr = new int*[row];
+    for(int i=0; i<row; i++) {
+        arr[i] = new int[col];
+    }
+    //taking input
+    for(int i=0; i<row; i++) {
+        for(int j=0; j<col; j++) {
+            cin >> arr[i][j];
+        }
+    }
+    //taking output
+    cout << endl;
+    for(int i=0; i<row; i++) {
+        for(int j=0; j<col; j++) {
+            cout << arr[i][j] << " ";
+        } cout << endl;
+    }
+    //releasing memory
+    for(int i=0; i<row; i++) {
+        delete [] arr[i];
+    }   
+    delete []arr;
+    //how to create a 2D array dynamically
+    //input/Output
+    //memory free kaise karani hai 
+    return 0;
+}
+```

@@ -1,0 +1,163 @@
+---
+title: Book Allocation Problem
+description: A guide in my new Starlight docs site.
+---
+
+## Book Allocation Problem
+- Each student gets a contiguous section of books.
+- The maximum number of pages allocated to a student is minimized.
+- No more than m students should be used to allocate the books.
+
+```c++
+#include<vector>
+using namespace std;
+
+// Function to check if it is possible to allocate books such that no student gets more than 'mid' pages
+bool isPossible(vector<int> arr, int n, int m, int mid) {
+    int studentCount = 1;   // Start by assigning books to the first student
+    int pageSum = 0;        // Variable to keep track of the sum of pages assigned to the current student
+    
+    for (int i = 0; i < n; i++) {
+        // If adding arr[i] (pages of the current book) to the current student's allocation keeps it <= mid
+        if (pageSum + arr[i] <= mid) {
+            pageSum += arr[i];   // Add the book to the current student's allocation
+        } else {
+            // If adding the current book exceeds 'mid', allocate it to a new student
+            studentCount++;
+            
+            // If the number of students exceeds 'm' or if any book has more pages than 'mid', return false
+            if (studentCount > m || arr[i] > mid) {
+                return false;
+            }
+
+            // Allocate the current book to the new student
+            pageSum = arr[i];
+        }
+
+        // If at any point, the number of students exceeds 'm', return false
+        if (studentCount > m) {
+            return false;
+        }
+    }
+    return true;   // If all books can be allocated within the given constraints, return true
+}
+
+// Function to find the minimum of the maximum number of pages a student can be allocated
+int allocateBooks(vector<int> arr, int n, int m) {
+    int s = 0;   // Start with the minimum possible number of pages (0)
+    int sum = 0; // Sum of all pages in the array (total number of pages in all books)
+
+    // Calculate the total number of pages
+    for (int i = 0; i < n; i++) {
+        sum += arr[i];
+    }
+    
+    int e = sum;   // The upper limit of the number of pages (the sum of all pages)
+    int ans = -1;  // Variable to store the result
+    int mid = s + (e - s) / 2;  // Calculate the middle point of the current range
+
+    // Perform binary search to minimize the maximum number of pages
+    while (s <= e) {
+        // Check if it's possible to allocate books with 'mid' as the maximum number of pages
+        if (isPossible(arr, n, m, mid)) {
+            ans = mid;   // If possible, store the current mid as a potential answer
+            e = mid - 1; // Try to find a smaller maximum by reducing the search space
+        } else {
+            s = mid + 1; // If not possible, increase the minimum number of pages
+        }
+        mid = s + (e - s) / 2;  // Recalculate the middle point
+    }
+    return ans;  // Return the minimum of the maximum number of pages a student can be allocated
+}
+```
+
+#### Example
+Consider the following input:\
+`arr = {10, 20, 30, 40}` (book pages)
+`m = 2` (number of students)
+- Step 1: Calculate the total sum of pages
+    - `sum = 10 + 20 + 30 + 40 = 100`.
+    - The minimum value for binary search (`s`) is `0`, and the maximum value (`e`) is `100`.
+- Step 2: Binary Search for the Optimal Solution
+    1. First Iteration:
+
+        - `mid = (0 + 100) / 2 = 50`.
+        - Check if it is possible to allocate books such that no student gets more than `50` pages.
+
+        **Allocation for** `mid = 50`:
+        - First student: `10 + 20 = 30` (next book exceeds 50).
+        - Second student: `30 + 40 = 70`.
+        - This allocation is possible, but there are exactly `2` students. So, the search space is reduced: `e = mid - 1 = 49`, and the current answer is `50`.
+    2. Second Iteration:
+
+        - `mid = (0 + 49) / 2 = 24`.
+
+        **Allocation for** `mid = 24`:
+
+        - First student: `10 + 20 = 30` (exceeds 24).
+        - Second student: `30` (exceeds 24).
+        - Third student: `40` (exceeds 24).
+        - This is not possible, so we increase the search space: `s = mid + 1 = 25`.
+    
+    3. Third Iteration:
+        - `mid = (25 + 49) / 2 = 37`.
+
+        **Allocation for** `mid = 37`:
+        - First student: `10 + 20 = 30` (next book exceeds 37).
+        - Second student: `30` (next book exceeds 37).
+        - Third student: `40` (exceeds 37).
+        - Since this allocation requires more than `2` students, it's not possible to allocate books with `37` pages as the maximum. So, we increase the search space: `s = mid + 1 = 38`.
+    4. Fourth Iteration:
+        - `mid = (38 + 49) / 2 = 43`.
+
+        **Allocation for** `mid = 43`:
+        - First student: `10 + 20 = 30` (next book exceeds 43).
+        - Second student: `30 + 40 = 70`.
+        - This allocation is possible with exactly `2` students, so we update our answer to `43` and reduce the search space: `e = mid - 1 = 42`.
+    5. Fifth Iteration:
+
+        - `mid = (38 + 42) / 2 = 40`.
+
+        **Allocation for** `mid = 40`:
+
+        - First student: `10 + 20 = 30` (next book exceeds 40).
+        - Second student: `30 + 40 = 70`.
+        - This allocation is possible with `2` students, so we update our answer to `40` and reduce the search space: `e = mid - 1 = 39`.
+
+    6. Sixth Iteration:
+
+        - `mid = (38 + 39) / 2 = 38`.
+
+        **Allocation for** `mid = 38`:
+
+        - First student: `10 + 20 = 30` (next book exceeds 38).
+        - Second student: `30 + 40 = 70`.
+        - This allocation is possible, but the result is higher than `38`. Therefore, we increase the search space: `s = mid + 1 = 39`.
+
+    7. Seventh Iteration:
+
+        - `mid = (39 + 39) / 2 = 39`.
+
+        **Allocation for** `mid = 39`:
+
+        - First student: `10 + 20 = 30` (next book exceeds 39).
+        - Second student: `30 + 40 = 70`.
+        - This allocation is possible, but the result is still higher than `39`. Therefore, we increase the search space again: `s = mid + 1 = 40`.
+
+At this point, `s = 40` and `e = 39`, so the loop exits. The final answer is the last valid value of ans, which is `40`.
+
+##### Explanation of Logic
+1. Setup:
+    - Use binary search to find the minimum possible maximum pages. Set the lower bound (`s`) to 0 and the upper bound (`e`) to the sum of all book pages.
+2. Binary Search:
+    - Calculate the mid-point (`mid`) as `(s + e) / 2`, representing the potential maximum pages per student.
+    - Use the isPossible function to check if books can be allocated without exceeding mid pages for any student.
+3. Allocation Check:
+    - In isPossible, iterate through the books and allocate them to students:
+    - If adding a book keeps the total pages below mid, allocate it to the current student.
+    - If it exceeds mid, assign it to a new student. If the required students exceed m, return false.
+3. Adjusting Search Space:
+    - If allocation is possible, reduce the upper bound (`e = mid - 1`) to find a smaller maximum.
+    - If not possible, increase the lower bound (`s = mid + 1`) to allow for more pages.
+4. Result:
+    - The loop continues until `s > e`, and the last valid mid value is returned as the minimum maximum pages per student.

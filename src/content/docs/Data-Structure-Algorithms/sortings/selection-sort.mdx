@@ -1,0 +1,66 @@
+---
+title: Selection Sort
+description: A guide in my new Starlight docs site.
+---
+
+````c++
+void selectionSort(vector<int>& arr, int n)
+{   
+    // Outer loop to iterate through each element except the last one
+    for(int i = 0; i < n-1; i++ ) {
+        int minIndex = i;  // Assume the first unsorted element is the smallest
+        
+        // Inner loop to find the minimum element in the unsorted portion
+        for(int j = i+1; j < n; j++) {
+            if(arr[j] < arr[minIndex])  // If a smaller element is found, update minIndex
+                minIndex = j;
+        }
+        // Swap the smallest found element with the first unsorted element
+        swap(arr[minIndex], arr[i]);
+    }
+}
+````
+
+### Example:
+```c++
+vector<int> arr = {64, 25, 12, 22, 11};
+int n = 5;
+```
+##### Step-by-Step Execution:
+1. Initial Array:\
+`arr[] = {64, 25, 12, 22, 11}`.
+
+2. Outer Loop (i = 0):
+    - Assume `minIndex = 0` (value is 64).
+    - Inner Loop:
+        - Compare `arr[1] (25)` with `arr[0] (64)` → `minIndex = 1`.
+        - Compare `arr[2] (12)` with `arr[1] (25)` → `minIndex = 2`.
+        - Compare `arr[3] (22)` with `arr[2] (12)` → `minIndex = 2`.
+        - Compare `arr[4] (11)` with `arr[2] (12)` → `minIndex = 4`.
+    - Swap `arr[0]` with `arr[4]`:
+        `arr[] = {11, 25, 12, 22, 64}`.
+3. Outer Loop (i = 1):
+    - Assume `minIndex = 1` (value is 25).
+    - Inner Loop:
+        - Compare `arr[2] (12)` with `arr[1] (25)` → `minIndex = 2`.
+        - Compare `arr[3] (22)` with `arr[2] (12)` → `minIndex = 2`.
+        - Compare `arr[4] (64)` with `arr[2] (12)` → `minIndex = 2`.
+    - Swap `arr[1]` with `arr[2]`:
+        - `arr[] = {11, 12, 25, 22, 64}`.
+4. Outer Loop (i = 2):
+
+    - Assume `minIndex = 2` (value is 25).
+    - Inner Loop:
+        - Compare `arr[3] (22)` with `arr[2] (25)` → `minIndex = 3`.
+        - Compare `arr[4] (64)` with `arr[3] (22)` → `minIndex = 3`.
+    - Swap `arr[2]` with `arr[3]`:
+        - `arr[] = {11, 12, 22, 25, 64}`.
+5. Outer Loop (i = 3):
+    - Assume `minIndex = 3` (value is 25).
+    - Inner Loop:
+        - Compare `arr[4] (64)` with `arr[3] (25)` → `minIndex = 3`.
+    - No swap needed as `minIndex = 3`.
+    - Final array: `arr[] = {11, 12, 22, 25, 64}`.
+###### Final Sorted Array:
+- After running the selection sort, the array is sorted:
+`arr[] = {11, 12, 22, 25, 64}`

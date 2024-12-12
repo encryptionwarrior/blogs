@@ -1,0 +1,263 @@
+---
+title: Multiple Value settings in select
+description: A guide in my new Starlight docs site.
+---
+
+Select Multiple values in select using react-hook-forms
+
+## Select Multiple Values
+
+
+### Validation schema
+```js
+import * as yup from 'yup'
+
+export const GradeRangeValidationSchema = yup.object({
+  start_grade: yup
+    .object({
+      id: yup.string().required('Start grade is required'),
+      value: yup
+        .string()
+        .required('Start grade value is required')
+        .matches(/^\d{1,2}$/, 'Start grade must be a number between 0 and 99')
+    })
+    .required(),
+  end_grade: yup
+    .object({
+      id: yup.string().required('End grade is required'),
+      value: yup
+        .string()
+        .required('End grade value is required')
+        .matches(/^\d{1,2}$/, 'End grade must be a number between 0 and 99')
+    })
+    .required(),
+  range_error: yup.string().test('grade-range', 'Start grade must be less than end grade', (value, context) => {
+    const { start_grade, end_grade } = context.parent
+    return parseInt(start_grade?.value, 10) < parseInt(end_grade?.value, 10)
+  })
+})
+
+
+```
+
+
+### Type Interface 
+```js
+export interface GradeRangeCompareFormValues {
+  id?: string
+  start_grade: {
+    id: string
+    value: string
+  }
+  end_grade: {
+    id: string
+    value: string
+  }
+  range_error?: string
+}
+```
+
+### Component
+```js
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable newline-before-return */
+// ** React Imports
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect, useState } from 'react'
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+
+// ** MUI Imports
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import Divider from '@mui/material/Divider'
+import Grid from '@mui/material/Grid'
+
+// ** Custom Component Import
+
+import { Box, FormHelperText, IconButton, InputLabel, MenuItem, Select, Typography } from '@mui/material'
+import dynamic from 'next/dynamic'
+import router from 'next/router'
+import { GradeRangeCompareFormValues, GradeRangeListType } from '../types/graderange.interface'
+import { GradeRangeValidationSchema } from '../yup/graderange.yup'
+
+const CustomEditor = dynamic(() => import('src/@core/components/editor/CustomEditor'), { ssr: false })
+
+interface GradeAddEditFormProps {
+  title: string
+  gradeRangeList: GradeRangeListType
+  initialData: Partial<GradeRangeCompareFormValues>
+  onSubmit: SubmitHandler<GradeRangeCompareFormValues>
+  onReset?: () => void
+}
+
+const GradeRangeAddEditForm: React.FC<GradeAddEditFormProps> = ({
+  title,
+  initialData,
+  onSubmit,
+  onReset,
+  gradeRangeList
+}) => {
+  const [imagePreview, setImagePreview] = useState<string | undefined>(undefined)
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    clearErrors,
+    getValues,
+    formState: { errors }
+  } = useForm<GradeRangeCompareFormValues>({
+    defaultValues: initialData,
+    resolver: yupResolver(GradeRangeValidationSchema)
+  })
+
+  useEffect(() => {
+    if (!!initialData) {
+      reset({
+        start_grade: {
+          id: initialData?.start_grade?.id,
+          value: initialData?.start_grade?.value
+        },
+        end_grade: {
+          id: initialData?.end_grade?.id,
+          value: initialData?.end_grade?.value
+        }
+      })
+    }
+  }, [initialData, reset])
+
+  const onBack = () => {
+    router.back()
+  }
+
+  const handleReset = () => {
+    reset({
+      start_grade: {
+        id: initialData?.start_grade?.id,
+        value: initialData?.start_grade?.value
+      },
+      end_grade: {
+        id: initialData?.end_grade?.id,
+        value: initialData?.end_grade?.value
+      }
+    })
+
+    if (onReset) onReset()
+  }
+
+  return (
+    <Card>
+      <CardContent sx={{ height: '80px', padding: '25px', ml: '5px' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <IconButton onClick={onBack} edge='start' color='inherit'>
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant='h6'>{title}</Typography>
+        </Box>
+      </CardContent>
+      <Divider sx={{ m: '0 !important' }} />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <CardContent>
+          <Grid container spacing={5}>
+            <Grid item xs={12} sm={6}>
+              <InputLabel variant='standard'>Select Start Range</InputLabel>
+              <Controller
+                name='start_grade'
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    labelId='start-range-select-label'
+                    fullWidth
+                    displayEmpty
+                    value={field.value?.id || ''} // Ensure the correct id is selected
+                    onChange={e => {
+                      const selectedId = e.target.value
+                      const selectedGrade = gradeRangeList.find(item => item._id === selectedId)
+                      field.onChange({ id: selectedId, value: selectedGrade?.grade || '' }) // Set both id and value
+                      clearErrors('range_error')
+                    }}
+                    inputProps={{ 'aria-label': 'Start Range' }}
+                    error={!!errors.start_grade?.id}
+                    sx={{ height: 39, mt: '17px' }}
+                  >
+                    <MenuItem value='' disabled>
+                      Start Range
+                    </MenuItem>
+                    {gradeRangeList &&
+                      gradeRangeList.map(item => (
+                        <MenuItem key={item._id} value={item._id}>
+                          Grade {item.grade}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                )}
+              />
+              <FormHelperText error={!!errors.start_grade?.id}>{errors.start_grade?.id?.message}</FormHelperText>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <InputLabel variant='standard'>Select End Range</InputLabel>
+              <Controller
+                name='end_grade'
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    labelId='end-range-select-label'
+                    fullWidth
+                    displayEmpty
+                    value={field.value?.id || ''} // Ensure the correct id is selected
+                    onChange={e => {
+                      const selectedId = e.target.value
+                      const selectedGrade = gradeRangeList.find(item => item._id === selectedId)
+                      field.onChange({ id: selectedId, value: selectedGrade?.grade || '' }) // Set both id and value
+                      clearErrors('range_error')
+                    }}
+                    inputProps={{ 'aria-label': 'End Range' }}
+                    error={!!errors.end_grade?.id}
+                    sx={{ height: 39, mt: '17px' }}
+                  >
+                    <MenuItem value='' disabled>
+                      End Range
+                    </MenuItem>
+                    {gradeRangeList &&
+                      gradeRangeList.map(item => (
+                        <MenuItem key={item._id} value={item._id}>
+                          Grade {item.grade}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                )}
+              />
+              <FormHelperText error={!!errors.end_grade?.id}>{errors.end_grade?.id?.message}</FormHelperText>
+            </Grid>
+          </Grid>
+
+          {!errors.end_grade && !errors.start_grade && errors.range_error && (
+            <FormHelperText error>{errors.range_error.message}</FormHelperText>
+          )}
+        </CardContent>
+        <Divider sx={{ m: '0 !important' }} />
+        <CardActions>
+          <Button type='submit' sx={{ mr: 2 }} variant='contained'>
+            Submit
+          </Button>
+          <Button type='button' color='secondary' variant='tonal' onClick={handleReset}>
+            Reset
+          </Button>
+        </CardActions>
+      </form>
+    </Card>
+  )
+}
+
+export default GradeRangeAddEditForm
+
+
+```
+

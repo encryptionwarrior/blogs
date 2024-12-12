@@ -1,0 +1,128 @@
+---
+title: String Fundamentals
+description: A guide in my new Starlight docs site.
+---
+
+## Char Arrays:
+- A char array is a sequence of characters stored in contiguous memory locations.
+- Char arrays in C/C++ are used to store strings but are not the same as string datatype.
+
+###### Declaration:
+```c++
+char arr[6] = {'H', 'e', 'l', 'l', 'o', '\0'}; // \0 is the null terminator
+```
+###### Example:
+```c++
+char name[] = "John";  // automatically adds '\0' at the end
+```
+
+- Important Points:
+    - A char array must end with the null character `\0` to represent a string.
+    - If the null terminator is missing, it could lead to undefined behavior when used with string functions.
+
+###### Accessing and Modifying:
+```c++
+char str[] = "World";
+str[0] = 'w';   // Modifies the first character
+cout << str;    // Output: world
+```
+
+### 2. Strings (String Class):
+    - The `string` class is part of the C++ Standard Library and provides a more powerful way to handle strings.
+    - It eliminates the need for manual memory management and provides many useful functions.
+
+###### Declaration:
+```c++
+string str = "Hello";
+```
+###### Example:
+```c++
+string s1 = "Hello";
+string s2 = "World";
+
+// Concatenation
+string s3 = s1 + " " + s2;  // "Hello World"
+
+// Accessing elements
+cout << s1[0];  // Output: H
+```
+#### 3. Difference between Char Arrays and Strings:
+| Char Array                            | String Class                         |
+|---------------------------------------|--------------------------------------|
+| Requires manual memory management.    | Memory management handled internally.|
+| Functions like `strcpy`, `strlen` needed. | Built-in methods like `.length()`, `.substr()` |
+| Fixed size once declared.             | Dynamic in size.                     |
+| Example: `char arr[5] = "abc";`       | Example: `string s = "abc";`         |
+
+##### 4. Common Operations on Char Arrays:
+- `strlen()`: Returns the length of the string (excluding `\0`).
+```c++
+char arr[] = "hello";
+cout << strlen(arr); // Output: 5
+```
+
+- `strcpy()`: Copies one string to another.
+```c++
+char src[] = "copy";
+char dest[10];
+strcpy(dest, src);
+```
+
+- `strcmp()`: Compares two strings lexicographically
+```c++
+char str1[] = "abc";
+char str2[] = "def";
+int result = strcmp(str1, str2);  // result < 0 because "abc" < "def"
+```
+##### 5. Common String Class Functions:
+
+- `.length()`: Returns the length of the string
+```c++
+string str = "Hello";
+cout << str.length();  // Output: 5
+```
+
+- `.substr(start, length)`: Extracts a substring.
+```c++
+string str = "Hello";
+string sub = str.substr(1, 3); // "ell"
+```
+
+- `.find(substring)`: Finds the first occurrence of a substring
+```c++
+string str = "Hello World";
+cout << str.find("World");  // Output: 6
+```
+###### 6. Converting Between Char Arrays and Strings:
+- From char array to string:
+```c++
+char arr[] = "hello";
+string str = string(arr); // Conversion to string
+```
+
+- From string to char array
+```c++
+string str = "hello";
+char arr[10];
+strcpy(arr, str.c_str()); // Converts string to char array
+```
+
+##### Example of both:
+```c++
+#include <iostream>
+#include <cstring>  // For char array functions
+#include <string>   // For string class
+using namespace std;
+
+int main() {
+    // Char Array Example
+    char arr[] = "Hello";
+    cout << "Char Array Length: " << strlen(arr) << endl;
+
+    // String Example
+    string str = "World";
+    cout << "String Length: " << str.length() << endl;
+    
+    return 0;
+}
+```

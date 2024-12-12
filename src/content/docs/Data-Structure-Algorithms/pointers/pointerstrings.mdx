@@ -1,0 +1,55 @@
+---
+title: Pointer String
+description: A guide in my new Starlight docs site.
+---
+
+- A string in C/C++ is an array of characters, and pointers can be used to handle strings efficiently.
+- A character pointer (`char *`) points to the first character of a string (character array).
+
+```c++
+char str[] = "Hello";
+char *ptr = str;  // Pointer points to the first character of the string
+
+cout << ptr[0];  // Outputs 'H'
+cout << *(ptr + 1);  // Outputs 'e'
+```
+
+- Strings are terminated with a null character ('\0').
+- You can manipulate strings using pointers (e.g., traversing, comparing).
+
+```c++
+#include <iostream>
+using namespace std;
+
+void printChars(char *str) {
+    while(*str != '\0') {
+        cout << *str;
+        str++;  // Move to the next character
+    }
+}
+
+int main() {
+    char name[] = "Pointers!";
+    printChars(name);  // Outputs "Pointers!"
+    return 0;
+}
+```
+
+### More Examples:
+```c++
+  int arr[5] = {1,2,3,4,5};
+    char ch[6] = "abcde";
+
+    cout << arr << endl;
+    //attention here
+    cout << ch << endl;
+    
+    char *c = &ch[0];
+    //prints entire string
+    cout << c << endl;
+
+    char temp = 'z';
+    char *p = &temp;
+
+    cout << p << endl;
+```

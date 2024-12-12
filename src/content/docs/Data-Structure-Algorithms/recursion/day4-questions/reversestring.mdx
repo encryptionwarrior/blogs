@@ -1,0 +1,68 @@
+---
+title: Reverse String
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include <iostream>
+using namespace std;
+
+void reverse(string& str, int i, int j) {
+    cout << "call received for " << str << endl; // Print the current state of the string
+
+    // Base case: If the left index crosses the right index, stop recursion
+    if (i > j)
+        return;
+
+    // Swap the characters at the current indices
+    swap(str[i], str[j]);
+
+    // Move towards the center
+    i++;
+    j--;
+
+    // Recursive call with updated indices
+    reverse(str, i, j);
+}
+
+int main() {
+    string str = "hello"; // Example string to reverse
+    reverse(str, 0, str.length() - 1); // Initial call to reverse function
+    cout << "Reversed string: " << str << endl; // Output the reversed string
+    return 0;
+}
+```
+
+#### Example:
+input string "hello":
+
+1. Initial Call: `reverse("hello", 0, 4)`
+    - Current State: "hello"
+    - `i = 0, j = 4`
+    - Swap: `str[0]` ('h') and `str[4]` ('o')
+    - Resulting String: "oellh"
+    - Increment: `i = 1`, `j = 3`
+    - Recursive Call: `reverse("oellh", 1, 3)`
+2. Second Call: `reverse("oellh", 1, 3)`
+    - Current State: "oellh"
+    - `i = 1`, `j = 3`
+    - Swap: `str[1]` ('e') and `str[3]` ('l')
+    - Resulting String: "olleh"
+    - Increment: `i = 2`, `j = 2`
+    - Recursive Call: reverse("olleh", 2, 2)
+3. Third Call: reverse("olleh", 2, 2)
+    - Current State: "olleh"
+    - `i = 2`, `j = 2`
+    - Base case: Since `i` (2) is not greater than `j` (2), it continues.
+    - Swap: `str[2]` ('l') and `str[2]` ('l') (no change)
+    - Increment: `i = 3`, `j = 1`
+    - Recursive Call: `reverse("olleh", 3, 1)`
+4. Fourth Call: `reverse("olleh", 3, 1)`
+    - Current State: "olleh"
+    - `i = 3`, `j = 1`
+    - Base case: Since `i` (3) is greater than `j` (1), it returns.
+
+##### Final Output:
+```c++
+Reversed string: olleh
+```

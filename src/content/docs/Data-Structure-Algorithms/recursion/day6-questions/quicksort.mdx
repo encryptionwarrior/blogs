@@ -1,0 +1,99 @@
+---
+title: Quick Sort
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include<iostream>
+using namespace std;
+
+// Partition function to place the pivot element in its correct position
+int partition(int arr[], int s, int e) {
+    int pivot = arr[s];  // Choosing the first element as the pivot
+    int cnt = 0;  // Counter to count elements less than or equal to pivot
+
+    // Count elements less than or equal to pivot in the array
+    for (int i = s + 1; i <= e; i++) {
+        if (arr[i] <= pivot) {
+            cnt++;
+        }
+    }
+
+    // Place pivot in its correct position in the array
+    int pivotIndex = s + cnt;
+    swap(arr[pivotIndex], arr[s]);  // Move pivot to its correct position
+
+    // Arrange elements smaller and larger than pivot around it
+    int i = s, j = e;
+    while (i < pivotIndex && j > pivotIndex) {
+        // Move 'i' forward if element is less than or equal to pivot
+        while (arr[i] <= pivot) {
+            i++;
+        }
+        // Move 'j' backward if element is greater than pivot
+        while (arr[j] > pivot) {
+            j--;
+        }
+        // Swap elements if 'i' is still left of pivotIndex and 'j' is right
+        if (i < pivotIndex && j > pivotIndex) {
+            swap(arr[i++], arr[j--]);
+        }
+    }
+
+    return pivotIndex;  // Return the index of pivot after placing it correctly
+}
+
+// Quick Sort function to recursively sort the array
+void quickSort(int arr[], int s, int e) {
+    // Base case: Array with one or zero elements is already sorted
+    if (s >= e) 
+        return;
+
+    // Partition the array and get the pivot index
+    int p = partition(arr, s, e);
+
+    // Recursively sort the left part of the array
+    quickSort(arr, s, p - 1);
+
+    // Recursively sort the right part of the array
+    quickSort(arr, p + 1, e);
+}
+
+int main() {
+    int arr[10] = {2, 4, 1, 6, 9, 9, 9, 9, 9, 9};
+    int n = 10;
+
+    // Sort the array using Quick Sort
+    quickSort(arr, 0, n - 1);
+
+    // Print the sorted array
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
+```
+
+### Example:
+Consider the array: `{2, 4, 1, 6, 9, 9, 9, 9, 9, 9}`
+
+1. Initial Call to Quick Sort:
+    - `quickSort(arr, 0, 9);` sorts the array from index 0 to 9.
+2. Partitioning:
+    - The first element `2` is chosen as the pivot.
+    - The code counts the elements less than or equal to `2`, finding that `1` element (`1`) fits this criteria.
+    - pivotIndex is then calculated, placing 2 in its  sorted position at index `1`.
+    - The array now looks like: `{1, 2, 4, 6, 9, 9, 9, 9, 9, 9}`.
+3. Recursive Sort on Left and Right Subarrays:
+    - `quickSort(arr, 0, 0);` is called for the left subarray (only one element `1`), which is already sorted.
+    - `quickSort(arr, 2, 9);` is called for the right subarray `{4, 6, 9, 9, 9, 9, 9, 9}`.
+4. Partitioning the Right Subarray:
+    - For the right subarray, `4` is chosen as the new pivot.
+    - All elements `6, 9...` are greater than `4`, so `4` stays at the start of this section.
+    - The array becomes `{1, 2, 4, 6, 9, 9, 9, 9, 9, 9}`, with 4 in its correct place.
+5. Further Recursive Sorting:
+    - The recursion continues for the left and right subarrays until all elements are sorted.
+6. Final Sorted Array:
+    - The final sorted output is `{1, 2, 4, 6, 9, 9, 9, 9, 9, 9}`.

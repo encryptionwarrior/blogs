@@ -1,0 +1,63 @@
+---
+title: Wave Print
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+vector<int> wavePrint(vector<vector<int> > arr, int nRows, int mCols)
+{
+    vector<int> ans;
+    // Loop through each column
+    for(int col=0; col<mCols; col++) {
+        // If the column index is odd, traverse bottom-to-top
+        if(col & 1) {
+            // Odd Index -> Bottom to top
+            for(int row = nRows-1; row >= 0; row--) {
+                ans.push_back(arr[row][col]);
+            }    
+        }
+        // If the column index is even, traverse top-to-bottom
+        else {
+            // 0 or even index -> Top to bottom
+            for(int row = 0; row < nRows; row++) {
+                ans.push_back(arr[row][col]);
+            }
+        }   
+    }
+    return ans;
+}
+```
+
+#### Example:
+```c++
+vector<vector<int>> arr = {{1, 2, 3},
+                           {4, 5, 6},
+                           {7, 8, 9}};
+
+int nRows = 3, mCols = 3;
+vector<int> result = wavePrint(arr, nRows, mCols);
+```
+
+###### Step-by-Step Example:
+
+Given the matrix:
+```c++
+1  2  3
+4  5  6
+7  8  9
+```
+
+- Iteration 1 (Column 0, even index):
+    - Traverse top to bottom: `1, 4, 7`.
+    - `ans = {1, 4, 7}`.
+- Iteration 2 (Column 1, odd index):
+    - Traverse bottom to top: `8, 5, 2`.
+    - `ans = {1, 4, 7, 8, 5, 2}`.
+- Iteration 3 (Column 2, even index):
+    - Traverse top to bottom: `3, 6, 9`.
+    - `ans = {1, 4, 7, 8, 5, 2, 3, 6, 9}`.
+
+Thus, the wave print of the matrix is:
+`[1, 4, 7, 8, 5, 2, 3, 6, 9]`.
+
+

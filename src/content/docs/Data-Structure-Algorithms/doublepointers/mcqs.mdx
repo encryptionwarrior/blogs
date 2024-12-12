@@ -1,0 +1,318 @@
+---
+title: Double Pointers MCQs
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+// Declare two integers
+int first = 8;
+int second = 18;
+// Declare a pointer and point it to second
+int *ptr = &second;
+// Dereference ptr and update the value of second to 9
+*ptr = 9;
+cout  << first << " " << second << endl;   // Output: 8 9
+
+
+// Declare integer and pointer, pointing p and q to the same memory location
+int first = 6;
+int *p = &first;
+int *q = p;
+// Dereference q and increment the value at that memory location (same as first)
+(*q)++;
+cout << first << endl;   // Output: 7
+
+
+// Declare integer and pointer, point p to first
+int first = 8;
+int *p = &first;
+// Post-increment the value pointed by p
+cout << (*p)++ << " ";   // Output: 8 (prints the value before increment)
+cout << first << endl;   // Output: 9 (value after increment)
+
+
+// This will cause a segmentation fault because p is a null pointer
+int *p = 0;
+int first = 110;
+// Dereferencing a null pointer causes undefined behavior
+*p = first;   // ERROR
+cout << *p << endl;
+
+
+// Assign the value of second to first, and increment second
+int first = 8;
+int second = 11;
+int *third = &second; 
+first = *third;  // first = 11
+*third = *third + 2;  // second = 13
+cout  << first << "  " << second << endl;   // Output: 11 13
+
+
+// Pointer to float, modifying value of f through ptr
+float f = 12.5;
+float p = 21.5;
+float* ptr = &f;
+(*ptr)++;  // f becomes 13.5
+*ptr = p;  // f is assigned value of p (21.5)
+cout << *ptr << " " << f << " " << p << endl;   // Output: 21.5 21.5 21.5
+
+
+// Array and pointer size comparison
+int arr[5];  // Array of 5 integers
+int *ptr;    // Pointer to int
+cout << sizeof(arr) << " " << sizeof(ptr) << endl;   // Output: 20 8 (Array has 5 ints (4 bytes each), pointer is 8 bytes)
+
+
+// Accessing array elements using pointer arithmetic
+int arr[] = {11, 21, 13, 14};
+cout << *(arr) << " " << *(arr+1) << endl;   // Output: 11 21
+
+
+// Array address prints the base address
+int arr[6] = {11, 12, 31};
+cout << arr << " " << &arr << endl;  // Output: Address of the array base
+
+
+// Print the address of the second element in the array
+int arr[6] = {11, 21, 13};
+cout << (arr + 1) << endl;   // Output: Address of arr[1]
+
+
+// Accessing array elements using pointer notation
+int arr[6] = {11, 21, 31};
+int *p = arr;
+cout << p[2] << endl;   // Output: 31 (value at index 2 of the array)
+
+
+// Accessing specific array elements using pointer arithmetic
+int arr[] = {11, 12, 13, 14, 15};
+cout << *(arr) << " " << *(arr + 3);   // Output: 11 14
+
+
+// This code will give a compilation error since `arr++` is not allowed
+int arr[] = {11, 21, 31, 41};
+int *ptr = arr++;
+cout << *ptr << endl;  // ERROR
+
+
+// Pointer to character, increments the character value
+char ch = 'a';
+char* ptr = &ch;
+ch++;  // ch becomes 'b'
+cout << *ptr << endl;   // Output: b
+
+
+// Printing a character array using a pointer
+char arr[] = "abcde";
+char *p = &arr[0];
+cout << p << endl;  // Output: abcde (prints the whole string from base address)
+
+
+// Moving the pointer to the next character and printing the string
+char arr[] = "abcde";
+char *p = &arr[0];
+p++;
+cout << p << endl;  // Output: bcde
+
+
+// Print first character using two methods (pointer and array indexing)
+char str[]= "babbar";
+char *p = str;
+cout << str[0] << " " << p[0] << endl;   // Output: b b
+
+
+// Function to update a value by doubling it
+void update(int *p){
+    *p = (*p)  *  2;
+}
+
+int main(){
+    int i = 10;
+    update(&i);  // Pass the address of i to update the value
+    cout << i << endl;  // Output: 20
+}
+
+
+// Function that prints the first element of the array
+void fun(int arr[]) {
+    cout << arr[0] << " ";
+}
+
+int main() {
+    int arr[] = {11, 12, 13, 14};
+    fun(arr + 1);  // Passing the address of the second element
+    cout << arr[0] << endl;   // Output: 12 11
+}
+
+
+// Function to modify pointer p, but it doesn't affect original pointer
+void update(int *p){
+    int a = 70;
+    p = &a;  // Changes the local pointer, no effect on main's pointer
+    *p = (*p) * (*p);
+}
+
+int main(){
+    int a = 70;
+    update(&a);  // Calls update but doesn't affect a
+    cout << a << endl;   // Output: 70 (No change to original `a`)
+}
+
+
+// Double pointer example, changing the pointer p in main via q
+int first = 10;
+int *p = &first;
+int **q = &p;
+int second = 20;
+*q = &second;  // p now points to second
+(*p)++;  // second becomes 21
+cout << first << " " << second << endl;   // Output: 10 21
+
+
+// Increment the value of first through double pointer
+int first = 110;
+int *p = &first;
+int **q = &p;
+int second = (**q)++ + 9;  // second = 110 + 9 = 119, first increments to 111
+cout << first << " " << second << endl;   // Output: 111 119
+
+
+// Increment the value of first through multiple pointer dereferencing
+int first = 100;
+int *p = &first;
+int **q = &p;
+int second = ++(**q);  // first becomes 101, second = 101
+int *r = *q;
+++(*r);  // first becomes 102
+cout << first << " " << second << endl;   // Output: 102 101
+
+
+// Increment the value of a variable using a double pointer
+void increment(int **p){
+    ++(**p);  // Increment the value of num through a double pointer
+}
+
+int main(){
+    int num = 110;
+    int *ptr = &num;
+    increment(&ptr);
+    cout << num << endl;   // Output: 111
+}
+
+
+// Print sum of first element plus 8
+int main()
+{
+    int arr[] = {41, 52, 36, 74};
+    int *p = (arr + 1);  // Pointer to the second element
+    cout << *arr + 8;   // Output: 49 (41 + 8)
+    return 0;
+}
+
+
+// Skip first three characters in the string and print the rest
+int main()
+{ 
+    char *p; 
+    char str[] = "pqrstuv";
+    p = str;
+    p += 3;  // Move pointer to the 4th character
+    cout << p;   // Output: rstuv
+    return 0;
+}
+
+
+// Fill an array with characters using pointer arithmetic
+int main()
+{
+    char arr[20];
+    int i;
+    for(i = 0; i < 10; i++) {
+        *(arr + i) = 65 + i;  // Fill with characters starting from 'A'
+    }
+    *(arr + i) = '\0';  // Null-terminate the string
+    cout << arr;   // Output: ABCDEFGHIJ
+    return 0;
+}
+
+
+// Difference between two pointers and printing value
+int main()
+{
+    float arr[5] = {12.5, 10.0, 13.5, 90.5, 0.5};
+    float *ptr1 = &arr[0];
+    float *ptr2 = ptr1 + 3;  // Points to arr[3]
+    cout<<*ptr2<<" ";  // Output: 90.5 (value at arr[3])
+    cout<< ptr2 - ptr1;  // Output: 3 (distance between pointers)
+    return 0;
+}
+
+
+// Printing characters from a string with various notations
+int main() {
+    char st[] = "ABCD";
+    for(int i = 0; st[i] != '\0'; i++) {
+        cout << st[i] << *(st)+i << *(i+st) << i[st];
+    }
+    return 0;
+}
+
+
+// Pointer manipulation within function calls
+void Q(int z)
+{
+    z += z;
+    cout<<z << " ";
+}
+
+void P(int *y) 
+{
+    int x = *y + 2;
+    Q(x);   // Calls Q with value of x
+    *y = x - 1;  // Updates y
+    cout<<x << " ";
+}
+
+int main()
+{
+    int x = 5;
+    P(&x);   // Passes address of x to P
+    cout<<x;   // Output: 12 7 6
+    return 0;
+}
+
+
+// Triple pointer example, accessing and updating value through multiple levels
+int main()
+{
+    int ***r, **q, *p, i=8;
+    p = &i;
+    (*p)++;  // i becomes 9
+    q = &p;
+    (**q)++;  // i becomes 10
+    r = &q;
+    cout<<*p << " " <<**q << " "<<***r;   // Output: 10 10 10
+    return 0;
+}
+
+
+// Function manipulating multiple pointers
+int f(int x, int *py, int **ppz) {
+    int y, z;
+    **ppz += 1;   // Increment value pointed by ppz
+    z = **ppz;    // z = new value of **ppz
+    *py += 2;     // Increment value at py
+    y = *py;      // y = new value of *py
+    x += 3;       // Increment x
+    return x + y + z;  // Return sum of x, y, and z
+}
+
+int main() {
+    int c, *b, **a;
+    c = 4;
+    b = &c;
+    a = &b;
+    cout << f(c, b, a);   // Output: 19 (after all increments)
+    return 0;
+}
+```

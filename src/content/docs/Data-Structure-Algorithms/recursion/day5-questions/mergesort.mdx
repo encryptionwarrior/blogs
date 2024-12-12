@@ -1,0 +1,126 @@
+---
+title: Merge Sort
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include<iostream>
+using namespace std;
+
+// Merge function to combine two sorted halves into a single sorted array
+void merge(int *arr, int s, int e) {
+    int mid = (s + e) / 2;
+
+    // Calculate lengths of two halves
+    int len1 = mid - s + 1;
+    int len2 = e - mid;
+
+    // Create temporary arrays for each half
+    int *first = new int[len1];
+    int *second = new int[len2];
+
+    // Copy values from original array into the first half
+    int mainArrayIndex = s;
+    for (int i = 0; i < len1; i++) {
+        first[i] = arr[mainArrayIndex++];
+    }
+
+    // Copy values from original array into the second half
+    mainArrayIndex = mid + 1;
+    for (int i = 0; i < len2; i++) {
+        second[i] = arr[mainArrayIndex++];
+    }
+
+    // Merge two sorted arrays back into the original array
+    int index1 = 0;
+    int index2 = 0;
+    mainArrayIndex = s;
+
+    while (index1 < len1 && index2 < len2) {
+        if (first[index1] < second[index2]) {
+            arr[mainArrayIndex++] = first[index1++];
+        } else {
+            arr[mainArrayIndex++] = second[index2++];
+        }
+    }
+
+    // Copy any remaining elements from the first array, if any
+    while (index1 < len1) {
+        arr[mainArrayIndex++] = first[index1++];
+    }
+
+    // Copy any remaining elements from the second array, if any
+    while (index2 < len2) {
+        arr[mainArrayIndex++] = second[index2++];
+    }
+
+    // Free allocated memory for temporary arrays
+    delete[] first;
+    delete[] second;
+}
+
+// Merge Sort function to recursively split and sort the array
+void mergeSort(int *arr, int s, int e) {
+    // Base case: if the array has one or zero elements, it is already sorted
+    if (s >= e) {
+        return;
+    }
+
+    int mid = (s + e) / 2;
+
+    // Recursively sort the left part
+    mergeSort(arr, s, mid);
+
+    // Recursively sort the right part
+    mergeSort(arr, mid + 1, e);
+
+    // Merge the sorted halves
+    merge(arr, s, e);
+}
+
+int main() {
+    int arr[15] = {3, 7, 0, 1, 5, 8, 3, 2, 34, 66, 87, 23, 12, 12, 12};
+    int n = 15;
+
+    mergeSort(arr, 0, n - 1);
+
+    // Print the sorted array
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
+```
+
+#### Example:
+```c++
+int arr[15] = {3, 7, 0, 1, 5, 8, 3, 2, 34, 66, 87, 23, 12, 12, 12};
+```
+
+1. Divide Phase:
+- mergeSort recursively divides the array into halves until each half contains only one element, which is inherently sorted.
+- For the example array, it will recursively split the array into smaller arrays.
+2. Merge Phase:
+- The merge function is called to combine the sorted arrays.
+- The merge function creates two temporary arrays (first and second) to hold the values from the two halves.
+- It then merges the two sorted halves back into the original array, element by element
+
+#### Step-by-Step Execution:
+1. Initial Call: `mergeSort(arr, 0, 14)`;
+    - Splits array into `[0..7]` and `[8..14]`.
+2. Recursively Split:
+    - Left part `[0..7]` is split until each subarray has a single element.
+    - Right part `[8..14]` is split in the same way.
+3. Merge Back:
+    - merge is called to combine two halves at each level of recursion.
+    - For instance, `[3, 7]` and `[0, 1]` are merged into `[0, 1, 3, 7]`, continuing until the whole array is merged.
+4. Final Output:
+    - After all merges are completed, the array becomes `[0, 1, 2, 3, 3, 5, 7, 8, 12, 12, 12, 23, 34, 66, 87]`.
+
+#### Key Parts of the Code:
+1. Recursive Splitting (`mergeSort`):
+    - Divides the array until each piece has only one element.
+2. Merging (`merge`):
+    - Merges the sorted halves by comparing elements and placing the smallest element first.

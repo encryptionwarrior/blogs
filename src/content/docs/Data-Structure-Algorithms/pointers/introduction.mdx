@@ -1,0 +1,186 @@
+---
+title: Introduction
+description: A guide in my new Starlight docs site.
+---
+
+Pointers provide the ability to work directly with memory by storing and manipulating the addresses of variables
+
+### Pointer Basics:
+- A pointer is a variable that stores the address of another variable.
+- The type of the pointer is associated with the type of variable it points to.
+###### Syntax:
+```c++
+int *ptr;  // Declares a pointer to an integer
+```
+###### Examples:
+```c++
+int a = 5;
+int *ptr = &a;  // `ptr` stores the address of `a`
+```
+
+### Dereferencing a Pointer:
+- To access the value stored at the address a pointer points to, you use the dereferencing operator `*`.
+- Dereferencing allows you to read or modify the value of the variable pointed to by the pointer.
+```c++
+int a = 5;
+int *ptr = &a;  // Pointer `ptr` holds the address of `a`
+int value = *ptr;  // Dereferencing `ptr` gives the value of `a`, which is 5
+```
+
+### Address-of Operator (&):
+- The address-of operator (&) is used to get the memory address of a variable.
+```c++
+int a = 5;
+int *ptr = &a;  // `ptr` stores the address of `a`
+```
+
+### Pointer Arithmetic:
+- Pointers can be incremented (`ptr++`), decremented (`ptr--`), and used in arithmetic operations.
+- When incrementing a pointer, it moves by the size of the type it points to (e.g., for an `int` pointer, it moves by `sizeof(int)`).
+```c++
+int arr[] = {10, 20, 30};
+int *ptr = arr;  // Pointer to the first element
+ptr++;  // Moves to the next element in the array (ptr now points to `arr[1]`)
+```
+
+### Null Pointer:
+- A pointer that does not point to any memory location is called a null pointer.
+- It is initialized with the value NULL or nullptr in C++.
+```c++
+int *ptr = NULL;  // Pointer is not pointing to any valid memory location
+```
+
+### Pointer to Pointer (Double Pointer):
+- A pointer can store the address of another pointer, creating a pointer to pointer.
+```c++
+int a = 10;
+int *p1 = &a;  // `p1` is a pointer to `a`
+int **p2 = &p1;  // `p2` is a pointer to `p1`
+```
+
+### Dynamic Memory Allocation:
+- Memory can be dynamically allocated at runtime using pointers.
+- In C++, this is done using `new` and `delete`.
+- In C, this is done using `malloc()` and `free()`.
+```c++
+int *arr = new int[5];  // Allocates an array of 5 integers
+delete[] arr;  // Frees the allocated memory
+```
+
+### Void Pointer:
+- A void pointer (`void *`) is a generic pointer that can point to any data type.
+- To dereference a void pointer, it must first be cast to the appropriate data type.
+```c++
+void *ptr;
+int a = 10;
+ptr = &a;  // Void pointer can point to any type
+int *intPtr = (int*)ptr;  // Cast it back to an int pointer before dereferencing
+```
+
+### Summary of Key Pointer Operations:
+| Operation                  | Explanation                                        | Example                |
+|----------------------------|----------------------------------------------------|------------------------|
+| Declare a pointer           | Stores the address of a variable                   | `int *ptr;`            |
+| Assign address to pointer   | Use `&` to assign the address of a variable        | `ptr = &var;`          |
+| Dereference a pointer       | Access the value stored at the memory location     | `*ptr`                 |
+| Null pointer                | Pointer with no valid address                      | `ptr = NULL;`          |
+| Pointer to pointer          | A pointer storing the address of another pointer   | `int **pptr = &ptr;`   |
+| Pointer arithmetic          | Increment or decrement pointer address             | `ptr++`                |
+| Dynamic memory allocation   | Allocates memory dynamically                       | `int *p = new int[10];`|
+| Free allocated memory       | Deallocate memory allocated by `new` or `malloc()` | `delete[] p;`          |
+
+
+### Example Program:
+```c++
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a = 10;
+    int *ptr = &a;    // Pointer stores the address of `a`
+    cout << "Address of a: " << ptr << endl;  // Output the address
+    cout << "Value of a: " << *ptr << endl;   // Dereferencing to get the value of `a`
+    *ptr = 20;  // Changing the value at the memory address
+    cout << "New value of a: " << a << endl;  // Output the updated value of `a`
+    return 0;
+}
+```
+
+### Important:
+- **Dangling Pointer**: A pointer pointing to a memory location that has been deallocated.
+- **Memory Leaks**: Occur when dynamically allocated memory is not freed.
+
+### Other Examples:
+```c++
+  //pointer to int is created, and pointing to some garbage address
+    int *p = 0; 
+    cout << *p << endl;
+    int i = 5;
+    int *q = &i;
+    cout << q << endl;
+    cout << *q << endl;
+    int *p = 0;
+    p = &i;
+    cout << p << endl;
+    cout << *p << endl;
+```
+```c++
+  //pointer to int is created, and pointing to some garbage address
+    int *p = 0; 
+    cout << *p << endl;
+    int i = 5;
+    int *q = &i;
+    cout << q << endl;
+    cout << *q << endl;
+    int *p = 0;
+    p = &i;
+    cout << p << endl;
+    cout << *p << endl;
+
+    int num = 5;
+   int a = num;
+   cout << "a before " << num << endl;
+   a++;
+   cout << "a after " << num << endl;
+
+
+   int *p  = &num;
+   cout << "before " << num << endl;
+   (*p)++;
+   cout << "after " << num << endl;
+
+    //copying a pointer
+   int *q = p;
+   cout << p <<" - " << q << endl;
+   cout << *p <<" - " << *q << endl;
+
+   //important concept
+   int i = 3;
+   int *t = &i;
+   //cout <<  (*t)++ << endl;
+   *t = *t +1;
+    cout << *t << endl;
+    cout << " before t " << t << endl;
+    t = t + 1;
+    cout << " after t " << t << endl;
+```
+
+```c++
+ int num  = 5 ;
+    cout << num << endl;
+    // address of Operator - &
+    cout <<" address of num is " << &num << endl;
+    int *ptr = &num;
+    cout << "Address is : " << ptr << endl;
+    cout << "value is : " << *ptr << endl;
+
+    double d = 4.3;
+    double *p2 = &d;
+
+    cout << "Address is : " << p2 << endl;
+    cout << "value is : " << *p2 << endl;
+
+    cout << " size of integer is " << sizeof(num) << endl;
+    cout << " size of pointer is " << sizeof(ptr) << endl;
+    cout << " size of pointer is " << sizeof(p2) << endl;
+```

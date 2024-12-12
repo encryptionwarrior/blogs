@@ -1,0 +1,172 @@
+---
+title: Macros, Global Variables, Inline Functions, and Default Arguments
+description: A guide in my new Starlight docs site.
+---
+
+## Macros:
+- Definition:
+    - Macros in C++ are preprocessor directives that provide a way to define constants or code snippets that can be reused throughout the program. They are defined using the #define directive.
+    - The preprocessor replaces the macro with its definition before the actual compilation process begins.
+- Types:
+    - Object-like Macros: Used for constants.
+    - Function-like Macros: Used for code snippets that look like functions.
+
+##### Syntax:
+```c++
+#define MACRO_NAME value
+#define MACRO_FUNCTION(x) (x * x)
+```
+
+##### Example:
+```c++
+#include <iostream>
+#define PI 3.14159       // Object-like macro
+#define SQUARE(x) (x * x)  // Function-like macro
+
+int main() {
+    int radius = 5;
+    // Using the macro
+    std::cout << "Area of circle: " << PI * SQUARE(radius) << std::endl;
+    return 0;
+}
+```
+
+###### Pros and Cons of Macros:
+- Pros:
+    - Efficient because they replace the code before compilation.
+    - Useful for constants and small, frequently used operations.
+- Cons:
+    - No type-checking, which can lead to subtle bugs.
+    - Hard to debug since they don't appear in the code after preprocessing.
+
+## Global Variables
+##### Definition:
+- A global variable is declared outside of all functions and is accessible from any part of the program. Its lifetime is the entire duration of the program.
+
+###### Syntax:
+```c++
+int globalVar = 10;  // Global variable
+void func() {
+    std::cout << globalVar;  // Can be accessed inside functions
+}
+```
+
+###### Example:
+```c++
+#include <iostream>
+int counter = 0;  // Global variable
+
+void increment() {
+    counter++;  // Modifying the global variable
+}
+
+int main() {
+    std::cout << "Counter before increment: " << counter << std::endl;
+    increment();
+    std::cout << "Counter after increment: " << counter << std::endl;
+    return 0;
+}
+```
+
+###### Scope and Lifetime:
+- Scope: Global variables have a global scope, meaning they are accessible anywhere after their declaration.
+- Lifetime: Global variables are allocated memory once, at the start of the program, and are deallocated only when the program terminates.
+
+###### Pros and Cons of Global Variables:
+- Pros:
+    - Easy access from anywhere in the code.
+    - Useful for storing global states.
+- Cons:
+    - Can lead to tight coupling and dependencies between functions.
+    - Harder to debug and track changes.
+    - Can cause conflicts with local variables of the same name.
+
+## Inline Functions
+Inline functions suggest to the compiler to replace the function call with the actual function code during compilation, thus eliminating the overhead of function calls. This is a hint, and the compiler may or may not inline the function based on optimization criteria.
+
+###### Syntax:
+```c++
+inline returnType functionName(parameters) {
+    // Function body
+}
+```
+
+###### Example:
+```c++
+#include <iostream>
+inline int square(int x) {
+    return x * x;
+}
+int main() {
+    std::cout << "Square of 5: " << square(5) << std::endl;
+    return 0;
+}
+```
+
+##### When to Use Inline Functions:
+- Small functions: Functions with only a few lines of code (1-2 lines).
+- Frequently called functions: To reduce the overhead of function calls in performance-critical applications.
+
+###### Pros and Cons of Inline Functions:
+- Pros:
+    - Eliminates the function call overhead.
+    - Increases performance for small, frequently called functions.
+- Cons:
+    - Can lead to code bloat if overused, especially for large functions.
+    - The compiler might ignore the inline request if the function is too complex.
+
+## Default Arguments
+##### Definition:
+
+- Default arguments allow a function to be called with fewer arguments than it is defined with. If an argument is not provided, the default value will be used.
+- They simplify function calls by providing default values for some parameters.
+
+###### Syntax:
+```c++
+returnType functionName(parameter1 = default_value1, parameter2 = default_value2) {
+    // Function body
+}
+```
+
+###### Example:
+```c++
+#include <iostream>
+
+void greet(std::string name = "Guest", int age = 18) {
+    std::cout << "Hello " << name << ", you are " << age << " years old." << std::endl;
+}
+
+int main() {
+    greet();  // Uses both default arguments
+    greet("Alice");  // Uses default age
+    greet("Bob", 25);  // Uses provided arguments
+    return 0;
+}
+```
+
+##### Rules for Default Arguments:
+- Order matters: Once you provide a default value for one parameter, all subsequent parameters must also have default values.
+- Defined from right to left: Only trailing parameters (from the right) can have default values.
+
+###### Pros and Cons of Default Arguments:
+- Pros:
+    - Reduces the need for overloaded functions.
+    - Provides flexibility in function calls.
+- Cons:
+    - May reduce readability if overused.
+    - Harder to track which arguments are being passed or skipped.
+
+
+#### Key Differences:
+| Concept           | Purpose                                                                                   | Example                                                |
+|-------------------|-------------------------------------------------------------------------------------------|--------------------------------------------------------|
+| Macros            | Define constants or reusable code that gets replaced during preprocessing.                 | `#define PI 3.14159`                                   |
+| Global Variables  | Variables accessible from any function in the program.                                     | `int globalVar = 10;`                                  |
+| Inline Functions  | Suggests to the compiler to replace function calls with the actual function code to reduce call overhead. | `inline int square(int x) { return x * x; }`           |
+| Default Arguments | Allows a function to be called with fewer arguments by providing default values for some parameters. | `void greet(std::string name = "Guest", int age = 18)` |
+
+#### Best Practices:
+- Macros: Use macros carefully to avoid bugs, especially for function-like macros. Prefer const or inline functions where possible.
+- Global Variables: Limit the use of global variables to avoid tight coupling and global state management issues. Consider alternatives like passing variables by reference.
+- Inline Functions: Use inline only for small, frequently called functions. Avoid inlining large functions to prevent code bloat.
+- Default Arguments: Use default arguments to reduce the need for overloaded functions, but ensure readability is maintained by keeping function parameters clear.
