@@ -249,6 +249,37 @@ export default defineConfig({
                 },
               ],
             },
+            {
+              label: "Double Pointers",
+              items: [
+                {
+                  label: "Introduction",
+                  slug: "data-structure-algorithms/doublepointers/introduction",
+                },
+                {
+                  label: "MCQs",
+                  slug: "data-structure-algorithms/doublepointers/mcqs",
+                },
+              ],
+            },
+            {
+              label: "Recursion",
+              items: [
+                {
+                  label: "Introduction",
+                  slug: "data-structure-algorithms/recursion/introduction",
+                },
+                {
+                  label: "Day-1 Questions",
+                  items: [
+                    {
+                      label: "Factorial",
+                      slug: "data-structure-algorithms/recursion/day1-questions/factorial",
+                    },
+                  ]
+                },
+              ],
+            },
           ],
         },
         {
@@ -258,6 +289,10 @@ export default defineConfig({
         {
           label: "sql",
           autogenerate: { directory: "sql" },
+        },
+        {
+          label: "Nest Js",
+          autogenerate: { directory: "nestjs" },
         },
       ],
       customCss: [
