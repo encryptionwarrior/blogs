@@ -34,7 +34,24 @@ export default defineConfig({
         },
         {
           label: "IT Support",
-          autogenerate: { directory: "IT Support" },
+          // autogenerate: { directory: "IT Support" },
+          items: [
+            {
+              label: "Foundations",
+              items: [
+                {
+                  label: "Lac 01: Welcome to IT Support",
+                  slug: "it-support/foundations/lacture01",
+                },
+              ]
+
+            },
+            {
+              label: "Lacture 01",
+              slug: "it-support/lacture01"
+
+            },
+          ]
         },
         {
           label: "Operating System",
@@ -275,6 +292,81 @@ export default defineConfig({
                     {
                       label: "Factorial",
                       slug: "data-structure-algorithms/recursion/day1-questions/factorial",
+                    },
+                    {
+                      label: "Power of Num",
+                      slug: "data-structure-algorithms/recursion/day1-questions/power",
+                    },
+                  ]
+                },
+                {
+                  label: "Day-2 Questions",
+                  items: [
+                    {
+                      label: "Climb Stairs",
+                      slug: "data-structure-algorithms/recursion/day2-questions/climbstairs",
+                    },
+                    {
+                      label: "Fibinacci Series",
+                      slug: "data-structure-algorithms/recursion/day2-questions/fibonacci",
+                    },
+                    {
+                      label: "Say Digits",
+                      slug: "data-structure-algorithms/recursion/day2-questions/saydigits",
+                    },
+                    {
+                      label: "Walking Examples",
+                      slug: "data-structure-algorithms/recursion/day2-questions/walkingexample",
+                    },
+                  ]
+                },
+                {
+                  label: "Day-3 Questions",
+                  items: [
+                    {
+                      label: "Is Sorted",
+                      slug: "data-structure-algorithms/recursion/day3-questions/issorted",
+                    },
+                    {
+                      label: "Sum Of Array Elements",
+                      slug: "data-structure-algorithms/recursion/day3-questions/sum",
+                    },
+                    {
+                      label: "Linear Serach",
+                      slug: "data-structure-algorithms/recursion/day3-questions/linearsearch",
+                    },
+                    {
+                      label: "Binary Search",
+                      slug: "data-structure-algorithms/recursion/day3-questions/binarysearch",
+                    },
+                  ]
+                },
+                {
+                  label: "Day-4 Questions",
+                  items: [
+                    {
+                      label: "Reverse String",
+                      slug: "data-structure-algorithms/recursion/day4-questions/reversestring",
+                    },
+                    {
+                      label: "Check Palindrome",
+                      slug: "data-structure-algorithms/recursion/day4-questions/palindromecheck",
+                    },
+                    {
+                      label: "Exponent",
+                      slug: "data-structure-algorithms/recursion/day4-questions/exponent",
+                    },
+                    {
+                      label: "Bubble Sort",
+                      slug: "data-structure-algorithms/recursion/day4-questions/bubblesort",
+                    },
+                    {
+                      label: "Selection Sort",
+                      slug: "data-structure-algorithms/recursion/day4-questions/selectionsort",
+                    },
+                    {
+                      label: "Insertion Sort",
+                      slug: "data-structure-algorithms/recursion/day4-questions/insertionsort",
                     },
                   ]
                 },

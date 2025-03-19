@@ -1,0 +1,27 @@
+---
+title: Code and Commands guideline
+description: A guide in my new Starlight docs site.
+---
+import { Steps } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+## Start deploying
+
+```
+sudo chmod 755 -R /var/www/backend
+```
+```
+sudo chown -R sandeep:www-data /var/www/backend
+```
+```
+sudo nano /etc/nginx/sites-available/backend
+```
+```
+sudo unlink /etc/nginx/sites-enabled/default
+```
+```
+sudo ln -s /etc/nginx/sites-available/backend /etc/nginx/sites-enabled
+```
+```
+sudo systemctl restart nginx
+```
