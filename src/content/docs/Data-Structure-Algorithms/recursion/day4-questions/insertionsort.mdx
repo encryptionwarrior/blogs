@@ -2,3 +2,96 @@
 title: Insertion Sort
 description: A guide in my new Starlight docs site.
 ---
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+// Recursive function to perform Insertion Sort
+void insertionSort(vector<int> &arr, int limit) {
+    // Base case: If we reach the end of the array, stop recursion
+    if(limit >= arr.size()) {
+        return;
+    }
+
+    int j = limit - 1; // Index of the last element in sorted part
+    int temp = arr[limit]; // Store the current element to be placed correctly
+
+    // Shift elements to the right until the correct position is found
+    while(j >= 0 && arr[j] > temp) {
+        arr[j+1] = arr[j];
+        j--;
+    }
+
+    // Insert the element at the correct position
+    arr[j+1] = temp;
+
+    // Recursive call for the next element
+    insertionSort(arr, limit + 1);
+}
+
+int main() {
+    int n;
+
+    // Taking input for array size
+    cout << "Enter the size of array: ";
+    cin >> n;
+    vector<int> arr(n);
+
+    // Taking input for array elements
+    cout << "Enter the elements of array: ";
+    for(int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+
+    // Display array before sorting
+    cout << "\nArray before sorting: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+
+    // Call insertion sort function starting from index 1
+    insertionSort(arr, 1);
+
+    // Display array after sorting
+    cout << "\nArray after sorting: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+
+    return 0;
+}
+
+```
+
+
+##### Example Walkthrough:
+
+Input Array: `[5, 3, 8, 4, 2]`
+
+1. Initial Call: `insertionSort(arr, 1)`
+    - Key Element: `3`
+    - Compare `3` with `5` (shift `5` to the right).
+    - Insert `3` → `[3, 5, 8, 4, 2]`
+    - Recursive call: `insertionSort(arr, 2)`
+
+2. Second Call: `insertionSort(arr, 2)`
+    - Key Element: `8`
+    - `8` is already in the correct position.
+    - Recursive call: `insertionSort(arr, 3)`
+
+3. Third Call: `insertionSort(arr, 3)`
+    - Key Element: `4`
+    - Compare `4` with `8` (shift 8 to the right).
+    - Compare `4` with `5` (shift 5 to the right).
+    - Insert `4` → `[3, 4, 5, 8, 2]`
+    - Recursive call: `insertionSort(arr, 4)`
+
+4. Fourth Call: `insertionSort(arr, 4)`
+    - Key Element: `2`
+    - Compare `2` with `8, 5, 4, and 3` (shift them all to the right).
+    - Insert `2 → [2, 3, 4, 5, 8]`
+    - Recursive call: `insertionSort(arr, 5)`
+
+5. Base Case: `limit >= arr.size()`
+    - Sorting is complete, function returns.

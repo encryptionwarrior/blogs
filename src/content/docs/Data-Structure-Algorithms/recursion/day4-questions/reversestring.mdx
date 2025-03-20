@@ -2,3 +2,72 @@
 title: Reverse String
 description: A guide in my new Starlight docs site.
 ---
+
+```c++
+#include<iostream>
+using namespace std;
+
+// Recursive function to reverse a string
+void reverse(string& str, int i, int j ) {
+
+    // Printing the current state of the string in each recursive call
+    cout << "call received for " << str << endl;
+
+    // Base case: If left index crosses right index, stop recursion
+    if(i > j)
+        return;
+
+    // Swap characters at i-th and j-th position
+    swap(str[i], str[j]);
+
+    // Move indices closer towards the center
+    i++;
+    j--;
+
+    // Recursive call to continue swapping the next pair
+    reverse(str, i, j);
+}
+
+int main() {
+    string name = "abcde"; // Example input
+    cout << endl;
+
+    // Call reverse function with the entire string
+    reverse(name, 0, name.length()-1);
+
+    cout << endl;
+
+    // Print the reversed string
+    cout << name << endl;
+
+    return 0;
+}
+```
+
+##### Example Walkthrough:
+
+Let's take an example string "abcde" and analyze how the recursive function works.
+
+1. Initial Call: `reverse("abcde", 0, 4)`
+
+   - `i = 0, j = 4`
+   - Swap `str[0] = 'a'` and `str[4] = 'e'`
+   - String becomes `"ebcda"`
+   - Recursive Call:` reverse("ebcda", 1, 3)`
+
+2. Second Call: `reverse("ebcda", 1, 3)`
+
+   - `i = 1, j = 3`
+   - Swap `str[1] = 'b'` and `str[3] = 'd'`
+   - String becomes `"edcba"`
+   - Recursive Call: `reverse("edcba", 2, 2)`
+
+3.Third Call: `reverse("edcba", 2, 2)`
+
+    - `i = 2, j = 2` (same index)
+    - No swap needed, recursion stops here.
+    - Function returns to the previous calls.
+
+4. Returning back through recursion stack
+
+   - Since all calls return, the final reversed string is `"edcba".`

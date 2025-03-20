@@ -43,6 +43,10 @@ export default defineConfig({
                   label: "Lac 01: Welcome to IT Support",
                   slug: "it-support/foundations/lacture01",
                 },
+                {
+                  label: "Lac 02: Intro to IT",
+                  slug: "it-support/foundations/lacture02",
+                },
               ]
 
             },
@@ -367,6 +371,50 @@ export default defineConfig({
                     {
                       label: "Insertion Sort",
                       slug: "data-structure-algorithms/recursion/day4-questions/insertionsort",
+                    },
+                  ]
+                },
+                {
+                  label: "Day-5 Questions",
+                  items: [
+                    {
+                      label: "Inversion Count",
+                      slug: "data-structure-algorithms/recursion/day5-questions/inversioncount",
+                    },
+                    {
+                      label: "Merge Sort",
+                      slug: "data-structure-algorithms/recursion/day5-questions/mergesort",
+                    },
+                  ]
+                },
+                {
+                  label: "Day-6 Questions",
+                  items: [
+                    {
+                      label: "Quick Sort",
+                      slug: "data-structure-algorithms/recursion/day6-questions/quicksort",
+                    },
+                  ]
+                },
+                {
+                  label: "Day-7 Questions",
+                  items: [
+                    {
+                      label: "Sub Sequences",
+                      slug: "data-structure-algorithms/recursion/day7-questions/subsequences",
+                    },
+                    {
+                      label: "Sub Sets",
+                      slug: "data-structure-algorithms/recursion/day7-questions/subsets",
+                    },
+                  ]
+                },
+                {
+                  label: "Day-8 Questions",
+                  items: [
+                    {
+                      label: "Keypad",
+                      slug: "data-structure-algorithms/recursion/day8-questions/keypad",
                     },
                   ]
                 },

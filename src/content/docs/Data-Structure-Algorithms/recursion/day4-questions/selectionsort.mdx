@@ -2,3 +2,96 @@
 title: Selection Sort
 description: A guide in my new Starlight docs site.
 ---
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+// Recursive function to perform Selection Sort
+void selectionSort(vector<int> &arr, int start) {
+    // Base case: If we have reached the last element, stop recursion
+    if(start >= arr.size()-1) {
+        return;
+    }
+
+    int minIndex = start; // Assume the first element is the smallest
+    
+    // Find the minimum element in the unsorted part of the array
+    for(int i = start; i < arr.size(); i++) {
+        if(arr[i] < arr[minIndex]) {
+            minIndex = i; // Update index of the smallest element
+        }
+    }
+
+    // Swap the smallest element with the first element of the unsorted part
+    swap(arr[start], arr[minIndex]);
+
+    // Recursive call for the next part of the array
+    selectionSort(arr, start + 1);
+}
+
+int main() {
+    int n;
+
+    // Taking input for array size
+    cout << "Enter the size of array: ";
+    cin >> n;
+    vector<int> arr(n);
+
+    // Taking input for array elements
+    cout << "Enter the elements of array: ";
+    for(int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+
+    // Display array before sorting
+    cout << "\nArray before sorting: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+
+    // Call selection sort function
+    selectionSort(arr, 0);
+
+    // Display array after sorting
+    cout << "\nArray after sorting: ";
+    for(int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+
+    return 0;
+}
+
+```
+
+##### Example Walkthrough:
+
+Input Array: `[5, 3, 8, 4, 2]`
+
+1. Initial Call: `selectionSort(arr, 0)`
+
+    - Unsorted portion: `[5, 3, 8, 4, 2]`
+    - Minimum element: `2` (at index 4)
+    - Swap `arr[0]` and `arr[4] → [2, 3, 8, 4, 5]`
+    - Recursive call: `selectionSort(arr, 1)`
+
+2. Second Call: `selectionSort(arr, 1)`
+    - Unsorted portion: `[3, 8, 4, 5]`
+    - Minimum element: `3` (already at index 1)
+    - No swap needed.
+    - Recursive call: `selectionSort(arr, 2)`
+
+3. Third Call: `selectionSort(arr, 2)`
+    - Unsorted portion: `[8, 4, 5]`
+    - Minimum element: `4` (at index 3)
+    - Swap `arr[2]` and `arr[3] → [2, 3, 4, 8, 5]`
+    - Recursive call: `selectionSort(arr, 3)`
+
+4. Fourth Call: `selectionSort(arr, 3)`
+    - Unsorted portion: `[8, 5]`
+    - Minimum element: `5 (at index 4)`
+    - Swap `arr[3]` and `arr[4] → [2, 3, 4, 5, 8]`
+    - Recursive call: `selectionSort(arr, 4)`
+
+5. Fifth Call: `selectionSort(arr, 4)`
+    - Base case reached: Only one element left → recursion stops.
