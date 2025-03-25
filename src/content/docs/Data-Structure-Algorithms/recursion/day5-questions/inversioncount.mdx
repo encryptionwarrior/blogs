@@ -2,3 +2,123 @@
 title: Inversion Count
 description: A guide in my new Starlight docs site.
 ---
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Function to merge two sorted subarrays and count inversions
+long long merge(vector<long long> &arr, int s, int e) {
+    int mid = s + (e - s) / 2; // Calculate mid-point
+
+    int len1 = mid - s + 1; // Size of left subarray
+    int len2 = e - mid;     // Size of right subarray
+
+    vector<long long> left(len1);
+    vector<long long> right(len2);
+
+    // Copy data into left and right subarrays
+    for (int i = 0; i < len1; i++)
+        left[i] = arr[s + i];
+    for (int i = 0; i < len2; i++)
+        right[i] = arr[mid + 1 + i];
+
+    long long inversions = 0;
+    int i = 0, j = 0, k = s;
+
+    // Merging and counting inversions
+    while (i < len1 && j < len2) {
+        if (left[i] <= right[j]) {
+            arr[k++] = left[i++];
+        } else {
+            arr[k++] = right[j++];
+            inversions += (len1 - i); // Elements left in left subarray are greater than right[j]
+        }
+    }
+
+    // Copy remaining elements from left subarray
+    while (i < len1) {
+        arr[k++] = left[i++];
+    }
+
+    // Copy remaining elements from right subarray
+    while (j < len2) {
+        arr[k++] = right[j++];
+    }
+
+    return inversions; // Return total inversions counted in this merge step
+}
+
+// Recursive function to implement merge sort and count inversions
+long long mergeSort(vector<long long> &arr, int s, int e) {
+    if (s >= e) return 0; // Base case: when only one element is left
+
+    int mid = s + (e - s) / 2;
+    long long inversions = 0;
+
+    // Count inversions in left half
+    inversions += mergeSort(arr, s, mid);
+
+    // Count inversions in right half
+    inversions += mergeSort(arr, mid + 1, e);
+
+    // Count inversions while merging
+    inversions += merge(arr, s, e);
+
+    return inversions;
+}
+
+// Function to count total inversions in the array
+long long inversionCount(vector<long long> &arr) {
+    return mergeSort(arr, 0, arr.size() - 1);
+}
+
+// Driver function
+int main() {
+    int n;
+    cout << "Enter the size of the array: ";
+    cin >> n;
+
+    vector<long long> arr(n);
+    cout << "Enter the elements of the array: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+
+    long long result = inversionCount(arr);
+    cout << "Total Inversions: " << result << endl;
+
+    return 0;
+}
+
+```
+
+###### Example Walkthrough:
+Input:
+```c++
+Enter the size of the array: 4
+Enter the elements of the array: 8 4 2 1
+```
+- Splitting Phase (Recursive Calls)
+```c++
+Left: [8, 4]     Right: [2, 1]
+Left: [8] [4]    Right: [2] [1]
+
+```
+
+- Merging Phase
+```c++
+Merging [8] and [4] → [4, 8]   (1 inversion: (8,4))
+Merging [2] and [1] → [1, 2]   (1 inversion: (2,1))
+Merging [4, 8] and [1, 2] → [1, 2, 4, 8]  
+Additional 4 inversions: (4,1), (4,2), (8,1), (8,2)
+```
+
+- Total Inversions:
+`1 + 1 + 4 = 6`
+
+Output:
+```yaml
+Total Inversions: 6
+```

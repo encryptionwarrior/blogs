@@ -2,3 +2,79 @@
 title: Sub Sequences
 description: A guide in my new Starlight docs site.
 ---
+
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Recursive function to generate subsequences
+void solve(vector<string>& ans, string str, string output, int i) {
+    // Base case: If we have processed all characters in the input string
+    if (i >= str.length()) {
+        // If the output string is not empty, add it to the answer list
+        if (output.length() > 0)
+            ans.push_back(output);
+        return;
+    }
+
+    // Exclude the current character and move to the next one
+    solve(ans, str, output, i + 1);
+
+    // Include the current character in the output and move to the next one
+    output.push_back(str[i]);
+    solve(ans, str, output, i + 1);
+}
+
+// Function to generate all subsequences of a given string
+vector<string> subsequences(string str) {
+    vector<string> ans;  // Vector to store all generated subsequences
+    string output = "";  // Variable to store the current subsequence
+    solve(ans, str, output, 0);  // Call the recursive function
+    return ans;  // Return the list of subsequences
+}
+```
+
+
+Input:
+```c++
+string str = "abc";
+vector<string> result = subsequences(str);
+```
+
+- Recursive Calls & Output Generation
+
+| Call Stack                    | Current `output` | Action            |
+|--------------------------------|-----------------|-------------------|
+| `solve(ans, "abc", "", 0)`     | ""              | Start recursion  |
+| `solve(ans, "abc", "", 1)`     | ""              | Exclude 'a'      |
+| `solve(ans, "abc", "", 2)`     | ""              | Exclude 'b'      |
+| `solve(ans, "abc", "", 3)`     | ""              | Base case (empty subsequence) |
+| `solve(ans, "abc", "c", 3)`    | "c"             | Include 'c'      |
+| `solve(ans, "abc", "b", 2)`    | "b"             | Include 'b'      |
+| `solve(ans, "abc", "bc", 3)`   | "bc"            | Include 'c'      |
+| `solve(ans, "abc", "a", 1)`    | "a"             | Include 'a'      |
+| `solve(ans, "abc", "ac", 3)`   | "ac"            | Include 'c'      |
+| `solve(ans, "abc", "ab", 2)`   | "ab"            | Include 'b'      |
+| `solve(ans, "abc", "abc", 3)`  | "abc"           | Include 'c'      |
+
+
+###### Example Walkthrough:
+
+
+- Final Output (All Subsequences)
+```c++
+["c", "b", "bc", "a", "ac", "ab", "abc"]
+```
+
+- Repeat for Right Partition
+```c++
+Pivot = 4
+Count elements ≤ pivot: 1
+Swap pivot with correct position.
+```
+
+- Final Sorted Array:
+```c++
+[1, 2, 4, 6, 9, 9, 9, 9, 9, 9]
+```

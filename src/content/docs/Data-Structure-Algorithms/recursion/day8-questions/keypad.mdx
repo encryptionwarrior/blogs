@@ -2,3 +2,85 @@
 title: Keypad
 description: A guide in my new Starlight docs site.
 ---
+
+```c++
+class Solution {
+private:
+    // Recursive function to generate letter combinations
+    void solve(string digit, string output, int index, vector<string>& ans, string mapping[]) {
+        
+        // Base Case: If the index reaches the end of the digits string
+        if(index >= digit.length()) {
+            ans.push_back(output);  // Store the generated combination
+            return;
+        }
+        
+        // Extract the current digit and get the corresponding letters from mapping
+        int number = digit[index] - '0';  // Convert character to integer
+        string value = mapping[number];   // Get the possible letters for the digit
+        
+        // Loop through all possible characters for the current digit
+        for(int i=0; i<value.length(); i++) {
+            output.push_back(value[i]);  // Choose a character
+            solve(digit, output, index+1, ans, mapping);  // Move to the next digit
+            output.pop_back();  // Backtrack to explore other options
+        }
+        
+    }
+
+public:
+    vector<string> letterCombinations(string digits) {
+        vector<string> ans;
+        
+        // Edge case: If input digits string is empty, return empty result
+        if(digits.length() == 0)
+            return ans;
+        
+        string output;  // Temporary string to store combinations
+        int index = 0;  // Start from the first digit
+        
+        // Mapping of digits to corresponding letters (as on a telephone keypad)
+        string mapping[10] = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        
+        // Call recursive function
+        solve(digits, output, index, ans, mapping);
+        
+        return ans;
+    }
+};
+```
+
+#### Step-by-Step Execution Example
+Input:
+```c++
+digits = "23"
+```
+
+Phone Keypad Mapping:
+```c++
+2 → "abc"
+3 → "def"
+```
+
+## Recursive Calls and Output Generation:
+
+| Recursive Call                         | Current `output` | Action                                   |
+|----------------------------------------|-----------------|------------------------------------------|
+| `solve("23", "", 0, ans, mapping)`     | `{}`             | Start                                   |
+| `solve("23", "a", 1, ans, mapping)`    | `"a"`           | Include `'a'` from `"abc"`              |
+| `solve("23", "ad", 2, ans, mapping)`   | `"ad"`          | Include `'d'` from `"def"`, **Add to ans** |
+| `solve("23", "ae", 2, ans, mapping)`   | `"ae"`          | Include `'e'` from `"def"`, **Add to ans** |
+| `solve("23", "af", 2, ans, mapping)`   | `"af"`          | Include `'f'` from `"def"`, **Add to ans** |
+| `solve("23", "b", 1, ans, mapping)`    | `"b"`           | Include `'b'` from `"abc"`              |
+| `solve("23", "bd", 2, ans, mapping)`   | `"bd"`          | Include `'d'` from `"def"`, **Add to ans** |
+| `solve("23", "be", 2, ans, mapping)`   | `"be"`          | Include `'e'` from `"def"`, **Add to ans** |
+| `solve("23", "bf", 2, ans, mapping)`   | `"bf"`          | Include `'f'` from `"def"`, **Add to ans** |
+| `solve("23", "c", 1, ans, mapping)`    | `"c"`           | Include `'c'` from `"abc"`              |
+| `solve("23", "cd", 2, ans, mapping)`   | `"cd"`          | Include `'d'` from `"def"`, **Add to ans** |
+| `solve("23", "ce", 2, ans, mapping)`   | `"ce"`          | Include `'e'` from `"def"`, **Add to ans** |
+| `solve("23", "cf", 2, ans, mapping)`   | `"cf"`          | Include `'f'` from `"def"`, **Add to ans** |
+
+## Final Output:
+```
+["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
+```
