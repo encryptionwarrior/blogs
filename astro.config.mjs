@@ -418,6 +418,24 @@ export default defineConfig({
                     },
                   ]
                 },
+                {
+                  label: "Day-9 Questions",
+                  items: [
+                    {
+                      label: "Permutation of String",
+                      slug: "data-structure-algorithms/recursion/day9-questions/permutation_of_string",
+                    },
+                  ]
+                },
+                {
+                  label: "Day-10 Questions",
+                  items: [
+                    {
+                      label: "Rat In Maze",
+                      slug: "data-structure-algorithms/recursion/day10-questions/rat_in_maze",
+                    },
+                  ]
+                },
               ],
             },
           ],

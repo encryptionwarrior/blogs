@@ -1,0 +1,89 @@
+---
+title: Permutation Of String
+description: A guide in my new Starlight docs site.
+---
+
+
+```c++
+#include <bits/stdc++.h>  // Includes all standard libraries
+using namespace std;
+
+// Recursive function to generate all permutations
+void solve(string str, vector<string> &solution, int index) {
+    // Base case: When index reaches the end of the string, add to solution
+    if(index == str.length()) {
+        solution.push_back(str); // Store the generated permutation
+        return;
+    }
+
+    // Loop to swap each character in the remaining part of the string
+    for(int i = index; i < str.length(); i++) {
+        swap(str[i], str[index]);  // Swap characters to create a new permutation
+        solve(str, solution, index + 1); // Recursively generate further permutations
+        swap(str[i], str[index]);  // Backtrack to restore the original string
+    }
+}
+
+// Function to find all permutations of a given string
+vector<string> permutations(string str) {
+    vector<string> solution; // To store all permutations
+    int index = 0;
+
+    solve(str, solution, index); // Start generating permutations
+    sort(solution.begin(), solution.end()); // Sort permutations in lexicographical order
+    return solution;
+}
+
+int main() {
+    string str;
+
+    // Taking input from user
+    cout << "Enter the string : ";
+    getline(cin, str); // Accepts a string with spaces
+
+    // Calling function to generate all permutations
+    vector<string> solution = permutations(str);
+
+    // Printing all the generated permutations
+    cout << "All permutations : " << endl;
+    for(int i = 0; i < solution.size(); i++) {
+        cout << "{ " << solution[i] << " }" << endl;
+    }
+
+    return 0;
+}
+```
+
+### #### Step-by-Step Execution Example
+
+Example Input
+```
+ABC
+```
+
+## Recursive Calls and Output Generation
+
+| Recursive Call                  | String State | Action Performed |
+|---------------------------------|-------------|----------------|
+| `solve("ABC", [], 0)`           | `"ABC"`     | Start with original string |
+| `solve("ABC", [], 1)`           | `"ABC"`     | Swap A with A (no change) |
+| `solve("ABC", [], 2)`           | `"ABC"`     | Swap B with B (no change) |
+| `solve("ABC", ["ABC"], 3)`      | `"ABC"`     | **Add "ABC" to solution** |
+| `solve("ACB", [], 1)`           | `"ACB"`     | Swap B and C |
+| `solve("ACB", [], 2)`           | `"ACB"`     | Swap C with C (no change) |
+| `solve("ACB", ["ABC", "ACB"], 3)`| `"ACB"`    | **Add "ACB" to solution** |
+| `solve("BAC", [], 1)`           | `"BAC"`     | Swap A and B |
+| `solve("BAC", [], 2)`           | `"BAC"`     | Swap C with C (no change) |
+| `solve("BAC", ["ABC", "ACB", "BAC"], 3)` | `"BAC"` | **Add "BAC" to solution** |
+| `solve("BCA", [], 2)`           | `"BCA"`     | Swap A and C |
+| `solve("BCA", ["ABC", "ACB", "BAC", "BCA"], 3)` | `"BCA"` | **Add "BCA" to solution** |
+| `solve("CBA", [], 1)`           | `"CBA"`     | Swap A and C |
+| `solve("CBA", [], 2)`           | `"CBA"`     | Swap B with B (no change) |
+| `solve("CBA", ["ABC", "ACB", "BAC", "BCA", "CBA"], 3)` | `"CBA"` | **Add "CBA" to solution** |
+| `solve("CAB", [], 2)`           | `"CAB"`     | Swap B and A |
+| `solve("CAB", ["ABC", "ACB", "BAC", "BCA", "CBA", "CAB"], 3)` | `"CAB"` | **Add "CAB" to solution** |
+
+## **Final Output:**
+```
+{ ABC } { ACB } { BAC } { BCA } { CAB } { CBA }
+```

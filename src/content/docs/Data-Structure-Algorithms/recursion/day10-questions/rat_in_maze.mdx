@@ -1,0 +1,148 @@
+---
+title: Rat In Maze Problems
+description: A guide in my new Starlight docs site.
+---
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+// Function to check if the next move is valid
+bool isPossible(vector<vector<int>> maze, vector<vector<int>> visited, int newx, int newy) {
+    // Check if the new position is within maze boundaries
+    if ((newx >= 0 && newx < maze.size()) && (newy >= 0 && newy < maze.size())) {
+        // Check if the path is open (1) and not already visited
+        if (maze[newx][newy] == 1 && visited[newx][newy] == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Recursive function to find all possible paths
+void findPath(vector<vector<int>> maze, vector<string> &solution, vector<vector<int>> &visited, string output, int x, int y) {
+    // **Base case**: If we reach the bottom-right corner, store the path and return
+    if (x == maze.size() - 1 && y == maze.size() - 1) {
+        solution.push_back(output);
+        return;
+    }
+
+    // Mark the current cell as visited
+    visited[x][y] = 1;
+    
+    int newx, newy;
+
+    // **Move Up**
+    newx = x - 1;
+    newy = y;
+    if (isPossible(maze, visited, newx, newy)) {
+        output.push_back('U');  // Add 'U' (Up) to the path
+        findPath(maze, solution, visited, output, newx, newy);
+        output.pop_back();  // Backtrack
+    }
+
+    // **Move Down**
+    newx = x + 1;
+    newy = y;
+    if (isPossible(maze, visited, newx, newy)) {
+        output.push_back('D');  // Add 'D' (Down) to the path
+        findPath(maze, solution, visited, output, newx, newy);
+        output.pop_back();  // Backtrack
+    }
+
+    // **Move Left**
+    newx = x;
+    newy = y - 1;
+    if (isPossible(maze, visited, newx, newy)) {
+        output.push_back('L');  // Add 'L' (Left) to the path
+        findPath(maze, solution, visited, output, newx, newy);
+        output.pop_back();  // Backtrack
+    }
+
+    // **Move Right**
+    newx = x;
+    newy = y + 1;
+    if (isPossible(maze, visited, newx, newy)) {
+        output.push_back('R');  // Add 'R' (Right) to the path
+        findPath(maze, solution, visited, output, newx, newy);
+        output.pop_back();  // Backtrack
+    }
+
+    // **Backtrack**: Unmark the current cell before returning
+    visited[x][y] = 0;
+}
+
+int main() {
+    int size;
+    
+    // Input: Maze size
+    cout << "Enter the row & col size : ";
+    cin >> size;
+
+    vector<vector<int>> maze;
+
+    // Input: Maze grid
+    cout << "Enter the elements of maze : ";
+    for (int i = 0; i < size; i++) {
+        vector<int> temp(size);
+        for (int j = 0; j < size; j++) {
+            cin >> temp[j];  // Read maze cell values (0 = blocked, 1 = open)
+        }
+        maze.push_back(temp);
+    }
+
+    vector<string> solution;
+    string output;
+
+    // Create a visited matrix to track visited positions
+    vector<vector<int>> visited(maze);
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            visited[i][j] = 0;  // Initialize visited cells to 0
+        }
+    }
+
+    // Start the search from the top-left corner (0,0)
+    findPath(maze, solution, visited, output, 0, 0);
+
+    // Sort the solutions to maintain lexicographical order
+    sort(solution.begin(), solution.end());
+
+    // Output all possible paths
+    cout << "All possible paths : " << endl;
+    for (int i = 0; i < solution.size(); i++) {
+        cout << solution[i] << endl;
+    }
+
+    return 0;
+}
+```
+
+#### Example
+```
+4
+1 0 0 0
+1 1 0 1
+0 1 0 0
+1 1 1 1
+```
+
+### Recursive Calls & Path Generation
+
+| Recursive Call                           | Current Position `(x,y)` | Path Output  |
+|------------------------------------------|-----------------|--------------|
+| `findPath(maze, [], visited, "", 0, 0)`  | `(0,0)`         | `""`         |
+| `findPath(maze, [], visited, "D", 1, 0)` | `(1,0)`         | `"D"`        |
+| `findPath(maze, [], visited, "DD", 2, 0)` | `(2,0)`         | `"DD"`       |
+| `findPath(maze, [], visited, "DDR", 2, 1)` | `(2,1)`         | `"DDR"`      |
+| `findPath(maze, [], visited, "DDRD", 3, 1)` | `(3,1)`         | `"DDRD"`     |
+| `findPath(maze, [], visited, "DDRDR", 3, 2)` | `(3,2)`         | `"DDRDR"`    |
+| `findPath(maze, [], visited, "DDRDRR", 3, 3)` | `(3,3)`         | `"DDRDRR"`   |
+| `findPath(maze, ["DDRDRR"], visited, "DDRDRR", 3, 3)` | `(3,3)` | `"DDRDRR"` (Destination reached) |
+
+### Final Output
+```
+All possible paths :
+DDRDRR
+DRDDRR
+```
