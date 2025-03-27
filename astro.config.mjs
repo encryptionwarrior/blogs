@@ -47,6 +47,10 @@ export default defineConfig({
                   label: "Lac 02: Intro to IT",
                   slug: "it-support/foundations/lacture02",
                 },
+                {
+                  label: "Lac 03: Intro to Hardware",
+                  slug: "it-support/foundations/lacture03",
+                },
               ]
 
             },
