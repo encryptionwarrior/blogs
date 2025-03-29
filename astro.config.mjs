@@ -51,6 +51,34 @@ export default defineConfig({
                   label: "Lac 03: Intro to Hardware",
                   slug: "it-support/foundations/lacture03",
                 },
+                {
+                  label: "Lac 03: Building PC",
+                  slug: "it-support/foundations/lacture04",
+                },
+                {
+                  label: "Lac 03: Mobile Devices",
+                  slug: "it-support/foundations/lacture05",
+                },
+                {
+                  label: "Lac 06: Operating Systems",
+                  slug: "it-support/foundations/lacture06",
+                },
+                {
+                  label: "Lac 08: Networking",
+                  slug: "it-support/foundations/lacture08",
+                },
+                {
+                  label: "Lac 09: Software",
+                  slug: "it-support/foundations/lacture09",
+                },
+                {
+                  label: "Lac 10: Troubleshooting",
+                  slug: "it-support/foundations/lacture10",
+                },
+                {
+                  label: "Lac 11: Soft Skills",
+                  slug: "it-support/foundations/lacture11",
+                },
               ]
 
             },

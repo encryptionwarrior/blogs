@@ -1,0 +1,141 @@
+---
+title: Operating system - Composition and Management
+description: IT support for mobile devices
+---
+
+### Remote Connection and SSH
+- Work desktop vs Home Computer
+Ex: Transfer data from home computer to remote computer
+
+- Remote Shell(SSH)
+A protocoal implemented by other programs to securely access one computer from another.
+- Shell code:
+```
+ssh cindy@104.131.122.215
+```
+- Private
+- Public
+- Virtual Private Network(VPN)
+Allows you to connect to a private network, like your work network, over the internet.
+
+### Operatinfg System
+Remote connections on windows
+- PuTTY
+A free, open source software that you can use to make remote connections through several network protocols, including SSH.
+- PuTTY configuarions
+```
+putty.exe -ssh cindy@104.141.122.215 22
+```
+- Remote Desktop Protocol
+- Microoft Terminal Services Client
+- Remote connection using GUI
+
+### Components of an Operating System
+- Operatinfg System:
+The whole package that manages our computer's resources and let us interact with it.
+
+- User Spaces Applications
+- Kernal Spaces:
+    - Process manager
+    - Memory manager
+    - File manager
+    - I/O manager
+- Hardware
+
+- System programs
+- User Interfaces
+
+- Windows
+- Mac
+- Linux
+- Ubuntu
+- Debian
+- Red Hat
+
+- Our kernel optmizes memoru usage and makes sure our applications have enough memory to run.
+- I/O Management
+Anything that can give us input, or that we can use for Output of  data.
+
+- File management
+- Process management
+- Memory management
+- I/O management
+
+### Files and File systems
+- File handling
+- Data 
+- Metadata
+- File System
+- NTFS
+- Encryption
+- Faster access speeds
+- Security
+- ReFs
+- HFS+
+- ext4
+- We write data to our hard drive in the form of adata blocks
+- Block storage:
+Imroves faster handling of adata because the data isn't stored as one long piece and can be accessed quicker.
+
+- File -> Metadata
+    - File Owner
+    - Permissions
+    - File Size
+    - Date Modified
+    - Date Created
+    - File Type
+
+- File extension
+The appended part of a filename that tells us what type of file it is in certain operating systems.
+
+### Process management
+- process:
+A program that's executing, like our internet browser or text editor.
+- Program:
+Am application that we can run, like Chrome.
+
+- User Space
+- Kernel - Processes
+- Hardware
+
+- Time slice
+A very short interval of time that gets allocated to a process for CPU execution
+
+- Kernel
+Creates processes, efficiently schedules them, and manages how processes are terminated
+
+### Memory management
+- Virtual Memory 
+The combination of hard drive spces and RAM that acts like memory that our processes can use 
+
+- Program -> Pages 
+    - Virtual Memory - RAM, Hard drive Spaces
+        - Physical Memory -RAM
+
+
+### I/O Management
+- I/O Devices 
+Devices that perform input and Output
+- Ehen you're troubleshooting or solving a problem with a slow machine, it's usually so sort of hardware resource  deficiency.
+
+### Ineract with the OS: User Space
+- Shell
+- Graphical User interface 
+
+- Shell
+A program that interprets text commands and sends the to the OS to execute.
+- Bourne Again Shell
+- Powershell
+
+
+### Logs 
+Files that record system events on our computer, just like a system's diary.
+
+### The Boot Process 
+- BIOS/UEFI
+A low-level software that initializes ourcomputer's hardware to makesure everything is good to go.
+- Poer on Self Test
+
+- Poer On  -> BIOS/UEFI -> Boot Device -> Boot loader -> OS -> Kernel -> system process
+- Bootloader 
+A small program that loads the operating system.
