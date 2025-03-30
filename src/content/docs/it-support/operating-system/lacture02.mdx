@@ -1,0 +1,109 @@
+---
+title: Using The Command Lines
+description: Operating System
+---
+
+### Windows: Display File Contents
+- `cat .\import_document.tsx`
+- `more .\import_document.tsx`
+
+- Enter Key
+Advance the file by one line 
+
+- Space Key
+Advances the file by one page 
+
+- q Key
+Allows you to quit out of more and go back to your shell
+
+- `cat fruits.txt -Head 10`
+- `cat fruits.txt -Tail 10`
+
+### Linux: Display File Contents
+- `cat import_document.txt`
+- `less large_document.txt`
+
+- g Key 
+Moves to the beginning of a file
+
+- G Key 
+Moves to the end of a text file
+
+- /word_search 
+Allows you to search for a word or phrase 
+
+- q Key
+Allows you to quit out of more and go back to your shell
+
+- `head fruits.txt`
+- `tail fruits.txt`
+
+### Windows: Modifying Text Files
+- `start notepad++ hello.txt`
+
+### Linux: Modifying Text Files
+- `nano my_file`
+
+### Windows Powershell 
+- Get-Help 
+- Get-Alias 
+- Get-ChildItem 
+- `Get-Alias ls`
+- `Get-Help`  is used for PowerShell commands like `Get-Help ls`, and `/?` is used for other commands like dir such as `dir /?` 
+
+### Windows: Searching Within Files 
+- `Ctrl + F` Indexing option 
+- Find Notepad++, press CTRL+SHIFT+F to open the Find Files dialog
+- `sls`
+- `select-string cow farm_animals.txt`
+- `select-string cow *.txt`
+
+### Windows: Searching Within Directories 
+ - `ls 'C:Programs Files\' -Recursive -Filter *.exe`
+ - Filter 
+ Will filter the results for file names that match a pattern
+
+### Linux: Searching Within Files 
+- `grep cow farm_animals.txt`
+- `select-grep cow *_animals.txt`
+
+### Windows: Input, Output, and Pipeline 
+- `cd 'C:\User\Cindy\desktop`
+- `echo woof > dog.txt`
+- Write-Output 
+- input/output streams 
+- stdin, stdout, stderr 
+- `cat .\dog.txt`
+- `echo woof`
+- `echo woof >> dog.txt`
+- `cat dog.txt`
+- `cat word.txt`
+- `cat word.txt | Select-String st`
+- `cat word.txt | Select-String st > st_words.txt`
+- `cat st_words.txt`
+- `rm secure_file`
+- `rm secure_file > errors.txt`
+- `1:stdout - the output`
+- `1:stderr - the error`
+- `$null`
+- Get-Help
+- about_redirection
+
+
+### Linux: Input, Output, and Pipeline 
+- stdin, stdout, stderr 
+- `echo woof > dog.txt`
+- `cat dog.txt`
+- `echo woof >> dog.txt`
+- `cat dog.txt`
+- `cat < file_input.txt`
+- `cat  file_input.txt`
+- `ls /dir/fake_dir 2 > error_output.txt`
+- `cat error_output.txt`
+- `/dev/null`
+- `less /var/log/syslog 2 > /dev/null`
+- `less -la /etc | grep bluetooth`
+
+### Windows and Linux Advanced Navigation 
+- Regular Expression 
+Used to help you do advanced pattern-based selection 

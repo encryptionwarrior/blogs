@@ -1,0 +1,199 @@
+---
+title: User and Permissions
+description: Operating System
+---
+
+### Users, Administrators, and Groups Oh My!
+- Standard Users
+- Administrators
+
+- Standard Users
+One who is given access to a machine but has restricted access to do things like install software or change certain setings.
+
+- Administrator(Admin)
+A user that has complete control over a machine.
+
+- Groups 
+- Admin - Parents  - Children 
+
+### Window: View User and Group Information
+- Computer Management - Using GUI
+- Windows domain 
+A  network of computers, users, files, etc, that are added to a central database.
+
+- User Access Control(UAC)
+
+### Windows: View User and Group Information using CLI 
+- `Get-LocalUser`
+- `Get-LocalGroup`
+- `Get-LocalGroupMember Administrators`
+
+### Linux: Users, Superuser and Beyond 
+- Root User 
+- /etc/sudoers 
+- sudo 
+- `sudo /etc/sudoers`
+- `sudo cat /etc/sudoers`
+- su or substitute user 
+- `sudo su -`
+- /etc/group 
+- /etc/password 
+
+### Windows: Password
+- Using GUI - Set Password 
+- net 
+- /?
+- `net user cindy 'some password'`
+- /logonpasswordchg:yes
+- `net user cindy`
+- `net user victor /logonpasswordchg:yes`
+
+### Linux: Password
+- passwd 
+- `passwd cindy`
+- When you set a password it's securely scrambled, then stored in a special privileged file called /etc/shadow 
+- -e or expire 
+- `sudo passwd -e victor`
+
+### Windows: Adding and Removing Users 
+- Using GUI
+- New-LocalUser
+- /add 
+- `net user andrea * /add`
+- `Get-LocalUser`
+- /logonpasswordchg:yes
+- `net user andrea /logonpasswordchg:yes`
+- `net user cedar pa5w0rd /add /logonpasswordchg:yes`
+- `Get-LocalUser`
+- Remove-LocalUser
+- `net user andrea /del`
+- `Remove-LocalUser cesar`
+- `Get-LocalUser`
+
+### Linux: Adding and Removing Users
+- `sudo useradd jaun`
+- `sudo userdel jaun`
+
+### Mobile Users and Accounts
+- Primary Account 
+- GUI of iOs and Android
+- Biometric Data
+Something about you that's unique to you, like a fingerprint, a voice, or a face.
+- MDM
+
+
+### Windows: File Permission
+In Windows, files and directory permissions are assigned suing Acess Control Lists or ACLs. Specifically, we're gonna work with Discretionaries Access Controls Lists or DACLs.
+- Windows files and folders can also have System Access Control Lists or SACLs assigned to them.
+- Read 
+Lets yoo see that a file exists, and allows you to read its contents. It also lets you read the files and directories in a directory.
+
+- Read & Execute 
+Lets you read files, and if the file is an executable, you can run the file. 
+- Read & Execute includes Read, so if you select Read & Execute, Read will be automatically selected.
+- List folder contents 
+An alias for Read & Execute on a directory.
+
+- Write 
+Lets yoy can make changes to a file. 
+
+- The Wriye permissions also lets you create subdirectories, and write to files in the directory.
+
+- Modify 
+The modify permission is an umbrella permission that includes the read, execute, and write.
+
+- Full Control 
+A user or group with full control can do anything they want to the file. 
+- icacls
+- Improved changes ACLS 
+- `icacls /?`
+
+### File Permission 
+- Read 
+Allows someone to read the contents of a file or folder 
+
+- Write
+Allow someone to write information to a file or folder.
+
+- Execute
+Allows someone to execute a program 
+- w=writable 
+- `ls -l ~/my_life`
+
+
+### Windows: Modifying Permissions
+- GUI 
+- icacls
+- `icacls "C:\Vacation Pictures" /grant Everyone:(OI)(CI)(R)`
+- Everyone 
+- `icacls "C:\Vacation Pictures" /grant 'Everyone:(OI)(CI)(R)'`
+
+- Guest users 
+A special type of user that's allowed to user the computer without a pasword.
+- Authenticated Users 
+- `icacls "C:\Vacation Pictures" /grant 'Everyone:(OI)(CI)(R)'`
+- `icacls "C:\Vacation Pictures" /grant 'Authenticated users:(OI)(CI)(R)'`
+- `icacls "C:\Vacation Pictures" /remove Everyone`
+- `icacls "C:\Vacation Pictures"`
+
+### Linux: Modifying Permissions
+- chmod
+- The owner, which is denoted by a u 
+- The group the file belogs to, which is denoted by g 
+- Other users, which is denoted by an o 
+- + or - 
+- `ls -l my_cool_file`
+-  `chmod u+X my_cool_file`
+- `ls -l my_cool_file`
+-  `chmod u-X my_cool_file`
+- `ls -l my_cool_file`
+symbolic format 
+
+- The numeric equivalent of rwx is:
+    - 4 for read or r
+    - 2 for write or w
+    - 1 for execute or x
+- `ls -l my_cool_file`
+- `chmod 754 my_cool_file`
+- `ls -l my_cool_file`
+
+- If you add 4, 2, and 1 together you get r,w,x which is equals 7, so our owner permission is able to read, write and execute thsi file. 
+- $ + 1 is read and execute
+- `chmod u+rwx my_cool_file`
+- `chmod g+rx my_cool_file`
+- `chmod o+r my_cool_file`
+- chown 
+- `chmod 754 my_cool_file`
+- `sudo chown devan my_cool_file`
+- `ls -l my_cool_file`
+- chgrp 
+- `sudo chgrp best_group_ever my_cool_file`
+- `ls -l my_cool_file`
+
+### Windows: Special Permissions 
+- GUI 
+- Simple Permissions 
+Sets of special, or specific permissions 
+- GUI 
+- `icacls C:\Windows\Temp`
+- WD: Create Files/Write data 
+- AD: Create Folders/Append data
+- S: Synchronize 
+
+- `icacls C:\Windows\Temp/example >> icacls.txt`
+
+### Linux: SetUID, SetGId, Sticky Bit 
+- /etc/shadow 
+- `passwd`
+- `ls -l /etc/shadow`
+- SetUID 
+- `ls -l /usr/bin/passwd`
+ `chmod u+s my_cool_file`
+ `sudo chmod 4755 my_cool_file`
+ - SetGID
+ - sticky bit
+- `sudo chmod 2755 my_cool_file`
+- `ls -l /usr/bin/passwd`
+- The symbolic bit is a t and the numerical bit is a 1.
+- `sudo chmod 1755 my_folder`
+- `ls -ld  my_folder`

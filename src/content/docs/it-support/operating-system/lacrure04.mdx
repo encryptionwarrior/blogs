@@ -1,0 +1,103 @@
+---
+title: Package and Software management
+description: Operating System
+---
+
+### Windows: Software Packages
+- Executable file(.exe)
+Contain instructions for a computer to execute when tyey're run 
+
+- PE Format 
+- Microsoft install package(.msi)
+Used to guide a program called the Windows installer in the installation, maintainance, and removal of programs on the windows Operating Syste.
+
+- Window Store 
+- APPX 
+- `C:\users\cindy\Desktop\hello.exe`
+- `\?`
+
+
+### Linux: Software Packages 
+- Debain 
+- Packaged as .deb file for debian.
+- dpkg
+- `sudo dpkg -i atom-amd64.deb`
+- `sudo dpkg -r atom`
+- dpkg -l
+- `dpkg -l | grep atom `
+
+### Mobile App packages 
+- Mobile Applications 
+- App Stores 
+A central, managed marketplace for app developers to publish and sell mobile apps.
+- App store app 
+- App store service 
+- Enterprize app management 
+- Mobile device management
+- Side-loading 
+Where you install mobile apps directly, without using an app store 
+
+- Mobile apps are standalone software packages, so, they contain all their dependecies 
+- Cache 
+- Clearing the cache will remove all changes to the settings, and sign out of any accounts that app was signed into.
+
+
+### Windows: Archives 
+- Archive 
+Comprised of one or more files that's compressed into a single file.
+
+- Package archives 
+The core or source software files that are compressed into one file
+
+- Installing from source 
+- .zip 
+- .tar 
+- .rar 
+- 7-zip 
+
+- `compress-Archive -Path C:\Users\Cindy\Desktop\coolFiles ~\Desktop\Archive.zip`
+
+
+### Linux Archives
+- To extract a file using 7zip, use the command 7z and the flag e for extract and then the file you want to extract.
+
+- `ls`
+- `7z e my_archive.tar`
+
+### Windows: Packages Dependencies 
+- Having dependecies
+Counting on other pieces of software to make an application work, since one bit of code depends on another , in order to work 
+
+- Library 
+A way to package a bunch of useful code that someone else wrote 
+
+- Dyanamic-link Libraries
+- Side-by-side Assemblies 
+- C:\Windows\WinSxS 
+- Manifest 
+- Find-Package 
+- cmdlet 
+- Sysinternals packges 
+
+- Package Management 
+- Chocolately 
+- `sysinternals -IncludeDependencies`
+- Register-PackageSource 
+- `-Name chocolatey -ProviderName chocolatey -Location https://chocolatey.org/api/chocolatey`
+
+### Linux: Package Dependencies 
+- Package managers 
+Come with the works to make package installation and removal easier, including installing packages dependecies.
+
+
+### Windows: Package manager 
+- `apt`
+- Package manager
+Make sure that the process of software installation, removal, update, and dependecy management is as easy and automatic as possible.
+
+- SCCM
+- Puppet 
+- Install-Packsges 
+
+
+

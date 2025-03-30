@@ -79,8 +79,24 @@ export default defineConfig({
                   label: "Lac 11: Soft Skills",
                   slug: "it-support/foundations/lacture11",
                 },
-              ]
-
+              ],
+            },
+            {
+              label: "Operating Systems",
+              items: [
+                {
+                  label: "Lac 01: Files & Directories",
+                  slug: "it-support/operating-system/lacture01",
+                },
+                {
+                  label: "Lac 02: Using Command Lines",
+                  slug: "it-support/operating-system/lacture02",
+                },
+                {
+                  label: "Lac 03: Using Command Lines",
+                  slug: "it-support/operating-system/lacture03",
+                },
+              ],
             },
             {
               label: "Lacture 01",
