@@ -1,0 +1,159 @@
+---
+title: Filesystems
+description: Operating System
+---
+
+### Review of Filesystems
+- Filesystem
+Used to keep track of files and file storage on a disk
+
+- Windows NTFS, Ubuntu ext4
+- USB drive - NTTFS formatted 
+
+- FAT32: Windows, Linux, Mac OS 
+
+### Disk Anatomy 
+- Partition 
+The piece of a disk that you can manage 
+
+- Volume 
+- Partition table 
+Tell the OS how the disk is partitioned 
+
+- Master Boot Record - MBR 
+- GUID Partition Table - GPT 
+
+- MBR - 2TB max volume size, Primary partitions
+- GPT 
+    - 2TB or greater volume size 
+    - One type of partition
+    - Unlimited partitions
+
+- UEFI 
+
+### Windows: Disk Partitioning and Formatting a Filesystem
+- Disk Management
+- Using GUI 
+
+- Diskpart 
+- `Diskpart`
+- `select disk 1`
+- `clean`
+- `create partitions primary`
+- `select partition 1`
+- `active`
+- `format FS=NTFS label=my-thumb-drive quick`
+
+### Windows: Mounting and Unmounting a Filesystem 
+
+- Mounting 
+Making something accessible to the computer, like a filesystem or a hard disk 
+
+### Linux: Disk Partitioning and Formatting a Filesystem
+- parted tool 
+- Interactive 
+- Command Line 
+- Parted I 
+- `sudo parted -l`
+- `sudo parted /dev/sdb`
+- mkpart 
+
+- `sudo mkfs -t ext4 /etc/sdb1`
+- `sudo parted -l`
+
+
+### Linux: Mounting and Unmounting a Filesystem 
+- `cd /dev/sdb`
+- `sudo mount /dev/sdb /my_usb/`
+- `cd /my_usb`
+
+- unmount 
+- \etc\fstab 
+
+- `sudo unmount /etc/sdb1`
+- `cat /etc/fstab`
+
+- UUID 
+- `sudo blkid`
+
+### Windows: Swap 
+- Virtual memory 
+How our OS provies the physical memory available in our computer like RAM to the applications that run on the computer 
+
+- Memory Manager 
+- pagefiles.sys 
+- GUI
+
+### Linux: Swap 
+- Swap space 
+In Linux, the dedicated area of the hard drive used for virtual memory 
+
+- `sudo parted /dev/sdb`
+- mkswap 
+- swapon 
+- `sudo mkswap /dev/sdb2`
+- `sudo swapon /dev/sdb2`
+
+### Windows: Files 
+- Master File Table - MFT 
+- File name, Timestamp, Permissions, Compression, Locations, Etc. 
+- file record number 
+- shortcut 
+- Symbolic links 
+- GUI 
+
+- `cd links`
+- `notepad.exe file_1_shortcut.lnk`
+- `notepad.exe file_1_symlink file_1.lnk`
+
+- Hard link 
+- \H 
+- `notepad.exe file_1_symlink`
+- `mklink /H file_1_hardlink file_1.txt`
+
+### Linux: Files
+- inode 
+- Softlink - File - HDD
+- Hardlink - Inode - Inode table - HDD - File 
+- `ls -l important_file`
+- ln -s 
+- `ls -l important_file important_file_softlink`
+- `ls -l important_file important_file_hardlink`
+- `ls -l important_file`
+
+### Windows: Disk Usage 
+- Computer Management 
+- GUI 
+- Disk Usage
+- cleanmgr.exe 
+- Defragmentation
+
+- The idea behind disk defragmentation is to take all the files stored on a given disk, and recognize them into neighboring locations.
+- Trim 
+- Disk Defragmenter 
+- GUI 
+
+### Linux: Disk Usage
+- du -h 
+- df 
+- `df -h`
+
+### Windows: Filesystem Repair 
+- Data buffer 
+A region of RAM that's used to tempararily store data while it's being moved around 
+- Data corruption 
+- NTFS - NTFS Log 
+- Self-healing 
+- fsutil 
+
+- `fsutil repair query C:`
+- Chkdsk 
+- /F 
+- `chkdsk /F D:`
+
+### Linux: Filesystem Repair 
+- fsck 
+- `sudo fsck /dev/sda`
+
+
+

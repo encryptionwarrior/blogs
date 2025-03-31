@@ -96,6 +96,14 @@ export default defineConfig({
                   label: "Lac 03: Using Command Lines",
                   slug: "it-support/operating-system/lacture03",
                 },
+                {
+                  label: "Lac 04: Package and Software management",
+                  slug: "it-support/operating-system/lacture04",
+                },
+                {
+                  label: "Lac 04: Filesystems",
+                  slug: "it-support/operating-system/lacture05",
+                },
               ],
             },
             {
