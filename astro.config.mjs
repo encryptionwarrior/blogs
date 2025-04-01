@@ -101,8 +101,16 @@ export default defineConfig({
                   slug: "it-support/operating-system/lacture04",
                 },
                 {
-                  label: "Lac 04: Filesystems",
+                  label: "Lac 05: Filesystems",
                   slug: "it-support/operating-system/lacture05",
+                },
+                {
+                  label: "Lac 06: Process Management",
+                  slug: "it-support/operating-system/lacture06",
+                },
+                {
+                  label: "Lac 07: Remote System in Practice",
+                  slug: "it-support/operating-system/lacture07",
                 },
               ],
             },

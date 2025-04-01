@@ -1,0 +1,97 @@
+---
+title: Operating Systems in Practice
+description: Operating System
+---
+
+### Remote Connection and SSH 
+- office and home laptop 
+- Remote connection
+Allows us to manage multiple machines from anywhere in the world 
+
+- Secure Shell 
+A protocol implemented by other programs to securily access one computer from another 
+
+- OpenSSH program 
+- `ssh cindy@104.131.122.215`
+- Private 
+- Public 
+- Virtual Private Network - VPN
+Allows you to connect to ap private network, like your work network, over the internet 
+
+### Remote Connection on Windows 
+- PuTTY 
+A free, open source software that you can use to make remote connections through several network protocols, including SSH 
+- GUI 
+- `putty.exe -ssh cindy@104.131.122.215`
+- RDP 
+- Microsoft Terminal services Client 
+- mstsc.exe 
+- /admin 
+
+### Remote Connection File Transfer 
+- Secure Copy- SCP 
+A commnad you can use in linux yo copy files between computers on a network 
+- `scp /home/cindy/Desktop/myfile.txt cindy@104.131.122.215`
+
+### Remote Connection File Transfer on Windows
+- PuTTY Secure Copy Client 
+- `pscp.exe`
+- `pscp.exe C:\Users\cindy\Desktop\myfile.txt cindy@104.131.122.215`
+
+- Shared folders 
+- GUI 
+- net share 
+- `net share ShareMe=C:\Users\cindy\Desktop\ShareMe /grant:everyone.full`
+
+### Virtual Machines
+- Virtual Machine 
+A single virtual machine 
+- VirtualBox
+- GUI 
+
+
+### System Monitoring 
+- `tail -f /var/log/syslog`
+- Logging 
+The act of creating log events 
+
+### The Windows Events Viewer 
+- Event Viewer 
+- eventvwr.msc 
+- GUI 
+
+### Linux Logs 
+- /var/log 
+- `ls /var/log`
+- `/var/log/syslog`
+- `logtotate`
+- Centralized logging 
+- `less /var/log/syslog`
+- Epoch time 
+
+
+### Working with Logs 
+- `less /var/log/syslog | grep error`
+- tail 
+- `tail -f /var/log/syslog`
+
+### Imaging Software 
+### Operating Systems Deployment Methods 
+- Drive -> Clone -> install folders, files and settings 
+- Clonezilla 
+- Symantc Ghost 
+- Disk-to-disk cloning 
+- dd 
+- `unmount /dev/sdd`
+- `sudo dd if=/dev/sdd of=~/Desktop/my_usb_image.img bs=100m`
+
+### Mobile Device Resetting and Imaging
+- Factory reset 
+- Over the air 
+- Re-flash 
+
+1. Download the update to a computer 
+2. Attach the mobile device to a computer using a USB cable 
+3. Run some software on the computer that will re-flash the mobile device 
+
+### Course wrap up

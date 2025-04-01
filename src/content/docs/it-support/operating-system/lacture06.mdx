@@ -1,0 +1,104 @@
+---
+title: Process Management
+description: Operating System
+---
+
+### Programs vs Process Revised
+
+- Programs 
+The applications that we can run, like the Chrome web browser
+
+- Processes 
+Programs that are running 
+
+- Program -> Process -> Resources 
+
+- Process ID 
+- Background processes 
+
+### Windows: Process Creation and Termination 
+- Session Manager Subsystem
+- smss.exe 
+- winlogon.exe 
+- Client/Server Runtime Subsystem 
+- csrss.exe 
+- init 
+- Environment
+
+- `notepad.exe`
+- taskkill 
+- PID 
+- `taskkill /pid 5856` 
+
+### Linux: Process Creation and Termination
+ - less /etx/some_file | grep Hello 
+ - When you startup your computer, the kernel creates a process called init, which has a PID of .
+
+### Windows: Reading Process Information
+- Chrome -> Program -> Processes 
+- taskmgr.exe 
+-  CTRL+SHIFT+ESC
+- GUI 
+- `Get-Process`
+
+### Linux: Reading Process Information
+- `ps -x`
+- R:running
+- T:stopped
+- S:interruptibel sleep 
+- `ps -ef`
+- `ps -ef | grep Chrome`
+- `ls -l /process`
+- `cat /proc/1805`
+
+### Windows: Signals 
+- Signal 
+A way to tell a process that something's just happened 
+
+- SIGINT 
+
+### Linux: Signals
+- SIGINT
+- `sudo parted`
+
+### Windows: Managing Processes 
+- Process Explorer 
+A utility Microsoft created to let IT Support Specialists, system administrators and other users look at running processes 
+- GUI 
+- Multilingual User Interface 
+- procexp.exe 
+
+### Linux: Managing Processes
+- SIGTERM 
+- `kill 10235`
+- SIGKILL
+- -KILL 
+- `kill -KILL 10392`
+- terminal stop 
+- SIGTSTP 
+- -TSTP 
+- `ps -x`
+- `kill -TSTP 10754`
+- SIGCOUNT 
+- `kill -COUNT 10829`
+- SIGTERM
+- SIGKILL
+- SIGTSTP
+
+### Mobile App Management 
+- GUI 
+- FOREGROUND 
+
+### Windows: Resource Monitoring 
+- Resource Monitoring tool 
+- GUI 
+- `Get-Process`
+- `Get-Process | Sort CPU -descending | Select -first  -Property ID.ProcessName.CPU `
+
+### Linux: Resource Monitoring 
+- top 
+- q 
+- uptime 
+- `Isof `
+
+
