@@ -1,0 +1,134 @@
+---
+title: Netwroking
+description: Computer Netwrking
+---
+
+### Course Introduction
+- Protocol 
+A deifned set of standards tht computers must follow in order to comminicate properly.
+
+- Computer Networking 
+The name we've given to full scope of how computers comminicate with each other.
+
+| #   | Layer Name   | Protocol             | Protocol Data Unit | Addressing     |
+|-----|--------------|----------------------|---------------------|----------------|
+| 5   | Application  | HTTP, SMTP, etc.     | Messages            | n/a            |
+| 4   | Transport    | TCP/UDP              | Segment             | Port #'s       |
+| 3   | Network      | IP                   | Datagram            | IP address     |
+| 2   | Data Link    | Ethernet, Wi-Fi      | Frames              | MAC Address    |
+| 1   | Physical     | 10 Base T, 802.11    | Bits                | n/a            |
+
+- OSI model 
+
+### The TCP/IP Five-Layer Network 
+- Physical Layer
+Represents the Physical devices that interconnect computers 
+
+- Data Link Layer
+responsible for defining a common way of interpreting these signals so network devices can comminicate 
+
+- The Ethernet standards also defines a protocol responsible for getting data to nodes on same on the network or link. 
+
+ - Network layer 
+ Allows different network to comminicate with each other through devices known as routers.
+
+ - Internetwork 
+ A collection of networks connected together through routers, the most famous of these being the internet.
+
+ - Internet - Network layer
+ - IP is the heart of the internet and most smaller networks around the world. 
+
+- Transport layer 
+Sort out which client and server programs are supposed to get that data 
+
+- UDP 
+
+- Physical -> Data Link -> Network -> Transport -> Application 
+
+### Cables 
+- Cables 
+Connect different devices to each other, allowing data to be transmitted over them 
+
+- Copper 
+- Fiber 
+
+- The most common forms of copper twisted-pair cables used in networking are Cat5, Cat5e, and Cat6 cables. 
+
+- Cat3 - cat5 - Cat5e - cat6 - Cat6a - Cat7
+
+- crosstalk 
+When an electrical pulse on one wire is accidently detected on another wire. 
+
+- Fire cables 
+Contain individual optical fibers, which are tiny tubes made out of glass about the width of a human hair 
+
+- Copper cable - Fiber optic 
+
+### hubs and Switches 
+- Hub 
+A physical layer device that allows for connections from many computers at once. 
+
+- Sending to machine 3 -> Workstation 1 -> Hub -> Workstation 4, Workstation 2, Workstation 3 
+
+- Collision domain 
+A network segment where only one device can communicate at a time.
+
+- If multiple systems try sending data at the same time, the electrical pulses sent acress the cable can interfere with each other. 
+
+- Data Collision (Hub) -> Workstation 1 -> Hub -> Workstation 2, Workstation, Workstation, Workstation, Workstation 
+
+- Network switch 
+
+### Routers
+- Hubs and Switches
+The primary devices used to connect computers on a single network, usually referred to as a LAN, or local area netwrok. 
+
+- Routers
+A device that knows how to forward data between independent netwroks 
+
+- Internet -> ISP -> Workstation -> Router -> Laptop 
+
+- Border Gateway Protocol(BGP) 
+Router share data with each other via this protocol, which lets them learn about the most optimal paths to forward traffic 
+
+### Servers and Clients 
+- servers 
+- clients
+
+- DNS server -> Mail server -> client 
+
+### Moving Bits Across the Wire 
+- Bit 
+The smallest representation of data that a computer can understabd; it's a one ora zero 
+
+- Modulation 
+A way of varying the voltage of this charge moving across the cable 
+
+- Line coding 
+Sender -> Digital Data -> Encoder -> Digital Signal -> Decoder -> Digital Data -> Receiver
+
+### Twisted Pair Cabling and Duplexing 
+- Duplexing Communication 
+The concept that information can flow in both directions across the tables 
+
+- Simplex Communication 
+This proess is unidirectional
+
+- Client Computer -> Only sends(Simples) -> Server 
+- Client Computer -> Simulataneous(Full-Duplex) -> Server 
+- Client Computer -> Taken turns(Half-Duplex) -> Server 
+
+### Networks Ports and Patch Panels 
+- RJ45 Ports
+- RJ45 Plugs 
+
+- Network ports 
+
+- Link LED - Cable properly connected to two devices that are both powered on - RJ45 Port 
+- Activity LED - Would flash whhen data actively transmitted across the cable - RJ45 Port 
+
+- Patch Panel
+
+
+
+

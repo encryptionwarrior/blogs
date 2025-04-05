@@ -115,8 +115,13 @@ export default defineConfig({
               ],
             },
             {
-              label: "Lacture 01",
-              slug: "it-support/lacture01"
+              label: "Computer Networking",
+             items: [
+              {
+                label: "Lac 01: Introduction to Networking",
+                slug: "it-support/networking/lacture01",
+              }
+             ]
 
             },
           ]
@@ -501,6 +506,10 @@ export default defineConfig({
                   ]
                 },
               ],
+            },
+            {
+              label: "Space-Time Complexity: Recusrive Algorithms",
+              slug: "data-structure-algorithms/space-time-complexity/recursive_algo",
             },
           ],
         },
