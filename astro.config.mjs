@@ -117,10 +117,18 @@ export default defineConfig({
             {
               label: "Computer Networking",
              items: [
-              {
-                label: "Lac 01: Introduction to Networking",
-                slug: "it-support/networking/lacture01",
-              }
+               {
+                 label: "Lac 01: Introduction to Networking",
+                 slug: "it-support/networking/lacture01",
+                },
+                {
+                  label: "Lac 02: The Network Layer",
+                  slug: "it-support/networking/lacture02",
+                },
+                {
+                  label: "Lac 02: Transport and Application Layers",
+                  slug: "it-support/networking/lacture03",
+                },
              ]
 
             },

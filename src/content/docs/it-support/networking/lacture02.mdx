@@ -1,0 +1,242 @@
+---
+title: The Network Layer
+description: Introduction to the Network Layer
+---
+
+### Introduction to the Network Layer
+### The Network Layer
+
+- Address Resolution Protocol 
+
+### IP Addresses 
+- 12.34.56.78 
+
+- Dotted Decimal Notation 
+- IP addresses belong to networks, not to the devices attached to those netwroks. 
+
+- Dyanamic Host Configuration Protocol(DHCP)
+
+- Dynamic IP address 
+-  Static IP address 
+
+- In most cases, static Ip addresses are reserved for servers and network devices, while dyanamic IP addresses are reserved for clients.
+
+### IP Datagrams and Encapsulation
+- IP Datagram 
+A highly structured series of fields that are strictly defined. 
+
+#### IP Datagram Header
+
+| Bits         | 0-3       | 4-7           | 8-15          | 16-18       | 19-31             |
+|--------------|-----------|---------------|---------------|-------------|-------------------|
+| Row 1        | Version   | Header Length | Service Type  |             | Total Length      |
+| Row 2        |                                 Identification                               |
+| Row 3        |                 Flags                |            Fragment Offset            |
+| Row 4        | TTL       | Protocol       |             Header Checksum              |
+| Row 5        |                                Source IP Address                              |
+| Row 6        |                              Destination IP Address                           |
+| Row 7        |              Options               |              Padding                   |
+
+
+- The most common version of IP is version 4, or IPv4 
+
+- Header Length field 
+Almost always 20 bytes in length when dealing with IPv4 
+
+- Service Type field 
+These 8 bits can be used to specify details about quality of service, or QoS, technologies 
+
+- Total Length field
+Indicates the total length of the IP datagram it's acctached  to 
+
+- Indetification field
+A 16-bit number that's used to group messages together.
+
+- The maximum size of a single datagram is the largest number you can represent with 16 bits 
+- 65, 535 
+
+
+- If the total amount of data that needs to be snt is larger than what can fit in a single datagram, the IP layer needs to split this data up into many individual packets.
+
+- Flag field 
+Used to indicates if a datagram is allowed to be fragment, or to indicate that the datagram has  already been fragmented 
+
+- fragmentation 
+The process of taking a single IP datagram and splitting it uo into several smaller datagrams 
+
+- Time to Live(TTL) field 
+An 8-bit field that indicates how many router hps a datagram can traverse before it's thrown away. 
+
+- Protocol field 
+Another 8-bit field that contains data about what transport protocol is beign used 
+
+- TCP
+- UDP 
+
+- Header checksum field 
+A checksum of the contents of the entire IP datagram header 
+
+- IP options field 
+An optional field and is used to set special characteristics for datagrams primarily used for testing purposes.
+
+- Padding field 
+A series of zeroes used to ensure the header is the correct total size 
+
+- Data payload section 
+
+| Layer       | Encapsulation Structure                                             |
+|-------------|----------------------------------------------------------------------|
+| Application | Message                                                              |
+| Transport   | TCP or UDP header + Message                                          |
+| Network     | IP header + TCP or UDP header + Message                              |
+| Data-link   | Ethernet header + IP header + TCP or UDP header + Message + Ethernet footer |
+
+### IP Address Classes 
+- IP addresses can be split into two sections: the Network ID and the host ID
+
+- 9.100.100.100 (9 - Network Id)(100.100.100 - host ID)
+
+- Address class system 
+A way of defining how to global IP address space is split up 
+
+- class A - 123.456.780.00(123-network ID)(456.780.00-host ID)
+- class B - 123.456.780.00(123.456-network ID)(780.00-host ID)
+- class C - 123.456.780.00(123.456.780-network ID)(00-host ID)
+
+| Class | Left-most bit | Starting IP address | Last IP address       |
+|-------|----------------|----------------------|------------------------|
+| A     | 0xxx           | 0.0.0.0              | 127.255.255.255        |
+| B     | 10xx           | 128.0.0.0            | 191.255.255.255        |
+| C     | 110x           | 192.0.0.0            | 223.255.255.255        |
+| D     | 1110           | 224.0.0.0            | 239.255.255.255        |
+| E     | 1111           | 240.0.0.0            | 255.255.255.255        |
+
+- Class inter-domain routing 
+
+### Address Resolution Protocol 
+- ARP
+A protocol used to discover the hardware address of a node with a certain IP address 
+
+- ARP Table 
+A list of IP addresses and the MAC addresses associated with them 
+
+- ARP Table entries generally expire after a short amount of time to ensure changes in the network are accounted for.
+
+### Subnetting 
+The process of taking a large netwrok and slitting it up into many individual and smaller subnetworks, or subnets 
+
+
+Incorrect subnetting setups are a common problemm you might run into as an IT Support Specialist, os, it's important to have a strong understanding of how this works 
+
+##### IP address classes
+
+| Class | Range     | Max Hosts    |
+|-------|-----------|--------------|
+| A     | 0-126     | 16 Million   |
+| B     | 128-191   | 64,000       |
+| C     | 192-224   | 254          |
+| D     | 224-239   | N/A          |
+| E     | 240-255   | N/A          |
+
+### Subnet masks 
+ - 10.0.1.1.0 (1.0.0 - NetworkID)(1- SubnetID)(10 - HostID)
+
+- Subnet masks
+32-bit numbers that are normally written out as four octets in decimal 
+
+#### IP Address and Subnet Mask
+
+|                    | Octet 1     | Octet 2     | Octet 3     | Octet 4     |
+|--------------------|-------------|-------------|-------------|-------------|
+| **IP address**     | 9           | 100         | 100         | 100         |
+| **IP address (bin)** | 0000 1001  | 0110 0100   | 0110 0100   | 0110 0100   |
+| **Subnet mask (bin)** | 1111 1111 | 1111 1111   | 1111 1111   | 0000 0000   |
+| **Subnet mask**    | **255.255.255.0** |             |             |             |
+
+- A single 8-bit number can represent 256 different numbers, or more specifically, the numbers 0-255 
+
+### Basic Binary Math 
+- Base ten 
+- Base two 
+
+- Operator 
+
+- two of the most important operators are *OR* and *AND* 
+
+- In computer logic, a 1 represents true and 0 represents false
+
+- X or Y = Z 
+"If either X or Y is true, then Z is true; otherwise , it's false"
+
+- Subnet Mask 
+A way for a computer to use and operators to determine if an IP address exists on the same network
+
+### CIDR 
+- Netwrok ID 
+- 8 bit - class A, 16 bit - class B, 24 bit - class C
+
+- Classes Inter-Domain Routing 
+- Demarcate 
+- Demarcation point 
+To describe where one network or system ends and another one begins 
+
+- CIDR notation 
+
+### Basic Routing Concepts 
+- Routing 
+- Router 
+A network device that forwards traffic depending on the destination on the destination address of that traffic 
+
+- Basic Routing Diagram 
+- ARP Table 
+
+### Routing Tables 
+- Destination network 
+- Next hop 
+- Total hops 
+- Interface 
+
+
+### Interior Gateway Protocols 
+- Routing protocols 
+- Routing protocols fall into two main categories: interior gateway protocols and exteterior gateway protocols
+
+- Interior Gateway Protocol are further split into two categories: Link state routing and distance-vector protocols 
+
+- Interior gateway Protocols
+Used by routers to share information within a single autonomous system 
+
+- Autonomous system 
+A collection of networks that fall under the control of a single network operator 
+
+- The two main types of interior gateway protocols are links state routing protocols and distance-vector protocols
+
+- In computer science, a list is known as a vector 
+
+### Exterior Gateway Protocol
+- Internet Assigned Numbers Authority (IANA)
+A non-profit organization that helps manage things like IP address allocation 
+
+- Along with managing IP address allocation, the IANA is also responsible for ASN, or Autonomous System Number allocation 
+
+- Autonomous System Number(ASN) 
+Numbers assigned to individual autonomous systems
+
+- AS19604 = IBM 
+
+### Non-Routable Address Space 
+- 4,294,967,295 
+- 7.5 billion 
+
+- This means that the IPv4 standard doesn't even have enough addresses available for every person on the planet
+
+- Request for Comments 
+
+- Non-routable address space 
+
+- Network Address Translation
+
+- 10.0.0.0/8
+- 172.16.0.0/12
+- 192.168.0.0/16
+
