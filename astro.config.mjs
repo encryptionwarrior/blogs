@@ -126,8 +126,16 @@ export default defineConfig({
                   slug: "it-support/networking/lacture02",
                 },
                 {
-                  label: "Lac 02: Transport and Application Layers",
+                  label: "Lac 03: Transport and Application Layers",
                   slug: "it-support/networking/lacture03",
+                },
+                {
+                  label: "Lac 04:  Networking Services",
+                  slug: "it-support/networking/lacture04",
+                },
+                {
+                  label: "Lac 04:  Networking Services - Best practice and Technologies",
+                  slug: "it-support/networking/lacture05",
                 },
              ]
 

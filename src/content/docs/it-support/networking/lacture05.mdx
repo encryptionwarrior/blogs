@@ -1,0 +1,90 @@
+---
+title: Networking Services - Best practice and Technologies
+description: Introduction to the Network Services 
+---
+
+- IP address
+- Subnet mask 
+- Gateway
+- Name server 
+
+- Dyanamic Host Configuration Protocol (DHCP)
+An application layer protocol that automates the configuration process of hosts on a network 
+
+- Dyanamic Allocation 
+A range of IP addresses is set aside for client devices and one of these IPs is issued to these devices when they request one 
+
+- Automatic Allocation
+a range of IP addresses is set aside for assigment purposes 
+
+- Fixed allocation 
+Requires a manually specified list of MAC address and their corresponding IPs 
+
+- Netwrok time protocol(NTP) servers 
+Used to keep all computers on a network synchronized in time 
+
+
+### DHCP in Action 
+- DHCP discovery 
+The process by which a client confihured to use DHCP attempts to get network configuration information
+
+- DHCP lease 
+
+### Basics of NAT 
+- Netwrok Address Translation 
+A technologies that allows a gateway, usually a router or firewall, to rwrite the source IP of an outgoing IP datagram while retaining the original Ip in order to rewrite it into the response 
+
+- IP masquerading 
+- One-to-many NAT 
+
+### NAT and the Transport Layer 
+- Port preservation
+A technique where the source port chosen by a client is the same port used by the router 
+
+- - Port Forwarding 
+A technique where specific destination ports can be configured to always be delivered to speicific nodes 
+
+### NAT, Non-Routable Address Space and the Limits of IPv4 
+- Regionnal internet registries 
+- AFRINIC serves the continent of Africa 
+- ARIN serves the United States, Canada, and parts of the Caribbean 
+- APNIC is responsible for most of Asia, Australia, New Zealand and Pecific Island nations 
+- LACNIC covers central Central and South america and any parts of the Carribbean not covered by ARIN 
+- RIPE serves Europe, Russia, the Middle East portions of Central Asia 
+
+- The IANA assigned the last unallocated/8 network blocks to the various RORs on February 3, 2011 
+
+- Then in April 2011, APNIC ran out of addresses 
+- RIPE was exit, in september of 2012v
+
+- LACNIC ran out of addresses to assign in June 2014, and ARIN did the same in September 2015 
+
+- Only AFRINIC has some IPs letf, but those are predicted to be depleted by 2018 
+
+- Non-routable address space 
+
+- EFC1918 
+
+- Virtual Private Netwroks (VPN)
+A technology that allows for the extension of a private or local network to hosts that might not be on that local network 
+
+- Remote Client -> VPN Tunnel(Internet) - > Router -> VPN server 
+
+- Two-factor authentication
+A technique where more than just a username and password are used to authenticate
+
+- VPN server -> router -> VPN tunnel(Internet) -> Router -> VPN Server 
+
+### Proxy Services 
+A server that acts on behalf of a client in order to access another services
+
+- Anonymity
+- Security 
+- Content filtering 
+- Increased performance
+
+- Web proxies 
+ 
+- Reverse proxy
+A service that might appear to be a single server to external clients, but actually represents many servers living behind it 
+
