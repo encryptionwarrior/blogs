@@ -134,8 +134,16 @@ export default defineConfig({
                   slug: "it-support/networking/lacture04",
                 },
                 {
-                  label: "Lac 04:  Networking Services - Best practice and Technologies",
+                  label: "Lac 05:  Networking Services - Best practice and Technologies",
                   slug: "it-support/networking/lacture05",
+                },
+                {
+                  label: "Lac 06: Connecting to the Internet",
+                  slug: "it-support/networking/lacture06",
+                },
+                {
+                  label: "Lac 07: Troubleshooting and the Future of Networking",
+                  slug: "it-support/networking/lacture07",
                 },
              ]
 

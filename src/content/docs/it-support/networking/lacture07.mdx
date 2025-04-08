@@ -1,0 +1,69 @@
+---
+title: Troubleshooting and the Future of Networking
+description: Introduction to the Network Services 
+---
+
+- Error detection  
+The ability for a protocol pr program to determine that something went wrong 
+
+- Error-recovery  
+The ability for a protocol or program to attempt to fix it 
+
+- Errors still pop-up 
+- miscounfiguring occur 
+- Hardware breaks down 
+- System incompatibilities come to light 
+
+- The cloud 
+- IPv6 
+
+### Ping: Internet Control Message Protocol 
+
+- The payload of ran ICMP packet exists entirely so that the recipient of the message knows which of their transmission caused the error being reported 
+
+- Ping  
+Ping lets you send a special type of ICMP message called an Echo Request 
+
+- If the destination is up and running and able to communicate on the network, it'll send back an ICMP Echo Reply message type 
+
+### Traceroute 
+A utility that lets you discover the path between two nodes, and gives you information about each hop along the way 
+
+- TTL field 
+- Time Exceeded 
+- `traceroute google.com`
+- `tracert google.com`
+
+- mtr - Linux/MacOS
+- pathping - Windows
+
+### Testing Port Connectivity 
+- netcat - Linux/MacOS 
+- Test-NetConnection - Windows 
+- nc, nc host, nc host port 
+- Zero input/Output mode 
+- Verbose 
+- `nc -z -v google.com 80`
+- `test-NetConnection google.com`
+- -port
+
+### Name Resolution Tools 
+- nslookup 
+- `nslookup twitter.com`
+- set debug 
+
+### Public DNS Servers 
+An ISP almost always gives you access to a recursive name server as part of the service it provides.
+
+- DNS as A Service 
+
+- Public DNS Servers  
+Name servers specifically set up so that anyone can use then, for free 
+
+- Level 3 Communications 
+- Most public DNS servers are available through anycast 
+
+
+
+
+
