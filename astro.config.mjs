@@ -148,6 +148,16 @@ export default defineConfig({
              ]
 
             },
+            {
+              label: "System Administration and IT Infrastruture Services",
+             items: [
+               {
+                 label: "Lac 01: Network and IT Infrastructure Services",
+                 slug: "it-support/system-administration/lacture01",
+                },
+             ]
+
+            },
           ]
         },
         {
