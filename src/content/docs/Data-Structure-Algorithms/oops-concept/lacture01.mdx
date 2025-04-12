@@ -1,0 +1,363 @@
+---
+title: OOPS Concept 
+description: A guide in my new Starlight docs site.
+---
+
+### Introduction 
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+class Hero {
+    public:
+        string name;
+        int health;
+        char level;
+};
+
+int main() {
+    Hero h1;
+    
+    h1.name = "Akash Gautam";
+    h1.health = 100;
+    h1.level  = 'A';
+
+    cout << "h1.name : " << h1.name << endl;
+    cout << "h1.health : " << h1.health << endl;
+    cout << "h1.level : " << h1.level << endl;
+
+    return 0;
+}
+```
+
+### Class Dyanamic Allocation 
+```c++ 
+#include <bits/stdc++.h>
+using namespace std;
+
+class Hero {
+    public:
+        string name;
+        int health;
+        char level;
+};
+
+int main() {
+    Hero *h1 = new Hero;
+    
+    h1->name = "Akash Gautam";
+    h1->health = 100;
+    h1->level  = 'A';
+
+    cout << "h1->name : " << h1->name << endl;
+    cout << "h1->health : " << h1->health << endl;
+    cout << "h1->level : " << h1->level << endl;
+
+    return 0;
+}
+```
+
+### Constructor 
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+class Hero {
+    public:
+        string name;
+        int health;
+        char level;
+
+        Hero() {
+        }
+
+        Hero(int health) {
+            this->health = health;
+        }
+
+        Hero(int health, char level) {
+            this->health = health;
+            this->level = level;
+        }
+
+        Hero(int health, char level, string name) {
+            this->health = health;
+            this->level = level;
+            this->name = name;
+        }
+};
+
+int main() {
+    Hero *h1 = new Hero();
+    cout << "For h1 : " << endl;
+    cout << "h1->health = " << h1->health << endl;
+    cout << "h1->level = " << h1->level << endl;
+    cout << "h1->name = " << h1->name << endl << endl;
+    
+    Hero *h2 = new Hero(30);
+    cout << "For h2 : " << endl;
+    cout << "h2->health = " << h2->health << endl;
+    cout << "h2->level = " << h2->level << endl;
+    cout << "h2->name = " << h2->name << endl << endl;
+
+    Hero *h3 = new Hero(40, 'A');
+    cout << "For h3 : " << endl;
+    cout << "h3->health = " << h3->health << endl;
+    cout << "h3->level = " << h3->level << endl;
+    cout << "h3->name = " << h3->name << endl << endl;
+
+    Hero *h4 = new Hero(50, 'B', "Akash");
+    cout << "For h4 : " << endl;
+    cout << "h4->health = " << h4->health << endl;
+    cout << "h4->level = " << h4->level << endl;
+    cout << "h4->name = " << h4->name << endl << endl;
+
+    return 0;
+}
+```
+
+### Copy Constructor 
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+class Hero {
+    public:
+        string name;
+        int health;
+        char level;
+
+        Hero() {
+        }
+
+        Hero(int health) {
+            this->health = health;
+        }
+
+        Hero(int health, char level) {
+            this->health = health;
+            this->level = level;
+        }
+
+        Hero(int health, char level, string name) {
+            this->health = health;
+            this->level = level;
+            this->name = name;
+        }
+
+        Hero(Hero &temp) {
+            this->health = temp.health;
+            this->level = temp.level;
+            this->name = temp.name;
+        }
+
+        void print() {
+            cout << "[Name : " << this->name << " , Health : ";
+            cout << this->health << " , Level : " << this->level << "]" << endl;
+        }
+};
+
+int main() {
+    Hero *h1 = new Hero(80, 'A', "Akash");
+    cout << "For h1 : ";
+    h1->print();
+    
+    Hero *h2 = new Hero(*h1);
+    cout << "For h2 : ";
+    h2->print();
+
+    Hero h3(*h2);
+    cout << "For h3 : ";
+    h3.print();
+
+    return 0;
+}
+```
+
+### Deep and Shallow Copy 
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+class Hero {
+    public:
+        char *name;
+        int health;
+        char level;
+
+        Hero() {
+        }
+
+        Hero(int health) {
+            this->health = health;
+        }
+
+        Hero(int health, char level) {
+            this->health = health;
+            this->level = level;
+        }
+
+        Hero(int health, char level, char *name) {
+            this->health = health;
+            this->level = level;
+            this->name = name;
+        }
+
+        // Hero(Hero &temp) {
+        //     this->health = temp.health;
+        //     this->level = temp.level;
+        //     this->name = temp.name;
+        // }
+
+        void print() {
+            cout << "[Name : " << this->name << " , Health : ";
+            cout << this->health << " , Level : " << this->level << "]" << endl;
+        }
+};
+
+int main() {
+    // cout << "Hello";
+    Hero h1(80, 'A');
+    char temp[6] = "Akash";
+    strcpy(h1.name, temp);
+    cout << "h1 before update : ";
+    h1.print();
+    
+    Hero h2(h1);
+    cout << "h2 before update : ";
+    h2.print();
+// cout << h1.name[0]
+    h1.name[0] = 'B';
+    
+    cout << "h1 after update : ";
+    h1.print();
+    cout << "h2 after update : ";
+    h2.print();
+
+    return 0;
+}
+```
+
+### Destructor 
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+class Hero {
+    public:
+        string name;
+        int health;
+        char level;
+
+        Hero() {
+            cout << "\tConstructor Called !" << endl;
+        }
+
+        Hero(int health) {
+            cout << "\tConstructor Called !" << endl;
+            this->health = health;
+        }
+
+        Hero(int health, char level) {
+            cout << "\tConstructor Called !" << endl;
+            this->health = health;
+            this->level = level;
+        }
+
+        Hero(int health, char level, string name) {
+            cout << "\tConstructor Called !" << endl;
+            this->health = health;
+            this->level = level;
+            this->name = name;
+        }
+
+        ~Hero() {
+            cout << "\tDestructor Called !" << endl;
+        }
+
+        void print() {
+            cout << "[Name : " << this->name << " , Health : ";
+            cout << this->health << " , level : " << this->level;
+            cout << "]" << endl;
+        }
+};
+
+int main() {
+
+    // Dynamic Allocation
+    Hero *h1 = new Hero(150, 'A', "Akash");
+    h1->print();
+    delete h1;      // Calling destructor manually
+
+    cout << endl;
+
+    // Static Allocation
+    Hero h2(250, 'G', "Gautam");
+    h2.print();
+    // Destructor called automatically
+
+    return 0;
+}
+```
+
+### Static Keyword 
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+class Hero {
+    public:
+        string name;
+        int health;
+        char level;
+
+        static int time;
+
+        Hero() {
+            cout << "\tConstructor Called !" << endl;
+        }
+
+        Hero(int health) {
+            cout << "\tConstructor Called !" << endl;
+            this->health = health;
+        }
+
+        Hero(int health, char level) {
+            cout << "\tConstructor Called !" << endl;
+            this->health = health;
+            this->level = level;
+        }
+
+        Hero(int health, char level, string name) {
+            cout << "\tConstructor Called !" << endl;
+            this->health = health;
+            this->level = level;
+            this->name = name;
+        }
+
+        ~Hero() {
+            cout << "\tDestructor Called !" << endl;
+        }
+
+        void print() {
+            cout << "[Name : " << this->name << " , Health : ";
+            cout << this->health << " , level : " << this->level;
+            cout << "]" << endl;
+        }
+
+        static int random() {
+            return time;
+        }
+};
+
+int Hero::time = 10;
+
+int main() {
+
+    cout << "Hero::time -> " << Hero::time << endl;
+
+    cout << "Hero::random() -> " << Hero::random() << endl;
+
+    return 0;
+}
+```

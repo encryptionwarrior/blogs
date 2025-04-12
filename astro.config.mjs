@@ -155,6 +155,10 @@ export default defineConfig({
                  label: "Lac 01: Network and IT Infrastructure Services",
                  slug: "it-support/system-administration/lacture01",
                 },
+               {
+                 label: "Lac 02: Software and Platform Service",
+                 slug: "it-support/system-administration/lacture02",
+                },
              ]
 
             },
@@ -544,6 +548,19 @@ export default defineConfig({
             {
               label: "Space-Time Complexity: Recusrive Algorithms",
               slug: "data-structure-algorithms/space-time-complexity/recursive_algo",
+            },
+            {
+              label: "OOPS concept",
+             items: [
+             {
+              label: "Introduction Of OOPS",
+              slug: "data-structure-algorithms/oops-concept/lacture01"
+             },
+             {
+              label: "Pillars of OOPS Concept",
+              slug: "data-structure-algorithms/oops-concept/lacture02"
+             },
+             ]
             },
           ],
         },
