@@ -562,6 +562,192 @@ export default defineConfig({
              },
              ]
             },
+            {
+              label: "Linked List",
+             items: [
+             {
+              label: "Day 01",
+              items: [
+                {
+                  label: "Introduction",
+                  slug: "data-structure-algorithms/linked-list/day01/lacture01"
+                },
+                {
+                  label: "Singly Linked List",
+                  slug: "data-structure-algorithms/linked-list/day01/lacture02"
+                },
+                {
+                  label: "Doubly Linked List",
+                  slug: "data-structure-algorithms/linked-list/day01/lacture03"
+                },
+                {
+                  label: "Circular Linked List",
+                  slug: "data-structure-algorithms/linked-list/day01/lacture04"
+                },
+              ],
+             },
+             {
+              label: "Day 02",
+              items: [
+                {
+                  label: "Reversed Linked List",
+                  slug: "data-structure-algorithms/linked-list/day02/lacture01"
+                },
+                {
+                  label: "Reversed DLL",
+                  slug: "data-structure-algorithms/linked-list/day02/lacture02"
+                },
+                {
+                  label: "Middle Of Linked List",
+                  slug: "data-structure-algorithms/linked-list/day02/lacture03"
+                },
+              ],
+             },
+             {
+              label: "Day 03",
+              items: [
+                {
+                  label: "Reversed LL In K Groups",
+                  slug: "data-structure-algorithms/linked-list/day03/lacture01"
+                },
+                {
+                  label: "Check Circular List",
+                  slug: "data-structure-algorithms/linked-list/day03/lacture02"
+                },
+              ],
+             },
+             {
+              label: "Day 04",
+              items: [
+                {
+                  label: "Detect Loop",
+                  slug: "data-structure-algorithms/linked-list/day04/lacture01"
+                },
+                {
+                  label: "Flyod Cycle Detection",
+                  slug: "data-structure-algorithms/linked-list/day04/lacture02"
+                },
+                {
+                  label: "Beginning Of The Loop",
+                  slug: "data-structure-algorithms/linked-list/day04/lacture03"
+                },
+                {
+                  label: "Remove Loop",
+                  slug: "data-structure-algorithms/linked-list/day04/lacture04"
+                },
+              ],
+             },
+             {
+              label: "Day 05",
+              items: [
+                {
+                  label: "Remove Duplicates In Sorted",
+                  slug: "data-structure-algorithms/linked-list/day05/lacture01"
+                },
+                {
+                  label: "Remove Duplicates In UnSorted",
+                  slug: "data-structure-algorithms/linked-list/day05/lacture02"
+                },
+                {
+                  label: "Split Circular",
+                  slug: "data-structure-algorithms/linked-list/day05/lacture03"
+                },
+              ],
+             },
+             {
+              label: "Day 06",
+              items: [
+                {
+                  label: "Sort In LL",
+                  slug: "data-structure-algorithms/linked-list/day06/lacture01"
+                },
+              ],
+             },
+             {
+              label: "Check Palindrome",
+              slug: "data-structure-algorithms/linked-list/day07"
+             },
+             {
+              label: "Add 2 Numbers Represented",
+              slug: "data-structure-algorithms/linked-list/day08"
+             },
+             {
+              label: "Clone a Linked List",
+              slug: "data-structure-algorithms/linked-list/day09"
+             },
+             {
+              label: "Merge Sort and Flatted A Linked List",
+              slug: "data-structure-algorithms/linked-list/day10"
+             },
+             ]
+            },
+            {
+              label: "Stack",
+              items: [
+                {
+                  label: "Day 01",
+                  items: [
+                    {
+                      label: "STL Implementation",
+                      slug: "data-structure-algorithms/stack/day01/lacture01"
+                    },
+                    {
+                      label: "Array Implementation",
+                      slug: "data-structure-algorithms/stack/day01/lacture02"
+                    },
+                    {
+                      label: "Linked List Implementation",
+                      slug: "data-structure-algorithms/stack/day01/lacture03"
+                    },
+                    {
+                      label: "Two Stack In An Array",
+                      slug: "data-structure-algorithms/stack/day01/lacture04"
+                    },
+                  ]
+                },
+                {
+                  label: "Day 02",
+                  items: [
+                    {
+                      label: "Reverse String",
+                      slug: "data-structure-algorithms/stack/day02/lacture02"
+                    },
+                    {
+                      label: "Delete Middle Of Stack",
+                      slug: "data-structure-algorithms/stack/day02/lacture02"
+                    },
+                    {
+                      label: "Valid Parenthesis",
+                      slug: "data-structure-algorithms/stack/day02/lacture03"
+                    },
+                    {
+                      label: "Insert An Element At Bottom",
+                      slug: "data-structure-algorithms/stack/day02/lacture04"
+                    },
+                    {
+                      label: "Reverse Stack using Recursion",
+                      slug: "data-structure-algorithms/stack/day02/lacture05"
+                    },
+                    {
+                      label: "Reverse Stack using Recursion",
+                      slug: "data-structure-algorithms/stack/day02/lacture05"
+                    },
+                    {
+                      label: "Sort Stack",
+                      slug: "data-structure-algorithms/stack/day02/lacture06"
+                    },
+                    {
+                      label: "Reduntant Brackets",
+                      slug: "data-structure-algorithms/stack/day02/lacture07"
+                    },
+                    {
+                      label: "Minimum Cost to make string valid",
+                      slug: "data-structure-algorithms/stack/day02/lacture08"
+                    },
+                  ]
+                },
+              ]
+            }
           ],
         },
         {
