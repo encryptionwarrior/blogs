@@ -746,6 +746,77 @@ export default defineConfig({
                     },
                   ]
                 },
+                {
+                  label: "day 03",
+                  items: [
+                    {
+                      label: "Next Smaller Element",
+                      slug: "data-structure-algorithms/stack/day03/lacture01"
+                    },
+                    {
+                      label: "Previous Smaller Element",
+                      slug: "data-structure-algorithms/stack/day03/lacture02"
+                    },
+                    {
+                      label: "Largest Reactange In Histogram ",
+                      slug: "data-structure-algorithms/stack/day03/lacture03"
+                    },
+                  ]
+                },
+                {
+                  label: "Celebrity Problem and Max Reactangle Matrix",
+                  slug: "data-structure-algorithms/stack/day04"
+                },
+                {
+                  label: "N Stack in An Array",
+                  slug: "data-structure-algorithms/stack/day05"
+                },
+                {
+                  label: "Get Min In 0(1) TC",
+                  slug: "data-structure-algorithms/stack/day06"
+                },
+              ]
+            },
+            {
+              label: "Queue",
+              items: [
+                {
+                  label: "Day 01",
+                  items: [
+                    {
+                      label: "Queue STL Implementation",
+                      slug: "data-structure-algorithms/queue/day01/lacture01"
+                    },
+                    {
+                      label: "Queue Array Implementation",
+                      slug: "data-structure-algorithms/queue/day01/lacture02"
+                    },
+                    {
+                      label: "Queue Linked List Implementation",
+                      slug: "data-structure-algorithms/queue/day01/lacture03"
+                    },
+                    {
+                      label: "Circular Queue",
+                      slug: "data-structure-algorithms/queue/day01/lacture04"
+                    },
+                    {
+                      label: "Input Restricted Queue",
+                      slug: "data-structure-algorithms/queue/day01/lacture05"
+                    },
+                    {
+                      label: "Output Restricted Queue",
+                      slug: "data-structure-algorithms/queue/day01/lacture06"
+                    },
+                    {
+                      label: "Doubly Ended Queue STL",
+                      slug: "data-structure-algorithms/queue/day01/lacture07"
+                    },
+                    {
+                      label: "Doubly Ended Queue Implementation",
+                      slug: "data-structure-algorithms/queue/day01/lacture08"
+                    },
+                  ]
+                }
               ]
             }
           ],
