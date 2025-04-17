@@ -1,0 +1,180 @@
+---
+title: Directory Services
+description: A guide in my new Starlight docs site.
+---
+
+### What is a Directory Server?
+Contains a lookup service that provides mapping beyween network resources and their network addresses.
+
+- Replication  
+The stored directory data can be copied and distributed across a number of physically distributed servers, but still appear as one, unified datastore for querying and administrating  
+
+-  Directory services  
+Useful for organization data and making it searchable for an organization 
+
+- Organizational Units (OUs)
+
+- Setup 
+- Configuration 
+- maintenance 
+
+### Implementing Directory server  
+- Directory Access Protocol(DAP) 
+- Directory System Protocol(DSP)
+- Directory Information shadowing Protocol(DISP)
+- Directory Operational Binding Management Protocol (DOP)
+- Lightweight Directory Access Protocol(LDAP)
+- Active Directory (AD) 
+- OpenLDAP
+
+### What is Centralized Management?
+A central service that provides instructions to all of the different parts of my IT infrastructure  
+
+- Directory services provides centralized authentication, authorization, and accounting, also known as AAA.  
+
+- RBAC (Role Based Access Control)
+
+- Chef 
+- Puppet 
+- SCCM 
+
+
+### What is LDAP?
+- Lightweight Directory Access Protocol(LDAP)  
+Used to access information in directory services like over a network  
+
+- Active Directory 
+- OpenLDAP  
+
+- dn:CN=Devan Sri-Tharan, OU=sysadmin, DC=example, DC=com 
+- dn(distinguished name), CN=(Common name of the object), OU(Organization unit such as a group), DC(domain component)
+
+
+### What is LDAP Authentication 
+- Bind operation 
+-  Anonymous 
+- Simple 
+- SASL (Simple Authentication & Security Layer)
+
+- kerberos  
+A network authentication protocol that's used to authenticate user identity, secure the transfer of user credentials, and more 
+
+### What is Active Directory? (AD)
+The native directory service for microsoft windows
+
+- Group Policy Objects (GPOs)
+- Active Directory Administrative Center(ADAC)
+- Containers 
+- Flexible Single-master Operations (FSMO) 
+
+### Managing Active Directory 
+
+### Managing Active Directory Users and Groups  
+- Security Account Manager 
+- Security Group  
+- Distribution Group  
+- Domain Local
+- Global 
+- Universal 
+- Security principal 
+- Parent group 
+
+### Managing Active Directory User Passwords 
+- One way cryptographic hash 
+- If there's more than one person who can authenticate using same username and password, then auditing becomes difficult or even impossible 
+- Reset 
+- Enceryption File system(EFS)
+
+### Joining an Active Directory Domain 
+- Joined or bound 
+- Workgroup computer 
+
+- `Add-computer -DomainName 'example.com' -Server 'dcl'`
+- Functional levels 
+
+### What is Group Policy?  
+- Group Policy Object  
+A set of plocies and preferences that can be applied to a group of objects in the directory 
+
+- When you link a GPO, all of yhe computers or users under that domain, site, or OU will have that policy applied. 
+
+- WMI Filters 
+- Securoty filtering 
+
+- A group Policy object can conayin computer configuratiuon, user configuration, or both. 
+
+
+- Policies  
+Settings that are reapplied every few minutes, and aren't meant to be changed even by the local administrators 
+
+- Group Policy Preferences  
+Settings that, in many cases, are meant to be a template for settings  
+
+
+- Windows Registry  
+A hierarchiral database of settings that windows, and many windows applications, use for storing configuration data 
+
+- Group policy Creation and Editing 
+- Group Policy management Console 
+- WMI 
+- Group Policy Settings Reference
+- Change management process  
+- AGPM 
+
+
+### Group Policy Inheritance and precedence 
+- When a computer is processing the Group Policy Objects that apply to it, all of these policies will be applied in precedence rules.  
+
+- Resultant set of Policy (RSOP) 
+- RSOP report 
+
+### Group Policy Troubleshooting 
+One of the most common issues you might encounter is when a user isn't able to login to their computer, or isn't able to authenticate to the Active directory domain. 
+
+- DNS records 
+- SRV records 
+- The SRV records that we're interested in are _ldap.tcp.dc._msdcs.DOMAIN.NAME, where DOMAIN.NAME is the DNS name of our main.  
+
+- `Resolve-DNSName -Type -Name _ldap._tcp.dc._msdcs.example.com` 
+
+- w32tm/resync 
+- A common issue that you might have to troubleshoot is when a GPO-defined policy or preferences fails to apply to a computer.  
+
+- Fast Logon Optimization 
+- gpupdate/force 
+- gpupdate/force/sync 
+
+- Replication failure 
+- `gpresult /R` 
+- `gpresult /H FILENAME.html`
+- gpresult /H test.html 
+- WMI filter 
+
+
+### Mobile Device Management(MDM) 
+- Remote wipe  
+A factory reste that yopu can trigger from your central MDM, rather than having to do it in person on the device 
+
+- Enterprise mobility management (EMM) 
+
+### What is OpenLDAP?
+- openLDAP 
+- LDIF 
+- LDAP Data Interchange Format 
+
+- `sudo apt-get install slapd ldap-utils` 
+-  `sudo dpkg-reconfigure slapd` 
+
+### Managing OpenLDAP 
+- phpLADP admin 
+- LDIF files 
+- ladpadd  
+Takes the input of an LDIF file and adds the context of the files 
+- ldapmodify  
+modifies an existing object 
+- ldapdelete 
+- ldapsearch 
+
+
+
+

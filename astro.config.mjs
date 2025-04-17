@@ -159,6 +159,18 @@ export default defineConfig({
                  label: "Lac 02: Software and Platform Service",
                  slug: "it-support/system-administration/lacture02",
                 },
+               {
+                 label: "Lac 03: What is system Administration?",
+                 slug: "it-support/system-administration/lacture03",
+                },
+               {
+                 label: "Lac 04: Data Recovery & Backups",
+                 slug: "it-support/system-administration/lacture04",
+                },
+               {
+                 label: "Lac 05: Directory Services",
+                 slug: "it-support/system-administration/lacture05",
+                },
              ]
 
             },
