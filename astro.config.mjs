@@ -174,6 +174,16 @@ export default defineConfig({
              ]
 
             },
+            {
+              label: "IT Security",
+             items: [
+               {
+                 label: "Lac 01: Understanding Security Threads",
+                 slug: "it-support/it-security/lacture01",
+                },
+             ]
+
+            },
           ]
         },
         {
