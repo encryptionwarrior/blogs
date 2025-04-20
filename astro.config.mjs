@@ -8,7 +8,7 @@ export default defineConfig({
     starlight({
       title: "Shadow Cipher",
       social: {
-        github: "https://github.com/withastro/starlight",
+        github: "https://github.com/encryptionwarrior",
       },
       sidebar: [
         {
@@ -31,6 +31,19 @@ export default defineConfig({
         {
           label: "IT Security",
           autogenerate: { directory: "IT Security" },
+        },
+        {
+          label: "English Speaking",
+          items: [
+            {
+              label: "How to speak Alone?",
+              slug: "english-speaking/how-to-speak",
+            }
+          ]
+        },
+        {
+          label: "Soft Skills",
+          slug: "soft-skills/overview"
         },
         {
           label: "IT Support",
@@ -180,6 +193,14 @@ export default defineConfig({
                {
                  label: "Lac 01: Understanding Security Threads",
                  slug: "it-support/it-security/lacture01",
+                },
+               {
+                 label: "Lac 02: Pelcgbytbtl(Cryptography)",
+                 slug: "it-support/it-security/lacture02",
+                },
+               {
+                 label: "Lac 02: AAA Security",
+                 slug: "it-support/it-security/lacture03",
                 },
              ]
 
