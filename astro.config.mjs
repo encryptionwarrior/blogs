@@ -873,6 +873,56 @@ export default defineConfig({
           autogenerate: { directory: "sql" },
         },
         {
+          label: "Languages",
+          items: [
+            {
+              label: "Javascript",
+              items: [
+                {
+                  label: "Basics",
+                  slug: "languages/javascript/basics01"
+                },
+                {
+                  label: "Basics 02",
+                  slug: "languages/javascript/basics02"
+                },
+                {
+                  label: "Basics 03",
+                  slug: "languages/javascript/basics03"
+                },
+                {
+                  label: "Advanced One",
+                  slug: "languages/javascript/advanced-one"
+                },
+                {
+                  label: "Classes and OOPs",
+                  slug: "languages/javascript/classes-oops"
+                },
+                {
+                  label: "Control Flow",
+                  slug: "languages/javascript/control-flow"
+                },
+                {
+                  label: "DOMs",
+                  slug: "languages/javascript/dom"
+                },
+                {
+                  label: "Events",
+                  slug: "languages/javascript/events"
+                },
+                {
+                  label: "Iterations",
+                  slug: "languages/javascript/iterations"
+                },
+                {
+                  label: "Closures",
+                  slug: "languages/javascript/closures"
+                },
+              ]
+            }
+          ]
+        },
+        {
           label: "Nest Js",
           autogenerate: { directory: "nestjs" },
         },

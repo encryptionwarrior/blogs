@@ -1,0 +1,286 @@
+---
+title: Basics Of JS
+description: A guide in my new Starlight docs site.
+---
+
+### Variables
+
+```js
+const accountId = 144553;
+let accountEmail = "hitesh@google.com";
+var accountPassword = "12345";
+accountCity = "jaipur";
+let accountState;
+
+accountEmail = "hc@hc.com";
+accountPassword = "21212121";
+accountCity = "Benguluru";
+
+console.log(accountId, accountCity);
+
+console.table([accountId, accountEmail, accountPassword, accountCity, accountState]);
+```
+
+### Datatypes  
+```js
+"use strcit";
+// alert(3+3);
+console.log(3+3);
+
+console.log("Hiesh");
+
+let name = "hitesh";
+let age = 18;
+let isLoggedIn = false;
+let state;
+
+// number => 2 to power 53;
+// bigint
+// string => ""
+// boolean => true, false
+// null => standalone value
+// undefined =>
+// symbol => unque
+// object
+
+console.log(typeof undefined);
+console.log(typeof null);
+```
+
+### Conversion Operations  
+```js
+let score = "hitesh";
+
+console.log(typeof score);
+console.log(typeof(score));
+
+let valueInNumber = Number(score);
+console.log(typeof valueInNumber);
+console.log(valueInNumber);
+
+// "33" => 33
+// "33abc" => NaN
+// true => 1; false => 0
+
+let isLoggedIn = "hitesh";
+
+let booleanIsLoggedIn = Boolean(isLoggedIn);
+console.log("booleanIsLoggedIn", booleanIsLoggedIn);
+
+// 1 => true; 0 => false
+// "" => false
+// "hitesh" => true
+
+let someNumber = 33;
+let stringNumber = String(someNumber);
+console.log(stringNumber);
+console.log(typeof stringNumber);
+
+// *********opeations***********************
+
+let value = 3;
+let negValue = -value;
+let strneg = -"value";
+console.log(negValue);
+console.log(strneg);
+
+
+console.log(2+2);
+console.log(2-2);
+console.log(2*2);
+console.log(2**3);
+console.log(2/3);
+console.log(2%3);
+
+let str1 = "hello";
+let str2 = "hitesh";
+
+let str3 = str1 + str2;
+console.log(str3);
+
+
+console.log("1"+2);
+console.log(1+"2");
+console.log("1"+2+2);
+console.log(1+2+"2");
+console.log((3+4)*5%3);
+
+console.log(+true);
+console.log(+"");
+
+let num1, num2, num3;
+
+num1 = num2 = num3 = 2+2;
+
+console.log(num1, num2, num3);
+
+let ganeCounter = 100;
+++ganeCounter;
+console.log(ganeCounter);
+// link to study
+// https://tc39.es/ecma262/multipage/abstract-operations.html#sec-type-conversion
+```
+
+### Comparison  
+```js
+
+console.log(2 > 1);
+console.log(2 >= 1);
+console.log(2 < 1);
+console.log(2 == 1);
+console.log(2 != 1);
+
+console.log("numbers");
+console.log("2" > 1);
+console.log("02" > 1);
+
+console.log("nulls")
+console.log(null > 0);
+console.log(null == 0);
+console.log(null >= 0);
+
+console.log("undefined")
+console.log(undefined == 0);
+console.log(undefined > 0);
+console.log(undefined < 0);
+
+console.log("2" === 2)
+```
+
+### Strings  
+```js
+
+const name = "hitesh";
+const repocount = 50;
+
+console.log(name + repocount + "value");
+console.log(`Hello my name is ${name} and my repo count is ${repocount}`);
+
+const gameName = new String("hitesh-hc-com");
+console.log(gameName[0]);
+console.log(gameName.__proto__);
+console.log(gameName.length);
+console.log(gameName.toUpperCase());
+console.log(gameName.charAt(2));
+console.log(gameName.indexOf("t"));
+
+const newString = gameName.substring(0, 4);
+console.log(newString);
+
+const anotherString = gameName.slice(-8, 4);
+console.log(anotherString);
+
+const newStringOne = "   hitesh   ";
+console.log(newStringOne);
+console.log(newStringOne.trim());
+
+const url = "https://hitesh.com/hitesh%20choudhary";
+console.log(url.replace("%20", "-"));
+console.log(url.includes("sunder"));
+console.log(gameName.split("-"));
+```
+
+### Number Maths 
+```js  
+const score = 400;
+console.log(score);
+
+const balance = new Number(100);
+console.log(balance);
+
+console.log(balance.toString().length);
+console.log(balance.toFixed(1));
+
+const otherName = 123.8966;
+console.log(otherName.toPrecision(4));
+
+const hundreds = 100000;
+console.log(hundreds.toLocaleString('en-IN'));
+
+// ++++++++++++++++++++++ Maths ++++++++++++++++
+console.log(Math);
+console.log(Math.abs(-4));
+console.log(Math.round(4.6));
+console.log(Math.ceil(4.2));
+console.log(Math.floor(4.9));
+console.log(Math.min(4, 3, 6, 8));
+console.log(Math.max(4, 3, 6, 8));
+
+console.log(Math.random());
+console.log((Math.random()*10)+1);
+console.log(Math.floor(Math.random()*10)+1);
+
+const min = 10;
+const max = 20;
+
+console.log(Math.floor(Math.random()*(max-min + 1))+ min);
+```
+
+### Dates 
+```js 
+
+let myDate = new Date();
+console.log(myDate.toString());
+console.log(myDate.toDateString());
+console.log(myDate.toLocaleDateString());
+console.log(typeof myDate);
+
+// let myCreatedDate = new Date("01-14-2023");
+// let myCreatedDate = new Date(2023, 0, 23);
+let myCreatedDate = new Date(2023, 0, 23, 5, 3);
+console.log(myCreatedDate.toLocaleString);
+
+let myTimeStmap = Date.now();
+
+console.log(myTimeStmap);
+console.log(myCreatedDate.getTime());
+console.log(Math.floor(Date.now()/1000));
+
+let newDate = new Date();
+console.log(newDate);
+console.log(newDate.getMonth()+1);
+console.log(newDate.getDay());
+
+// `${newDate.getDay()} and the time`
+
+newDate.toLocaleString("default", {
+    weekday: "long"
+})
+```
+
+### Datatypes Summary  
+```js  
+// primitve
+
+// 7 types - string, number, boolean, null, undefined, symbol, bigint
+
+const score = 100;
+const scoreValue = 100.3;
+
+const isLoggedIn = false;
+const outsideTemp = null;
+let userEmail;
+
+const id = Symbol("123");
+const anotherId = Symbol("123");
+
+console.log(id === anotherId);
+
+const bigNumber = 234566566566n;
+
+// reference(Non-Primitve)
+
+// Array, Objects, funtions
+
+const heroes = ["Shaktiman", "Naagraj", "Doga"];
+let myObj = {
+    name: "Hitesh",
+    age: 22
+};
+
+const myFunction = function(){
+    console.log("Hello World");
+}
+
+console.log(typeof anotherId);
+```

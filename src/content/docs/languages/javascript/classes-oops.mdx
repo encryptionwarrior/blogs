@@ -1,0 +1,417 @@
+---
+title: Classes and OOPS
+description: A guide in my new Starlight docs site.
+---
+
+### Bind 
+```js 
+
+class React {
+    constructor(){
+        this.library = "React";
+        this.server = "https://localhost:300";
+
+        document.querySelector(button)
+        .addEventListener("click", this.handleClick.bind(this));
+    }
+
+    handleClick(){
+        console.log("button clicked");
+        console.log(this.server);
+    }
+
+}
+
+const app = new React();
+```
+
+### Call 
+```js 
+function SetUsername(username){
+    this.username = username;
+    console.log("called");
+}
+
+function createdUser(username, email, password){
+    SetUsername.call(this, username);
+
+    this.email = email
+    this.password = password
+}
+
+const chai = new createdUser("chai", "chai@fb.com", "123");
+console.log(chai);
+```
+
+
+### Getter Setter 
+```js 
+
+class User {
+    constructor(email, password){
+        this.email = email;
+        this.password = password;
+    }
+
+    get email(){
+        return this._email.toUpperCase();
+    }
+
+    set email(value){
+        this._email = value;
+    }
+
+    get password(){
+        return `${this._password}hitesh`;
+    }
+
+    set password(value){
+        this._password = value;
+    }
+}
+
+const hitesh = new User("h@hitesh.ai", "abc");
+console.log(hitesh.email);
+console.log(hitesh.password);
+```
+
+### Inheritance 
+```js 
+class User {
+    constructor(username){
+        this.username = username;
+    }
+
+    logMe(){
+        console.log(`USERNAME is ${this.username}`);
+    }
+}
+
+class Teacher extends User{
+    constructor(username, email, password){
+        super(username);
+        this.email = email;
+        this.password = password;
+    }
+
+    addCourse(){
+        console.log(`A New course was added by ${this.username}`);
+    }
+
+}
+
+const chai = new Teacher("chai", "chai@teacher.com", "123");
+
+chai.logMe();
+
+const masalaChai = new User("masalaChai");
+masalaChai.logMe();;
+console.log(chai instanceof User);
+```
+
+### Math PI 
+```js 
+const descripter = Object.getOwnPropertyDescriptor(Math, "PI");
+
+console.log(descripter);
+console.log(Math.PI);
+Math.PI = 5;
+console.log(Math.PI);
+
+const chai = {
+    name: "ginger chai",
+    price: 250,
+    isAvailable: true,
+
+    orderChai: function(){
+        console.log("chai nhi bni");
+    }
+}
+
+console.log(Object.getOwnPropertyDescriptor(chai, "name"));
+
+Object.defineProperty(chai, "name", {
+    enumerable: true,
+});
+
+console.log(Object.getOwnPropertyDescriptor(chai, "name"));
+
+for(let [key, value] of Object.entries(chai)){
+    if(typeof value !== 'function'){
+        console.log(`${key} : ${key}`);
+    }
+}
+```
+
+### My classes  
+```js 
+
+class User {
+    constructor(username, email, password){
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
+    encryptPassword(){
+        return `${this.password}abc`;
+    }
+    changeUsername(){
+        return `${this.username.toUpperCase()}`;
+    }
+}
+
+const chai = new User("chai", "chai@gmail.com", "123");
+
+console.log(chai.encryptPassword());
+console.log(chai.changeUsername());
+
+// behind the scenes
+
+function Users(username, email, password){
+    this.username = username;
+    this.email = email;
+    this.password = password;
+}
+
+Users.prototype.encryptPassword = function(){
+    return `${this.password}abc`;
+}
+
+Users.prototype.changeUsername = function(){
+    return `${this.username.toUpperCase()}`;
+}
+
+const tea = new Users("tea", "tea@gmail.com", "123");
+
+console.log(tea.encryptPassword());
+console.log(tea.changeUsername());
+```
+
+### Object Get Set  
+```js 
+const User = {
+    _email: "h@hc.com",
+    _password: "abc",
+
+    get email(){
+        return this._email.toUpperCase();
+    },
+
+    set email(value){
+        this._email = value;
+    }
+
+}
+
+const tea = Object.create(User);
+console.log(tea.email);
+```
+
+### Object 
+```js 
+function multipliesBy5(num){
+    return num*5;
+}
+
+multipliesBy5.power = 2;
+
+console.log(multipliesBy5(5));
+console.log(multipliesBy5);
+console.log(multipliesBy5.power);
+console.log(multipliesBy5.prototype);
+
+function createUser(username, score){
+    this.username = username;
+    this.score = score;
+}
+
+createUser.prototype.increment = function(){
+    this.score++;
+}
+
+createUser.prototype.printMe = function(){
+    console.log(`Price is ${this.score}`);
+}
+const chai = new createUser("chai", 25);
+const tea = createUser("tea", 250);
+chai.increment();
+chai.printMe();
+console.log(tea);
+```
+
+### OOPs 
+```js 
+
+const user = {
+    username: "hitesh",
+    loginCount: 8,
+    signedIn: true,
+
+    getUserDetails: function(){
+        console.log("Got user details from database");
+        console.log(`Username: ${this.username}`);
+        console.log(this);
+    }
+}
+
+console.log(user.username);
+console.log(user.getUserDetails());
+console.log(this);
+
+
+function User(username, loginCount, isLoggedIn){
+    this.username = username;
+    this.loginCount = loginCount;
+    this.isLoggedIn = isLoggedIn;
+
+    this.greeting = function(){
+        console.log(`Welcome ${this.username}`);
+    }
+    return this;
+}
+
+const userOne = new User("hitesh", 12, true);
+const userTwo = new User("chaiAurCode", 12, true);
+console.log(userOne.constructor);
+console.log(userTwo);
+```
+
+### Properties set 
+```js 
+
+function User(email, password){
+    this._email = email;
+    this._password = password;
+
+    Object.defineProperty(this, "email", {
+        get: function (){
+            return this._email.toUpperCase();
+        },
+        set: function(value){
+            this._email = value;
+        }
+    });
+
+    Object.defineProperty(this, "password", {
+        get: function(){
+            return this._password.toUpperCase();
+        },
+        set: function(value){
+            this._password = value;
+        }
+    })
+}
+
+const chai = new User("chai@chai.com", "chai");
+console.log(chai.email);      // Output: CHAI@CHAI.COM
+console.log(chai.password);   // Output: CHAI
+
+chai.email = "new@chai.com";  // Updates the internal _email
+chai.password = "newpass";    // Updates the internal _password
+
+console.log(chai.email);      // Output: NEW@CHAI.COM
+console.log(chai.password);   // Output: NEWPASS
+```
+
+### Prototype  
+```js 
+
+
+let myHeroes = ["thor", "spiderman"];
+
+let heroPower = {
+    thor: "hammer",
+    spiderman: "sling",
+
+    getSpiderPower: function(){
+        console.log(`Spidy power is ${this.spiderman}`);
+    }
+}
+
+Object.prototype.hitesh = function(){
+    console.log(`hitesh is present in all objects`);
+}
+
+Array.prototype.heyHitesh = function(){
+    console.log(`Hitesh says hello`);
+}
+
+heroPower.hitesh();
+myHeroes.hitesh();
+// heroPower.heyHitesh();
+myHeroes.heyHitesh();
+
+// Inheritance
+
+const User = {
+    name: "chai",
+    email: "chai@google.com",
+}
+
+const Teacher = {
+    makeVideo: true,
+}
+
+const TeachingSupport = {
+    isAavailable: false,
+}
+
+const TASupport = {
+    makeAssingment: "JS assignment",
+    fullTime: true,
+    __proto__: TeachingSupport
+}
+
+Teacher.__proto__ = User;
+
+Object.setPrototypeOf(TeachingSupport, Teacher);
+
+console.log(TASupport.makeAssingment);
+console.log(TASupport.fullTime);
+console.log(TASupport.isAavailable);
+console.log(TASupport.makeVideo);
+console.log(TASupport.email);
+
+let anotherUserName = "chaiAurCode    ";
+String.prototype.trueLength = function(){
+    console.log(`${this}`);
+    console.log(`True length is: ${this.trim().length}`);
+}
+
+anotherUserName.trueLength();
+"hitesh".trueLength();
+"iceTea".trueLength();
+```
+
+### Static Props 
+```js 
+
+class User {
+    constructor(username){
+        this.username = username;
+    }
+
+    logMe(){
+        console.log(`Username: ${this.username}`);
+    }
+
+    static createId(){
+        return `123`;
+    }
+}
+
+const hitesh = new User("hitesh");
+console.log(User.createId());
+// console.log(hitesh.createId());
+
+class Teacher extends User {
+        constructor(username, email){
+            super(username);
+            this.email = email;
+        }   
+}
+const iPhone = new Teacher("iPhone", "i@phone.com");
+// console.log(iPhone.createId());
+console.log(Teacher.createId());
+```

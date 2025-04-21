@@ -1,0 +1,177 @@
+---
+title: Basics Of JS
+description: A guide in my new Starlight docs site.
+---
+
+### Arrow functions 
+```js 
+const user = {
+    username: "hitesh",
+    price: 999,
+
+    welcomeMessage: function(){
+        console.log(`${this.username}, welcome to website`);
+        console.log(this);
+    }
+}
+
+user.welcomeMessage();
+user.username = "Sam";
+user.welcomeMessage();
+
+console.log(this);
+
+function chai(){
+    let username = "hitesh";
+    console.log(this.username);
+}
+
+chai();
+
+const chai1 = function (){
+    let username = "hitesh";
+    console.log(this.username);
+}
+
+chai1();
+
+const chai2 = () => {
+    let username = "hitesh";
+    console.log(this);
+}
+
+chai2();
+
+const addTwo = (num1, num2) => {
+    return num1 + num2;
+}
+
+const addTwo1 = (num1, num2) =>  num1 + num2;
+const addTwo2 = (num1, num2) =>  (num1 + num2);
+const addTwo3 = (num1, num2) =>  ({username: "hitesh"});;
+
+console.log(addTwo(3, 4));
+console.log(addTwo1(3, 4));
+console.log(addTwo2(3, 4));
+console.log(addTwo3(3, 4));
+
+const myArray = [2, 5, 3, 7, 8];
+
+// myArray.forEach();
+```
+
+### Functions  
+```js 
+
+function sayMyName(){
+    console.log("H");
+    console.log("I");
+    console.log("T");
+    console.log("E");
+    console.log("S");
+    console.log("H");
+};
+
+sayMyName();
+
+function addTwoNumbers(number1, number2){
+    return number1 + number2;
+}
+
+const result = addTwoNumbers(3, 5);
+
+console.log("Result: " + result);
+
+function loginUserMessage(username = "sam"){
+    if(!username){
+        console.log("Please enter a username");
+        return;
+    }
+
+    return `${username} just logged In`;
+}
+
+console.log(loginUserMessage("hitesh"));
+
+function calculatePrice(val1, val2, ...num1){
+    return num1;
+}
+
+console.log(calculatePrice(300, 500, 600));
+
+const user = {
+    username: "hitesh",
+    prices: 199
+};
+
+const myNewArray = [200, 400, 100, 600];
+
+function returnScondValue(getArray){
+    return getArray[1];
+}
+
+
+console.log(returnScondValue(myNewArray));
+```
+
+### IIFE
+```js
+(function chai(){
+    console.log('DB CONNECTED!');
+})();
+
+((name) => {
+    console.log(`DB CONNECTED TWO ${name}`);
+})('hitesh');
+```
+
+### Scope  
+```js
+
+let a = 300;
+if(true){
+    let a = 10;
+    const b = 20;
+    console.log('INNER: ', a);
+}
+
+console.log(a);
+// console.log(b);
+
+function one(){
+    const username = "hitesh";
+
+    function two(){
+        const website = "youtube";
+        console.log(website);
+    }
+
+    two();
+}
+
+one();
+
+if (true) {
+    const username = "hitesh"
+    if (username === "hitesh") {
+        const website = " youtube"
+        // console.log(username + website);
+    }
+    // console.log(website);
+}
+
+// console.log(username);
+
+console.log(addone(5));
+
+function addone(num){
+    return num + 1;
+}
+
+
+addTwo(4)
+const addTwo = function(num){
+    return num + 2;
+}
+
+```
