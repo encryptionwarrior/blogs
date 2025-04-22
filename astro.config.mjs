@@ -199,8 +199,20 @@ export default defineConfig({
                  slug: "it-support/it-security/lacture02",
                 },
                {
-                 label: "Lac 02: AAA Security",
+                 label: "Lac 03: AAA Security",
                  slug: "it-support/it-security/lacture03",
+                },
+               {
+                 label: "Lac 04: Company Culture for Security",
+                 slug: "it-support/it-security/lacture04",
+                },
+               {
+                 label: "Lac 05: Defence in Depth",
+                 slug: "it-support/it-security/lacture05",
+                },
+               {
+                 label: "Lac 06: Pelcgbybtl(Cryptology)",
+                 slug: "it-support/it-security/lacture06",
                 },
              ]
 
@@ -222,6 +234,10 @@ export default defineConfig({
         {
           label: "Git & Github",
           autogenerate: { directory: "git-github" },
+        },
+        {
+          label: "Frameworks",
+          autogenerate: { directory: "frameworks" },
         },
         {
           label: "Data Structure & Algorithms",
