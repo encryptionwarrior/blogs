@@ -214,6 +214,10 @@ export default defineConfig({
                  label: "Lac 06: Pelcgbybtl(Cryptology)",
                  slug: "it-support/it-security/lacture06",
                 },
+               {
+                 label: "Lac 07: Securing Your Networks",
+                 slug: "it-support/it-security/lacture07",
+                },
              ]
 
             },
