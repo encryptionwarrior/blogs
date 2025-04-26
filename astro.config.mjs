@@ -939,6 +939,19 @@ export default defineConfig({
                   slug: "languages/javascript/closures"
                 },
               ]
+            },
+            {
+              label: "Typescript",
+              items: [
+                {
+                  label: "Basics",
+                  slug: "languages/typescript/basics"
+                },
+                {
+                  label: "Advanced",
+                  slug: "languages/typescript/advanced"
+                },
+              ]
             }
           ]
         },

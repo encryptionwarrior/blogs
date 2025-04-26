@@ -1,0 +1,264 @@
+---
+title:  Basics
+description: A guide in my new Starlight docs site.
+---
+
+### Variables  
+```ts
+let greetings: string = "Hello Hitesh";
+
+greetings.toLowerCase();
+console.log(greetings);
+
+let userId = 334455.3;
+userId.toFixed();
+
+let isLoggedIn: boolean = false;
+
+let hero: string;
+
+function getHero(){
+    return "thor";
+}
+
+hero = getHero();
+
+export {};
+```
+
+### Array  
+```ts
+const superHeroes: string[] = [];
+// const heroPower: number[] = [];
+const heroPower: Array<number> = [];
+
+type User = {
+    name: string;
+    isActive: boolean;
+}
+
+const allUsers: User[] = [];
+
+const MLModels: number[][] = [[255, 255, 255], []];
+
+superHeroes.push("Spiderman");
+heroPower.push(200);
+
+allUsers.push({name: "", isActive: true});
+
+```
+
+### Enums 
+```ts 
+enum SeatChoice {
+    AISLE = "aisle",
+    MIDDLE = 3,
+    WINDOW,
+    FOURTH
+}
+const hcSeat = SeatChoice.AISLE;
+```
+
+### Functions 
+```ts 
+function addTwo(num: number): number{
+    return num + 2;
+}
+
+function getUpper(val: string){
+    return val.toUpperCase();
+}
+
+function loginUser(name: string, email: string, isPaid: boolean) => {};
+
+let myValue = addTwo(5);
+getUpper("hitesh");
+signUpUser("hitesh", "hitesh@1co.dev", false);
+loginUser("h", "h@h.com");
+
+function getValue(myVal: number): boolean{
+    if(myVal > 5){
+        return true;
+    }
+    return false;
+    // return "200 Ok"
+}
+
+const getHello = (s: string): string => {
+    return "";
+}
+
+const heroes = ["thor", "spiderman", "ironman"];
+
+heroes.map((hero) => string => {
+    return `hero is ${string}`;
+})
+
+function consoleError(errmsg: string): void{
+    console.log(errmsg);
+}
+
+function handleErr(errmsg: string): never{
+    throw new Error(errmsg);
+}
+
+
+export {};
+```
+
+### Interfaces  
+```ts 
+interface User {
+    readonly dbId: number;
+    email: string;
+    userId: string;
+    googleId?: string;
+    startTrail(): string;
+    getCoupon(couponname: string, value: number):number
+}
+
+interface User {
+    githubtoken: string;
+}
+
+interface Admin extends User {
+    role: "admin" | "ts" | "learner";
+}
+
+const hitesh: Admin = {dbId: 22, email: "h@h.com",
+    userId: 2211,
+    role: "admin",
+    githubtoken: "github",
+    startTrail: () => {
+        return 'trail started'
+    },
+
+    getCoupon: (name: "hitesh10", off: 10) => {
+        return 10;
+    }
+}
+
+hitesh.email = "h@h.com";
+```
+
+### Objects  
+```ts 
+// const User = {
+//     name: "hitesh",
+//     email: "hitesh@lo.dev",
+//     isActive: true,
+// }
+
+// function createUser({name: string, isPaid: boolean}){};
+
+// let newUser = {name:"hitesh", isPaid:true, email: "h@h.com"};
+
+// createUser(newUser);
+
+// function createCourse():{name: string, price: number}{
+//     return {name: "reactJs", price: 399};
+// }
+
+// type User = {
+//     name: string;
+//     email: string;
+//     isActive:  boolean;
+// }
+
+// function createUser(user: User): User{
+//     return {name: "", email: "", isActive: true}
+// }
+
+// createUser({name:"", email:"", isActive: true});
+
+type User = {
+    readonly _id: string;
+    name: string;
+    email: string;
+    isActive: boolean;
+    credcardDetails?: number;
+}
+
+
+let myUser: User = {
+    _id: "1234",
+    name: "h",
+    email: "h@h.com",
+    isActive: false,
+}
+
+type cardNumber = {
+    cardNumber: string;
+}
+
+type cardDate = {
+    cardDate: string;
+}
+
+type cardDetails = cardNumber & cardDate & {
+    cvv: number;
+}
+
+myUser.email = "h@gmail.com";
+// myUser._id = "asa";
+
+export {}
+```
+
+### Tuples  
+```ts 
+let tUser: [string, number, boolean];
+
+tUser = ["name", 1, true];
+
+let rgb: [number, number, number] = [255, 123, 112];
+
+type User = [number, string];
+
+const newUser: User = [112, "example@google.com"];
+
+newUser[1] = "hc.com";
+newUser.push(true);
+```
+
+### Unions  
+```ts 
+let socre: number | string = 33;
+socre = 44;
+socre = "55";
+
+type User = {
+    name: string;
+    id: number;
+}
+
+type Admin = {
+    username: string;
+    id: number;
+}
+
+let hitesh: User | Admin = {name: "hitesh", id: 334};
+
+hitesh = {username: 'hc', id: 334};
+
+// function getDbId(id: number | number){
+//     console.log(`DB id is: ${id}`);
+// }
+
+getDbId(3);
+getDbId("3");
+
+function getDbId(id: number | string){
+    if(typeof id === "string"){
+        id.toLowerCase();
+    }
+}
+
+const data: number[] = [1, 2, 3];
+const data2: string[] = ["1", "2", "3"];
+const data3: (string | number | boolean)[] = ["1", "2", 3, true];
+
+let seatAllotment: "aisle" | "middle" | "window";
+seatAllotment = "crewel";
+
+```
