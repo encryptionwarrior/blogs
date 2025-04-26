@@ -952,7 +952,56 @@ export default defineConfig({
                   slug: "languages/typescript/advanced"
                 },
               ]
-            }
+            },
+            {
+              label: "C",
+              items: [
+                {
+                  label: "Lacture 01",
+                  slug: "languages/c/lacture01"
+                },
+                {
+                  label: "Lacture 02",
+                  slug: "languages/c/lacture02"
+                },
+                {
+                  label: "Lacture 03",
+                  slug: "languages/c/lacture03"
+                },
+                {
+                  label: "Lacture 04",
+                  slug: "languages/c/lacture04"
+                },
+                {
+                  label: "Lacture 05",
+                  slug: "languages/c/lacture05"
+                },
+                {
+                  label: "Lacture 06",
+                  slug: "languages/c/lacture06"
+                },
+                {
+                  label: "Lacture 07",
+                  slug: "languages/c/lacture07"
+                },
+                {
+                  label: "Lacture 08",
+                  slug: "languages/c/lacture08"
+                },
+                {
+                  label: "Lacture 09",
+                  slug: "languages/c/lacture09"
+                },
+                {
+                  label: "Lacture 10",
+                  slug: "languages/c/lacture10"
+                },
+                {
+                  label: "Lacture 11",
+                  slug: "languages/c/lacture11"
+                },
+              ]
+            },
           ]
         },
         {
