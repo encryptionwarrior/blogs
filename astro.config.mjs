@@ -1002,6 +1002,63 @@ export default defineConfig({
                 },
               ]
             },
+            {
+              label: "Python",
+              items: [
+                {
+                  label: "Basics",
+                  slug: "languages/python/basic"
+                },
+                {
+                  label: "Conditionals",
+                  slug: "languages/python/conditional"
+                },
+                {
+                  label: "Loops",
+                  slug: "languages/python/loops"
+                },
+                {
+                  label: "funtions",
+                  slug: "languages/python/functions"
+                },
+                {
+                  label: "Scopes",
+                  slug: "languages/python/scope"
+                },
+                {
+                  label: "OOPs",
+                  slug: "languages/python/oop"
+                },
+                {
+                  label: "Decorators",
+                  slug: "languages/python/decorators"
+                },
+                {
+                  label: "Error Handling",
+                  slug: "languages/python/error-handler"
+                },
+                {
+                  label: "DB Sqlite",
+                  slug: "languages/python/database-sqlite"
+                },
+                {
+                  label: "Handling Apis",
+                  slug: "languages/python/handling-apis"
+                },
+                {
+                  label: "Pyhton MongoDB",
+                  slug: "languages/python/python-mongodb"
+                },
+                {
+                  label: "Vurtual PY",
+                  slug: "languages/python/virtual"
+                },
+                {
+                  label: "Jupiter Notes",
+                  slug: "languages/python/jupiter_notes"
+                },
+              ]
+            }
           ]
         },
         {
