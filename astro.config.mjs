@@ -878,8 +878,48 @@ export default defineConfig({
                       label: "Doubly Ended Queue Implementation",
                       slug: "data-structure-algorithms/queue/day01/lacture08"
                     },
+                  ],
+                 
+                },
+                {
+                   label: "Day 02",
+                  items: [
+                      {
+                      label: "Queue Reversal",
+                      slug: "data-structure-algorithms/queue/day02/lacture01"
+                    }
                   ]
                 }
+              ]
+            },
+            {
+              label: "Binary Tree",
+              items: [
+               {
+                label: "Day 01",
+                items: [
+                  {
+                    label: "Introduction",
+                   slug: "data-structure-algorithms/binarytree/day01/lacture01"
+                  },
+                  {
+                    label: "Pre-order Traversal",
+                   slug: "data-structure-algorithms/binarytree/day01/lacture02"
+                  },
+                  {
+                    label: "In-order Traversal",
+                   slug: "data-structure-algorithms/binarytree/day01/lacture04"
+                  },
+                  {
+                    label: "Post-order Traversal",
+                   slug: "data-structure-algorithms/binarytree/day01/lacture03"
+                  },
+                  {
+                    label: "Reverse Level Order",
+                   slug: "data-structure-algorithms/binarytree/day01/lacture05"
+                  },
+                ]
+               }
               ]
             }
           ],
