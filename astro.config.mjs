@@ -919,7 +919,33 @@ export default defineConfig({
                    slug: "data-structure-algorithms/binarytree/day01/lacture05"
                   },
                 ]
-               }
+               },
+               {
+                label: "Day 02",
+                items: [
+                  {
+                    label: "Height Of Binary Tree",
+                   slug: "data-structure-algorithms/binarytree/day02/lacture01"
+                  },
+                  {
+                    label: "Diameter Of Binary Tree",
+                   slug: "data-structure-algorithms/binarytree/day02/lacture02"
+                  },
+                  {
+                    label: "Check Balanced",
+                   slug: "data-structure-algorithms/binarytree/day02/lacture03"
+                  },
+                  {
+                    label: "Check Identical",
+                   slug: "data-structure-algorithms/binarytree/day02/lacture04"
+                  },
+                  {
+                    label: "Sum Of Tree",
+                   slug: "data-structure-algorithms/binarytree/day02/lacture05"
+                  },
+                 
+                ]
+               },
               ]
             }
           ],
