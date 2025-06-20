@@ -946,6 +946,74 @@ export default defineConfig({
                  
                 ]
                },
+               {
+                label: "Day 03",
+                items: [
+                  {
+                    label: "Zig-Zag traversal",
+                   slug: "data-structure-algorithms/binarytree/day03/lacture01"
+                  },
+                  {
+                    label: "Boundry traversal",
+                   slug: "data-structure-algorithms/binarytree/day03/lacture02"
+                  },
+                  {
+                    label: "Vertical Order traversal",
+                   slug: "data-structure-algorithms/binarytree/day03/lacture03"
+                  },
+                  {
+                    label: "Top View",
+                   slug: "data-structure-algorithms/binarytree/day03/lacture04"
+                  },
+                  {
+                    label: "Bottom View",
+                   slug: "data-structure-algorithms/binarytree/day03/lacture05"
+                  },
+                  {
+                    label: "Left View",
+                   slug: "data-structure-algorithms/binarytree/day03/lacture06"
+                  },
+                  {
+                    label: "Right View",
+                   slug: "data-structure-algorithms/binarytree/day03/lacture07"
+                  },
+                  {
+                    label: "Diagnol Traversal",
+                   slug: "data-structure-algorithms/binarytree/day03/lacture08"
+                  },
+                 
+                ]
+               },
+              ]
+            },
+            {
+              label: "Binary Search Tree(BST)",
+              items: [
+                {
+                  label: "Day 01",
+                  items: [
+                    {
+                      label: "BST Implementation",
+                      slug: "data-structure-algorithms/binarysearchtree/day01/lacture01"
+                    },
+                    {
+                      label: "BST Traversal",
+                      slug: "data-structure-algorithms/binarysearchtree/day01/lacture02"
+                    },
+                    {
+                      label: "BST Search",
+                      slug: "data-structure-algorithms/binarysearchtree/day01/lacture03"
+                    },
+                    {
+                      label: "BST - Min - Max",
+                      slug: "data-structure-algorithms/binarysearchtree/day01/lacture04"
+                    },
+                    {
+                      label: "BST - Deletion",
+                      slug: "data-structure-algorithms/binarysearchtree/day01/lacture05"
+                    },
+                  ]
+                }
               ]
             }
           ],
