@@ -1013,7 +1013,288 @@ export default defineConfig({
                       slug: "data-structure-algorithms/binarysearchtree/day01/lacture05"
                     },
                   ]
+                },
+                {
+                  label: "Day 02",
+                  items: [
+                    {
+                      label: "Validate BST",
+                      slug: "data-structure-algorithms/binarysearchtree/day02/lacture01"
+                    },
+                    {
+                      label: "BST - Kth smallest",
+                      slug: "data-structure-algorithms/binarysearchtree/day02/lacture02"
+                    },
+                    {
+                      label: "BST - Kth smallest By Morris Traversal",
+                      slug: "data-structure-algorithms/binarysearchtree/day02/lacture03"
+                    },
+                    {
+                      label: "BST - Kth Largest",
+                      slug: "data-structure-algorithms/binarysearchtree/day02/lacture04"
+                    },
+                    {
+                      label: "InOrder Predecessor Successor",
+                      slug: "data-structure-algorithms/binarysearchtree/day02/lacture05"
+                    },
+                    {
+                      label: "BST - LCA",
+                      slug: "data-structure-algorithms/binarysearchtree/day02/lacture06"
+                    },
+                  ]
+                },
+                {
+                  label: "Day 03",
+                  items: [
+                    {
+                      label: "Two Sum in BST",
+                      slug: "data-structure-algorithms/binarysearchtree/day03/lacture01"
+                    },
+                    {
+                      label: "Flatten BST to Sorted List",
+                      slug: "data-structure-algorithms/binarysearchtree/day03/lacture02"
+                    },
+                    {
+                      label: "Normal BST to Balanced BST",
+                      slug: "data-structure-algorithms/binarysearchtree/day03/lacture03"
+                    },
+                    {
+                      label: "Perorder to BST",
+                      slug: "data-structure-algorithms/binarysearchtree/day03/lacture04"
+                    },
+                  ]
+                },
+                {
+                  label: "Day 04",
+                  items: [
+                    {
+                      label: "Merge2BST InOrder",
+                      slug: "data-structure-algorithms/binarysearchtree/day04/lacture01"
+                    },
+                    {
+                      label: " Merge2BST LinkedList",
+                      slug: "data-structure-algorithms/binarysearchtree/day04/lacture02"
+                    },
+                    {
+                      label: "Max BST in Binary Tree",
+                      slug: "data-structure-algorithms/binarysearchtree/day04/lacture03"
+                    },
+                  ]
                 }
+              ]
+            },
+            {
+              label: "Heap",
+              items: [
+                {
+                  label: "Day 01",
+                  items: [
+                    {
+                      label: "Heap Introduction",
+                      slug: "data-structure-algorithms/heaps/day01/lacture01"
+                    },
+                    {
+                      label: "Build Min Heap",
+                      slug: "data-structure-algorithms/heaps/day01/lacture02"
+                    },
+                    {
+                      label: "Heap Sort",
+                      slug: "data-structure-algorithms/heaps/day01/lacture03"
+                    },
+                    {
+                      label: "Max Heap By Priority Queue",
+                      slug: "data-structure-algorithms/heaps/day01/lacture04"
+                    },
+                    {
+                      label: "Min Heap By Priority Queue",
+                      slug: "data-structure-algorithms/heaps/day01/lacture05"
+                    },
+                  ]
+                },
+                {
+                  label: "Day 02",
+                  items: [
+                    {
+                      label: "Kth Smallest Element",
+                      slug: "data-structure-algorithms/heaps/day02/lacture01"
+                    },
+                    {
+                      label: "Kth Largest Element",
+                      slug: "data-structure-algorithms/heaps/day02/lacture02"
+                    },
+                    {
+                      label: "Is binary Tree Heap",
+                      slug: "data-structure-algorithms/heaps/day02/lacture03"
+                    },
+                    {
+                      label: "Merge 2 MaxHeaps",
+                      slug: "data-structure-algorithms/heaps/day02/lacture04"
+                    },
+                    {
+                      label: "Minimum cost of Ropes",
+                      slug: "data-structure-algorithms/heaps/day02/lacture05"
+                    },
+                    {
+                      label: "BST to Min Heap",
+                      slug: "data-structure-algorithms/heaps/day02/lacture06"
+                    },
+                  ]
+                },
+                {
+                  label: "Day 03",
+                  items: [
+                    {
+                      label: "Kth Largest Sum Of Subarrays",
+                      slug: "data-structure-algorithms/heaps/day03/lacture01"
+                    },
+                    {
+                      label: "Merge K Sorted Arrays",
+                      slug: "data-structure-algorithms/heaps/day03/lacture02"
+                    },
+                    {
+                      label: "Merge K Sorted List",
+                      slug: "data-structure-algorithms/heaps/day03/lacture03"
+                    },
+                    {
+                      label: "Smallest Range In K List",
+                      slug: "data-structure-algorithms/heaps/day03/lacture04"
+                    },
+                    {
+                      label: "Median In A Stream",
+                      slug: "data-structure-algorithms/heaps/day03/lacture05"
+                    },
+                  ]
+                },
+              ]
+            },
+            {
+              label: "Hashmap",
+              items: [
+                {
+                      label: "Unordered Map",
+                      slug: "data-structure-algorithms/hashmaps/lacture01"
+                },
+                {
+                      label: "Maximum Frequency Number",
+                      slug: "data-structure-algorithms/hashmaps/lacture02"
+                },
+              ]
+            },
+            {
+              label: "Trie and Backtracing",
+              items: [
+                {
+                      label: "Trie",
+                      items: [
+                        {
+                           label: "Trie Intro",
+                      slug: "data-structure-algorithms/trie-n-backtracing/day01/lacture01"
+                        },
+                        {
+                           label: "Longest Common Prefix By Comparisons",
+                      slug: "data-structure-algorithms/trie-n-backtracing/day01/lacture02"
+                        },
+                        {
+                           label: "Longest Common Prefix By Tries",
+                      slug: "data-structure-algorithms/trie-n-backtracing/day01/lacture03"
+                        },
+                        {
+                           label: "Phone Directory",
+                      slug: "data-structure-algorithms/trie-n-backtracing/day02/lacture01"
+                        },
+                      ]
+                },
+                {
+                      label: "Backtracking",
+                      items: [
+                        {
+                           label: "Rat In Maze",
+                      slug: "data-structure-algorithms/trie-n-backtracing/day02/lacture02"
+                        },
+                        {
+                           label: "N Queens",
+                      slug: "data-structure-algorithms/trie-n-backtracing/day02/lacture03"
+                        },
+                        {
+                           label: "N Queens Hashmaps",
+                      slug: "data-structure-algorithms/trie-n-backtracing/day02/lacture04"
+                        },
+                        {
+                           label: "Valid Sudoku",
+                      slug: "data-structure-algorithms/trie-n-backtracing/day02/lacture05"
+                        },
+                    
+                      ]
+                },
+              ]
+            },
+            {
+              label: "Graph",
+              items: [
+                {
+                  label: "Day 01",
+                  items: [
+                    {
+                           label: "Adjacency List",
+                      slug: "data-structure-algorithms/graph/day01/lacture01"  
+                    },
+                    {
+                           label: "Adjacency List General",
+                      slug: "data-structure-algorithms/graph/day01/lacture02"  
+                    },
+                    {
+                           label: "Adjacency Matrix",
+                      slug: "data-structure-algorithms/graph/day01/lacture03"  
+                    },
+                    {
+                           label: "Create Graph And Print It",
+                      slug: "data-structure-algorithms/graph/day01/lacture04"  
+                    },
+                  ]
+                },
+                {
+                  label: "Day 02",
+                  items: [
+                    {
+                           label: "BFS Traversal",
+                      slug: "data-structure-algorithms/graph/day02/lacture01"  
+                    },
+                    {
+                           label: "DFS Traversal",
+                      slug: "data-structure-algorithms/graph/day02/lacture02"  
+                    },
+                    {
+                           label: "Cycle Detection In Undirected Graph Using BFS",
+                      slug: "data-structure-algorithms/graph/day02/lacture03"  
+                    },
+                    {
+                           label: "Cycle Detection In Undirected Graph Using DFS",
+                      slug: "data-structure-algorithms/graph/day02/lacture04"  
+                    },
+                  ]
+                },
+                {
+                  label: "Day 03",
+                  items: [
+                    {
+                           label: "Cycle Detection In Directed Graph",
+                      slug: "data-structure-algorithms/graph/day03/lacture01"  
+                    },
+                    {
+                           label: "Topological Sort Using DFS",
+                      slug: "data-structure-algorithms/graph/day03/lacture02"  
+                    },
+                    {
+                           label: "Topological Sort Using Kahns Algorithm",
+                      slug: "data-structure-algorithms/graph/day03/lacture03"  
+                    },
+                    {
+                           label: "Detect Cycle In A Directed Graph",
+                      slug: "data-structure-algorithms/graph/day03/lacture04"  
+                    },
+                  
+                  ]
+                },
               ]
             }
           ],
