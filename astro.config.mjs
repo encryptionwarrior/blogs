@@ -1295,6 +1295,28 @@ export default defineConfig({
                   
                   ]
                 },
+                {
+                  label: "Day 04",
+                  items: [
+                    {
+                           label: "Shortest Path In Undirected Graph",
+                      slug: "data-structure-algorithms/graph/day04/lacture01"  
+                    },
+                    {
+                           label: "Shortest Path In Directed Acyclic Graph",
+                      slug: "data-structure-algorithms/graph/day04/lacture02"  
+                    },
+                    {
+                           label: "Shortest Path In DAG Using Graph Class",
+                      slug: "data-structure-algorithms/graph/day04/lacture03"  
+                    },
+                    {
+                           label: "Shortest Path Using Dijkstras Algorithm",
+                      slug: "data-structure-algorithms/graph/day04/lacture04"  
+                    },
+                  
+                  ]
+                },
               ]
             }
           ],
