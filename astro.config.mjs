@@ -1317,6 +1317,73 @@ export default defineConfig({
                   
                   ]
                 },
+                {
+                  label: "Day 05",
+                  items: [
+                    {
+                           label: "Prism MST",
+                      slug: "data-structure-algorithms/graph/day05/lacture01"  
+                    },
+                    {
+                           label: "Disjoint Set",
+                      slug: "data-structure-algorithms/graph/day05/lacture02"  
+                    },
+                    {
+                           label: "Kruskals MST",
+                      slug: "data-structure-algorithms/graph/day05/lacture03"  
+                    },
+                    {
+                           label: "Bridges In Graph",
+                      slug: "data-structure-algorithms/graph/day05/lacture04"  
+                    },
+                    {
+                           label: "Articulation Point In Graph",
+                      slug: "data-structure-algorithms/graph/day05/lacture05"  
+                    },
+                    {
+                           label: "Kosaraju Algorithm",
+                      slug: "data-structure-algorithms/graph/day05/lacture06"  
+                    },
+                    {
+                           label: "Bellmon Ford Algorithm",
+                      slug: "data-structure-algorithms/graph/day05/lacture07"  
+                    },
+                  
+                  ]
+                },
+              ]
+            },
+            {
+              label: "DP Series",
+              items: [
+                {
+                 label: "Fibonacci Series",
+                      slug: "data-structure-algorithms/dp-series/day01/lacture01" 
+                },
+                {
+                 label: "Climbing Stairs",
+                      slug: "data-structure-algorithms/dp-series/day01/lacture02" 
+                },
+                {
+                 label: "Min Cost Climbing Stairs",
+                      slug: "data-structure-algorithms/dp-series/day01/lacture03" 
+                },
+                {
+                 label: "Minimum Elements",
+                      slug: "data-structure-algorithms/dp-series/day01/lacture04" 
+                },
+                {
+                 label: "Max Non Adjacent Sum",
+                      slug: "data-structure-algorithms/dp-series/day01/lacture05" 
+                },
+                {
+                 label: "House Robber Problem",
+                      slug: "data-structure-algorithms/dp-series/day01/lacture06" 
+                },
+                {
+                 label: "Cut Rod Into Segments",
+                      slug: "data-structure-algorithms/dp-series/day01/lacture07" 
+                },
               ]
             }
           ],
