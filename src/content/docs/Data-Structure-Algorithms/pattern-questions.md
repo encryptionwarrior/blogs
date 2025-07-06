@@ -204,6 +204,31 @@ code
 ```
 ### Right Angled Inverted Counting Triangle Pattern
 ```c++
+4 3 2 1
+3 2 1
+2 1
+1
+```
+
+code
+```c++
+ int height, i, j;
+
+    cout << "Enter height of the triangle:" << endl;
+    cin >> height;
+    cout << endl;
+
+    for (i = height; i >= 1; i--) {
+        for (j = i; j >= 1; j--) {
+            cout << j << " ";
+        }
+        cout << endl;
+    }
+```
+
+
+### Right Angled Inverted Counting Triangle Pattern
+```c++
 10
 9 8 
 7 6 5
@@ -211,23 +236,35 @@ code
 ```
 code
 ```c++
-    int height, i, j, val, k;
-    char ch;
-    cout << endl;
-    cout << "Enter height of the triangle:";
-    cout << endl;
+  int height;
+    cout << "Enter height of the triangle: ";
     cin >> height;
-    cout << endl;
 
-    for (i = 1; i <= height; i++)
-    {
-        for (j = 1; j <= i; j++)
-        {
-            cout << i - j + 1 << " ";
+    int val = (height * (height + 1)) / 2; // Starting value (sum of first n natural numbers)
+
+    for (int i = 1; i <= height; i++) {
+        for (int j = 1; j <= i; j++) {
+            cout << val-- << " ";
         }
         cout << endl;
     }
-    cout << endl;
+    // int height, i, j, val, k;
+    // char ch;
+    // cout << endl;
+    // cout << "Enter height of the triangle:";
+    // cout << endl;
+    // cin >> height;
+    // cout << endl;
+
+    // for (i = 1; i <= height; i++)
+    // {
+    //     for (j = 1; j <= i; j++)
+    //     {
+    //         cout << i - j + 1 << " ";
+    //     }
+    //     cout << endl;
+    // }
+    // cout << endl;
 ```
 ### Alphabetic Square Pattern
 ```c++
@@ -291,10 +328,15 @@ code
 ```
 ### Inverted Alphabetic Triangle Pattern
 ```c++
-D 
-C C 
-B B B
-A A A A
+// D 
+// C C 
+// B B B
+// A A A A
+D  
+C  D  
+B  C  D  
+A  B  C  D  
+
 ```
 code
 ```c++
@@ -321,10 +363,15 @@ code
 
 ### Inverted Right Angle Character Triangle Pattern
 ```c++
-D 
-C C 
-B B B
-A A A A
+// D 
+// C C 
+// B B B
+// A A A A
+      A 
+    A A 
+  A A A 
+A A A A 
+
 ```
 code
 ```c++
@@ -355,10 +402,16 @@ code
 ```
 ### Reverse Right Angle Character Triangle Pattern
 ```c++
-D 
-C C 
-B B B
-A A A A
+// D 
+// C C 
+// B B B
+// A A A A
+# # # # # 
+# # # # 
+# # # 
+# # 
+# 
+
 ```
 code
 ```c++
@@ -389,10 +442,16 @@ code
 ```
 ### Number Pyramid Pattern
 ```c++
-D 
-C C 
-B B B
-A A A A
+// D 
+// C C 
+// B B B
+// A A A A
+        1 
+      1 2 1 
+    1 2 3 2 1 
+  1 2 3 4 3 2 1 
+1 2 3 4 5 4 3 2 1 
+
 ```
 code
 ```c++
@@ -422,10 +481,10 @@ code
 ```
 ### Dabangg Pattern
 ```c++
-D 
-C C 
-B B B
-A A A A
+1 2 3 4 * * 4 3 2 1 
+1 2 3 * * * * 3 2 1 
+1 2 * * * * * * 2 1 
+1 * * * * * * * * 1 
 ```
 code
 ```c++
