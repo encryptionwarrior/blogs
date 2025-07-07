@@ -4,21 +4,22 @@ description: A guide in my new Starlight docs site.
 ---
 
 ```c++
-#include <bits/stdc++.h>
+#include <bits/stdc++.h>             // Includes all standard libraries
 using namespace std;
 
 class Node {
-    public:
-    int data;
-    Node* next;
-    Node* prev;
+public:
+    int data;                        // Stores data
+    Node* next;                      // Pointer to next node
+    Node* prev;                      // Pointer to previous node
 
-    Node(int data) {
+    Node(int data) {                 // Constructor to initialize node
         this->data = data;
         this->next = NULL;
         this->prev = NULL;
     }
 };
+
 
 void printHead(Node* head) {
     if(head == NULL) {
@@ -28,7 +29,7 @@ void printHead(Node* head) {
 
     cout << "Doubly List by Head : ";
     while(head != NULL) {
-        cout << head->data << " ";
+        cout << head->data << " ";   // Traverse forward
         head = head->next;
     }
     cout << endl;
@@ -39,32 +40,34 @@ void printTail(Node* tail) {
         cout << "List is Empty!" << endl;
         return;
     }
-    
+
     cout << "Doubly List by Tail : ";
     while(tail != NULL) {
-        cout << tail->data << " ";
+        cout << tail->data << " ";   // Traverse backward
         tail = tail->prev;
     }
     cout << endl;
 }
 
+
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head->prev = temp;
-    head = temp;
+    Node *temp = new Node(data);     // Create new node
+    temp->next = head;               // Point to old head
+    head->prev = temp;               // Old head's prev is new node
+    head = temp;                     // Update head
 }
 
 void insertAtTail(Node* &tail, int data) {
-    Node *temp = new Node(data);
-    tail->next = temp;
-    temp->prev = tail;
-    tail = temp;
+    Node *temp = new Node(data);     // Create new node
+    tail->next = temp;               // Old tail's next points to new node
+    temp->prev = tail;               // New node's prev points to old tail
+    tail = temp;                     // Update tail
 }
+
 
 void insertAtMiddle(Node* &head, Node* &tail, int data, int pos) {
     if(pos == 1) {
-        insertAtHead(head, data);
+        insertAtHead(head, data);    // Insert at head
         return;
     }
 
@@ -84,12 +87,13 @@ void insertAtMiddle(Node* &head, Node* &tail, int data, int pos) {
     insertNode->prev = temp;
     temp->next = insertNode;
 
-    if(insertNode->prev == tail) {
+    if(insertNode->prev == tail) {   // Update tail if inserted at end
         tail = insertNode;
     } else {
         temp->next->prev = insertNode;
     }
 }
+
 
 void deletePosition(Node* &head, Node* &tail, int pos) {
     Node *temp = head;
@@ -128,9 +132,10 @@ void deletePosition(Node* &head, Node* &tail, int pos) {
     delete target;
 }
 
+
 void deleteValue(Node* &head, Node* &tail, int val) {
     Node* temp = head;
-    
+
     if(head->data == val) {
         head = head->next;
         delete temp;
@@ -157,7 +162,7 @@ void deleteValue(Node* &head, Node* &tail, int val) {
         cout << "Value Not Found!" << endl;
         return;
     }
-    
+
     temp->prev->next = temp->next;
 
     if(temp == tail) {
@@ -169,13 +174,15 @@ void deleteValue(Node* &head, Node* &tail, int val) {
     delete temp;
 }
 
+
 void reverseDLL(Node* &head, Node* &tail) {
     Node* curr = head;
 
     while(curr != NULL) {
         Node* temp = curr->prev;
-        curr->prev = curr->next;
+        curr->prev = curr->next;         // Swap next and prev
         curr = curr->next;
+
         if(curr == NULL) {
             tail->next = temp;
         } else {
@@ -188,22 +195,34 @@ void reverseDLL(Node* &head, Node* &tail) {
     tail = curr;
 }
 
+
 int main() {
-    Node *head = new Node(1);
+    Node *head = new Node(1);           // Initial node
     Node *tail = head;
 
     for(int i=1; i<=5; i++) {
-        insertAtTail(tail, pow(2,i));
+        insertAtTail(tail, pow(2,i));   // Add 2, 4, 8, 16, 32
     }
 
-    printHead(head);
-    printTail(tail);
+    printHead(head);                    // Print forward
+    printTail(tail);                    // Print backward
 
-    reverseDLL(head, tail);
+    reverseDLL(head, tail);             // Reverse list
 
     printHead(head);
     printTail(tail);
 
     return 0;
 }
+
+```
+
+#### Diagram (Initial list):
+```
+Head → 1 ⇄ 2 ⇄ 4 ⇄ 8 ⇄ 16 ⇄ 32 ← Tail
+```
+
+####  After `reverseDLL:`
+```
+Head → 32 ⇄ 16 ⇄ 8 ⇄ 4 ⇄ 2 ⇄ 1 ← Tail
 ```

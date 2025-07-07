@@ -4,87 +4,106 @@ description: A guide in my new Starlight docs site.
 ---
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Includes all standard C++ libraries, useful for competitive programming
+using namespace std; // Uses the standard namespace to avoid prefixing standard library elements with std::
 
+// Defines the structure of a Node in the singly linked list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data; // Data stored in the node
+    Node* next; // Pointer to the next node in the list
 
+    // Constructor to create a new node
     Node(int data) {
-        this->data = data;
-        this->next = NULL;
+        this->data = data; // Initializes the data member with the provided value
+        this->next = NULL; // Initializes the next pointer to NULL, indicating no subsequent node initially
     }
 };
 
+// Function to print the singly linked list
 void printList(Node* head) {
+    // Checks if the list is empty (head is NULL)
     if(head == NULL) {
-        cout << "List is Empty!" << endl;
-        return;
+        cout << "List is Empty!" << endl; // Prints a message if the list is empty
+        return; // Exits the function
     }
-    
-    cout << "Singly List : ";
+
+    cout << "Singly List : "; // Prints a label for the list
+    // Traverses the list from head to tail
     while(head != NULL) {
-        cout << head->data << " ";
-        head = head->next;
+        cout << head->data << " "; // Prints the data of the current node
+        head = head->next; // Moves to the next node
     }
-    cout << endl;
+    cout << endl; // Prints a newline character at the end
 }
 
+// Function to insert a new node at the head of the list
 void insertAtHead(Node* &head, int data) {
+    // Creates a new Node object on the heap with the given data
     Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    temp->next = head; // Sets the new node's next pointer to the current head of the list
+    head = temp; // Updates the head of the list to point to the newly created node
 }
 
+// Function to insert a new node at the tail of the list
 void insertAtTail(Node* &tail, int data) {
+    // Creates a new Node object on the heap with the given data
     Node *temp = new Node(data);
-    tail->next = temp;
-    tail = temp;
+    tail->next = temp; // Sets the current tail's next pointer to the newly created node
+    tail = temp; // Updates the tail of the list to point to the newly created node
 }
 
+// Function to sort a linked list containing only 0s, 1s, and 2s
+// This approach counts the occurrences of 0s, 1s, and 2s, then rewrites the list.
 void Sort012(Node* &head) {
-    Node* temp = head;
-    int zero=0, one=0, two=0;
+    Node* temp = head; // Temporary pointer to traverse the list
+    int zero = 0, one = 0, two = 0; // Counters for 0s, 1s, and 2s
 
+    // First pass: Count the occurrences of 0s, 1s, and 2s
     while(temp != NULL) {
-        switch(temp->data) {
+        switch(temp->data) { // Use a switch statement for clear counting
             case 0:
-                zero++;
+                zero++; // Increment zero count if data is 0
                 break;
             case 1:
-                one++;
+                one++; // Increment one count if data is 1
                 break;
-            default:
-                two++;
+            default: // If data is not 0 or 1, it must be 2
+                two++; // Increment two count
         }
-
-        temp = temp->next;
+        temp = temp->next; // Move to the next node
     }
 
-    temp = head;
+    // Second pass: Rewrite the data in the linked list based on the counts
+    temp = head; // Reset temp to the head of the list
 
+    // Fill the beginning of the list with 0s
     while(zero--) {
-        temp->data = 0;
-        temp = temp->next;
+        temp->data = 0; // Set current node's data to 0
+        temp = temp->next; // Move to the next node
     }
 
+    // Fill the middle of the list with 1s
     while(one--) {
-        temp->data = 1;
-        temp = temp->next;
+        temp->data = 1; // Set current node's data to 1
+        temp = temp->next; // Move to the next node
     }
 
+    // Fill the end of the list with 2s
     while(two--) {
-        temp->data = 2;
-        temp = temp->next;
+        temp->data = 2; // Set current node's data to 2
+        temp = temp->next; // Move to the next node
     }
 }
 
+// Main function to demonstrate sorting a linked list of 0s, 1s, and 2s
 int main() {
+    // Initialize the head and tail of the linked list
+    // The first node has data 1
     Node *head = new Node(1);
-    Node *tail = head;
+    Node *tail = head; // Initially, head and tail point to the same node
 
+    // Insert various nodes with 0s, 1s, and 2s at the tail
     insertAtTail(tail, 0);
     insertAtTail(tail, 2);
     insertAtTail(tail, 1);
@@ -98,12 +117,83 @@ int main() {
     insertAtTail(tail, 2);
     insertAtTail(tail, 0);
 
-    printList(head);
+    printList(head); // Print the unsorted list
 
-    Sort012(head);
-    cout << "After sorting : ";
-    printList(head);
+    Sort012(head); // Call the sorting function
+    cout << "After sorting : "; // Print a label for the sorted list
+    printList(head); // Print the sorted list
 
-    return 0;
+    return 0; // Indicates successful execution
 }
 ```
+
+-----
+
+### Sorting a Linked List of 0s, 1s, and 2s
+
+Sorting a linked list that contains only three distinct values (0, 1, and 2) can be done very efficiently, without using general-purpose comparison-based sorting algorithms like Merge Sort or Quick Sort, which typically have higher time complexities for linked lists.
+
+The provided `Sort012` function implements a common and optimal approach:
+
+1.  **Counting Occurrences (First Pass):**
+
+      * Traverse the entire linked list once.
+      * Maintain three separate counters: `zero`, `one`, and `two`.
+      * For each node encountered, increment the corresponding counter based on its `data` value.
+      * **Time Complexity:** $O(N)$, where $N$ is the number of nodes, as we visit each node exactly once.
+      * **Space Complexity:** $O(1)$, as we only use a few integer variables for counters.
+
+2.  **Overwriting Data (Second Pass):**
+
+      * Reset a pointer back to the `head` of the list.
+      * Based on the `zero` count, iterate and set the `data` of the first `zero` nodes to `0`.
+      * Then, based on the `one` count, iterate and set the `data` of the next `one` nodes to `1`.
+      * Finally, based on the `two` count, iterate and set the `data` of the remaining `two` nodes to `2`.
+      * **Time Complexity:** $O(N)$, as we again visit each node exactly once to update its data.
+      * **Space Complexity:** $O(1)$.
+
+**Overall Time Complexity:** $O(N)$
+**Overall Space Complexity:** $O(1)$
+
+This method is highly efficient because it leverages the limited range of values (0, 1, 2). It's simpler and faster than manipulating node pointers for a general sort.
+
+-----
+
+**Example:**
+
+Consider the unsorted linked list: `1 -> 0 -> 2 -> 1 -> 0 -> 2 -> 0 -> 1 -> 2 -> NULL`
+
+1.  **First Pass (Counting):**
+
+      * Traverse the list:
+          * Node `1`: `one = 1`
+          * Node `0`: `zero = 1`
+          * Node `2`: `two = 1`
+          * Node `1`: `one = 2`
+          * Node `0`: `zero = 2`
+          * Node `2`: `two = 2`
+          * Node `0`: `zero = 3`
+          * Node `1`: `one = 3`
+          * Node `2`: `two = 3`
+      * After the first pass: `zero = 3`, `one = 3`, `two = 3`.
+
+2.  **Second Pass (Overwriting):**
+
+      * Reset `temp` to point to the head of the list.
+      * **Fill 0s:** `zero` is 3.
+          * `temp->data = 0` (first node becomes 0)
+          * `temp->data = 0` (second node becomes 0)
+          * `temp->data = 0` (third node becomes 0)
+          * List: `0 -> 0 -> 0 -> 1 -> 0 -> 2 -> 0 -> 1 -> 2 -> NULL` (only first three nodes updated so far)
+      * **Fill 1s:** `one` is 3.
+          * `temp->data = 1` (fourth node becomes 1)
+          * `temp->data = 1` (fifth node becomes 1)
+          * `temp->data = 1` (sixth node becomes 1)
+          * List: `0 -> 0 -> 0 -> 1 -> 1 -> 1 -> 0 -> 1 -> 2 -> NULL` (only next three nodes updated)
+      * **Fill 2s:** `two` is 3.
+          * `temp->data = 2` (seventh node becomes 2)
+          * `temp->data = 2` (eighth node becomes 2)
+          * `temp->data = 2` (ninth node becomes 2)
+          * List: `0 -> 0 -> 0 -> 1 -> 1 -> 1 -> 2 -> 2 -> 2 -> NULL` (fully sorted)
+
+This method effectively sorts the list by value without changing the structure of the linked list itself, only the data within the nodes.

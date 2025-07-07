@@ -96,111 +96,130 @@ int main() {
 
 
 ### Flatten A Linked List
+```cpp
+#include <bits/stdc++.h> // Common includes (iostream, etc.)
+using namespace std;     // Standard namespace
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
-
+// Node class for a singly linked list
 class Node {
-    public:
-    int data;
-    Node *next;
+public:
+    int data;  // Data stored in the node
+    Node *next; // Pointer to the next node
 
-    Node(int data) {
+    Node(int data) { // Constructor
         this->data = data;
         this->next = NULL;
     }
 };
 
+// Prints the linked list
 void printList(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) { // Check if list is empty
         cout << "List is Empty!" << endl;
         return;
     }
-    
-    while(head != NULL) {
+    while(head != NULL) { // Traverse and print data
         cout << head->data << " ";
         head = head->next;
     }
     cout << endl;
 }
 
+// Inserts a new node at the head of the list
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    Node *temp = new Node(data); // Create new node
+    temp->next = head;           // Link new node to current head
+    head = temp;                 // Update head
 }
 
+// Finds the middle of a linked list using fast and slow pointers
 Node* findMiddle(Node* head) {
+    // fast starts at head->next for correct splitting in merge sort (first half smaller/equal size)
     Node* fast = head->next;
     Node* slow = head;
 
-    while(fast!=NULL && fast->next!=NULL) {
-        fast = fast->next->next;
-        slow = slow->next;
+    while(fast != NULL && fast->next != NULL) { // Loop until fast reaches end
+        fast = fast->next->next; // Fast moves 2 steps
+        slow = slow->next;       // Slow moves 1 step
     }
-
-    return slow;
+    return slow; // Slow is at the end of the first half (or middle for odd length)
 }
 
+// Merges two sorted linked lists into a single sorted list
 Node* mergeLL(Node* head1, Node* head2) {
-    if(head1==NULL || head2==NULL) {
-        return (head1==NULL) ? head2 : head1;
-    }
+    // Base cases: if one list is empty, return the other
+    if(head1 == NULL) return head2;
+    if(head2 == NULL) return head1;
 
-    Node* answer = new Node(-1);
-    Node* temp = answer;
+    // Create a dummy node to simplify merging
+    Node* answer = new Node(-1); // Dummy node
+    Node* temp = answer;         // Pointer to build the merged list
 
-    while(head1!=NULL && head2!=NULL) {
+    // Merge logic: compare elements and append smaller one
+    while(head1 != NULL && head2 != NULL) {
         if(head1->data < head2->data) {
-            temp->next = head1;
-            temp = head1;
-            head1 = head1->next;
+            temp->next = head1; // Link current smaller element from head1
+            temp = head1;       // Move temp to the newly linked node
+            head1 = head1->next; // Move head1 to next element
         } else {
-            temp->next = head2;
-            temp = head2;
-            head2 = head2->next;
+            temp->next = head2; // Link current smaller element from head2
+            temp = head2;       // Move temp to the newly linked node
+            head2 = head2->next; // Move head2 to next element
         }
     }
 
+    // Append remaining elements (if any) from head1
     if(head1 != NULL) {
         temp->next = head1;
     }
 
+    // Append remaining elements (if any) from head2
     if(head2 != NULL) {
         temp->next = head2;
     }
 
+    // Return the actual head of the merged list (skip dummy node)
     return answer->next;
 }
 
+// Implements Merge Sort for a linked list
 Node* mergeSort(Node* head) {
-    if(head==NULL || head->next==NULL) {
+    // Base Case: empty list or single node list is already sorted
+    if(head == NULL || head->next == NULL) {
         return head;
     }
 
+    // Step 1: Find the middle of the list
     Node* mid = findMiddle(head);
-    Node* left = head;
-    Node* right = mid->next;
-    mid->next = NULL;
 
+    // Step 2: Divide the list into two halves
+    Node* left = head;          // First half starts from head
+    Node* right = mid->next;    // Second half starts after middle
+    mid->next = NULL;           // Break the link to separate halves
+
+    // Step 3: Recursively sort both halves
     left = mergeSort(left);
     right = mergeSort(right);
 
+    // Step 4: Merge the sorted halves
     return mergeLL(left, right);
 }
 
+// // Placeholder for a 'flatten list' function (commented out)
+// // This would likely flatten a multi-level linked list (e.g., with 'down' and 'right' pointers)
 // Node* flattenList(Node* head) {
-//     Node* down = head;
-//     down->next = NULL;
-    // Node* right = flattenList(head->right);
-    // Node* ans = mergeLL(down, right);
-    // return ans;
+//     // Node* down = head;
+//     // down->next = NULL;
+//     // Node* right = flattenList(head->right); // Recursive call for right sub-list
+//     // Node* ans = mergeLL(down, right);       // Merge current 'down' list with flattened right
+//     // return ans;
 // }
 
 int main() {
-    Node *head = new Node(5);
+    Node *head = new Node(5); // Start with a node, then insert others at head
 
+    // Build a sample unsorted linked list
+    // Resulting list: 62 -> 0 -> -3 -> 76 -> 19 -> 32 -> 44 -> 5
     insertAtHead(head, 44);
     insertAtHead(head, 32);
     insertAtHead(head, 19);
@@ -210,13 +229,92 @@ int main() {
     insertAtHead(head, 62);
 
     cout << "Before sorting : ";
-    printList(head);
+    printList(head); // Print the unsorted list
 
-    head = mergeSort(head);
+    head = mergeSort(head); // Sort the list using merge sort
 
     cout << "After sorting : ";
-    printList(head);
+    printList(head); // Print the sorted list
 
     return 0;
 }
 ```
+
+-----
+
+### Quick Revision Notes: Merge Sort for Linked Lists
+
+**Problem:** Sort a given singly linked list using the Merge Sort algorithm.
+
+**Merge Sort Principle:**
+
+1.  **Divide:** Split the list into two halves.
+2.  **Conquer:** Recursively sort each half.
+3.  **Combine:** Merge the two sorted halves into a single sorted list.
+
+**Key Functions:**
+
+1.  **`findMiddle(Node* head)`:**
+
+      * **Purpose:** Divides the list into two halves by finding the middle node.
+      * **Method:** Fast and Slow Pointer approach.
+          * `fast` pointer moves two steps (`head->next->next`).
+          * `slow` pointer moves one step (`head->next`).
+          * `fast` starts at `head->next` (not `head`) to ensure that for even-length lists, `slow` ends at the *last node of the first half*. This is crucial for correctly splitting the list.
+      * **Return:** The node that marks the end of the first half.
+      * **Complexity:** $O(N)$ time (single traversal), $O(1)$ space.
+
+2.  **`mergeLL(Node* head1, Node* head2)`:**
+
+      * **Purpose:** Merges two *already sorted* linked lists into a single sorted linked list.
+      * **Method:** Iterative comparison.
+          * Create a `dummy` node (`answer`) to simplify handling the head of the new merged list.
+          * Use a `temp` pointer to attach nodes to the `answer` list.
+          * Compare `head1->data` and `head2->data`. Attach the smaller node to `temp->next` and advance `temp` and the corresponding `head` pointer.
+          * After one list is exhausted, append the remaining nodes of the other list.
+          * Return `answer->next` (skipping the dummy node).
+      * **Complexity:** $O(M+N)$ time (where M and N are lengths of lists), $O(1)$ space (excluding new list).
+
+3.  **`mergeSort(Node* head)`:**
+
+      * **Purpose:** The main recursive function for merge sort.
+      * **Base Case:** If `head` is `NULL` or `head->next` is `NULL` (empty or single-node list), it's already sorted, so return `head`.
+      * **Recursive Steps:**
+          * **Find Middle:** Call `mid = findMiddle(head)`.
+          * **Split:** Define `left = head`, `right = mid->next`. Crucially, set `mid->next = NULL` to *break* the list into two separate halves.
+          * **Sort Halves:** Recursively call `left = mergeSort(left)` and `right = mergeSort(right)`.
+          * **Merge:** Call `mergeLL(left, right)` to combine the two sorted halves.
+      * **Return:** The head of the fully sorted list.
+
+**Overall Complexity of Merge Sort:**
+
+  * **Time:** $O(N \\log N)$
+      * Each level of recursion involves splitting ($O(N)$) and merging ($O(N)$).
+      * There are $\\log N$ levels of recursion.
+  * **Space:** $O(\\log N)$ due to recursion stack depth. (For linked lists, this is often considered the auxiliary space, as no extra arrays are used for sorting the elements themselves.)
+
+**Advantages for Linked Lists:**
+
+  * Merge sort is efficient for linked lists because splitting and merging operations (changing pointers) are fast, unlike arrays where splitting often requires copying and merging can be complex or require extra space.
+  * It does not require random access, which is slow for linked lists.
+
+**Example Flow (Unsorted: `3 -> 1 -> 4 -> 2`):**
+
+1.  `mergeSort(3->1->4->2)`
+      * `mid` = `1` (from `findMiddle`)
+      * `left` = `3->1`, `right` = `4->2` (break at `1->next`)
+      * `left = mergeSort(3->1)`
+          * `mid` = `3`
+          * `left` = `3`, `right` = `1`
+          * `3 = mergeSort(3)` -\> returns `3`
+          * `1 = mergeSort(1)` -\> returns `1`
+          * `mergeLL(3, 1)` -\> returns `1->3`
+      * `right = mergeSort(4->2)`
+          * `mid` = `4`
+          * `left` = `4`, `right` = `2`
+          * `4 = mergeSort(4)` -\> returns `4`
+          * `2 = mergeSort(2)` -\> returns `2`
+          * `mergeLL(4, 2)` -\> returns `2->4`
+      * `mergeLL(1->3, 2->4)` -\> returns `1->2->3->4`
+
+Result: Sorted list `1 -> 2 -> 3 -> 4`

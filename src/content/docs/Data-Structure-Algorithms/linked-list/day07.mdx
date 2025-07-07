@@ -3,68 +3,76 @@ title: Check Palindrome In Linked List
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes all standard C++ libraries (e.g., iostream, vector, etc.)
+using namespace std; // Uses the standard namespace
 
+// Node class for a singly linked list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data;  // Data stored in the node
+    Node* next; // Pointer to the next node
 
+    // Constructor to create a new node
     Node(int data) {
-        this->data = data;
-        this->next = NULL;
+        this->data = data; // Initialize data
+        this->next = NULL; // Initialize next pointer to NULL
     }
 };
 
+// Function to print the linked list
 void printList(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) { // Check if list is empty
         cout << "List is Empty!" << endl;
         return;
     }
-    
+
     cout << "Singly List : ";
-    while(head != NULL) {
+    while(head != NULL) { // Traverse and print data
         cout << head->data << " ";
         head = head->next;
     }
     cout << endl;
 }
 
+// Function to insert a new node at the head of the list
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    Node *temp = new Node(data); // Create new node
+    temp->next = head;           // Link new node to current head
+    head = temp;                 // Update head to new node
 }
 
+// Function to check if a singly linked list is a palindrome
+// Approach: Copy list to vector, then check if vector is palindrome
 bool isPalindrome(Node* head) {
-    Node* temp = head;
-    vector<int> newList;
+    Node* temp = head; // Temporary pointer for list traversal
+    vector<int> newList; // Vector to store linked list data
 
+    // Step 1: Copy linked list data to a vector
     while(temp != NULL) {
-        newList.push_back (temp->data);
-        temp = temp->next;
+        newList.push_back(temp->data); // Add current node's data to vector
+        temp = temp->next;             // Move to next node
     }
 
-    int start = 0;
-    int end = newList.size() - 1;
+    // Step 2: Check if the vector is a palindrome
+    int start = 0;                     // Pointer for start of vector
+    int end = newList.size() - 1;      // Pointer for end of vector
 
-    while(start < end) {
-        if(newList[start] != newList[end]) {
-            return false;
+    while(start < end) {               // Iterate inwards from both ends
+        if(newList[start] != newList[end]) { // If elements don't match
+            return false;              // Not a palindrome
         }
-
-        start++;
-        end--;
+        start++;                       // Move start pointer forward
+        end--;                         // Move end pointer backward
     }
 
-    return true;
+    return true; // If loop completes, it's a palindrome
 }
 
 int main() {
-    Node *head = NULL;
+    Node *head = NULL; // Initialize an empty linked list
 
+    // Insert elements to create a palindrome list: 54 -> 67 -> 34 -> 99 -> 34 -> 67 -> 54
     insertAtHead(head, 54);
     insertAtHead(head, 67);
     insertAtHead(head, 34);
@@ -73,89 +81,163 @@ int main() {
     insertAtHead(head, 67);
     insertAtHead(head, 54);
 
-    printList(head);
+    printList(head); // Print the created list
 
+    // Check and print if the list is a palindrome
     if(isPalindrome(head)) {
         cout << "List is palindrome!" << endl;
     } else {
         cout << "List is not palindrome!" << endl;
     }
 
-    return 0;
+    return 0; // Indicate successful execution
 }
 ```
 
+-----
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+### Quick Revision Note: Palindrome Check for Singly Linked List
 
+**Problem:** Determine if a given singly linked list is a palindrome. A palindrome reads the same forwards and backwards.
+
+**Approach Used (`isPalindrome` function):**
+
+1.  **Copy to Auxiliary Space (Vector):**
+
+      * **Idea:** The simplest way to check for a palindrome in a singly linked list is to copy all its elements into a data structure that allows easy bidirectional access, like a `std::vector` (or an array).
+      * **Process:** Traverse the linked list from head to tail. For each node, append its `data` to the `vector`.
+      * **Time Complexity:** $O(N)$, where $N$ is the number of nodes, as we visit each node once to copy its data.
+      * **Space Complexity:** $O(N)$, as the `vector` will store all $N$ elements of the linked list.
+
+2.  **Two-Pointer Check on Auxiliary Space:**
+
+      * **Idea:** Once the elements are in the `vector`, checking for a palindrome becomes straightforward.
+      * **Process:** Use two pointers, `start` at the beginning of the `vector` and `end` at the end. Move `start` forwards and `end` backwards, comparing elements at each step. If a mismatch is found, it's not a palindrome. If they meet or cross without mismatches, it is a palindrome.
+      * **Time Complexity:** $O(N)$, as we iterate through at most half of the `vector`.
+      * **Space Complexity:** $O(1)$ (ignoring the space used by the `vector` itself, which is part of step 1).
+
+**Overall Time Complexity:** $O(N)$ (dominated by the two passes over the list/vector)
+**Overall Space Complexity:** $O(N)$ (due to storing all list elements in the vector)
+
+**Example:**
+
+Linked List: `54 -> 67 -> 34 -> 99 -> 34 -> 67 -> 54 -> NULL`
+
+1.  **Copy to `vector`:**
+    `newList = [54, 67, 34, 99, 34, 67, 54]`
+
+2.  **Two-Pointer Check:**
+
+      * `start = 0`, `end = 6`
+      * `newList[0]` (54) == `newList[6]` (54) -\> Match. `start = 1`, `end = 5`
+      * `newList[1]` (67) == `newList[5]` (67) -\> Match. `start = 2`, `end = 4`
+      * `newList[2]` (34) == `newList[4]` (34) -\> Match. `start = 3`, `end = 3`
+      * `start` is no longer less than `end`. Loop terminates.
+
+Result: `true` (List is a palindrome)
+
+-----
+
+**Alternative (More Optimal) Approach (Not implemented in the provided code but good for revision):**
+
+For a singly linked list, a more space-efficient (but slightly more complex) approach would be:
+
+1.  **Find Middle:** Use the "fast and slow pointer" method to find the middle of the linked list.
+2.  **Reverse Second Half:** Reverse the linked list from the middle to the end.
+3.  **Compare Halves:** Compare the first half of the original list with the reversed second half.
+4.  **Restore List (Optional):** Reverse the second half back to restore the original list structure.
+
+This alternative approach has:
+
+  * **Time Complexity:** $O(N)$ (for finding middle, reversing, and comparing).
+  * **Space Complexity:** $O(1)$ (does not use auxiliary data structures proportional to N, only a few pointers). This is often preferred in interviews.
+
+```cpp
+#include <bits/stdc++.h> // Includes all standard C++ libraries (e.g., iostream, vector, etc.)
+using namespace std; // Uses the standard namespace
+
+// Node class for a singly linked list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data;  // Data stored in the node
+    Node* next; // Pointer to the next node
 
+    // Constructor to create a new node
     Node(int data) {
-        this->data = data;
-        this->next = NULL;
+        this->data = data; // Initialize data
+        this->next = NULL; // Initialize next pointer to NULL
     }
 };
 
+// Function to print the linked list
 void printList(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) { // Check if list is empty
         cout << "List is Empty!" << endl;
         return;
     }
-    
+
     cout << "Singly List : ";
-    while(head != NULL) {
+    while(head != NULL) { // Traverse and print data
         cout << head->data << " ";
         head = head->next;
     }
     cout << endl;
 }
 
+// Function to insert a new node at the head of the list
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    Node *temp = new Node(data); // Create new node
+    temp->next = head;           // Link new node to current head
+    head = temp;                 // Update head to new node
 }
 
+// Function to check if a singly linked list is a palindrome
+// Approach: Create a reversed copy of the list and compare it with the original.
 bool isPalindrome(Node* head) {
-    Node* copy = NULL;
-    Node* temp = head;
-   
+    Node* copy = NULL; // Head of the reversed copy list
+    Node* temp = head; // Temporary pointer for original list traversal
+
+    // Step 1: Create a reversed copy of the original linked list
+    // By repeatedly inserting at the head of 'copy', we effectively reverse the order.
     while(temp != NULL) {
-        insertAtHead(copy, temp->data);
-        temp = temp->next;
+        insertAtHead(copy, temp->data); // Insert current node's data at head of 'copy'
+        temp = temp->next;              // Move to next node in original list
     }
-    // No need to reverse as inserting at head position has already reversed the list.
 
-    bool flag = true;
-    temp = copy;
+    // Step 2: Compare the original list with its reversed copy
+    // 'head' still points to the original list's head.
+    // 'copy' points to the head of the reversed copy.
+    bool flag = true; // Flag to track if it's a palindrome (assume true initially)
+    temp = copy;      // Use 'temp' to traverse the 'copy' list
 
-    while(head != NULL) {
-        if(head->data != temp->data) {
-            flag = false;
-            break;
+    while(head != NULL) { // Iterate as long as original list has nodes
+        if(head->data != temp->data) { // If data doesn't match
+            flag = false; // Set flag to false
+            break;        // No need to continue, it's not a palindrome
         }
 
-        head = head->next;
-        temp = temp->next;
+        head = head->next; // Move to next node in original list
+        temp = temp->next; // Move to next node in reversed copy
     }
 
+    // Step 3: Deallocate memory used by the 'copy' list
+    // (Important for good memory management, as 'copy' was dynamically allocated)
     while(copy != NULL) {
-        Node* target = copy;
-        copy = copy->next;
-        delete target;
+        Node* target = copy; // Pointer to the current node to be deleted
+        copy = copy->next;   // Move 'copy' to the next node before deletion
+        delete target;       // Deallocate the current node
     }
 
-    return flag;
+    return flag; // Return the palindrome check result
 }
 
 int main() {
-    Node *head = NULL;
+    Node *head = NULL; // Initialize an empty linked list
 
+    // Insert elements to create a palindrome list: 54 -> 67 -> 34 -> 99 -> 34 -> 67 -> 54
+    // (Note: insertAtHead adds elements in reverse order of insertion calls)
+    // List built: 54 (last inserted) -> 67 -> 34 -> 99 -> 34 -> 67 -> 54 (first inserted)
+    // So the head will be 54. The actual list in memory is: 54 -> 67 -> 34 -> 99 -> 34 -> 67 -> 54
     insertAtHead(head, 54);
     insertAtHead(head, 67);
     insertAtHead(head, 34);
@@ -164,104 +246,214 @@ int main() {
     insertAtHead(head, 67);
     insertAtHead(head, 54);
 
-    printList(head);
+    printList(head); // Print the created list
 
+    // Check and print if the list is a palindrome
     if(isPalindrome(head)) {
         cout << "List is palindrome!" << endl;
     } else {
         cout << "List is not palindrome!" << endl;
     }
 
-    return 0;
+    return 0; // Indicate successful execution
 }
 ```
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+-----
 
+### Quick Revision Note: Palindrome Check for Singly Linked List (Using Reversed Copy)
+
+**Problem:** Determine if a given singly linked list reads the same forwards and backwards (i.e., is a palindrome).
+
+**Approach Used (`isPalindrome` function):**
+
+1.  **Create a Reversed Copy:**
+
+      * **Idea:** Build a completely new linked list by traversing the original list and inserting each node's data at the *head* of the new list. Inserting at the head naturally reverses the order of elements.
+      * **Process:**
+          * Initialize `Node* copy = NULL;`
+          * Iterate through the `original list` (using `temp` pointer).
+          * For each `temp->data`, call `insertAtHead(copy, temp->data)`.
+      * **Time Complexity:** $O(N)$, where $N$ is the number of nodes, as we traverse the original list once and perform $N$ head insertions (each $O(1)$).
+      * **Space Complexity:** $O(N)$, as we create a new linked list that is a full copy of the original.
+
+2.  **Compare Original and Reversed Copy:**
+
+      * **Idea:** Now that we have the original list (pointed to by `head`) and its reversed version (pointed to by `copy`), we can compare them element by element.
+      * **Process:**
+          * Use two pointers, one for `head` and one for `copy`.
+          * Iterate simultaneously, comparing `head->data` and `copy->data`.
+          * If any pair of corresponding elements do not match, the list is not a palindrome.
+          * If both lists are traversed completely without a mismatch, it is a palindrome.
+      * **Time Complexity:** $O(N)$, as we traverse both lists once.
+      * **Space Complexity:** $O(1)$ (ignoring the space used by the copied list, which is part of step 1).
+
+3.  **Deallocate Copied List:**
+
+      * **Important:** Since the `copy` list was dynamically allocated, it's crucial to deallocate its memory to prevent memory leaks. This is done by traversing `copy` and `delete`ing each node.
+      * **Time Complexity:** $O(N)$.
+
+**Overall Time Complexity:** $O(N)$ (dominated by the three passes: copy, compare, deallocate).
+**Overall Space Complexity:** $O(N)$ (due to creating the full copy of the list).
+
+**Example:**
+
+Original List: `54 -> 67 -> 34 -> 99 -> 34 -> 67 -> 54 -> NULL`
+
+1.  **Create Reversed Copy (`copy`):**
+
+      * Insert `54` (from original head): `54 -> NULL` (`copy` points to this `54`)
+      * Insert `67`: `67 -> 54 -> NULL` (`copy` points to `67`)
+      * Insert `34`: `34 -> 67 -> 54 -> NULL` (`copy` points to `34`)
+      * ...and so on.
+      * Final `copy` list: `54 -> 67 -> 34 -> 99 -> 34 -> 67 -> 54 -> NULL` (which is indeed the reverse)
+
+2.  **Compare Original (`head`) and Reversed Copy (`copy`):**
+
+      * `head->data` (54) vs `copy->data` (54) -\> Match
+      * `head->data` (67) vs `copy->data` (67) -\> Match
+      * `head->data` (34) vs `copy->data` (34) -\> Match
+      * `head->data` (99) vs `copy->data` (99) -\> Match
+      * `head->data` (34) vs `copy->data` (34) -\> Match
+      * `head->data` (67) vs `copy->data` (67) -\> Match
+      * `head->data` (54) vs `copy->data` (54) -\> Match
+      * Both lists become `NULL`.
+
+Result: `true` (List is a palindrome)
+
+-----
+
+**Comparison with Vector Approach (Previous `isPalindrome`):**
+
+  * **Similarities:** Both approaches use $O(N)$ time and $O(N)$ space complexity.
+  * **Differences:**
+      * The `vector` approach uses a `std::vector`, which might have slightly better cache performance due to contiguous memory, but involves potential reallocations.
+      * This "reversed copy linked list" approach directly manipulates linked list nodes for the copy, which might be preferred if strictly sticking to linked list operations. Memory deallocation is a manual step.
+
+**More Optimal Approach (O(1) Space - for revision):**
+
+As mentioned in the previous note, the most optimal solution for space efficiency ($O(1)$ space) involves:
+
+1.  Finding the middle of the linked list (using fast/slow pointers).
+2.  Reversing the second half of the linked list.
+3.  Comparing the first half with the reversed second half.
+4.  (Optional but good practice) Reversing the second half back to restore the original list.
+    This approach avoids creating a full copy, making it more memory-efficient.
+
+
+```cpp
+#include <bits/stdc++.h> // Includes all standard C++ libraries (e.g., iostream, vector, etc.)
+using namespace std; // Uses the standard namespace
+
+// Node class for a singly linked list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data;  // Data stored in the node
+    Node* next; // Pointer to the next node
 
+    // Constructor to create a new node
     Node(int data) {
-        this->data = data;
-        this->next = NULL;
+        this->data = data; // Initialize data
+        this->next = NULL; // Initialize next pointer to NULL
     }
 };
 
+// Function to print the linked list
 void printList(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) { // Check if list is empty
         cout << "List is Empty!" << endl;
         return;
     }
-    
+
     cout << "Singly List : ";
-    while(head != NULL) {
+    while(head != NULL) { // Traverse and print data
         cout << head->data << " ";
         head = head->next;
     }
     cout << endl;
 }
 
+// Function to insert a new node at the head of the list
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    Node *temp = new Node(data); // Create new node
+    temp->next = head;           // Link new node to current head
+    head = temp;                 // Update head to new node
 }
 
+// Function to reverse a linked list
+// Input: head of the list to be reversed
+// Output: new head of the reversed list
 Node* reverse(Node* head) {
-    Node* curr = head;
-    Node* prev = NULL;
-    Node* next = NULL;
+    Node* curr = head; // Current node, starts at head
+    Node* prev = NULL; // Previous node, initially NULL
+    Node* next = NULL; // Next node, for temporary storage
 
-    while(curr != NULL) {
-        next = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = next;
+    while(curr != NULL) { // Iterate until end of list
+        next = curr->next; // Store next node
+        curr->next = prev; // Reverse current node's pointer
+        prev = curr;       // Move prev to current node
+        curr = next;       // Move current to next node
     }
-
-    return prev;
+    return prev; // 'prev' will be the new head of the reversed list
 }
 
+// Function to find the middle of a linked list
+// Uses the "fast and slow pointer" approach
 Node* getMiddle(Node* head) {
-    Node* slow = head;
-    Node* fast = head;
+    Node* slow = head; // Slow pointer, moves one step at a time
+    Node* fast = head; // Fast pointer, moves two steps at a time
 
-    while(fast!=NULL && fast->next!=NULL) {
-        fast = fast->next->next;
-        slow = slow->next;
+    // 'fast' checks for NULL and 'fast->next' checks for odd/even length
+    while(fast != NULL && fast->next != NULL) {
+        fast = fast->next->next; // Fast moves two steps
+        slow = slow->next;       // Slow moves one step
     }
-
-    return slow;
+    return slow; // When fast reaches end, slow is at the middle
 }
 
+// Function to check if a singly linked list is a palindrome
+// Optimized approach using O(1) extra space (excluding recursion stack for reverse if recursive)
 bool isPalindrome(Node* head) {
-    Node* middle = getMiddle(head);
-    middle = middle->next;
-    middle = reverse(middle);
-
-    Node* head1 = head;
-    Node* head2 = middle;
-
-    while(head2 != NULL) {
-        if(head1->data != head2->data) {
-            return false;
-        }
-
-        head1 = head1->next;
-        head2 = head2 ->next;
+    // Edge case: empty or single-node list is a palindrome
+    if (head == NULL || head->next == NULL) {
+        return true;
     }
 
-    middle = reverse(middle);
-    return true;
+    Node* middle = getMiddle(head); // Find the middle node of the list
+    Node* headOfSecondHalf = middle->next; // Head of the second half of the list
+    middle->next = NULL; // Break the list into two halves (important for comparison)
+
+    headOfSecondHalf = reverse(headOfSecondHalf); // Reverse the second half
+
+    Node* head1 = head; // Pointer for the first half
+    Node* head2 = headOfSecondHalf; // Pointer for the reversed second half
+
+    bool palindrome = true; // Flag to store the result
+
+    // Compare the first half with the reversed second half
+    while(head1 != NULL && head2 != NULL) { // Iterate as long as both halves have elements
+        if(head1->data != head2->data) { // If data doesn't match
+            palindrome = false; // Not a palindrome
+            break;              // Exit loop early
+        }
+        head1 = head1->next; // Move to next node in first half
+        head2 = head2->next; // Move to next node in reversed second half
+    }
+
+    // Restore the original list (optional but good practice for calling functions)
+    // First, reverse the second half back to its original order
+    headOfSecondHalf = reverse(headOfSecondHalf);
+    // Then, reconnect the two halves
+    middle->next = headOfSecondHalf;
+
+    return palindrome; // Return the result
 }
 
 int main() {
-    Node *head = NULL;
+    Node *head = NULL; // Initialize an empty linked list
 
+    // Insert elements to create a palindrome list: 54 -> 67 -> 34 -> 99 -> 34 -> 67 -> 54
+    // List created (head to tail): 54 -> 67 -> 34 -> 99 -> 34 -> 67 -> 54
     insertAtHead(head, 54);
     insertAtHead(head, 67);
     insertAtHead(head, 34);
@@ -270,14 +462,100 @@ int main() {
     insertAtHead(head, 67);
     insertAtHead(head, 54);
 
-    printList(head);
+    printList(head); // Print the created list
 
+    // Check and print if the list is a palindrome
     if(isPalindrome(head)) {
         cout << "List is palindrome!" << endl;
     } else {
         cout << "List is not palindrome!" << endl;
     }
 
-    return 0;
+    return 0; // Indicate successful execution
 }
 ```
+
+-----
+
+### Quick Revision Note: Palindrome Check for Singly Linked List (Optimized O(1) Space)
+
+**Problem:** Determine if a singly linked list is a palindrome efficiently, ideally without using extra space proportional to the list size.
+
+**Core Idea:**
+A linked list is a palindrome if its first half matches the reverse of its second half.
+
+**Approach Used (`isPalindrome` function):**
+
+1.  **Find the Middle of the List (`getMiddle`):**
+
+      * **Method:** Use the "Floyd's Tortoise and Hare" (fast and slow pointer) algorithm.
+          * `slow` pointer moves one step at a time.
+          * `fast` pointer moves two steps at a time.
+      * **Result:** When `fast` reaches the end (or `NULL`), `slow` will be at the middle node of the list. For even length lists, `slow` will be the last node of the first half. For odd length, `slow` will be the actual middle node.
+      * **Time Complexity:** $O(N)$, for a single traversal.
+      * **Space Complexity:** $O(1)$.
+
+2.  **Reverse the Second Half of the List (`reverse`):**
+
+      * **Method:**
+          * Identify the start of the second half: `middle->next`.
+          * Temporarily break the link between the first and second halves: `middle->next = NULL;`. This isolates the first half.
+          * Use a standard iterative linked list reversal algorithm on the second half.
+      * **Result:** The second half of the list is now reversed.
+      * **Time Complexity:** $O(N/2)$, approximately $O(N)$, for reversing half the list.
+      * **Space Complexity:** $O(1)$.
+
+3.  **Compare the First Half with the Reversed Second Half:**
+
+      * **Method:**
+          * Use one pointer (`head1`) starting from the original `head`.
+          * Use another pointer (`head2`) starting from the head of the *reversed* second half.
+          * Compare `head1->data` and `head2->data` sequentially.
+      * **Result:** If all corresponding data matches until `head2` becomes `NULL`, the list is a palindrome. If a mismatch occurs, it's not.
+      * **Time Complexity:** $O(N/2)$, approximately $O(N)$.
+      * **Space Complexity:** $O(1)$.
+
+4.  **Restore the Original List (Crucial for Function Reusability):**
+
+      * **Method:** This step is important if you intend for the original linked list structure to remain unchanged after the `isPalindrome` call.
+          * Reverse the (now compared) second half back to its original order.
+          * Reconnect the two halves: Set `middle->next` back to the (now re-reversed) head of the second half.
+      * **Time Complexity:** $O(N/2)$, approximately $O(N)$.
+      * **Space Complexity:** $O(1)$.
+
+**Overall Time Complexity:** $O(N)$ (dominated by multiple traversals/reversals, each linear).
+**Overall Space Complexity:** $O(1)$ (constant extra space, as no auxiliary data structures growing with N are used).
+
+**Example:**
+
+List: `54 -> 67 -> 34 -> 99 -> 34 -> 67 -> 54 -> NULL` (Length 7)
+
+1.  **`getMiddle(head)`:**
+
+      * `slow` goes `54 -> 67 -> 34 -> 99`
+      * `fast` goes `54 -> 34 -> 34 -> 54 -> NULL` (reaches end)
+      * `middle` points to `99`.
+      * `headOfSecondHalf` (initially `middle->next`) becomes `34`.
+      * `middle->next = NULL` breaks list: `54 -> 67 -> 34 -> 99 -> NULL` and `34 -> 67 -> 54 -> NULL`.
+
+2.  **`reverse(headOfSecondHalf)`:**
+
+      * The second half `34 -> 67 -> 54 -> NULL` becomes `54 -> 67 -> 34 -> NULL`.
+      * `headOfSecondHalf` now points to `54` (the new head of the reversed second half).
+
+3.  **Compare:**
+
+      * `head1` (original head `54`) vs `head2` (reversed second half head `54`) -\> Match.
+      * `head1` (67) vs `head2` (67) -\> Match.
+      * `head1` (34) vs `head2` (34) -\> Match.
+      * `head1` (99) vs `head2` (NULL) -\> Comparison stops here. `head2` is `NULL`. The comparison `while(head1 != NULL && head2 != NULL)` covers this.
+      * The loop finishes without `palindrome` being set to `false`.
+
+4.  **Restore:** (Not shown in example trace for brevity, but happens in code)
+
+      * `reverse(headOfSecondHalf)` reverses it back to `34 -> 67 -> 54 -> NULL`.
+      * `middle->next = headOfSecondHalf` reconnects `99 -> 34`.
+
+Result: `true` (List is a palindrome)
+
+This optimized method is generally preferred in coding interviews due to its superior space complexity.

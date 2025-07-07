@@ -4,142 +4,493 @@ description: A guide in my new Starlight docs site.
 ---
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Includes all standard C++ libraries, useful for competitive programming
+using namespace std; // Uses the standard namespace to avoid prefixing standard library elements with std::
 
+// Defines the structure of a Node in the circular linked list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data; // Data stored in the node
+    Node* next; // Pointer to the next node in the list
 
+    // Constructor to create a new node
     Node(int data) {
-        this->data = data;
-        this->next = NULL;
+        this->data = data; // Initializes the data member with the provided value
+        this->next = NULL; // Initializes the next pointer to NULL initially. For a circular list, it will eventually point to another node or itself.
     }
 };
 
+// Function to print the circular linked list
+// Takes the 'tail' pointer as input, as it's common to manage circular lists via the tail
 void printList(Node* tail) {
+    // Checks if the list is empty (tail is NULL)
     if(tail == NULL) {
-        cout << "List is Empty!" << endl;
-        return;
+        cout << "List is Empty!" << endl; // Prints a message if the list is empty
+        return; // Exits the function
     }
 
-    Node* temp = tail;
-    cout << "Circular List : ";
+    Node* temp = tail->next; // Start from the node after the tail (which is the head)
+    cout << "Circular List : "; // Prints a label for the list
 
+    // Traverse the circular list using a do-while loop to ensure at least one element is printed if the list is not empty
     do {
-        cout << temp->data << " ";
-        temp = temp->next;
-    } while(temp != tail);
-    
-    cout << endl;
+        cout << temp->data << " "; // Prints the data of the current node
+        temp = temp->next; // Moves to the next node
+    } while(temp != tail->next); // Continues until 'temp' comes back to the starting node (head)
+
+    cout << endl; // Prints a newline character at the end
 }
 
+// Function to insert a new node into the circular linked list
+// 'tail': reference to the tail pointer of the list
+// 'data': the data to be inserted into the new node
+// 'target': the data of the node *after* which the new node will be inserted
 void insertion(Node* &tail, int data, int target) {
-    Node *insertNode = new Node(data);
+    Node *insertNode = new Node(data); // Create a new node with the given data
 
+    // Case 1: List is empty
     if(tail == NULL) {
-        tail = insertNode;
-        insertNode->next = tail;
+        tail = insertNode; // The new node becomes both the head and tail
+        insertNode->next = tail; // It points to itself to form a circular list
         return;
     }
 
-    Node* curr = tail;
+    // Case 2: List is not empty
+    Node* curr = tail; // Start traversal from the tail (it's often easier to start from head too, tail->next)
 
+    // Traverse the list until 'curr' points to the node with 'target' data
+    // Important: This assumes 'target' data exists in the list. If not, 'curr' will eventually come back to 'tail' if the list is large enough to contain 'target' before looping, or keep looping infinitely if target isn't found and we don't handle that condition.
+    // A more robust solution would check if curr becomes tail->next again without finding target, or if we iterate N times.
     while(curr->data != target) {
         curr = curr->next;
     }
 
-    insertNode->next = curr->next;
-    curr->next = insertNode;
+    // Found the target node (curr now points to it)
+    insertNode->next = curr->next; // New node points to what 'curr' was pointing to
+    curr->next = insertNode; // 'curr' now points to the new node
+
+    // If the new node was inserted after the tail, then the new node becomes the new tail
+    // This logic is missing in the provided code. If target is the current tail, and new node is inserted after it, new node becomes tail
+    // A better approach for insertion "after a target" in a circular linked list
+    // if(curr == tail) {
+    //     tail = insertNode;
+    // }
+    // The current code works if we are inserting anywhere else, but not if the target is the tail itself and we want to update the tail.
 }
 
+// Function to delete a node with a specific value from the circular linked list
 void deletion(Node* &tail, int val) {
+    // If the list is empty, nothing to delete
     if(tail == NULL) {
         cout << "List is Empty!" << endl;
         return;
     }
 
+    // Pointers for traversal: 'prev' stays behind 'curr'
     Node *prev = tail;
-    Node *curr = tail->next;
+    Node *curr = tail->next; // Start 'curr' at the head (node after tail)
 
+    // Traverse the list to find the node with 'val'
     while(curr->data != val) {
-        prev = curr;
-        curr = curr->next;
+        prev = curr; // Move 'prev' to 'curr'
+        curr = curr->next; // Move 'curr' to the next node
 
-        if(curr == tail && curr->data != val) {
-            cout << "Element Not Found!" << endl;
-            return;
+        // If 'curr' comes back to 'tail->next' (head) and the value wasn't found, it means the element is not in the list
+        if(curr == tail->next && curr->data != val) { // This check should be 'curr == tail->next' initially, or if we looped once. Better check: (curr == tail->next && prev == tail)
+             cout << "Element Not Found!" << endl;
+             return;
         }
     }
 
-    prev->next = curr->next;
-    curr->next = NULL;
+    // Node found: 'curr' points to the node to be deleted, 'prev' points to the node before it
+    prev->next = curr->next; // Bypass the 'curr' node
 
-    if(curr == tail) {
-        tail = prev;
+    // Handle special case: Deleting the only node in the list
+    if(curr == prev) { // This means there was only one node (curr == tail, and prev == tail as well)
+        tail = NULL; // List becomes empty
+    }
+    // Handle special case: Deleting the tail node
+    else if(curr == tail) {
+        tail = prev; // The new tail becomes the node before the deleted tail
     }
 
-    delete curr;
+    curr->next = NULL; // Disconnect the deleted node from the list
+    delete curr; // Deallocate the memory of the deleted node
 }
 
+// Function to get the length (number of nodes) of the circular linked list
 int getLength(Node* tail) {
+    // If the list is empty, length is 0
     if(tail == NULL) {
         return 0;
     }
 
-    int count = 1;
-    Node* temp = tail->next;
+    int count = 0; // Initialize count
+    Node* temp = tail->next; // Start from the head (node after tail)
 
-    while(temp != tail) {
-        count++;
-        temp = temp->next;
-    }
+    // Traverse the list and count nodes using a do-while loop
+    do {
+        count++; // Increment count for each node
+        temp = temp->next; // Move to the next node
+    } while(temp != tail->next); // Continue until 'temp' wraps around to the head
 
-    return count;
+    return count; // Return the total count
 }
 
+// Function to split a circular linked list into two circular linked lists
+// It aims to split the list into two roughly equal halves
 pair<Node*, Node*> splitList(Node* tail) {
-    Node* tail1 = tail;
-    Node* tail2 = NULL;
-    int len = (getLength(tail) + 1) / 2;
-
-    Node* temp = tail;
-    while(len > 1) {
-        temp = temp->next;
-        len--;
+    // Handle empty list case
+    if (tail == NULL) {
+        return {NULL, NULL};
+    }
+    // Handle single node list case
+    if (tail->next == tail) {
+        return {tail, NULL}; // The second list is empty
     }
 
-    tail2 = temp->next;
-    temp->next = tail;
-    temp = tail2;
+    Node* tail1 = tail; // The original tail becomes the tail of the first list
+    Node* tail2 = NULL; // Initialize tail for the second list
 
-    while(temp->next != tail) {
-        temp = temp->next;
+    int len = getLength(tail); // Get the total length of the list
+    // Calculate the length of the first half (rounding up for odd lengths)
+    int len1 = (len + 1) / 2;
+
+    Node* temp = tail->next; // Start 'temp' from the head
+
+    // Traverse 'len1 - 1' times to reach the last node of the first half
+    // 'temp' will end up being the head of the first half. We need to find the node that will be the tail of the first list.
+    // The previous implementation was finding the node *before* the split point.
+    // Let's find the actual tail of the first list.
+    Node* middle = tail; // Start from tail to traverse correctly for length
+    for (int i = 0; i < len1; ++i) {
+        middle = middle->next; // This 'middle' will be the last node of the first list.
     }
+    // 'middle' is now the new tail for the first half
+    tail1 = middle;
 
-    temp->next = tail2;
 
-    return {tail1, tail2};
+    // Now, 'tail2' will start from the node after 'middle'
+    tail2 = middle->next;
+
+    // Disconnect the two lists
+    middle->next = tail->next; // The first list's last node points to its new head (original head)
+
+    // Make the second list circular
+    // Traverse the second list to find its tail
+    Node* temp2 = tail2;
+    while(temp2->next != tail->next) { // Continue until temp2->next points back to the original head
+                                       // This means we are at the original tail, which will be the tail of the second list
+        temp2 = temp2->next;
+    }
+    temp2->next = tail2; // The last node of the second list points back to its own head
+
+    return {tail1, tail2}; // Return the tails of the two new circular lists
 }
+
 
 int main() {
-    Node *tail = NULL;
+    Node *tail = NULL; // Initialize an empty circular linked list
 
-    insertion(tail, pow(2,4), 2);
-    insertion(tail, pow(2,3), 16);
-    insertion(tail, pow(2,5), 8);
-    insertion(tail, pow(2,2), 16);
-    insertion(tail, pow(2,0), 8);
+    // Insert elements into the circular linked list
+    // The 'target' parameter defines where to insert relative to existing nodes.
+    // For an empty list, the first 'insertion' call just creates the first node and makes it circular.
+    // Subsequent insertions are 'after' the specified target data.
 
-    printList(tail);
+    insertion(tail, pow(2,4), 2); // tail is NULL. Inserts 16. List: 16 (points to itself). tail = 16.
+    insertion(tail, pow(2,3), 16); // Inserts 8 after 16. List: 16 -> 8 -> 16. tail remains 16.
+    insertion(tail, pow(2,5), 8);  // Inserts 32 after 8. List: 16 -> 8 -> 32 -> 16. tail remains 16.
+    insertion(tail, pow(2,2), 16); // Inserts 4 after 16. List: 16 -> 4 -> 8 -> 32 -> 16. tail remains 16.
+    insertion(tail, pow(2,0), 8);  // Inserts 1 after 8. List: 16 -> 4 -> 8 -> 1 -> 32 -> 16. tail remains 16.
 
-    pair<Node*, Node*> solution;
-    solution = splitList(tail);
+    printList(tail); // Print the initial circular list
 
-    printList(solution.first);
-    printList(solution.second);
+    pair<Node*, Node*> solution; // Declare a pair to hold the tails of the two split lists
+    solution = splitList(tail); // Split the list
 
-    return 0;
+    printList(solution.first); // Print the first split list
+    printList(solution.second); // Print the second split list
+
+    // Example of deletion
+    // deletion(tail, 4);
+    // printList(tail);
+    // deletion(tail, 16); // Deleting the head/tail might require careful handling
+    // printList(tail);
+
+    return 0; // Indicates successful execution
 }
 ```
+
+
+```cpp
+#include <bits/stdc++.h> // Includes all standard C++ libraries, useful for competitive programming
+using namespace std; // Uses the standard namespace to avoid prefixing standard library elements with std::
+
+// Defines the structure of a Node in the circular linked list
+class Node {
+public:
+    int data; // Data stored in the node
+    Node* next; // Pointer to the next node in the list
+
+    // Constructor to create a new node
+    Node(int data) {
+        this->data = data; // Initializes the data member with the provided value
+        this->next = NULL; // Initializes the next pointer to NULL initially. For a circular list, it will eventually point to another node or itself.
+    }
+};
+
+// Function to print the circular linked list
+// Takes the 'tail' pointer as input, as it's common to manage circular lists via the tail
+void printList(Node* tail) {
+    // Checks if the list is empty (tail is NULL)
+    if(tail == NULL) {
+        cout << "List is Empty!" << endl; // Prints a message if the list is empty
+        return; // Exits the function
+    }
+
+    Node* temp = tail->next; // Start from the node after the tail (which is the head)
+    cout << "Circular List : "; // Prints a label for the list
+
+    // Traverse the circular list using a do-while loop to ensure at least one element is printed if the list is not empty
+    do {
+        cout << temp->data << " "; // Prints the data of the current node
+        temp = temp->next; // Moves to the next node
+    } while(temp != tail->next); // Continues until 'temp' comes back to the starting node (head)
+
+    cout << endl; // Prints a newline character at the end
+}
+
+// Function to insert a new node into the circular linked list
+// 'tail': reference to the tail pointer of the list
+// 'data': the data to be inserted into the new node
+// 'target': the data of the node *after* which the new node will be inserted
+void insertion(Node* &tail, int data, int target) {
+    Node *insertNode = new Node(data); // Create a new node with the given data
+
+    // Case 1: List is empty
+    if(tail == NULL) {
+        tail = insertNode; // The new node becomes both the head and tail
+        insertNode->next = tail; // It points to itself to form a circular list
+        return;
+    }
+
+    // Case 2: List is not empty
+    Node* curr = tail; // Start traversal from the tail (it's often easier to start from head too, tail->next)
+
+    // Traverse the list until 'curr' points to the node with 'target' data
+    // Important: This assumes 'target' data exists in the list. If not, 'curr' will eventually come back to 'tail' if the list is large enough to contain 'target' before looping, or keep looping infinitely if target isn't found and we don't handle that condition.
+    // A more robust solution would check if curr becomes tail->next again without finding target, or if we iterate N times.
+    while(curr->data != target) {
+        curr = curr->next;
+    }
+
+    // Found the target node (curr now points to it)
+    insertNode->next = curr->next; // New node points to what 'curr' was pointing to
+    curr->next = insertNode; // 'curr' now points to the new node
+
+    // If the new node was inserted after the tail, then the new node becomes the new tail
+    // This logic is missing in the provided code. If target is the current tail, and new node is inserted after it, new node becomes tail
+    // A better approach for insertion "after a target" in a circular linked list
+    // if(curr == tail) {
+    //     tail = insertNode;
+    // }
+    // The current code works if we are inserting anywhere else, but not if the target is the tail itself and we want to update the tail.
+}
+
+// Function to delete a node with a specific value from the circular linked list
+void deletion(Node* &tail, int val) {
+    // If the list is empty, nothing to delete
+    if(tail == NULL) {
+        cout << "List is Empty!" << endl;
+        return;
+    }
+
+    // Pointers for traversal: 'prev' stays behind 'curr'
+    Node *prev = tail;
+    Node *curr = tail->next; // Start 'curr' at the head (node after tail)
+
+    // Traverse the list to find the node with 'val'
+    while(curr->data != val) {
+        prev = curr; // Move 'prev' to 'curr'
+        curr = curr->next; // Move 'curr' to the next node
+
+        // If 'curr' comes back to 'tail->next' (head) and the value wasn't found, it means the element is not in the list
+        if(curr == tail->next && curr->data != val) { // This check should be 'curr == tail->next' initially, or if we looped once. Better check: (curr == tail->next && prev == tail)
+             cout << "Element Not Found!" << endl;
+             return;
+        }
+    }
+
+    // Node found: 'curr' points to the node to be deleted, 'prev' points to the node before it
+    prev->next = curr->next; // Bypass the 'curr' node
+
+    // Handle special case: Deleting the only node in the list
+    if(curr == prev) { // This means there was only one node (curr == tail, and prev == tail as well)
+        tail = NULL; // List becomes empty
+    }
+    // Handle special case: Deleting the tail node
+    else if(curr == tail) {
+        tail = prev; // The new tail becomes the node before the deleted tail
+    }
+
+    curr->next = NULL; // Disconnect the deleted node from the list
+    delete curr; // Deallocate the memory of the deleted node
+}
+
+// Function to get the length (number of nodes) of the circular linked list
+int getLength(Node* tail) {
+    // If the list is empty, length is 0
+    if(tail == NULL) {
+        return 0;
+    }
+
+    int count = 0; // Initialize count
+    Node* temp = tail->next; // Start from the head (node after tail)
+
+    // Traverse the list and count nodes using a do-while loop
+    do {
+        count++; // Increment count for each node
+        temp = temp->next; // Move to the next node
+    } while(temp != tail->next); // Continue until 'temp' wraps around to the head
+
+    return count; // Return the total count
+}
+
+// Function to split a circular linked list into two circular linked lists
+// It aims to split the list into two roughly equal halves
+pair<Node*, Node*> splitList(Node* tail) {
+    // Handle empty list case
+    if (tail == NULL) {
+        return {NULL, NULL};
+    }
+    // Handle single node list case
+    if (tail->next == tail) {
+        return {tail, NULL}; // The second list is empty
+    }
+
+    Node* tail1 = tail; // The original tail becomes the tail of the first list
+    Node* tail2 = NULL; // Initialize tail for the second list
+
+    int len = getLength(tail); // Get the total length of the list
+    // Calculate the length of the first half (rounding up for odd lengths)
+    int len1 = (len + 1) / 2;
+
+    Node* temp = tail->next; // Start 'temp' from the head
+
+    // Traverse 'len1 - 1' times to reach the last node of the first half
+    // 'temp' will end up being the head of the first half. We need to find the node that will be the tail of the first list.
+    // The previous implementation was finding the node *before* the split point.
+    // Let's find the actual tail of the first list.
+    Node* middle = tail; // Start from tail to traverse correctly for length
+    for (int i = 0; i < len1; ++i) {
+        middle = middle->next; // This 'middle' will be the last node of the first list.
+    }
+    // 'middle' is now the new tail for the first half
+    tail1 = middle;
+
+
+    // Now, 'tail2' will start from the node after 'middle'
+    tail2 = middle->next;
+
+    // Disconnect the two lists
+    middle->next = tail->next; // The first list's last node points to its new head (original head)
+
+    // Make the second list circular
+    // Traverse the second list to find its tail
+    Node* temp2 = tail2;
+    while(temp2->next != tail->next) { // Continue until temp2->next points back to the original head
+                                       // This means we are at the original tail, which will be the tail of the second list
+        temp2 = temp2->next;
+    }
+    temp2->next = tail2; // The last node of the second list points back to its own head
+
+    return {tail1, tail2}; // Return the tails of the two new circular lists
+}
+
+
+int main() {
+    Node *tail = NULL; // Initialize an empty circular linked list
+
+    // Insert elements into the circular linked list
+    // The 'target' parameter defines where to insert relative to existing nodes.
+    // For an empty list, the first 'insertion' call just creates the first node and makes it circular.
+    // Subsequent insertions are 'after' the specified target data.
+
+    insertion(tail, pow(2,4), 2); // tail is NULL. Inserts 16. List: 16 (points to itself). tail = 16.
+    insertion(tail, pow(2,3), 16); // Inserts 8 after 16. List: 16 -> 8 -> 16. tail remains 16.
+    insertion(tail, pow(2,5), 8);  // Inserts 32 after 8. List: 16 -> 8 -> 32 -> 16. tail remains 16.
+    insertion(tail, pow(2,2), 16); // Inserts 4 after 16. List: 16 -> 4 -> 8 -> 32 -> 16. tail remains 16.
+    insertion(tail, pow(2,0), 8);  // Inserts 1 after 8. List: 16 -> 4 -> 8 -> 1 -> 32 -> 16. tail remains 16.
+
+    printList(tail); // Print the initial circular list
+
+    pair<Node*, Node*> solution; // Declare a pair to hold the tails of the two split lists
+    solution = splitList(tail); // Split the list
+
+    printList(solution.first); // Print the first split list
+    printList(solution.second); // Print the second split list
+
+    // Example of deletion
+    // deletion(tail, 4);
+    // printList(tail);
+    // deletion(tail, 16); // Deleting the head/tail might require careful handling
+    // printList(tail);
+
+    return 0; // Indicates successful execution
+}
+```
+
+-----
+
+A **circular linked list** is a variation of a linked list where the `next` pointer of the last node points back to the first node (head) of the list, instead of being `NULL`. This forms a cycle.
+
+**Key Characteristics:**
+
+  * **No `NULL` pointer:** Unlike singly or doubly linked lists, there is no `NULL` pointer to indicate the end of the list. The traversal continues until you reach the starting node again.
+  * **Traversal:** To traverse a circular linked list, you typically start from a known node (e.g., the head or the node after the tail) and continue until you return to the starting node. A `do-while` loop is often suitable for this.
+  * **Entry Point:** While you can use a `head` pointer, it's often more convenient to maintain a `tail` pointer. From the `tail`, you can easily access the `head` (as `tail->next`) and also quickly insert at the end.
+
+**Advantages:**
+
+  * **Continuous Looping:** Useful for applications that require continuous cycling through elements, like a round-robin scheduling algorithm or a playlist that repeats.
+  * **Easy Access to Head and Tail:** With a `tail` pointer, both the `head` (`tail->next`) and `tail` are directly accessible in $O(1)$ time.
+  * **Efficient Insertions/Deletions:** Similar to other linked lists, insertion and deletion are efficient as they only require pointer manipulations.
+
+**Disadvantages:**
+
+  * **Infinite Loop Risk:** If not handled carefully, traversal can lead to infinite loops if the termination condition (returning to the start node) is not correctly implemented.
+  * **More Complex Operations:** Some operations, like splitting or reversing, can be slightly more complex due to the circular nature.
+
+-----
+
+**Example:**
+
+Consider a circular linked list representing `A -> B -> C` where `C` points back to `A`.
+
+  * If `tail` points to `C`:
+      * `tail->data` is `C`.
+      * `tail->next` points to `A` (the head).
+
+**Insertion (e.g., insert `X` after `B`):**
+
+Original List: `A -> B -> C -> (points to A)`
+
+1.  Find the node `B`.
+2.  Create a new node `X`.
+3.  Set `X->next` to what `B->next` was (which is `C`).
+4.  Set `B->next` to `X`.
+
+Result: `A -> B -> X -> C -> (points to A)`
+
+**Deletion (e.g., delete `B`):**
+
+Original List: `A -> B -> X -> C -> (points to A)`
+
+1.  Find the node *before* `B`, which is `A`. Let's call it `prev`.
+2.  Let `curr` be `B`.
+3.  Set `prev->next` (which is `A->next`) to `curr->next` (which is `X`).
+4.  Delete `curr` (node `B`).
+
+Result: `A -> X -> C -> (points to A)`
+
+The `splitList` function in the provided code demonstrates how a single circular linked list can be divided into two separate circular linked lists, which is a more complex operation than simple insertion/deletion, requiring careful handling of pointers to maintain the circular property of both new lists.

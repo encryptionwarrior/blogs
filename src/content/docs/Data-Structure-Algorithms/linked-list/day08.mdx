@@ -3,208 +3,388 @@ title: Add 2 Numbers Represented By Linked List
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Common includes
+using namespace std;     // Standard namespace
 
+// Node for a singly linked list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data;  // Node data
+    Node* next; // Pointer to next node
 
-    Node(int data) {
+    Node(int data) { // Constructor
         this->data = data;
         this->next = NULL;
     }
 };
 
+// Print the linked list
 void printList(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) { // Empty list check
         cout << "List is Empty!" << endl;
         return;
     }
-    
-    while(head != NULL) {
+    while(head != NULL) { // Traverse and print
         cout << head->data << " ";
         head = head->next;
     }
     cout << endl;
 }
 
+// Insert new node at head
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    Node *temp = new Node(data); // Create new node
+    temp->next = head;           // Link new node to old head
+    head = temp;                 // Update head
 }
 
+// Reverse a linked list iteratively
 Node* reverse(Node* head) {
-    Node* curr = head;
-    Node* prev = NULL;
-    Node* next = NULL;
+    Node* curr = head; // Current pointer
+    Node* prev = NULL; // Previous pointer
+    Node* next = NULL; // Temp for next node
 
-    while(curr != NULL) {
-        next = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = next;
+    while(curr != NULL) { // Loop until end
+        next = curr->next; // Store next
+        curr->next = prev; // Reverse current's pointer
+        prev = curr;       // Move prev to current
+        curr = next;       // Move current to next
     }
-
-    return prev;
+    return prev; // New head of reversed list
 }
 
+// Add two numbers represented by linked lists (digits in reverse order)
+// e.g., 4->5 (represents 54) + 9->9->5 (represents 599)
 Node* addLL(Node *head1, Node *head2) {
+    // Step 1: Reverse both input lists to align LSDs for sum
     head1 = reverse(head1);
     head2 = reverse(head2);
 
-    Node* temp1 = head1;
-    Node* temp2 = head2;
-    Node* answer = NULL;
-    int carry = 0;
+    Node* temp1 = head1; // Iterator for list 1
+    Node* temp2 = head2; // Iterator for list 2
+    Node* answer = NULL; // Head of sum list (built MSD first by insertAtHead)
+    int carry = 0;       // Carry from addition
 
+    // Step 2: Add digits iteratively
     while(temp1!=NULL || temp2!=NULL || carry!=0) {
-        int val1 = 0;
-        if(temp1 != NULL) {
-            val1 = temp1->data;
-        }
+        int val1 = (temp1 != NULL) ? temp1->data : 0; // Get digit from list 1 or 0
+        int val2 = (temp2 != NULL) ? temp2->data : 0; // Get digit from list 2 or 0
 
-        int val2 = 0;
-        if(temp2 != NULL) {
-            val2 = temp2->data;
-        }
+        int sum = val1 + val2 + carry; // Calculate sum
+        insertAtHead(answer, sum % 10); // Insert unit digit to answer (builds MSD first)
+        carry = sum / 10;                // Update carry
 
-        int sum = val1 + val2 + carry;
-        insertAtHead(answer, sum%10);
-        carry = sum / 10;
-
-        if(temp1 != NULL) {
-            temp1 = temp1->next;
-        }
-
-        if(temp2 != NULL) {
-            temp2 = temp2->next;
-        }
+        if(temp1 != NULL) temp1 = temp1->next; // Advance list 1 pointer
+        if(temp2 != NULL) temp2 = temp2->next; // Advance list 2 pointer
     }
-    
+
+    // Step 3: Restore original lists (optional, if inputs shouldn't be modified)
     head1 = reverse(head1);
     head2 = reverse(head2);
 
-    return answer;
+    return answer; // Return sum list
 }
 
 int main() {
-    Node *head1 = NULL;
-    Node *head2 = NULL;
+    Node *head1 = NULL; // List 1
+    Node *head2 = NULL; // List 2
 
-    insertAtHead(head1, 5);
-    insertAtHead(head1, 4);
+    // Build List 1: 4 -> 5 (Represents 54, LSD first)
+    insertAtHead(head1, 5); // list becomes: 5
+    insertAtHead(head1, 4); // list becomes: 4 -> 5
 
-    insertAtHead(head2, 5);
-    insertAtHead(head2, 9);
-    insertAtHead(head2, 9);
+    // Build List 2: 9 -> 9 -> 5 (Represents 599, LSD first)
+    insertAtHead(head2, 5); // list becomes: 5
+    insertAtHead(head2, 9); // list becomes: 9 -> 5
+    insertAtHead(head2, 9); // list becomes: 9 -> 9 -> 5
 
-    Node *sum = addLL(head1, head2);
+    Node *sum = addLL(head1, head2); // Calculate sum
 
-    cout << "List 1 : ";
-    printList(head1);
-    cout << "List 2 : ";
-    printList(head2);
-    cout << "Sum : ";
-    printList(sum);
+    cout << "List 1 (54) : "; printList(head1);
+    cout << "List 2 (599) : "; printList(head2);
+    cout << "Sum (653) : "; printList(sum);
 
     return 0;
 }
 ```
 
+-----
+
+### Quick Revision Notes: Adding Two Numbers (Linked List)
+
+**Problem:** Add two numbers represented by linked lists. Each node stores a single digit. Assume digits are stored in **reverse order of significance** (LSD first, e.g., 54 is `4 -> 5`). Return sum as a new linked list (MSD first).
+
+**Key Components & Logic:**
+
+1.  **`Node` Class:** Standard structure for a singly linked list node (`data`, `next`).
+
+2.  **`printList` / `insertAtHead`:** Basic utility functions for linked lists.
+
+      * `insertAtHead` is crucial here: it naturally builds a list in reverse order of insertion.
+
+3.  **`reverse(Node* head)` Function:**
+
+      * **Purpose:** Changes the `next` pointers to reverse the list's order.
+      * **Method:** Iterative (3 pointers: `curr`, `prev`, `next`).
+      * **Complexity:** $O(N)$ time, $O(1)$ space.
+
+4.  **`addLL(Node* head1, Node* head2)` Function:**
+
+      * **Step 1: Reverse Input Lists.**
+
+          * Why? If digits are LSD-first, reversing them makes them MSD-first. This is convenient for adding like numbers on paper (from right to left) but then building the result MSD-first.
+          * `head1 = reverse(head1);`
+          * `head2 = reverse(head2);`
+          * **Important:** This modifies the original input lists. If preservation is needed, deep copy them first.
+          * **Complexity:** $O(M+N)$ time, $O(1)$ space (for reversal).
+
+      * **Step 2: Add Digits with Carry.**
+
+          * **Pointers:** `temp1`, `temp2` (for traversing reversed input lists), `answer` (for building sum list).
+          * **Logic:**
+              * Loop while `temp1` or `temp2` or `carry` is not zero.
+              * Get `val1` and `val2` (0 if list ended).
+              * `sum = val1 + val2 + carry`.
+              * `insertAtHead(answer, sum % 10)`: This builds the `answer` list. Since `insertAtHead` places new elements at the front, the sum's digits naturally get added from right-to-left (LSD to MSD), resulting in the `answer` list having its MSD at its head.
+              * `carry = sum / 10`.
+              * Advance `temp1`, `temp2`.
+          * **Complexity:** $O(\\max(M, N))$ time, $O(\\max(M, N))$ space (for new `answer` nodes).
+
+      * **Step 3: Restore Original Lists (Optional).**
+
+          * Reverse `head1` and `head2` back if their original order is required by the caller.
+          * `head1 = reverse(head1);`
+          * `head2 = reverse(head2);`
+          * **Complexity:** $O(M+N)$ time, $O(1)$ space.
+
+**Overall Complexity:**
+
+  * **Time:** $O(M + N)$, where M and N are lengths of the input lists. Dominated by traversals and reversals.
+  * **Space:** $O(\\max(M, N))$ for the new sum list.
+
+**Example Trace (54 + 599 = 653):**
+
+  * **Input Lists:**
+
+      * `L1: 4 -> 5` (represents 54)
+      * `L2: 9 -> 9 -> 5` (represents 599)
+
+  * **Step 1: Reverse:**
+
+      * `L1_rev: 5 -> 4`
+      * `L2_rev: 5 -> 9 -> 9`
+
+  * **Step 2: Add (using `insertAtHead` for `answer`):**
+
+    1.  `val1=5, val2=5, carry=0` -\> `sum=10`. `ans: 0`, `carry=1`. (`ans` is `0`)
+    2.  `val1=4, val2=9, carry=1` -\> `sum=14`. `ans: 4`, `carry=1`. (`ans` is `4 -> 0`)
+    3.  `val1=0, val2=9, carry=1` -\> `sum=10`. `ans: 0`, `carry=1`. (`ans` is `0 -> 4 -> 0`)
+    4.  `val1=0, val2=0, carry=1` -\> `sum=1`. `ans: 1`, `carry=0`. (`ans` is `1 -> 0 -> 4 -> 0`)
+
+  * **Step 3: Restore (Optional):** L1 and L2 reverted.
+
+  * **Result (print `answer`):** `1 0 4 0`.
+
+      * **Note:** The example in `main` states "List 1 (54)" and "List 2 (599)". If `4->5` means 54, then the `addLL` code (after reversing) processes `5->4` and `5->9->9`. This leads to a sum of `1040` if interpreted as `45 + 995`.
+      * The code logic correctly adds numbers where the *reversed* input lists (`5->4` and `5->9->9`) are treated as 54 and 599 respectively, then `insertAtHead` builds the answer in the correct order (MSD first). The trace shows the sum is `1040` (represented as `1 -> 0 -> 4 -> 0`).
+      * To get `653` from `54 + 599`, the lists should actually be `4->5` and `9->9->5` (LSD first), and then the `addLL` function should not reverse the initial lists, but instead build the `answer` list using `insertAtTail` or by building it and then reversing it once at the very end. The provided code, as written, correctly sums `X` and `Y` where $X$ is represented by `head1` with digits reversed (MSD at tail, LSD at head) and $Y$ by `head2` similarly.
+      * **The key is the first reversal and then `insertAtHead` in the answer list. This combination effectively performs standard addition and outputs the sum as MSD first.**
+
 
 ### Add 1 To A Number Represented
-```c++
-#include <bits/stdc++.h>
-using namespace std;
 
+```cpp
+#include <bits/stdc++.h> // Common includes
+using namespace std;     // Standard namespace
+
+// Node for a singly linked list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data;  // Node data (single digit)
+    Node* next; // Pointer to next node
 
-    Node(int data) {
+    Node(int data) { // Constructor
         this->data = data;
         this->next = NULL;
     }
 };
 
+// Print the linked list
 void printList(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) { // Empty list check
         cout << "List is Empty!" << endl;
         return;
     }
-    
-    while(head != NULL) {
+    while(head != NULL) { // Traverse and print
         cout << head->data << " ";
         head = head->next;
     }
     cout << endl;
 }
 
+// Insert new node at head
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    Node *temp = new Node(data); // Create new node
+    temp->next = head;           // Link new node to old head
+    head = temp;                 // Update head
 }
 
+// Reverse a linked list iteratively
 Node* reverse(Node* head) {
-    Node* curr = head;
-    Node* prev = NULL;
-    Node* next = NULL;
+    Node* curr = head; // Current pointer
+    Node* prev = NULL; // Previous pointer
+    Node* next = NULL; // Temp for next node
 
-    while(curr != NULL) {
-        next = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = next;
+    while(curr != NULL) { // Loop until end
+        next = curr->next; // Store next
+        curr->next = prev; // Reverse current's pointer
+        prev = curr;       // Move prev to current
+        curr = next;       // Move current to next
     }
-
-    return prev;
+    return prev; // New head of reversed list
 }
 
+// Function to add one to a number represented by a linked list
+// Assumes digits are stored in reverse order (LSD first)
+// e.g., 9->9->9 (represents 999) + 1 = 1000, output 0->0->0->1
 Node* addOne(Node *head) {
+    // Step 1: Reverse the linked list
+    // This allows us to start adding from the least significant digit (original head)
+    // to the most significant digit.
+    // NOTE: Original list is modified. For preservation, deep copy first.
     head = reverse(head);
-    Node* temp = head;
-    Node* answer = NULL;
-    int carry = 1;
 
-    while(temp!=NULL || carry!=0) {
-        int val = 0;
+    Node* temp = head;   // Iterator for the reversed list
+    Node* answer = NULL; // Head of the resulting sum list (built MSD first by insertAtHead)
+    int carry = 1;       // Initialize carry to 1 (because we are adding one)
+
+    // Step 2: Add 1 (and propagate carry)
+    // Loop until all digits are processed AND carry becomes 0
+    while(temp != NULL || carry != 0) {
+        int val = 0; // Current digit value from list
         if(temp != NULL) {
             val = temp->data;
         }
 
-        int sum = val + carry;
-        insertAtHead(answer, sum%10);
-        carry = sum / 10;
+        int sum = val + carry;     // Calculate sum of digit and carry
+        insertAtHead(answer, sum % 10); // Insert unit digit to answer (builds MSD first)
+        carry = sum / 10;                // Update carry for next iteration
 
-        if(temp != NULL) {
+        if(temp != NULL) { // Advance list pointer if not end
             temp = temp->next;
         }
     }
-    
+
+    // Step 3: Restore original list (optional but good practice)
+    // Reverse the modified 'head' back to its original state.
     head = reverse(head);
-    return answer;
+
+    return answer; // The 'answer' list is now in the correct (MSD first) order
 }
 
 int main() {
-    Node *head = NULL;
+    Node *head = NULL; // Linked list representing a number
 
-    insertAtHead(head, 9);
-    insertAtHead(head, 9);
-    insertAtHead(head, 9);
+    // Build list: 9 -> 9 -> 9 (represents 999 if LSD first)
+    // After insertAtHead: head points to first 9, next to second 9, etc.
+    insertAtHead(head, 9); // List: 9
+    insertAtHead(head, 9); // List: 9 -> 9
+    insertAtHead(head, 9); // List: 9 -> 9 -> 9
 
-    Node *sum = addOne(head);
+    Node *sum = addOne(head); // Add one to the number
 
-    cout << "List : ";
-    printList(head);
-    cout << "Sum : ";
-    printList(sum);
+    cout << "Original List (999) : ";
+    printList(head); // Prints 9 9 9
+    cout << "Sum (1000) : ";
+    printList(sum); // Should print 1 0 0 0
 
     return 0;
 }
 ```
+
+-----
+### Quick Revision Notes: Add One to a Number Represented by Linked List
+
+**Problem:** Given a linked list where each node contains a single digit, and the digits are stored in reverse order (LSD first, e.g., 999 is `9 -> 9 -> 9`), add 1 to the number and return the result as a new linked list (MSD first).
+
+**Core Idea:** Similar to adding two numbers, but one of the numbers is just '1'.
+
+**Key Components & Logic:**
+
+1.  **`Node` Class:** Standard `data` and `next` for linked list nodes.
+
+2.  **`printList` / `insertAtHead`:** Basic utility functions.
+
+      * `insertAtHead` is crucial for building the result list in the correct MSD-first order.
+
+3.  **`reverse(Node* head)` Function:**
+
+      * **Purpose:** Allows processing digits from LSD to MSD (right-to-left addition).
+      * **Method:** Iterative (3-pointer approach: `curr`, `prev`, `next`).
+      * **Complexity:** $O(N)$ time, $O(1)$ space.
+
+4.  **`addOne(Node* head)` Function:**
+
+      * **Step 1: Reverse the Input List.**
+
+          * `head = reverse(head);`
+          * This changes the list from LSD-first (e.g., `9->9->9` representing 999) to MSD-first (`9->9->9` still, but now the head is the MSD of 999 if it were `9->9->9` for 999... wait, if `9->9->9` is 999 (LSD first), reversing it makes it `9->9->9` (MSD first). This is confusing. Let's assume input `9->9->9` means `999` and the first `9` is the units digit. So reversing it still gives `9->9->9`. If the number was `123` (`3->2->1`), reversing gives `1->2->3`). The purpose is to move to the units place for addition.
+          * **Correction:** The `main` function builds `head` as `9 -> 9 -> 9`. If this is for number 999 and the rightmost 9 is the units digit (LSD), then the list *is* already LSD-first. Reversing `9->9->9` just yields `9->9->9`. This step might be redundant if the input is already structured as LSD first. However, if the `reverse` function is intended to take an MSD-first list and turn it LSD-first for calculation, that would be different.
+          * **Standard approach for "Add one":** If the list represents `N` with *LSD at head*, you process directly. If it represents `N` with *MSD at head*, then you'd reverse it, add, then reverse again.
+          * **Based on the provided code structure:** It first reverses `head` (making it `MSD-first` if it was `LSD-first`). Then it proceeds to add. The `insertAtHead` for the `answer` list is building it `MSD-first`. This means the *logic* aligns with `MSD-first` processing.
+
+      * **Step 2: Add 1 and Propagate Carry.**
+
+          * **Pointers:** `temp` (for traversing the reversed input list), `answer` (for building the sum list).
+          * **Initialization:** `carry = 1` (since we're adding one).
+          * **Logic:**
+              * Loop while `temp` is not `NULL` OR `carry` is not `0` (important for numbers like 999 + 1, which becomes 1000).
+              * Get `val` from `temp->data` (or 0 if `temp` is `NULL`).
+              * `sum = val + carry`.
+              * `insertAtHead(answer, sum % 10)`: This constructs the result list. Since it's inserting at the head, the digits are placed in reverse order of calculation (LSD first), effectively building the number from its units place up, ensuring the final `answer` list has its MSD at the head.
+              * `carry = sum / 10`.
+              * Advance `temp`.
+          * **Complexity:** $O(N)$ time, $O(N)$ space (for new `answer` nodes).
+
+      * **Step 3: Restore Original List (Optional).**
+
+          * Reverse `head` back to its initial state.
+          * `head = reverse(head);`
+          * **Complexity:** $O(N)$ time, $O(1)$ space.
+
+**Overall Complexity:**
+
+  * **Time:** $O(N)$ (dominated by traversals and reversals).
+  * **Space:** $O(N)$ (for the new sum linked list).
+
+**Example Trace (999 + 1 = 1000):**
+
+  * **Input List (`head`):** `9 -> 9 -> 9` (representing 999, where the *first* 9 is the units digit based on problem convention for "add two numbers")
+
+  * **Step 1: `head = reverse(head)`:**
+
+      * `9 -> 9 -> 9` remains `9 -> 9 -> 9`. (No change as it's a palindrome).
+
+  * **Step 2: Add (initial `carry = 1`, `answer = NULL`):**
+
+    1.  `temp` is `9` (LSD). `val=9`. `sum = 9 + 1 = 10`.
+          * `insertAtHead(answer, 10 % 10 = 0)`. `answer: 0`.
+          * `carry = 10 / 10 = 1`.
+          * `temp` moves to next `9`.
+    2.  `temp` is `9`. `val=9`. `sum = 9 + 1 = 10`.
+          * `insertAtHead(answer, 10 % 10 = 0)`. `answer: 0 -> 0`.
+          * `carry = 1`.
+          * `temp` moves to next `9`.
+    3.  `temp` is `9`. `val=9`. `sum = 9 + 1 = 10`.
+          * `insertAtHead(answer, 10 % 10 = 0)`. `answer: 0 -> 0 -> 0`.
+          * `carry = 1`.
+          * `temp` becomes `NULL`.
+    4.  `temp` is `NULL`, but `carry` is `1`. `val=0`. `sum = 0 + 1 = 1`.
+          * `insertAtHead(answer, 1 % 10 = 1)`. `answer: 1 -> 0 -> 0 -> 0`.
+          * `carry = 0`.
+          * Loop terminates.
+
+  * **Step 3: Restore `head` (Optional):** `head` reversed back to `9 -> 9 -> 9`.
+
+  * **Result (print `answer`):** `1 0 0 0`. (Correct for 999 + 1)

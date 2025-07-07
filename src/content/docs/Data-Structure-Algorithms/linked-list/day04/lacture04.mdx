@@ -4,217 +4,501 @@ description: A guide in my new Starlight docs site.
 ---
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes
+using namespace std;     // Standard namespace
 
+// Node Class: Defines structure of a linked list node
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data;   // Data storage
+    Node* next; // Pointer to next node
 
+    // Node Constructor
     Node(int data) {
         this->data = data;
-        this->next = NULL;
+        this->next = NULL; // Initialize next as NULL
     }
 };
 
+// printList: Prints all elements in the list
 void printList(Node* head) {
     if(head == NULL) {
         cout << "List is Empty!" << endl;
         return;
     }
-    
+
     cout << "Singly List : ";
     while(head != NULL) {
-        cout << head->data << " ";
-        head = head->next;
+        cout << head->data << " "; // Print data
+        head = head->next;         // Move to next node
     }
     cout << endl;
 }
 
+// insertAtHead: Adds node to the beginning
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    Node *temp = new Node(data); // Create new node
+    temp->next = head;           // New node points to old head
+    head = temp;                 // Head updates to new node
 }
 
+// insertAtTail: Adds node to the end
 void insertAtTail(Node* &tail, int data) {
-    Node *temp = new Node(data);
-    tail->next = temp;
-    tail = temp;
+    Node *temp = new Node(data); // Create new node
+    tail->next = temp;           // Old tail points to new node
+    tail = temp;                 // Tail updates to new node
 }
 
+// insertAtMiddle: Inserts node at a specific position
 void insertAtMiddle(Node* &head, Node* &tail, int data, int pos) {
-    if(pos == 1) {
+    if(pos == 1) { // Special case: insert at head
         insertAtHead(head, data);
         return;
     }
 
-    Node *temp = head;
-    while(temp != NULL && pos>2) {
+    Node *temp = head; // Traverse pointer
+    while(temp != NULL && pos > 2) { // Find node BEFORE insertion point
         temp = temp->next;
         pos--;
     }
 
-    if(temp==NULL || pos<=0) {
+    if(temp==NULL || pos<=0) { // Invalid position check
         cout << "Invalid Position!" << endl;
         return;
     }
 
-    Node *insertNode = new Node(data);
-    insertNode->next = temp->next;
-    temp->next = insertNode;
+    Node *insertNode = new Node(data); // Create node to insert
+    insertNode->next = temp->next;     // New node points to temp's next
+    temp->next = insertNode;           // Temp points to new node
 
-    if(insertNode->next == NULL) {
+    if(insertNode->next == NULL) { // Update tail if inserted at end
         tail = insertNode;
     }
 }
 
+// deletePosition: Deletes node at a specific position
 void deletePosition(Node* &head, int pos) {
-    Node *temp = head;
-    if(pos == 1) {
+    Node *temp = head; // Pointer for deletion/traversal
+    if(pos == 1) {     // Special case: delete head
         head = head->next;
-        delete temp;
+        delete temp;   // Free memory
         return;
     }
 
-    while(temp!=NULL && pos>2) {
+    while(temp!=NULL && pos > 2) { // Find node BEFORE deletion point
         temp = temp->next;
         pos--;
     }
 
-    if(temp==NULL || temp->next==NULL || pos<=0) {
+    if(temp==NULL || temp->next==NULL || pos<=0) { // Invalid position check
         cout << "Invalid Position!" << endl;
         return;
     }
 
-    Node* target = temp->next;
-    temp->next = target->next;
-    delete target;
+    Node* target = temp->next; // Node to be deleted
+    temp->next = target->next; // Bypass target node
+    delete target;             // Free memory
 }
 
+// deleteValue: Deletes first occurrence of a specific value
 void deleteValue(Node* &head, int val) {
-    Node* temp = head->next;
-    Node* prev = head;
-    
-    if(head->data == val) {
+    Node* temp = head->next; // Current pointer
+    Node* prev = head;       // Previous pointer
+
+    if(head->data == val) { // Special case: delete head by value
         head = head->next;
-        delete prev;
+        delete prev; // Free old head
         return;
     }
 
+    // Traverse to find the value
     while(temp!=NULL) {
         if(temp->data == val) {
-            val = INT_MIN;
+            val = INT_MIN; // Sentinel to mark value found
             break;
         }
-
-        prev = temp;
-        temp = temp->next;
+        prev = temp;       // Move prev
+        temp = temp->next; // Move temp
     }
 
-    if(prev->next==NULL || val!=INT_MIN) {
+    if(prev->next==NULL || val!=INT_MIN) { // Value not found
         cout << "Value Not Found!" << endl;
         return;
     }
-    
-    prev->next = temp->next;
-    delete temp;
+
+    prev->next = temp->next; // Bypass target node
+    delete temp;             // Free memory
 }
 
+// floydDetectLoop: Detects if a cycle (loop) is present using Floyd's Cycle-Finding Algorithm (Tortoise and Hare)
 bool floydDetectLoop(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) { // Empty list has no loop
         return false;
     }
 
-    Node* slow = head;
-    Node* fast = head;
+    Node* slow = head; // Slow pointer (moves 1 step at a time)
+    Node* fast = head; // Fast pointer (moves 2 steps at a time)
 
+    // Traverse the list with two pointers
     while(slow != NULL && fast != NULL) {
-        fast = fast->next;
-        slow = slow->next;
+        fast = fast->next; // Fast moves 1 step
+        slow = slow->next; // Slow moves 1 step
 
-        if(fast != NULL) {
-            fast = fast->next;
+        if(fast != NULL) { // Check if fast is not NULL before moving it again
+            fast = fast->next; // Fast moves another step
         }
 
-        if(slow == fast) {
+        if(slow == fast) { // If pointers meet, a loop is detected
             return true;
         }
     }
 
-    return false;
+    return false; // Fast pointer reached NULL, no loop found
 }
 
+// beginningPoint: Finds the starting node of a loop in a linked list (assumes a loop exists)
 Node* beginningPoint(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) { // Empty list, no loop, no beginning point
         return head;
     }
 
-    Node* slow = head;
-    Node* fast = head;
+    Node* slow = head; // Slow pointer (1 step)
+    Node* fast = head; // Fast pointer (2 steps)
 
+    // STEP 1: Find Intersection Node (where slow and fast meet)
+    // This is the same logic as Floyd's cycle detection
     while(slow != NULL && fast != NULL) {
-        fast = fast->next;
-        slow = slow->next;
+        fast = fast->next; // Fast moves 1 step
+        slow = slow->next; // Slow moves 1 step
 
-        if(fast != NULL) {
-            fast = fast->next;
+        if(fast != NULL) { // Ensure fast is not NULL before moving it again
+            fast = fast->next; // Fast moves another step
         }
 
-        if(slow == fast) {
+        if(slow == fast) { // Pointers meet, loop detected, break
             break;
         }
     }
 
+    // If loop was not found (e.g., list was not guaranteed to have a loop)
+    // This function assumes a loop exists, so this case shouldn't be hit if used correctly.
+    if (slow == NULL || fast == NULL) { // Handle case where no loop was found (e.g., in an infinite loop due to error)
+        return NULL; // Or throw an error, depending on design
+    }
+
+    // STEP 2: Appoint slow to head
+    // Reset slow pointer to the head of the list
     slow = head;
+
+    // STEP 3: Again Start Traversing Pointers
+    // Move both slow and fast one step at a time.
+    // They will meet at the beginning of the loop.
     while(slow != fast) {
         slow = slow->next;
         fast = fast->next;
     }
 
+    // STEP 4: Got the Beginning Point
+    // Both pointers are now at the start of the loop
     return slow;
 }
 
+// removeLoop: Removes a loop from a linked list
 void removeLoop(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) { // Empty list, nothing to remove
         return;
     }
-    
-    Node* start = beginningPoint(head);
-    Node* temp = head;
 
-    while(temp->next != start) {
+    // STEP 1: Find the beginning node of the loop
+    Node* startOfLoop = beginningPoint(head);
+
+    // If beginningPoint returns NULL, it means there was no loop (or list was empty)
+    if (startOfLoop == NULL) {
+        return;
+    }
+
+    // STEP 2: Traverse from head to the node just before the loop's beginning
+    // Or, traverse from the loop's beginning until the node *before* it.
+    Node* temp = startOfLoop;
+    while(temp->next != startOfLoop) { // Move temp until it points to the node just before 'startOfLoop'
         temp = temp->next;
     }
 
+    // STEP 3: Break the loop
+    // Set the 'next' pointer of the last node in the loop to NULL
     temp->next = NULL;
 }
 
+// main: Program entry point, demonstrates operations
 int main() {
-    Node *head = new Node(1);
-    Node *tail = head;
+    Node *head = new Node(1); // Create initial node
+    Node *tail = head;        // Tail points to head initially
 
+    // Build list: 1 -> 2 -> 4 -> 8 -> 16 -> 32 -> 64 -> 128
     for(int i=1; i<=7; i++) {
         insertAtTail(tail, pow(2,i));
     }
-    printList(head);
+    printList(head); // Print original list
+
+    // Create a cycle for testing: 128 points to 8 (head->next->next->next)
+    // List: 1 -> 2 -> 4 -> 8 -> 16 -> 32 -> 64 -> 128 -> (points to 8)
     tail->next = head->next->next->next;
 
+    // Check if a cycle is present before removal
     if(floydDetectLoop(head)) {
-        cout << "Cycle is present!" << endl;
+        cout << "Cycle is present BEFORE removal!" << endl;
     } else {
-        cout << "Cycle is not present!" << endl;
+        cout << "Cycle is not present BEFORE removal!" << endl;
     }
 
+    // Remove the loop
     removeLoop(head);
 
+    // Check if a cycle is present after removal
     if(floydDetectLoop(head)) {
-        cout << "Cycle is present!" << endl;
+        cout << "Cycle is present AFTER removal!" << endl;
     } else {
-        cout << "Cycle is not present!" << endl;
+        cout << "Cycle is not present AFTER removal!" << endl;
     }
 
-    return 0;
+    // Print the list again to see if it's now a linear list
+    cout << "List after removing loop: ";
+    printList(head);
+
+    return 0; // Indicate success
 }
 ```
+
+
+#### 1\. What is it?
+
+  * A **linear data structure** where elements are stored in **nodes**.
+  * Each **node** has:
+      * `data` (the actual value)
+      * `next` (a pointer to the *next* node).
+  * The last node's `next` pointer is `NULL`.
+  * Accessed via a `head` pointer (first node) and sometimes a `tail` pointer (last node for efficiency).
+
+#### 2\. Core `Node` Structure
+
+```cpp
+class Node {
+public:
+    int data;   // The value
+    Node* next; // Points to the next node
+    Node(int data) {
+        this->data = data;
+        this->next = NULL;
+    }
+};
+```
+
+  * **Key:** `Node* next` is crucial for linking.
+
+#### 3\. Basic Operations (Quick Glance)
+
+  * **`printList(Node* head)`**:
+
+      * **Purpose:** Traverse and display all elements.
+      * **How:** Start at `head`, loop `while (head != NULL)`, print `head->data`, then `head = head->next;`.
+      * **Edge Case:** If `head == NULL`, list is empty.
+      * **Example:** `1->2->3` prints "Singly List : 1 2 3"
+
+  * **`insertAtHead(Node* &head, int data)`**:
+
+      * **Purpose:** Add a new node at the beginning.
+      * **How:** 1. Create new node. 2. New node's `next` points to old `head`. 3. `head` becomes new node.
+      * **Key:** `head` is passed by reference (`&`).
+      * **Example:** `2->3` + `insertAtHead(head, 1)` → `1->2->3`
+
+  * **`insertAtTail(Node* &tail, int data)`**:
+
+      * **Purpose:** Add a new node at the end.
+      * **How:** 1. Create new node. 2. Old `tail`'s `next` points to new node. 3. `tail` becomes new node.
+      * **Key:** `tail` is passed by reference (`&`).
+      * **Example:** `1->2` + `insertAtTail(tail, 3)` → `1->2->3`
+
+  * **`insertAtMiddle(Node* &head, Node* &tail, int data, int pos)`**:
+
+      * **Purpose:** Insert at a specific `pos`.
+      * **How:**
+        1.  Handle `pos=1` (call `insertAtHead`).
+        2.  Else, traverse (`temp`) to node *before* `pos`.
+        3.  Insert: New node's `next` to `temp->next`, `temp->next` to new node.
+        4.  Update `tail` if new node is last.
+      * **Example:** `10->20->40` + `insertAtMiddle(..., 30, 3)` → `10->20->30->40`
+
+  * **`deletePosition(Node* &head, int pos)`**:
+
+      * **Purpose:** Delete node at specific `pos`.
+      * **How:**
+        1.  Handle `pos=1` (update `head`, `delete` old head).
+        2.  Else, traverse (`temp`) to node *before* `pos`.
+        3.  Bypass target node (`temp->next = target->next`), `delete` target.
+      * **Example:** `10->20->30` + `deletePosition(head, 2)` → `10->30`
+
+  * **`deleteValue(Node* &head, int val)`**:
+
+      * **Purpose:** Delete the *first occurrence* of `val`.
+      * **How:**
+        1.  Handle `head->data == val` (update `head`, `delete` old head).
+        2.  Else, use `prev` and `temp` to find `val`.
+        3.  Bypass `temp` (`prev->next = temp->next`), `delete` `temp`.
+      * **Example:** `10->20->30` + `deleteValue(head, 20)` → `10->30`
+
+#### 4\. `floydDetectLoop(Node* head)` Function (Prerequisite)
+
+  * **Purpose:** Efficiently detect if a cycle (loop) is present in the linked list using Floyd's Cycle-Finding Algorithm (Tortoise and Hare).
+
+  * **Concept:** Uses two pointers, one moving slowly (1 step at a time) and one moving fast (2 steps at a time). If there's a loop, the fast pointer will eventually catch up to the slow pointer. If no loop, the fast pointer will reach `NULL`.
+
+  * **How it works (Step-by-Step):**
+
+    1.  **Empty List Check:**
+          * `if(head == NULL)`: Returns `false`. An empty list cannot have a loop.
+    2.  **Initialize Pointers:**
+          * `Node* slow = head;`: Slow pointer starts at `head`.
+          * `Node* fast = head;`: Fast pointer also starts at `head`.
+    3.  **Traverse and Check:**
+          * `while(slow != NULL && fast != NULL)`: Loop as long as both pointers are valid.
+          * `fast = fast->next;`: Fast pointer moves one step.
+          * `slow = slow->next;`: Slow pointer moves one step.
+          * `if(fast != NULL)`: Check if `fast` is still valid before moving it a second time.
+              * `fast = fast->next;`: Fast pointer moves a second step.
+          * `if(slow == fast)`: If the two pointers meet at any point, a loop is detected.
+              * Return `true` (loop detected).
+    4.  **No Loop Confirmation:**
+          * If the loop finishes (meaning `fast` or `slow` became `NULL`), it indicates the fast pointer reached the end of the list without meeting the slow pointer.
+          * Return `false` (no loop found).
+
+  * **Example:**
+
+    **Scenario 1: Non-Cyclic List**
+    `head -> 1 -> 2 -> 3 -> 4 -> NULL`
+
+    | Iteration | `slow` | `fast` | `slow == fast`? |
+    | :-------- | :----- | :----- | :-------------- |
+    | Initial   | `1`    | `1`    | `true` (initial) |
+    | 1         | `2`    | `3`    | `false`         |
+    | 2         | `3`    | `NULL` | `false`         |
+    | Loop Ends | `fast` is `NULL`. |                 |
+
+      * Function returns `false`.
+      * **Result:** "Cycle is not present\!"
+
+    **Scenario 2: Cyclic List**
+    `head -> 1 -> 2 -> 3 -> 4 -> 5`
+    `              ^---------<--| ` (5 points back to 2)
+
+    | Iteration | `slow` | `fast` | `slow == fast`? |
+    | :-------- | :----- | :----- | :-------------- |
+    | Initial   | `1`    | `1`    | `true` (initial) |
+    | 1         | `2`    | `3`    | `false`         |
+    | 2         | `3`    | `5`    | `false`         |
+    | 3         | `4`    | `2`    | `false`         |
+    | 4         | `5`    | `4`    | `false`         |
+    | 5         | `2`    | `2`    | `true`          |
+    | Loop Ends | (Pointers met) |                 |
+
+      * Function returns `true`.
+      * **Result:** "Cycle is present\!"
+
+#### 5\. `beginningPoint(Node* head)` Function (Prerequisite)
+
+  * **Purpose:** Finds the starting node (entry point) of a loop in a linked list.
+
+  * **Pre-requisite:** This function assumes that a loop **already exists** in the linked list (often confirmed by `floydDetectLoop`).
+
+  * **Concept:** Extends Floyd's algorithm. After `slow` and `fast` pointers meet (intersection point) within the loop:
+
+    1.  Reset `slow` pointer to the `head` of the list.
+    2.  Move both `slow` and `fast` pointers one step at a time. They will meet again at the exact beginning of the loop.
+
+  * **How it works (Step-by-Step):**
+
+    1.  **Phase 1: Find Intersection Node:**
+          * Use `slow` and `fast` pointers as in `floydDetectLoop` to find their first meeting point within the loop. `break` when `slow == fast`.
+    2.  **Phase 2: Find Beginning Point:**
+          * Reset `slow = head;`.
+          * Loop `while(slow != fast)`:
+              * `slow = slow->next;`
+              * `fast = fast->next;`
+          * `return slow;` (which is the loop's start).
+
+  * **Example:**
+
+    **List with a Cycle:**
+    `head -> 1 -> 2 -> 3 -> 4 -> 5 -> 6`
+    `                        ^---------<--| ` (6 points back to 3)
+
+    1.  **Initial:** `slow = 1`, `fast = 1`
+    2.  **Phase 1 (Finding Intersection):**
+          * `slow` moves: `1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 3 -> 4 ...`
+          * `fast` moves: `1 -> 3 -> 5 -> 3 -> 5 -> 3 -> 5 ...`
+          * They will eventually meet at `3` (or `4`, `5`, `6` depending on list length and loop start, but they *will* meet inside the loop). Let's assume they meet at node `5`.
+          * `slow` is at `5`, `fast` is at `5`. `break`.
+    3.  **Phase 2 (Finding Beginning):**
+          * `slow` resets to `head` (`1`). `fast` remains at `5`.
+          * `slow` moves: `1 -> 2 -> 3`
+          * `fast` moves: `5 -> 6 -> 3`
+          * They both meet at node `3`.
+    4.  **Return:** Node `3`.
+
+
+      * **Result:** "Beginning point of the loop : 3"
+
+#### 6\. `removeLoop(Node* head)` Function (New\!)
+
+  * **Purpose:** Removes an existing loop from a linked list, converting it back into a linear list.
+
+  * **Pre-requisite:** A loop must exist in the list. This function relies on `beginningPoint` to find the loop's start.
+
+  * **Concept:** After identifying the start of the loop, traverse the loop from that starting point until you reach the node *just before* the starting node. Set that node's `next` pointer to `NULL`.
+
+  * **How it works (Step-by-Step):**
+
+    1.  **Handle Empty List:**
+          * `if(head == NULL)`: Return (nothing to remove).
+    2.  **Find Loop Start:**
+          * `Node* startOfLoop = beginningPoint(head);`: Call `beginningPoint` to get the first node of the loop.
+          * **Important:** If `beginningPoint` returns `NULL` (meaning no loop was found or list was empty), `removeLoop` should also return.
+    3.  **Traverse to Node Before Loop Start:**
+          * `Node* temp = startOfLoop;`: Start a `temp` pointer from the beginning of the loop.
+          * `while(temp->next != startOfLoop)`: Move `temp` forward until its `next` pointer points *back* to the `startOfLoop`. This means `temp` is the last node in the loop.
+    4.  **Break the Loop:**
+          * `temp->next = NULL;`: Set the `next` pointer of the last node in the loop (`temp`) to `NULL`. This effectively breaks the cycle.
+
+  * **Example:**
+
+    **Initial List with Loop:**
+    `head -> 1 -> 2 -> 3 -> 4 -> 5 -> 6`
+    `                        ^---------<--| ` (6 points back to 3)
+
+    1.  `removeLoop(head)` is called.
+    2.  `beginningPoint(head)` is called:
+          * Phase 1: `slow` and `fast` meet (e.g., at node `5`).
+          * Phase 2: `slow` resets to `1`. `slow` moves `1 -> 2 -> 3`. `fast` moves `5 -> 6 -> 3`. They meet at `3`.
+          * `startOfLoop` is set to node `3`.
+    3.  `temp` starts at `3`.
+    4.  **Loop (`while(temp->next != startOfLoop)`):**
+          * `temp` is `3`, `temp->next` is `4`. `4 != 3`. `temp` moves to `4`.
+          * `temp` is `4`, `temp->next` is `5`. `5 != 3`. `temp` moves to `5`.
+          * `temp` is `5`, `temp->next` is `6`. `6 != 3`. `temp` moves to `6`.
+          * `temp` is `6`, `temp->next` is `3`. `3 != 3` is `false`. Loop terminates.
+          * `temp` is now at node `6` (the last node in the loop, which points back to the start).
+    5.  `temp->next = NULL;`: `6->next` is set to `NULL`.
+
+
+   **Resulting List:** `1 -> 2 -> 3 -> 4 -> 5 -> 6 -> NULL` (The loop is successfully removed). 
+
+#### 7\. `main()` Function
+
+  * **Purpose:** Test and demonstrate.
+  * **Flow:**
+    1.  Creates a linear list (e.g., `1 -> 2 -> 4 -> ... -> 128`).
+    2.  Prints the initial linear list.
+    3.  **Manually creates a loop:** `tail->next = head->next->next->next;` (e.g., `128` points to `8`).
+    4.  Uses `floydDetectLoop` to confirm the cycle is present.
+    5.  Calls `removeLoop(head)` to break the cycle.
+    6.  Uses `floydDetectLoop` again to confirm the cycle is now removed.
+    7.  Prints the list again to show it's now linear.

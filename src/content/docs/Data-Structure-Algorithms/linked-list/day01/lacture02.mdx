@@ -7,137 +7,179 @@ description: A guide in my new Starlight docs site.
 #include <bits/stdc++.h>
 using namespace std;
 
+// Node structure for singly linked list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data;       // Stores value
+    Node* next;     // Pointer to next node
 
+    // Constructor initializes data and next pointer
     Node(int data) {
         this->data = data;
         this->next = NULL;
     }
 };
 
+// Function to print the linked list
 void printList(Node* head) {
     if(head == NULL) {
         cout << "List is Empty!" << endl;
         return;
     }
-    
+
     cout << "Singly List : ";
     while(head != NULL) {
         cout << head->data << " ";
-        head = head->next;
+        head = head->next;  // Move to next node
     }
     cout << endl;
 }
 
+// Insert a node at the head (start) of the list
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    Node *temp = new Node(data); // Create new node
+    temp->next = head;           // New node points to current head
+    head = temp;                 // Head now points to new node
 }
 
+// Insert a node at the tail (end) of the list
 void insertAtTail(Node* &tail, int data) {
-    Node *temp = new Node(data);
-    tail->next = temp;
-    tail = temp;
+    Node *temp = new Node(data); // Create new node
+    tail->next = temp;           // Current tail points to new node
+    tail = temp;                 // Tail now points to new node
 }
 
+// Insert a node at a specific position (1-based index)
 void insertAtMiddle(Node* &head, Node* &tail, int data, int pos) {
-    if(pos == 1) {
+    if(pos == 1) {  // Insert at head if position is 1
         insertAtHead(head, data);
         return;
     }
 
     Node *temp = head;
-    while(temp != NULL && pos>2) {
+    // Traverse to (pos-1)th node
+    while(temp != NULL && pos > 2) {
         temp = temp->next;
         pos--;
     }
 
-    if(temp==NULL || pos<=0) {
+    // If position is invalid
+    if(temp == NULL || pos <= 0) {
         cout << "Invalid Position!" << endl;
         return;
     }
 
+    // Insert new node after temp
     Node *insertNode = new Node(data);
     insertNode->next = temp->next;
     temp->next = insertNode;
 
+    // Update tail if inserted at end
     if(insertNode->next == NULL) {
         tail = insertNode;
     }
 }
 
+// Delete a node at given position
 void deletePosition(Node* &head, int pos) {
     Node *temp = head;
+
+    // Deleting the first node
     if(pos == 1) {
         head = head->next;
         delete temp;
         return;
     }
 
-    while(temp!=NULL && pos>2) {
+    // Traverse to (pos-1)th node
+    while(temp != NULL && pos > 2) {
         temp = temp->next;
         pos--;
     }
 
-    if(temp==NULL || temp->next==NULL || pos<=0) {
+    // Check for invalid position
+    if(temp == NULL || temp->next == NULL || pos <= 0) {
         cout << "Invalid Position!" << endl;
         return;
     }
 
+    // Delete the node at position
     Node* target = temp->next;
     temp->next = target->next;
     delete target;
 }
 
+// Delete the first occurrence of a node with given value
 void deleteValue(Node* &head, int val) {
     Node* temp = head->next;
     Node* prev = head;
-    
+
+    // If head node has the value
     if(head->data == val) {
         head = head->next;
         delete prev;
         return;
     }
 
-    while(temp!=NULL) {
+    // Traverse to find node with matching value
+    while(temp != NULL) {
         if(temp->data == val) {
-            val = INT_MIN;
+            val = INT_MIN;  // Mark as found
             break;
         }
-
         prev = temp;
         temp = temp->next;
     }
 
-    if(prev->next==NULL || val!=INT_MIN) {
+    // If value not found
+    if(prev->next == NULL || val != INT_MIN) {
         cout << "Value Not Found!" << endl;
         return;
     }
-    
+
+    // Delete the matching node
     prev->next = temp->next;
     delete temp;
 }
 
 int main() {
-    Node *head = new Node(1);
-    Node *tail = head;
+    Node *head = new Node(1);  // Initial head node with value 1
+    Node *tail = head;         // Tail initially same as head
 
-    for(int i=1; i<=5; i++) {
-        insertAtTail(tail, pow(2,i));
+    // Insert powers of 2 (2 to 32) at tail
+    for(int i = 1; i <= 5; i++) {
+        insertAtTail(tail, pow(2, i));  // Inserts: 2, 4, 8, 16, 32
     }
 
-    printList(head);
+    printList(head);  // Output: 1 2 4 8 16 32
 
-    // deletePosition(head, 6);
+    // Uncomment to test deleting by position
+    // deletePosition(head, 6); 
     // printList(head);
 
-    deleteValue(head, 32);
-    printList(head);
+    deleteValue(head, 32);   // Deletes node with value 32
+    printList(head);         // Output: 1 2 4 8 16
 
     return 0;
 }
+
 ```
+
+- Creating a singly linked list
+- Inserting nodes at head, tail, or middle
+- Deleting nodes by position or by value
+- Printing the linked list
+
+```c++
+Singly List : 1 2 4 8 16 32 
+Singly List : 1 2 4 8 16 
+```
+
+| Function Name      | Purpose                          |
+| ------------------ | -------------------------------- |
+| `insertAtHead()`   | Insert node at beginning         |
+| `insertAtTail()`   | Insert node at end               |
+| `insertAtMiddle()` | Insert node at specific position |
+| `deletePosition()` | Delete node at given position    |
+| `deleteValue()`    | Delete node by value             |
+| `printList()`      | Print all nodes                  |

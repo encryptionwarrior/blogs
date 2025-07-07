@@ -4,27 +4,32 @@ description: A guide in my new Starlight docs site.
 ---
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Includes all standard C++ libraries
+using namespace std; // Uses the standard namespace
 
+// Defines the structure of a Node in the linked list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data; // Data stored in the node
+    Node* next; // Pointer to the next node in the list
 
+    // Constructor to create a new node
     Node(int data) {
-        this->data = data;
-        this->next = NULL;
+        this->data = data; // Initializes data
+        this->next = NULL; // Initializes next pointer to NULL
     }
 };
 
+// Function to print the linked list
 void printList(Node* head) {
+    // Checks if the list is empty
     if(head == NULL) {
         cout << "List is Empty!" << endl;
         return;
     }
-    
+
     cout << "Singly List : ";
+    // Traverses the list and prints each node's data
     while(head != NULL) {
         cout << head->data << " ";
         head = head->next;
@@ -32,135 +37,394 @@ void printList(Node* head) {
     cout << endl;
 }
 
+// Function to insert a new node at the head of the list
 void insertAtHead(Node* &head, int data) {
+    // Creates a new node
     Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    temp->next = head; // Sets the new node's next to the current head
+    head = temp; // Updates the head to the new node
 }
 
+// Function to insert a new node at the tail of the list
 void insertAtTail(Node* &tail, int data) {
+    // Creates a new node
     Node *temp = new Node(data);
-    tail->next = temp;
-    tail = temp;
+    tail->next = temp; // Sets the current tail's next to the new node
+    tail = temp; // Updates the tail to the new node
 }
 
+// Function to insert a new node at a specific position in the list
 void insertAtMiddle(Node* &head, Node* &tail, int data, int pos) {
+    // Handles insertion at the head
     if(pos == 1) {
         insertAtHead(head, data);
         return;
     }
 
     Node *temp = head;
-    while(temp != NULL && pos>2) {
+    // Traverses to the node just before the desired insertion position
+    while(temp != NULL && pos > 2) {
         temp = temp->next;
         pos--;
     }
 
-    if(temp==NULL || pos<=0) {
+    // Handles invalid position
+    if(temp == NULL || pos <= 0) {
         cout << "Invalid Position!" << endl;
         return;
     }
 
+    // Creates the new node to insert
     Node *insertNode = new Node(data);
-    insertNode->next = temp->next;
-    temp->next = insertNode;
+    insertNode->next = temp->next; // Links the new node to the rest of the list
+    temp->next = insertNode; // Links the previous node to the new node
 
+    // If the new node is inserted at the end, update the tail
     if(insertNode->next == NULL) {
         tail = insertNode;
     }
 }
 
+// Function to delete a node at a specific position
 void deletePosition(Node* &head, int pos) {
     Node *temp = head;
+    // Handles deletion at the head
     if(pos == 1) {
-        head = head->next;
-        delete temp;
+        head = head->next; // Moves head to the next node
+        delete temp; // Deletes the original head node
         return;
     }
 
-    while(temp!=NULL && pos>2) {
+    // Traverses to the node just before the node to be deleted
+    while(temp != NULL && pos > 2) {
         temp = temp->next;
         pos--;
     }
 
-    if(temp==NULL || temp->next==NULL || pos<=0) {
+    // Handles invalid position or if the target node doesn't exist
+    if(temp == NULL || temp->next == NULL || pos <= 0) {
         cout << "Invalid Position!" << endl;
         return;
     }
 
-    Node* target = temp->next;
-    temp->next = target->next;
-    delete target;
+    Node* target = temp->next; // Node to be deleted
+    temp->next = target->next; // Bypasses the target node
+    delete target; // Deletes the target node
 }
 
+// Function to delete a node by its value
 void deleteValue(Node* &head, int val) {
-    Node* temp = head->next;
-    Node* prev = head;
-    
+    Node* temp = head->next; // Pointer to traverse the list
+    Node* prev = head; // Pointer to keep track of the previous node
+
+    // Handles deletion if the value is at the head
     if(head->data == val) {
-        head = head->next;
-        delete prev;
+        head = head->next; // Moves head to the next node
+        delete prev; // Deletes the original head
         return;
     }
 
-    while(temp!=NULL) {
+    // Traverses the list to find the value
+    while(temp != NULL) {
         if(temp->data == val) {
-            val = INT_MIN;
+            val = INT_MIN; // Marks that the value was found
             break;
         }
-
-        prev = temp;
-        temp = temp->next;
+        prev = temp; // Moves previous to current node
+        temp = temp->next; // Moves current to next node
     }
 
-    if(prev->next==NULL || val!=INT_MIN) {
+    // Handles case where value is not found or it was the last element
+    if(prev->next == NULL || val != INT_MIN) {
         cout << "Value Not Found!" << endl;
         return;
     }
-    
-    prev->next = temp->next;
-    delete temp;
+
+    prev->next = temp->next; // Bypasses the target node
+    delete temp; // Deletes the target node
 }
 
+// Function to remove duplicate consecutive nodes from the list
 void removeNodes(Node* &head) {
+    // Returns if the list is empty
     if(head == NULL) {
         return;
     }
 
     Node* temp = head;
+    // Traverses the list
     while(temp->next != NULL) {
+        // If current node's data is same as next node's data (duplicate)
         if(temp->data == temp->next->data) {
-            Node* target = temp->next;
-            temp->next = target->next;
-            delete target;
+            Node* target = temp->next; // Node to be deleted
+            temp->next = target->next; // Bypasses the duplicate node
+            delete target; // Deletes the duplicate node
         } else {
-            temp = temp->next;
+            temp = temp->next; // Move to the next node if no duplicate
         }
     }
 }
 
+// Main function to demonstrate linked list operations
 int main() {
+    // Initializes the head and tail of the linked list
     Node *head = new Node(1);
     Node *tail = head;
 
-    for(int i=0; i<=5; i++) {
-        insertAtTail(tail, pow(2,i));
+    // Populates the linked list with some values, including duplicates for demonstration
+    for(int i = 0; i <= 5; i++) {
+        insertAtTail(tail, pow(2, i)); // Inserts powers of 2
 
-        if(i==0) {
-            insertAtTail(tail, pow(2,i));
+        if(i == 0) {
+            insertAtTail(tail, pow(2, i)); // Inserts a duplicate of 2^0 (1)
         }
 
-        if(i==5) {
-            insertAtTail(tail, pow(2,i));
-            insertAtTail(tail, pow(2,i));
-            insertAtTail(tail, pow(2,i));
+        if(i == 5) {
+            insertAtTail(tail, pow(2, i)); // Inserts a duplicate of 2^5 (32)
+            insertAtTail(tail, pow(2, i)); // Inserts another duplicate of 2^5 (32)
+            insertAtTail(tail, pow(2, i)); // Inserts yet another duplicate of 2^5 (32)
         }
     }
-    printList(head);
+    printList(head); // Prints the list before removing duplicates
 
-    removeNodes(head);
-    printList(head);
+    removeNodes(head); // Removes consecutive duplicate nodes
+    printList(head); // Prints the list after removing duplicates
 
-    return 0;
+    return 0; // Indicates successful execution
 }
 ```
+
+```cpp
+#include <bits/stdc++.h> // Includes all standard C++ libraries
+using namespace std; // Uses the standard namespace
+
+// Defines the structure of a Node in the linked list
+class Node {
+public:
+    int data; // Data stored in the node
+    Node* next; // Pointer to the next node in the list
+
+    // Constructor to create a new node
+    Node(int data) {
+        this->data = data; // Initializes data
+        this->next = NULL; // Initializes next pointer to NULL
+    }
+};
+
+// Function to print the linked list
+void printList(Node* head) {
+    // Checks if the list is empty
+    if(head == NULL) {
+        cout << "List is Empty!" << endl;
+        return;
+    }
+
+    cout << "Singly List : ";
+    // Traverses the list and prints each node's data
+    while(head != NULL) {
+        cout << head->data << " ";
+        head = head->next;
+    }
+    cout << endl;
+}
+
+// Function to insert a new node at the head of the list
+void insertAtHead(Node* &head, int data) {
+    // Creates a new node
+    Node *temp = new Node(data);
+    temp->next = head; // Sets the new node's next to the current head
+    head = temp; // Updates the head to the new node
+}
+
+// Function to insert a new node at the tail of the list
+void insertAtTail(Node* &tail, int data) {
+    // Creates a new node
+    Node *temp = new Node(data);
+    tail->next = temp; // Sets the current tail's next to the new node
+    tail = temp; // Updates the tail to the new node
+}
+
+// Function to insert a new node at a specific position in the list
+void insertAtMiddle(Node* &head, Node* &tail, int data, int pos) {
+    // Handles insertion at the head
+    if(pos == 1) {
+        insertAtHead(head, data);
+        return;
+    }
+
+    Node *temp = head;
+    // Traverses to the node just before the desired insertion position
+    while(temp != NULL && pos > 2) {
+        temp = temp->next;
+        pos--;
+    }
+
+    // Handles invalid position
+    if(temp == NULL || pos <= 0) {
+        cout << "Invalid Position!" << endl;
+        return;
+    }
+
+    // Creates the new node to insert
+    Node *insertNode = new Node(data);
+    insertNode->next = temp->next; // Links the new node to the rest of the list
+    temp->next = insertNode; // Links the previous node to the new node
+
+    // If the new node is inserted at the end, update the tail
+    if(insertNode->next == NULL) {
+        tail = insertNode;
+    }
+}
+
+// Function to delete a node at a specific position
+void deletePosition(Node* &head, int pos) {
+    Node *temp = head;
+    // Handles deletion at the head
+    if(pos == 1) {
+        head = head->next; // Moves head to the next node
+        delete temp; // Deletes the original head node
+        return;
+    }
+
+    // Traverses to the node just before the node to be deleted
+    while(temp != NULL && pos > 2) {
+        temp = temp->next;
+        pos--;
+    }
+
+    // Handles invalid position or if the target node doesn't exist
+    if(temp == NULL || temp->next == NULL || pos <= 0) {
+        cout << "Invalid Position!" << endl;
+        return;
+    }
+
+    Node* target = temp->next; // Node to be deleted
+    temp->next = target->next; // Bypasses the target node
+    delete target; // Deletes the target node
+}
+
+// Function to delete a node by its value
+void deleteValue(Node* &head, int val) {
+    Node* temp = head->next; // Pointer to traverse the list
+    Node* prev = head; // Pointer to keep track of the previous node
+
+    // Handles deletion if the value is at the head
+    if(head->data == val) {
+        head = head->next; // Moves head to the next node
+        delete prev; // Deletes the original head
+        return;
+    }
+
+    // Traverses the list to find the value
+    while(temp != NULL) {
+        if(temp->data == val) {
+            val = INT_MIN; // Marks that the value was found
+            break;
+        }
+        prev = temp; // Moves previous to current node
+        temp = temp->next; // Moves current to next node
+    }
+
+    // Handles case where value is not found or it was the last element
+    if(prev->next == NULL || val != INT_MIN) {
+        cout << "Value Not Found!" << endl;
+        return;
+    }
+
+    prev->next = temp->next; // Bypasses the target node
+    delete temp; // Deletes the target node
+}
+
+// Function to remove duplicate consecutive nodes from the list
+void removeNodes(Node* &head) {
+    // Returns if the list is empty
+    if(head == NULL) {
+        return;
+    }
+
+    Node* temp = head;
+    // Traverses the list
+    while(temp->next != NULL) {
+        // If current node's data is same as next node's data (duplicate)
+        if(temp->data == temp->next->data) {
+            Node* target = temp->next; // Node to be deleted
+            temp->next = target->next; // Bypasses the duplicate node
+            delete target; // Deletes the duplicate node
+        } else {
+            temp = temp->next; // Move to the next node if no duplicate
+        }
+    }
+}
+
+// Main function to demonstrate linked list operations
+int main() {
+    // Initializes the head and tail of the linked list
+    Node *head = new Node(1);
+    Node *tail = head;
+
+    // Populates the linked list with some values, including duplicates for demonstration
+    for(int i = 0; i <= 5; i++) {
+        insertAtTail(tail, pow(2, i)); // Inserts powers of 2
+
+        if(i == 0) {
+            insertAtTail(tail, pow(2, i)); // Inserts a duplicate of 2^0 (1)
+        }
+
+        if(i == 5) {
+            insertAtTail(tail, pow(2, i)); // Inserts a duplicate of 2^5 (32)
+            insertAtTail(tail, pow(2, i)); // Inserts another duplicate of 2^5 (32)
+            insertAtTail(tail, pow(2, i)); // Inserts yet another duplicate of 2^5 (32)
+        }
+    }
+    printList(head); // Prints the list before removing duplicates
+
+    removeNodes(head); // Removes consecutive duplicate nodes
+    printList(head); // Prints the list after removing duplicates
+
+    return 0; // Indicates successful execution
+}
+```
+
+-----
+
+
+A **singly linked list** is a linear data structure where each element, called a **node**, points to the next node in the sequence. Each node typically consists of two parts:
+
+1.  **Data**: The actual value stored in the node.
+2.  **Next Pointer**: A pointer (or reference) to the next node in the list. The last node's "next" pointer is usually `NULL` to signify the end of the list.
+
+Unlike arrays, linked lists do not store elements in contiguous memory locations. This allows for efficient insertion and deletion of elements at any position, as you only need to update a few pointers, not shift elements. However, accessing an element by its index is less efficient than in an array, as you must traverse the list from the beginning.
+
+-----
+
+**Example:**
+
+Consider a singly linked list representing a sequence of numbers: `1 -> 5 -> 10 -> 15 -> NULL`
+
+  * The **head** points to the node containing `1`.
+  * The node with `1` has its `next` pointer pointing to the node with `5`.
+  * The node with `5` has its `next` pointer pointing to the node with `10`.
+  * The node with `10` has its `next` pointer pointing to the node with `15`.
+  * The node with `15` has its `next` pointer set to `NULL`, indicating it's the last node.
+
+If we wanted to **insert `7` after `5`**:
+
+Original: `1 -> 5 -> 10 -> 15 -> NULL`
+
+1.  Find the node with `5`.
+2.  Create a new node with `7`.
+3.  Set the new node's `next` pointer to the node that `5` was pointing to (which is `10`).
+4.  Set `5`'s `next` pointer to the new node (`7`).
+
+Result: `1 -> 5 -> 7 -> 10 -> 15 -> NULL`
+
+If we wanted to **delete `10`**:
+
+Original: `1 -> 5 -> 7 -> 10 -> 15 -> NULL`
+
+1.  Find the node *before* `10`, which is `7`.
+2.  Set `7`'s `next` pointer to the node that `10` was pointing to (which is `15`).
+3.  Delete the node `10` from memory.
+
+Result: `1 -> 5 -> 7 -> 15 -> NULL`
+

@@ -4,98 +4,234 @@ description: A guide in my new Starlight docs site.
 ---
 
 ```c++
-#include <bits/stdc++.h>
+#include <bits/stdc++.h>      // Include all standard libraries
 using namespace std;
 
+// Node class representing each element of the list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data;      // Data part
+    Node* next;    // Pointer to the next node
 
+    // Constructor to initialize node
     Node(int data) {
-        this->data = data;
-        this->next = NULL;
+        this->data = data;    // Set node's data
+        this->next = NULL;    // Set next pointer to NULL initially
     }
 };
 
+// Function to print the circular linked list starting from tail
 void printList(Node* tail) {
-    if(tail == NULL) {
+    if(tail == NULL) {                        // If list is empty
         cout << "List is Empty!" << endl;
         return;
     }
 
-    Node* temp = tail;
+    Node* temp = tail;                        // Start from tail
     cout << "Circular List : ";
 
+    // Use do-while to ensure even single-node list prints
     do {
-        cout << temp->data << " ";
-        temp = temp->next;
-    } while(temp != tail);
-    
+        cout << temp->data << " ";            // Print current node's data
+        temp = temp->next;                    // Move to next node
+    } while(temp != tail);                    // Stop when we complete one circle
+
     cout << endl;
 }
 
+// Function to insert a node with `data` after node with value `target`
 void insertion(Node* &tail, int data, int target) {
-    Node *insertNode = new Node(data);
+    Node *insertNode = new Node(data);        // Create new node
 
-    if(tail == NULL) {
-        tail = insertNode;
-        insertNode->next = tail;
+    if(tail == NULL) {                        // If list is empty
+        tail = insertNode;                    // Set new node as tail
+        insertNode->next = tail;              // Make it circular (points to itself)
         return;
     }
 
-    Node* curr = tail;
+    Node* curr = tail;                        // Start from tail
 
-    while(curr->data != target) {
-        curr = curr->next;
+    while(curr->data != target) {             // Find the target node
+        curr = curr->next;                    // Move to next
     }
 
+    // Insert new node after target node
     insertNode->next = curr->next;
     curr->next = insertNode;
+
+    // (Optional) You can update tail if needed based on conditions
 }
 
+// Function to delete node by value
 void deletion(Node* &tail, int val) {
-    if(tail == NULL) {
+    if(tail == NULL) {                        // If list is empty
         cout << "List is Empty!" << endl;
         return;
     }
 
-    Node *prev = tail;
-    Node *curr = tail->next;
+    Node *prev = tail;                        // Start from tail
+    Node *curr = tail->next;                  // Start from first node (after tail)
 
+    // Find the node with matching value
     while(curr->data != val) {
         prev = curr;
         curr = curr->next;
 
+        // If we made a full circle and didn’t find the value
         if(curr == tail && curr->data != val) {
             cout << "Element Not Found!" << endl;
             return;
         }
     }
 
+    // Re-link previous node to skip the current node
     prev->next = curr->next;
     curr->next = NULL;
 
+    // If the node to delete is the tail, update tail
     if(curr == tail) {
         tail = prev;
     }
 
-    delete curr;
+    delete curr;     // Free memory
 }
 
 int main() {
-    Node *tail = NULL;
+    Node *tail = NULL;     // Initially, list is empty
 
-    insertion(tail, pow(2,4), 2);
-    insertion(tail, pow(2,3), 16);
-    insertion(tail, pow(2,5), 8);
-    insertion(tail, pow(2,2), 16);
+    // Insert 16 (2^4), as first node (since list is empty)
+    insertion(tail, pow(2,4), 2);     // Inserts 16 (target ignored because list is empty)
 
-    printList(tail);
+    // Insert 8 (2^3) after 16
+    insertion(tail, pow(2,3), 16);    // Inserts 8 after 16
 
-    deletion(tail, 64);
-    printList(tail);
+    // Insert 32 (2^5) after 8
+    insertion(tail, pow(2,5), 8);     // Inserts 32 after 8
+
+    // Insert 4 (2^2) after 16
+    insertion(tail, pow(2,2), 16);    // Inserts 4 after 16
+
+    // Print the list
+    printList(tail);   // Expected output: Circular List : 32 16 4 8
+
+    // Try to delete value 64 (which doesn’t exist)
+    deletion(tail, 64);  // Prints: Element Not Found!
+
+    // Print list again (should be unchanged)
+    printList(tail);   // Expected output: Circular List : 32 16 4 8
 
     return 0;
 }
+
+```
+
+######  Initial Setup
+```
+Node *tail = NULL;
+```
+
+##### Step 1:
+```c++
+insertion(tail, pow(2,4), 2);  // insertion(tail, 16, 2)
+```
+- Since list is empty:
+    - Create node 16
+    - Point it to itself
+    - tail = 16
+
+
+##### List 
+```
++-----+
+| 16  |
++--+--+
+   |
+   v
+  (self-loop)
+```
+
+
+##### Step 2:
+```c++
+insertion(tail, pow(2,3), 16);  // insertion(tail, 8, 16)
+```
+- Traverse to node with data == 16
+- Insert 8 after 16
+
+
+##### List 
+```
++-----+     +-----+
+| 16  | --> |  8  |
++-----+     +-----+
+   ^           |
+   |           v
+   +-----------+
+        (tail)
+
+```
+
+
+##### Step 3:
+```c++
+insertion(tail, pow(2,5), 8);  // insertion(tail, 32, 8)
+```
+- Traverse to node with data == 8
+- Insert 32 after 8
+- tail is now pointing to 32
+
+
+##### List 
+```
++-----+     +-----+     +------+
+| 16  | --> |  8  | --> |  32  |
++-----+     +-----+     +------+
+   ^                          |
+   |                          v
+   +--------------------------+
+                          (tail)
+
+```
+
+
+#####  Step 4:
+```c++
+insertion(tail, pow(2,2), 16);  // insertion(tail, 4, 16)
+```
+- Find node 16
+- Insert 4 after 16
+
+
+##### List 
+```
++-----+     +-----+     +-----+     +------+
+| 16  | --> |  4  | --> |  8  | --> |  32  |
++-----+     +-----+     +-----+     +------+
+   ^                                      |
+   |                                      v
+   +--------------------------------------+
+                                     (tail)
+```
+
+
+#####  Step 5:
+```c++
+deletion(tail, 64);
+```
+- Traverse the list to find 64
+- Not found, so:
+
+
+##### List 
+```
+Element Not Found!
+```
+
+#### Final Output:
+```
+printList(tail);
+```
+Traverses from tail and prints circularly:
+```
+Circular List : 32 16 4 8
 ```

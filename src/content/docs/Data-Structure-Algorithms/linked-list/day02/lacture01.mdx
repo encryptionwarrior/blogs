@@ -4,176 +4,217 @@ description: A guide in my new Starlight docs site.
 ---
 
 ```c++
-#include <bits/stdc++.h>
+#include <bits/stdc++.h>              // Include all standard libraries
 using namespace std;
 
+// Node class representing each element of the singly linked list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data;         // Data part
+    Node* next;       // Pointer to the next node
 
-    Node(int data) {
+    Node(int data) {  // Constructor to initialize node
         this->data = data;
         this->next = NULL;
     }
 };
 
+// Function to print the entire singly linked list
 void printList(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) {                         // If list is empty
         cout << "List is Empty!" << endl;
         return;
     }
-    
+
     cout << "Singly List : ";
-    while(head != NULL) {
+    while(head != NULL) {                      // Traverse till end of list
         cout << head->data << " ";
         head = head->next;
     }
     cout << endl;
 }
 
+// Insert new node at the beginning of the list
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    Node *temp = new Node(data);               // Create new node
+    temp->next = head;                         // Point new node to current head
+    head = temp;                               // Update head to new node
 }
 
+// Insert new node at the end of the list
 void insertAtTail(Node* &tail, int data) {
-    Node *temp = new Node(data);
-    tail->next = temp;
-    tail = temp;
+    Node *temp = new Node(data);               // Create new node
+    tail->next = temp;                         // Link current tail to new node
+    tail = temp;                               // Update tail
 }
 
+// Insert new node at a specific position
 void insertAtMiddle(Node* &head, Node* &tail, int data, int pos) {
-    if(pos == 1) {
+    if(pos == 1) {                             // If position is 1, insert at head
         insertAtHead(head, data);
         return;
     }
 
     Node *temp = head;
-    while(temp != NULL && pos>2) {
+    while(temp != NULL && pos > 2) {           // Traverse to (pos-1)th node
         temp = temp->next;
         pos--;
     }
 
-    if(temp==NULL || pos<=0) {
+    if(temp == NULL || pos <= 0) {             // Invalid position check
         cout << "Invalid Position!" << endl;
         return;
     }
 
-    Node *insertNode = new Node(data);
-    insertNode->next = temp->next;
-    temp->next = insertNode;
+    Node *insertNode = new Node(data);         // Create new node
+    insertNode->next = temp->next;             // Point to next node
+    temp->next = insertNode;                   // Link previous node to new node
 
-    if(insertNode->next == NULL) {
+    if(insertNode->next == NULL) {             // If inserted at end, update tail
         tail = insertNode;
     }
 }
 
+// Delete node by position
 void deletePosition(Node* &head, int pos) {
     Node *temp = head;
-    if(pos == 1) {
-        head = head->next;
-        delete temp;
+    if(pos == 1) {                             // If deleting head
+        head = head->next;                     // Move head to next
+        delete temp;                           // Delete original head
         return;
     }
 
-    while(temp!=NULL && pos>2) {
+    while(temp != NULL && pos > 2) {           // Traverse to (pos-1)th node
         temp = temp->next;
         pos--;
     }
 
-    if(temp==NULL || temp->next==NULL || pos<=0) {
-        cout << "Invalid Position!" << endl;
+    if(temp == NULL || temp->next == NULL || pos <= 0) {
+        cout << "Invalid Position!" << endl;   // Check for out of bounds
         return;
     }
 
-    Node* target = temp->next;
-    temp->next = target->next;
-    delete target;
+    Node* target = temp->next;                 // Node to be deleted
+    temp->next = target->next;                 // Bypass the target node
+    delete target;                             // Delete target
 }
 
+// Delete node by value
 void deleteValue(Node* &head, int val) {
     Node* temp = head->next;
     Node* prev = head;
-    
-    if(head->data == val) {
-        head = head->next;
-        delete prev;
+
+    if(head->data == val) {                    // If value is in head
+        head = head->next;                     // Move head forward
+        delete prev;                           // Delete old head
         return;
     }
 
-    while(temp!=NULL) {
-        if(temp->data == val) {
+    while(temp != NULL) {
+        if(temp->data == val) {                // Found target node
             val = INT_MIN;
             break;
         }
 
-        prev = temp;
-        temp = temp->next;
+        prev = temp;                           // Move prev forward
+        temp = temp->next;                     // Move temp forward
     }
 
-    if(prev->next==NULL || val!=INT_MIN) {
-        cout << "Value Not Found!" << endl;
+    if(prev->next == NULL || val != INT_MIN) {
+        cout << "Value Not Found!" << endl;    // If not found
         return;
     }
-    
-    prev->next = temp->next;
-    delete temp;
+
+    prev->next = temp->next;                   // Bypass the target
+    delete temp;                               // Delete target
 }
 
+// Iterative method to reverse the linked list
 void reverseLL(Node* &head) {
     Node* prev = NULL;
 
-    while(head != NULL) {
-        Node* curr = head;
-        head = head->next;
-        curr->next = prev;
-        prev = curr;
+    while(head != NULL) {                      // Loop till end
+        Node* curr = head;                     // Current node
+        head = head->next;                     // Move head
+        curr->next = prev;                     // Reverse the link
+        prev = curr;                           // Move prev forward
     }
 
-    head = prev;
+    head = prev;                               // Update head to new front
 }
 
+// Recursive reverse using 3 pointers
 void rec_reverseLL(Node* &head, Node* curr, Node* prev) {
-    if(curr == NULL) {
-        head = prev;
+    if(curr == NULL) {                         // Base case
+        head = prev;                           // Update head
         return;
     }
 
-    rec_reverseLL(head, curr->next, curr);
-    curr->next = prev;
+    rec_reverseLL(head, curr->next, curr);     // Recurse forward
+    curr->next = prev;                         // Reverse link
 }
 
+// Elegant recursive reverse using return value
 Node* rec_reverseLL2(Node* head) {
-    if(head == NULL || head->next == NULL) {
+    if(head == NULL || head->next == NULL) {   // Base case
         return head;
     }
 
-    Node* curr = rec_reverseLL2(head->next);
-    head->next->next = head;
-    head->next = NULL;
-    return curr;
+    Node* curr = rec_reverseLL2(head->next);   // Recurse to end
+    head->next->next = head;                   // Reverse link
+    head->next = NULL;                         // Cut off original link
+    return curr;                               // Return new head
 }
 
 int main() {
-    Node *head = new Node(1);
-    Node *tail = head;
+    Node *head = new Node(1);                  // Initialize list with 1
+    Node *tail = head;                          // Tail also at 1 initially
 
-    for(int i=1; i<=5; i++) {
-        insertAtTail(tail, pow(2,i));
+    for(int i = 1; i <= 5; i++) {
+        insertAtTail(tail, pow(2, i));          // Insert 2^i at tail
     }
+    printList(head);                            // Print list
+
+    reverseLL(head);                            // Reverse iteratively
     printList(head);
 
-    reverseLL(head);
+    rec_reverseLL(head, head, NULL);            // Reverse using 3-pointer recursion
     printList(head);
 
-    rec_reverseLL(head, head, NULL);
-    printList(head);
-
-    head = rec_reverseLL2(head);
+    head = rec_reverseLL2(head);                // Reverse using elegant recursion
     printList(head);
 
     return 0;
 }
+
+```
+
+#### Initial List (after inserting 2^1 to 2^5):
+```
+1 → 2 → 4 → 8 → 16 → 32 → NULL
+^                          ^
+head                     tail
+```
+
+####  After reverseLL(head) (Iterative reverse):
+```
+32 → 16 → 8 → 4 → 2 → 1 → NULL
+^                          ^
+head                     old head (was 1)
+```
+
+
+####  After rec_reverseLL(...) (Recursive using 3-pointers):
+```
+1 → 2 → 4 → 8 → 16 → 32 → NULL
+^                          ^
+head                     tail
+
+```
+
+#### After rec_reverseLL2(...) (Elegant recursive):
+```
+32 → 16 → 8 → 4 → 2 → 1 → NULL
+^                          ^
+head                     tail
 ```

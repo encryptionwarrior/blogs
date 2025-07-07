@@ -4,194 +4,517 @@ description: A guide in my new Starlight docs site.
 ---
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Includes all standard C++ libraries, like iostream, vector, map, cmath, etc.
+using namespace std; // Uses the standard namespace to avoid prefixing standard library elements with std::
 
+// Defines the structure of a Node in the linked list
 class Node {
-    public:
-    int data;
-    Node* next;
+public:
+    int data; // Data stored in the node
+    Node* next; // Pointer to the next node in the list
 
+    // Constructor to create a new node
     Node(int data) {
-        this->data = data;
-        this->next = NULL;
+        this->data = data; // Initializes the data member with the provided value
+        this->next = NULL; // Initializes the next pointer to NULL, indicating no subsequent node initially
     }
 };
 
+// Function to print the linked list
 void printList(Node* head) {
+    // Checks if the list is empty (head is NULL)
     if(head == NULL) {
-        cout << "List is Empty!" << endl;
-        return;
+        cout << "List is Empty!" << endl; // Prints a message if the list is empty
+        return; // Exits the function
     }
-    
-    cout << "Singly List : ";
+
+    cout << "Singly List : "; // Prints a label for the list
+    // Traverses the list from head to tail
     while(head != NULL) {
-        cout << head->data << " ";
-        head = head->next;
+        cout << head->data << " "; // Prints the data of the current node
+        head = head->next; // Moves to the next node
     }
-    cout << endl;
+    cout << endl; // Prints a newline character at the end
 }
 
+// Function to insert a new node at the head of the list
 void insertAtHead(Node* &head, int data) {
+    // Creates a new Node object on the heap with the given data
     Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    temp->next = head; // Sets the new node's next pointer to the current head of the list
+    head = temp; // Updates the head of the list to point to the newly created node
 }
 
+// Function to insert a new node at the tail of the list
 void insertAtTail(Node* &tail, int data) {
+    // Creates a new Node object on the heap with the given data
     Node *temp = new Node(data);
-    tail->next = temp;
-    tail = temp;
+    tail->next = temp; // Sets the current tail's next pointer to the newly created node
+    tail = temp; // Updates the tail of the list to point to the newly created node
 }
 
+// Function to insert a new node at a specific position in the list
 void insertAtMiddle(Node* &head, Node* &tail, int data, int pos) {
+    // Handles the special case where insertion is at the first position (head)
     if(pos == 1) {
         insertAtHead(head, data);
         return;
     }
 
-    Node *temp = head;
-    while(temp != NULL && pos>2) {
+    Node *temp = head; // Start traversal from the head
+    // Traverse to the node just before the desired insertion position
+    // We stop at pos-2 because we need to modify the 'next' pointer of the node at (pos-1)
+    while(temp != NULL && pos > 2) {
         temp = temp->next;
         pos--;
     }
 
-    if(temp==NULL || pos<=0) {
+    // Handles invalid positions (e.g., position out of bounds or less than or equal to 0)
+    if(temp == NULL || pos <= 0) {
         cout << "Invalid Position!" << endl;
         return;
     }
 
+    // Creates the new node to be inserted
     Node *insertNode = new Node(data);
-    insertNode->next = temp->next;
-    temp->next = insertNode;
+    insertNode->next = temp->next; // Links the new node's next to the node that 'temp' was pointing to
+    temp->next = insertNode; // Links 'temp's next to the new node
 
+    // If the new node is inserted at the very end, update the tail pointer
     if(insertNode->next == NULL) {
         tail = insertNode;
     }
 }
 
+// Function to delete a node at a specific position
 void deletePosition(Node* &head, int pos) {
-    Node *temp = head;
+    Node *temp = head; // Temporary pointer starting at the head
+    // Handles the special case of deleting the head node
     if(pos == 1) {
-        head = head->next;
-        delete temp;
+        head = head->next; // Move the head to the next node
+        delete temp; // Deallocate the memory of the original head node
         return;
     }
 
-    while(temp!=NULL && pos>2) {
+    // Traverses to the node just before the node to be deleted
+    // We stop at pos-2 because we need to modify the 'next' pointer of the node at (pos-1)
+    while(temp != NULL && pos > 2) {
         temp = temp->next;
         pos--;
     }
 
-    if(temp==NULL || temp->next==NULL || pos<=0) {
+    // Handles invalid positions (e.g., position out of bounds, or if the node to delete doesn't exist)
+    if(temp == NULL || temp->next == NULL || pos <= 0) {
         cout << "Invalid Position!" << endl;
         return;
     }
 
-    Node* target = temp->next;
-    temp->next = target->next;
-    delete target;
+    Node* target = temp->next; // 'target' points to the node that will be deleted
+    temp->next = target->next; // Bypasses the 'target' node by linking 'temp' to 'target's next
+    delete target; // Deallocate the memory of the target node
 }
 
+// Function to delete a node by its value
 void deleteValue(Node* &head, int val) {
-    Node* temp = head->next;
-    Node* prev = head;
-    
+    Node* temp = head->next; // Pointer to traverse the list, starting from the second node
+    Node* prev = head; // Pointer to keep track of the previous node, starting at the head
+
+    // Handles the special case if the value to be deleted is in the head node
     if(head->data == val) {
-        head = head->next;
-        delete prev;
+        head = head->next; // Move the head to the next node
+        delete prev; // Deallocate the memory of the original head node
         return;
     }
 
-    while(temp!=NULL) {
+    // Traverses the list to find the node with the specified value
+    while(temp != NULL) {
         if(temp->data == val) {
-            val = INT_MIN;
-            break;
+            val = INT_MIN; // Use INT_MIN as a flag to indicate the value was found and processed
+            break; // Exit the loop once the value is found
         }
-
-        prev = temp;
-        temp = temp->next;
+        prev = temp; // Move 'prev' to the current 'temp' node
+        temp = temp->next; // Move 'temp' to the next node
     }
 
-    if(prev->next==NULL || val!=INT_MIN) {
+    // Handles cases where the value was not found or if 'prev' is the last node and 'val' wasn't found
+    if(prev->next == NULL || val != INT_MIN) {
         cout << "Value Not Found!" << endl;
         return;
     }
-    
-    prev->next = temp->next;
-    delete temp;
+
+    prev->next = temp->next; // Bypasses the 'temp' node (which holds the value to be deleted)
+    delete temp; // Deallocate the memory of the 'temp' node
 }
 
+// Function to remove all occurrences of duplicate nodes from the linked list (using nested loops - O(N^2) complexity)
 void removeNodes1(Node* &head) {
+    // If the list is empty, there's nothing to remove
     if(head == NULL) {
         return;
     }
 
-    Node* curr = head;
-    while(curr->next != NULL) {
-        Node* prev = curr;
-        Node* temp = curr->next;
+    Node* curr = head; // 'curr' pointer iterates through the list
+    // Iterate through each node starting from the head
+    while(curr != NULL) {
+        Node* prev = curr; // 'prev' pointer always stays behind 'temp' within the inner loop
+        Node* temp = curr->next; // 'temp' pointer is used to compare with 'curr' and find duplicates
 
+        // Inner loop: compares 'curr' data with all subsequent nodes
         while(temp != NULL) {
+            // If a duplicate is found (curr's data matches temp's data)
             if(curr->data == temp->data) {
-                Node* target = temp;
-                temp = temp->next;
-                prev->next = temp;
-                delete target;
+                Node* target = temp; // 'target' points to the duplicate node
+                temp = temp->next; // Move 'temp' to the next node before deletion
+                prev->next = temp; // Bypass the 'target' node by linking 'prev' to 'temp'
+                delete target; // Deallocate the memory of the duplicate node
             } else {
-                prev = temp;
-                temp = temp->next;
+                prev = temp; // Move 'prev' to the current 'temp' node
+                temp = temp->next; // Move 'temp' to the next node
             }
         }
-        
-        curr = curr->next;
+        curr = curr->next; // Move to the next unique node in the outer loop
     }
 }
 
-
+// Function to remove duplicate nodes from the linked list (using a hash map - O(N) complexity on average)
 void removeNodes2(Node* &head) {
+    // If the list is empty, there's nothing to remove
     if(head == NULL) {
         return;
     }
 
-    map<int, bool> visited;
-    Node* temp = head;
-    visited[temp->data] = true;
+    map<int, bool> visited; // A map to store whether a node's data has been visited (key: data, value: true/false)
+    Node* temp = head; // Start traversal from the head
+    visited[temp->data] = true; // Mark the head node's data as visited
 
+    // Iterate through the list, starting from the second node (temp->next)
     while(temp->next != NULL) {
+        // If the data of the next node has already been visited (it's a duplicate)
         if(visited[temp->next->data] == true) {
-            Node* target = temp->next;
-            temp->next = target->next;
-            delete target;
+            Node* target = temp->next; // 'target' points to the duplicate node
+            temp->next = target->next; // Bypass the 'target' node by linking 'temp' to 'target's next
+            delete target; // Deallocate the memory of the duplicate node
         } else {
-            visited[temp->next->data] = true;
-            temp = temp->next;
+            visited[temp->next->data] = true; // Mark the current node's data as visited
+            temp = temp->next; // Move to the next node
         }
     }
 }
 
+// Main function to demonstrate linked list operations
 int main() {
+    // Initializes the head and tail of the linked list with the first node (data = 1)
     Node *head = new Node(1);
-    Node *tail = head;
+    Node *tail = head; // Initially, head and tail point to the same node
 
-    insertAtTail(tail, pow(2,2));
-    insertAtTail(tail, pow(2,1));
-    insertAtTail(tail, pow(2,9));
-    insertAtTail(tail, pow(2,4));
-    insertAtTail(tail, pow(2,7));
-    insertAtTail(tail, pow(2,9));
-    insertAtTail(tail, pow(2,2));
-    insertAtTail(tail, pow(2,4));
-    insertAtTail(tail, pow(2,0));
-    insertAtTail(tail, pow(2,2));
-    insertAtTail(tail, pow(2,9));
-    insertAtTail(tail, pow(2,9));
+    // Inserts various nodes at the tail, including some duplicates for demonstration
+    insertAtTail(tail, pow(2,2)); // 4
+    insertAtTail(tail, pow(2,1)); // 2
+    insertAtTail(tail, pow(2,9)); // 512
+    insertAtTail(tail, pow(2,4)); // 16
+    insertAtTail(tail, pow(2,7)); // 128
+    insertAtTail(tail, pow(2,9)); // 512 (duplicate)
+    insertAtTail(tail, pow(2,2)); // 4 (duplicate)
+    insertAtTail(tail, pow(2,4)); // 16 (duplicate)
+    insertAtTail(tail, pow(2,0)); // 1 (duplicate)
+    insertAtTail(tail, pow(2,2)); // 4 (duplicate)
+    insertAtTail(tail, pow(2,9)); // 512 (duplicate)
+    insertAtTail(tail, pow(2,9)); // 512 (duplicate)
 
-    printList(head);
+    printList(head); // Prints the list before removing duplicates
 
-    removeNodes1(head);
-    printList(head);
+    removeNodes1(head); // Calls the function to remove all duplicates (O(N^2) approach)
+    // removeNodes2(head); // Uncomment this line and comment out removeNodes1 to use the O(N) approach
 
-    return 0;
+    printList(head); // Prints the list after removing duplicates
+
+    return 0; // Indicates successful execution of the program
 }
 ```
+
+```cpp
+#include <bits/stdc++.h> // Includes all standard C++ libraries, like iostream, vector, map, cmath, etc.
+using namespace std; // Uses the standard namespace to avoid prefixing standard library elements with std::
+
+// Defines the structure of a Node in the linked list
+class Node {
+public:
+    int data; // Data stored in the node
+    Node* next; // Pointer to the next node in the list
+
+    // Constructor to create a new node
+    Node(int data) {
+        this->data = data; // Initializes the data member with the provided value
+        this->next = NULL; // Initializes the next pointer to NULL, indicating no subsequent node initially
+    }
+};
+
+// Function to print the linked list
+void printList(Node* head) {
+    // Checks if the list is empty (head is NULL)
+    if(head == NULL) {
+        cout << "List is Empty!" << endl; // Prints a message if the list is empty
+        return; // Exits the function
+    }
+
+    cout << "Singly List : "; // Prints a label for the list
+    // Traverses the list from head to tail
+    while(head != NULL) {
+        cout << head->data << " "; // Prints the data of the current node
+        head = head->next; // Moves to the next node
+    }
+    cout << endl; // Prints a newline character at the end
+}
+
+// Function to insert a new node at the head of the list
+void insertAtHead(Node* &head, int data) {
+    // Creates a new Node object on the heap with the given data
+    Node *temp = new Node(data);
+    temp->next = head; // Sets the new node's next pointer to the current head of the list
+    head = temp; // Updates the head of the list to point to the newly created node
+}
+
+// Function to insert a new node at the tail of the list
+void insertAtTail(Node* &tail, int data) {
+    // Creates a new Node object on the heap with the given data
+    Node *temp = new Node(data);
+    tail->next = temp; // Sets the current tail's next pointer to the newly created node
+    tail = temp; // Updates the tail of the list to point to the newly created node
+}
+
+// Function to insert a new node at a specific position in the list
+void insertAtMiddle(Node* &head, Node* &tail, int data, int pos) {
+    // Handles the special case where insertion is at the first position (head)
+    if(pos == 1) {
+        insertAtHead(head, data);
+        return;
+    }
+
+    Node *temp = head; // Start traversal from the head
+    // Traverse to the node just before the desired insertion position
+    // We stop at pos-2 because we need to modify the 'next' pointer of the node at (pos-1)
+    while(temp != NULL && pos > 2) {
+        temp = temp->next;
+        pos--;
+    }
+
+    // Handles invalid positions (e.g., position out of bounds or less than or equal to 0)
+    if(temp == NULL || pos <= 0) {
+        cout << "Invalid Position!" << endl;
+        return;
+    }
+
+    // Creates the new node to be inserted
+    Node *insertNode = new Node(data);
+    insertNode->next = temp->next; // Links the new node's next to the node that 'temp' was pointing to
+    temp->next = insertNode; // Links 'temp's next to the new node
+
+    // If the new node is inserted at the very end, update the tail pointer
+    if(insertNode->next == NULL) {
+        tail = insertNode;
+    }
+}
+
+// Function to delete a node at a specific position
+void deletePosition(Node* &head, int pos) {
+    Node *temp = head; // Temporary pointer starting at the head
+    // Handles the special case of deleting the head node
+    if(pos == 1) {
+        head = head->next; // Move the head to the next node
+        delete temp; // Deallocate the memory of the original head node
+        return;
+    }
+
+    // Traverses to the node just before the node to be deleted
+    // We stop at pos-2 because we need to modify the 'next' pointer of the node at (pos-1)
+    while(temp != NULL && pos > 2) {
+        temp = temp->next;
+        pos--;
+    }
+
+    // Handles invalid positions (e.g., position out of bounds, or if the node to delete doesn't exist)
+    if(temp == NULL || temp->next == NULL || pos <= 0) {
+        cout << "Invalid Position!" << endl;
+        return;
+    }
+
+    Node* target = temp->next; // 'target' points to the node that will be deleted
+    temp->next = target->next; // Bypasses the 'target' node by linking 'temp' to 'target's next
+    delete target; // Deallocate the memory of the target node
+}
+
+// Function to delete a node by its value
+void deleteValue(Node* &head, int val) {
+    Node* temp = head->next; // Pointer to traverse the list, starting from the second node
+    Node* prev = head; // Pointer to keep track of the previous node, starting at the head
+
+    // Handles the special case if the value to be deleted is in the head node
+    if(head->data == val) {
+        head = head->next; // Move the head to the next node
+        delete prev; // Deallocate the memory of the original head node
+        return;
+    }
+
+    // Traverses the list to find the node with the specified value
+    while(temp != NULL) {
+        if(temp->data == val) {
+            val = INT_MIN; // Use INT_MIN as a flag to indicate the value was found and processed
+            break; // Exit the loop once the value is found
+        }
+        prev = temp; // Move 'prev' to the current 'temp' node
+        temp = temp->next; // Move 'temp' to the next node
+    }
+
+    // Handles cases where the value was not found or if 'prev' is the last node and 'val' wasn't found
+    if(prev->next == NULL || val != INT_MIN) {
+        cout << "Value Not Found!" << endl;
+        return;
+    }
+
+    prev->next = temp->next; // Bypasses the 'temp' node (which holds the value to be deleted)
+    delete temp; // Deallocate the memory of the 'temp' node
+}
+
+// Function to remove all occurrences of duplicate nodes from the linked list (using nested loops - O(N^2) complexity)
+void removeNodes1(Node* &head) {
+    // If the list is empty, there's nothing to remove
+    if(head == NULL) {
+        return;
+    }
+
+    Node* curr = head; // 'curr' pointer iterates through the list
+    // Iterate through each node starting from the head
+    while(curr != NULL) {
+        Node* prev = curr; // 'prev' pointer always stays behind 'temp' within the inner loop
+        Node* temp = curr->next; // 'temp' pointer is used to compare with 'curr' and find duplicates
+
+        // Inner loop: compares 'curr' data with all subsequent nodes
+        while(temp != NULL) {
+            // If a duplicate is found (curr's data matches temp's data)
+            if(curr->data == temp->data) {
+                Node* target = temp; // 'target' points to the duplicate node
+                temp = temp->next; // Move 'temp' to the next node before deletion
+                prev->next = temp; // Bypass the 'target' node by linking 'prev' to 'temp'
+                delete target; // Deallocate the memory of the duplicate node
+            } else {
+                prev = temp; // Move 'prev' to the current 'temp' node
+                temp = temp->next; // Move 'temp' to the next node
+            }
+        }
+        curr = curr->next; // Move to the next unique node in the outer loop
+    }
+}
+
+// Function to remove duplicate nodes from the linked list (using a hash map - O(N) complexity on average)
+void removeNodes2(Node* &head) {
+    // If the list is empty, there's nothing to remove
+    if(head == NULL) {
+        return;
+    }
+
+    map<int, bool> visited; // A map to store whether a node's data has been visited (key: data, value: true/false)
+    Node* temp = head; // Start traversal from the head
+    visited[temp->data] = true; // Mark the head node's data as visited
+
+    // Iterate through the list, starting from the second node (temp->next)
+    while(temp->next != NULL) {
+        // If the data of the next node has already been visited (it's a duplicate)
+        if(visited[temp->next->data] == true) {
+            Node* target = temp->next; // 'target' points to the duplicate node
+            temp->next = target->next; // Bypass the 'target' node by linking 'temp' to 'target's next
+            delete target; // Deallocate the memory of the duplicate node
+        } else {
+            visited[temp->next->data] = true; // Mark the current node's data as visited
+            temp = temp->next; // Move to the next node
+        }
+    }
+}
+
+// Main function to demonstrate linked list operations
+int main() {
+    // Initializes the head and tail of the linked list with the first node (data = 1)
+    Node *head = new Node(1);
+    Node *tail = head; // Initially, head and tail point to the same node
+
+    // Inserts various nodes at the tail, including some duplicates for demonstration
+    insertAtTail(tail, pow(2,2)); // 4
+    insertAtTail(tail, pow(2,1)); // 2
+    insertAtTail(tail, pow(2,9)); // 512
+    insertAtTail(tail, pow(2,4)); // 16
+    insertAtTail(tail, pow(2,7)); // 128
+    insertAtTail(tail, pow(2,9)); // 512 (duplicate)
+    insertAtTail(tail, pow(2,2)); // 4 (duplicate)
+    insertAtTail(tail, pow(2,4)); // 16 (duplicate)
+    insertAtTail(tail, pow(2,0)); // 1 (duplicate)
+    insertAtTail(tail, pow(2,2)); // 4 (duplicate)
+    insertAtTail(tail, pow(2,9)); // 512 (duplicate)
+    insertAtTail(tail, pow(2,9)); // 512 (duplicate)
+
+    printList(head); // Prints the list before removing duplicates
+
+    removeNodes1(head); // Calls the function to remove all duplicates (O(N^2) approach)
+    // removeNodes2(head); // Uncomment this line and comment out removeNodes1 to use the O(N) approach
+
+    printList(head); // Prints the list after removing duplicates
+
+    return 0; // Indicates successful execution of the program
+}
+```
+
+-----
+
+### Removing Duplicates from a Singly Linked List
+
+Removing duplicates from a **singly linked list** involves identifying and deleting nodes that contain values already present earlier in the list. There are primarily two common approaches, each with different time complexities:
+
+1.  **Using Nested Loops (Brute Force):**
+
+      * This method involves two pointers: an outer pointer (`curr`) that iterates through each node, and an inner pointer (`temp`) that starts from `curr`'s next and checks for duplicates.
+      * For each node pointed to by `curr`, the inner loop traverses the rest of the list. If `temp` finds a node with the same data as `curr`, that node is deleted.
+      * **Time Complexity:** $O(N^2)$, where $N$ is the number of nodes, as for each node, we might iterate through the rest of the list.
+      * **Space Complexity:** $O(1)$ (constant), as no additional data structures are used.
+
+2.  **Using a Hash Map (or Set):**
+
+      * This approach uses a **hash map** (or a **set**) to keep track of the data values encountered so far.
+      * We traverse the list with a single pointer (`temp`). For each node, we check if its data is already present in the hash map.
+      * If the data is in the map, it's a duplicate, and the node is deleted.
+      * If the data is not in the map, it's unique, so we add it to the map and move to the next node.
+      * **Time Complexity:** $O(N)$ on average, as hash map operations (insertion and lookup) take $O(1)$ time on average.
+      * **Space Complexity:** $O(N)$ in the worst case, as the hash map could store up to $N$ unique elements.
+
+-----
+
+**Example of `removeNodes1` (Nested Loops):**
+
+Consider the list: `1 -> 4 -> 2 -> 512 -> 16 -> 128 -> 512 -> 4 -> 16 -> 1 -> 4 -> 512 -> 512 -> 512 -> NULL`
+
+1.  **`curr` is at `1`:**
+      * Inner loop checks `4`, `2`, `512`, `16`, `128`, `512`, `4`, `16`.
+      * Finds `1` again (the ninth node). Deletes it.
+      * The list becomes: `1 -> 4 -> 2 -> 512 -> 16 -> 128 -> 512 -> 4 -> 16 -> 4 -> 512 -> 512 -> 512 -> NULL`
+2.  **`curr` moves to `4`:**
+      * Inner loop checks `2`, `512`, `16`, `128`, `512`.
+      * Finds `4` (the eighth node). Deletes it.
+      * Finds `4` again (the ninth node after deletion). Deletes it.
+      * The list continues to be processed.
+
+**Example of `removeNodes2` (Hash Map):**
+
+Consider the list: `1 -> 4 -> 2 -> 512 -> 16 -> 128 -> 512 -> 4 -> 16 -> 1 -> 4 -> 512 -> 512 -> 512 -> NULL`
+
+1.  **`temp` is at `1`:** Add `1` to `visited`. `visited = {1:true}`
+2.  **`temp` moves to `4`:** Add `4` to `visited`. `visited = {1:true, 4:true}`
+3.  **`temp` moves to `2`:** Add `2` to `visited`. `visited = {1:true, 4:true, 2:true}`
+4.  **`temp` moves to `512`:** Add `512` to `visited`. `visited = {1:true, 4:true, 2:true, 512:true}`
+5.  **`temp` moves to `16`:** Add `16` to `visited`. `visited = {1:true, 4:true, 2:true, 512:true, 16:true}`
+6.  **`temp` moves to `128`:** Add `128` to `visited`. `visited = {..., 128:true}`
+7.  **`temp` moves to `512`:** `512` is in `visited`. Delete this node.
+8.  **`temp` (now pointing to the node that was after the deleted `512`) points to `4`:** `4` is in `visited`. Delete this node.
+9.  **`temp` points to `16`:** `16` is in `visited`. Delete this node.
+10. **`temp` points to `1`:** `1` is in `visited`. Delete this node.
+    And so on, until all duplicates are removed.
+
+Which approach is better depends on the constraints and requirements. If memory is extremely limited, the $O(1)$ space complexity of the nested loop approach might be preferred. However, for large lists, the $O(N)$ average time complexity of the hash map approach makes it significantly faster.
+
+Do you want to explore other linked list operations or maybe delve into circular linked lists?

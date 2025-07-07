@@ -3,6 +3,29 @@ title: Linked List - Intro
 description: A guide in my new Starlight docs site.
 ---
 
+- A linked list is a linear data structure where elements (nodes) are connected using pointers.
+- Each Node contains:
+- Data (value)
+- Pointer to the next node (next)
+
+#### Node Structure
+```c++
+class Node {
+public:
+    int data;
+    Node* next;
+
+    Node(int data) {
+        this->data = data;
+        this->next = NULL;
+    }
+};
+```
+
+- `data:` stores the value.
+- `next:` pointer to the next node.
+- Constructor initializes `data` and sets `next` to `NULL`.
+
 ```c++
 #include <bits/stdc++.h>
 using namespace std;
@@ -32,3 +55,15 @@ int main() {
     return 0;
 }
 ```
+
+- Creates a node `head` with data = 10, `next = NULL`.
+- Creates another node `head2` with data = 20.
+- Links `head` to `head2` → a two-node chain: 
+
+`head (10) -> head2 (20)`
+- Outputs: 10 & 20
+(head's data and the data of the next node)
+
+- Dynamically creates a node with data = 30.
+- Outputs: 30
+

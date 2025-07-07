@@ -3,186 +3,396 @@ title: Clone a Linked List
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Common includes
+using namespace std;     // Standard namespace
 
+// Node for a linked list with a random pointer
 class Node {
-    public:
-    int data;
-    Node *next, *random;
+public:
+    int data;        // Node data
+    Node *next, *random; // Pointers to next node and a random node
 
-    Node(int data) {
+    Node(int data) { // Constructor
         this->data = data;
         this->next = NULL;
+        this->random = NULL; // Initialize random to NULL
     }
 };
 
+// Print the linked list (data and random pointer's data)
 void printList(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) { // Empty list check
         cout << "List is Empty!" << endl;
         return;
     }
-    
-    while(head != NULL) {
-        cout << "[" << head->data << "," << head->random->data << "] ";
-        // cout << head->data << " ";
+    while(head != NULL) { // Traverse and print
+        // Prints [data, random_data] if random is not NULL, else handles NULL
+        cout << "[" << head->data << ",";
+        if (head->random != NULL) {
+            cout << head->random->data;
+        } else {
+            cout << "NULL"; // Indicate if random points to NULL
+        }
+        cout << "] ";
         head = head->next;
     }
     cout << endl;
 }
 
+// Insert new node at head (utility, not directly used in clone logic here)
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    Node *temp = new Node(data); // Create new node
+    temp->next = head;           // Link new node to old head
+    head = temp;                 // Update head
 }
 
+// Insert new node at tail (utility, used to build clone list)
 void insertAtTail(Node* &head, Node* &tail, int data) {
-    Node* temp = new Node(data);    
-    
-    if(tail == NULL) {
-        head = tail = temp;
-    } else {
-        tail = tail->next = temp;
+    Node* temp = new Node(data); // Create new node
+
+    if(head == NULL) { // If list is empty, new node is head and tail
+        head = temp;
+        tail = temp;
+    } else { // Append to tail
+        tail->next = temp; // Current tail points to new node
+        tail = temp;       // Update tail to new node
     }
 }
 
+// Function to clone a linked list with random pointers
+// Approach: Using a hash map (O(N) space)
 Node* cloneList(Node* head) {
-    Node* cloneHead = NULL;
-    Node* cloneTail = NULL;
-    Node* temp = head;
-    map<Node*, Node*> mapping;
+    Node* cloneHead = NULL; // Head of the cloned list
+    Node* cloneTail = NULL; // Tail of the cloned list
+    Node* temp = head;       // Iterator for original list
+    map<Node*, Node*> mapping; // Map: original_node -> clone_node
 
+    // Step 1: Create a deep copy of nodes and populate mapping
     while(temp != NULL) {
+        // Create new node with same data and append to clone list
         insertAtTail(cloneHead, cloneTail, temp->data);
+        // Map original node to its new clone
         mapping[temp] = cloneTail;
-        temp = temp->next;
+        temp = temp->next; // Move to next original node
     }
 
-    temp = head;
-    Node* clone = cloneHead;
+    // Step 2: Assign random pointers in the cloned list
+    temp = head;       // Reset iterator for original list
+    Node* clone = cloneHead; // Iterator for clone list
 
-    while(clone != NULL) {
+    while(clone != NULL) { // Iterate through the clone list
+        // Use mapping to find the corresponding random pointer in clone list
         clone->random = mapping[temp->random];
-        temp = temp->next;
-        clone = clone->next;
+        temp = temp->next; // Advance original list iterator
+        clone = clone->next; // Advance clone list iterator
     }
 
-    return cloneHead;
+    return cloneHead; // Return head of the cloned list
 }
 
 int main() {
-    Node *head = new Node(5);;
+    // Manually create a sample linked list with random pointers
+    Node *head = new Node(1); // Creating node 1 (head)
+    Node *node2 = new Node(2);
+    Node *node3 = new Node(3);
+    Node *node4 = new Node(4);
+    Node *node5 = new Node(5);
 
-    insertAtHead(head, 4);
-    insertAtHead(head, 3);
-    insertAtHead(head, 2);
-    insertAtHead(head, 1);
+    head->next = node2;
+    node2->next = node3;
+    node3->next = node4;
+    node4->next = node5;
+    node5->next = NULL; // End of list
 
-    head->random = head->next->next;
-    head->next->random = head;
-    head->next->next->random = head->next->next->next->next;
-    head->next->next->next->random = head->next->next;
-    head->next->next->next->next->random = head->next;
+    // Set random pointers (example based on relative positions)
+    // List: 1 -> 2 -> 3 -> 4 -> 5
+    // Indices:0    1    2    3    4
+    head->random = node3; // 1's random points to 3 (index 2)
+    node2->random = head; // 2's random points to 1 (index 0)
+    node3->random = node5; // 3's random points to 5 (index 4)
+    node4->random = node3; // 4's random points to 3 (index 2)
+    node5->random = node2; // 5's random points to 2 (index 1)
 
     cout << "Original List : ";
-    printList(head);
+    printList(head); // Print original list
 
-    Node *clone = cloneList(head);
+    Node *clone = cloneList(head); // Clone the list
 
     cout << "Clone List : ";
-    printList(clone);
+    printList(clone); // Print the cloned list
 
     return 0;
 }
 ```
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+-----
+### Quick Revision Notes: Cloning a Linked List with Random Pointers
 
+**Problem:** Create a deep copy of a linked list where each node has a `next` pointer and an additional `random` pointer, which can point to any node in the list or `NULL`.
+
+**Challenge:** Simple traversal and copying (`next` pointers) is easy. The difficulty is copying `random` pointers, as the nodes they point to might not have been created yet in the clone.
+
+**Approach Used (Hashing/Mapping - $O(N)$ Space):**
+
+1.  **Node Structure:** Requires `data`, `next`, and `random` pointers.
+
+2.  **`insertAtTail` (Utility):** Helps in efficiently building the new clone list by appending nodes.
+
+3.  **`cloneList(Node* head)` Function:**
+
+      * **Step 1: Create Nodes and Map Original to Clone.**
+
+          * **Goal:** Create all new nodes for the clone list and establish a mapping between original nodes and their corresponding new clone nodes.
+          * **Process:**
+              * Initialize `cloneHead = NULL`, `cloneTail = NULL`.
+              * Use a `std::map<Node*, Node*> mapping;` (or `unordered_map` for average $O(1)$ lookup). This map stores `(original_node_address -> clone_node_address)`.
+              * Traverse the `original list` (using `temp`).
+              * For each `temp` node:
+                  * Create a `new Node(temp->data)`.
+                  * Append this new node to the `clone list` using `insertAtTail`.
+                  * Store the mapping: `mapping[temp] = clone_node_just_created`.
+          * **Why?** This step creates all the 'normal' `next` links and provides a lookup table to resolve `random` pointers later.
+          * **Complexity:** $O(N)$ time (for traversal and map insertions), $O(N)$ space (for `map` and `clone` nodes).
+
+      * **Step 2: Assign Random Pointers in Clone.**
+
+          * **Goal:** Correctly set the `random` pointers for all nodes in the cloned list.
+          * **Process:**
+              * Reset `temp = head` (for original list traversal).
+              * Reset `clone = cloneHead` (for clone list traversal).
+              * Traverse both lists simultaneously.
+              * For each `clone` node:
+                  * Its `random` pointer should point to the clone of `temp->random`.
+                  * Use the `mapping` to find this: `clone->random = mapping[temp->random];`
+                  * This lookup handles `NULL` gracefully if `temp->random` is `NULL`.
+          * **Why?** Now that all original nodes are mapped to their clone counterparts, we can look up the correct clone target for each random pointer.
+          * **Complexity:** $O(N)$ time (for traversal and map lookups), $O(1)$ additional space.
+
+**Overall Complexity:**
+
+  * **Time:** $O(N)$ (dominated by two passes over the list and map operations).
+  * **Space:** $O(N)$ (for the `map` and the new cloned list nodes).
+
+-----
+
+**Alternative (Optimized) Approach ($O(1)$ Space - for revision):**
+
+1.  **Interweave Nodes:** Create new clone nodes and insert them right after their corresponding original nodes.
+      * `1 -> 1' -> 2 -> 2' -> 3 -> 3' ...`
+2.  **Assign Random Pointers:** Traverse the interweaved list. For an original node `curr` and its clone `curr->next`:
+      * `curr->next->random = curr->random->next;` (if `curr->random` is not `NULL`).
+      * This works because `curr->random->next` will be the clone of `curr->random`.
+3.  **Separate Lists:** Detach the original and clone lists by adjusting `next` pointers.
+
+This $O(1)$ space method is often preferred in interviews but is more complex to implement correctly. The map-based approach is simpler and sufficient if $O(N)$ space is allowed.
+
+
+```cpp
+#include <bits/stdc++.h> // Common includes
+using namespace std;     // Standard namespace
+
+// Node for a linked list with a random pointer
 class Node {
-    public:
-    int data;
-    Node *next, *random;
+public:
+    int data;        // Node data
+    Node *next, *random; // Pointers to next node and a random node
 
-    Node(int data) {
+    Node(int data) { // Constructor
         this->data = data;
         this->next = NULL;
+        this->random = NULL; // Initialize random to NULL
     }
 };
 
+// Print the linked list (data and random pointer's data)
 void printList(Node* head) {
-    if(head == NULL) {
+    if(head == NULL) { // Empty list check
         cout << "List is Empty!" << endl;
         return;
     }
-    
-    while(head != NULL) {
-        cout << "[" << head->data << "," << head->random->data << "] ";
-        // cout << head->data << " ";
+    while(head != NULL) { // Traverse and print
+        // Prints [data, random_data] if random is not NULL, else handles NULL
+        cout << "[" << head->data << ",";
+        if (head->random != NULL) {
+            cout << head->random->data;
+        } else {
+            cout << "NULL"; // Indicate if random points to NULL
+        }
+        cout << "] ";
         head = head->next;
     }
     cout << endl;
 }
 
+// Insert new node at head (utility, not directly used in clone logic here)
 void insertAtHead(Node* &head, int data) {
-    Node *temp = new Node(data);
-    temp->next = head;
-    head = temp;
+    Node *temp = new Node(data); // Create new node
+    temp->next = head;           // Link new node to old head
+    head = temp;                 // Update head
 }
 
+// Function to clone a linked list with random pointers
+// Optimized Approach: O(1) Space
 Node* cloneList(Node* head) {
+    if (head == NULL) return NULL; // Handle empty list case
+
     Node* temp = head;
+    // Step 1: Create A' nodes and interweave with original A nodes: A -> A' -> B -> B' -> ...
     while(temp != NULL) {
-        Node* next = temp->next;
-        Node* cloneNode = new Node(temp->data);
-        temp->next = cloneNode;
-        temp = cloneNode->next = next;
+        Node* next = temp->next;          // Store original next
+        Node* cloneNode = new Node(temp->data); // Create clone node
+        temp->next = cloneNode;           // Link original to clone
+        cloneNode->next = next;           // Link clone to original's next
+        temp = next;                      // Move temp to the next original node
     }
 
-    Node *cloneHead = head->next;
-    Node* clone = cloneHead;
-
-    temp = head;    
+    // Step 2: Assign random pointers for A' nodes
+    temp = head; // Reset temp to original head
     while(temp != NULL) {
-        temp->next->random = temp->random->next;
-        temp = temp->next->next;
+        if (temp->random != NULL) {
+            // A's random points to B' if A's random points to B
+            temp->next->random = temp->random->next;
+        } else {
+            temp->next->random = NULL; // If original random is NULL, clone random is NULL
+        }
+        temp = temp->next->next; // Move temp to the next original node (skip clone)
     }
 
-    temp = head;
-    while(clone->next != NULL) {
-        temp = temp->next = temp->next->next;
-        clone = clone->next = clone->next->next;
+    // Step 3: Detach original and cloned lists
+    Node *cloneHead = head->next; // Head of the cloned list
+    Node* clone = cloneHead;      // Iterator for the clone list
+    temp = head;                  // Iterator for the original list
+
+    while(clone->next != NULL) { // Loop until the second to last clone node
+        temp->next = temp->next->next;   // Original node points to its original next
+        clone->next = clone->next->next; // Clone node points to its clone next
+        temp = temp->next;               // Advance original iterator
+        clone = clone->next;             // Advance clone iterator
     }
-    
-    temp->next = clone->next = NULL;
-    return cloneHead;
+
+    // Handle the last node's next pointer
+    temp->next = NULL;    // Last original node's next is NULL
+    clone->next = NULL;   // Last clone node's next is NULL
+
+    return cloneHead; // Return head of the cloned list
 }
 
 int main() {
-    Node *head = new Node(5);;
+    // Manually create a sample linked list with random pointers
+    Node *head = new Node(1); // Creating node 1 (head)
+    Node *node2 = new Node(2);
+    Node *node3 = new Node(3);
+    Node *node4 = new Node(4);
+    Node *node5 = new Node(5);
 
-    insertAtHead(head, 4);
-    insertAtHead(head, 3);
-    insertAtHead(head, 2);
-    insertAtHead(head, 1);
+    head->next = node2;
+    node2->next = node3;
+    node3->next = node4;
+    node4->next = node5;
+    node5->next = NULL; // End of list
 
-    head->random = head->next->next;
-    head->next->random = head;
-    head->next->next->random = head->next->next->next->next;
-    head->next->next->next->random = head->next->next;
-    head->next->next->next->next->random = head->next;
+    // Set random pointers (example based on relative positions)
+    // List: 1 -> 2 -> 3 -> 4 -> 5
+    // Indices:0    1    2    3    4
+    head->random = node3; // 1's random points to 3
+    node2->random = head; // 2's random points to 1
+    node3->random = node5; // 3's random points to 5
+    node4->random = node3; // 4's random points to 3
+    node5->random = node2; // 5's random points to 2
 
     cout << "Original List : ";
-    printList(head);
+    printList(head); // Print original list
 
-    Node *clone = cloneList(head);
+    Node *clone = cloneList(head); // Clone the list
 
     cout << "Clone List : ";
-    printList(clone);
+    printList(clone); // Print the cloned list
+
+    // Verify original list is restored (optional)
+    cout << "Original List after clone (should be restored): ";
+    printList(head);
 
     return 0;
 }
 ```
+
+-----
+
+### Quick Revision Notes: Cloning a Linked List with Random Pointers (O(1) Space)
+
+**Problem:** Create a deep copy of a linked list that includes both `next` and `random` pointers, without using extra space proportional to the list's size.
+
+**Challenge:** Directly copying `random` pointers is hard as target nodes in the clone list may not exist yet.
+
+**Approach Used (Interweaving Nodes - $O(1)$ Space):**
+
+1.  **Node Structure:** `data`, `next`, `random` pointers.
+
+2.  **`cloneList(Node* head)` Function:**
+
+      * **Step 1: Interweave Cloned Nodes.**
+
+          * **Goal:** Create a copy of each original node and insert it immediately after its original counterpart.
+          * **Process:**
+              * Traverse the original list.
+              * For each `original_node`:
+                  * Create `clone_node` with `original_node->data`.
+                  * Set `clone_node->next = original_node->next`.
+                  * Set `original_node->next = clone_node`.
+                  * Move to `original_node->next->next` (the next original node).
+          * **Resulting Structure:** `Original1 -> Clone1 -> Original2 -> Clone2 -> Original3 -> Clone3 ...`
+          * **Complexity:** $O(N)$ time, $O(1)$ extra space (besides new nodes).
+
+      * **Step 2: Assign Random Pointers for Cloned Nodes.**
+
+          * **Goal:** Set the `random` pointers for all the `clone_node`s.
+          * **Process:**
+              * Traverse the interweaved list (again starting from `head`).
+              * For each `original_node` (`curr`):
+                  * Its clone is `original_node->next`.
+                  * If `original_node->random` is not `NULL`:
+                      * `clone_node->random = original_node->random->next;` (The clone's random points to the clone of what the original's random pointed to).
+                  * If `original_node->random` is `NULL`:
+                      * `clone_node->random = NULL;`
+              * Move to the next original node: `curr = curr->next->next`.
+          * **Complexity:** $O(N)$ time, $O(1)$ extra space.
+
+      * **Step 3: Detach Original and Cloned Lists.**
+
+          * **Goal:** Separate the two interwoven lists into two distinct lists.
+          * **Process:**
+              * Initialize `cloneHead = head->next`.
+              * Use two pointers: `original_curr` (starts at `head`) and `clone_curr` (starts at `cloneHead`).
+              * Loop until `clone_curr->next` is `NULL` (i.e., until the second-to-last node in the clone list).
+                  * `original_curr->next = original_curr->next->next;` (Reconnect original list).
+                  * `clone_curr->next = clone_curr->next->next;` (Reconnect clone list).
+                  * Advance both pointers.
+              * Handle the last node's `next` pointers (set to `NULL`).
+              * `original_curr->next = NULL;`
+              * `clone_curr->next = NULL;`
+          * **Complexity:** $O(N)$ time, $O(1)$ extra space.
+
+**Overall Complexity:**
+
+  * **Time:** $O(N)$ (three passes over the list).
+  * **Space:** $O(1)$ (no auxiliary data structure like a map is used; memory for clone nodes is created directly).
+
+**Example Trace (List: `1 -> 2 -> 3`, 1.random-\>3, 2.random-\>1, 3.random-\>2):**
+
+1.  **Interweave:**
+    `1 -> 1' -> 2 -> 2' -> 3 -> 3' -> NULL`
+
+2.  **Assign Randoms:**
+
+      * `1'`.random = `1`.random-\>next (`3`-\>next) = `3'`
+      * `2'`.random = `2`.random-\>next (`1`-\>next) = `1'`
+      * `3'`.random = `3`.random-\>next (`2`-\>next) = `2'`
+
+3.  **Separate:**
+
+      * Original: `1 -> 2 -> 3 -> NULL` (restored)
+      * Clone: `1' -> 2' -> 3' -> NULL` (new clone list)
+      * Randoms are correctly set within the clone list.
+
+This method is more complex to implement but highly space-efficient.
