@@ -3,43 +3,99 @@ title: Next Smaller Element
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, vector, stack)
+using namespace std;     // Standard namespace
 
+// Function to find the "Next Smaller Element to the Left" for each element
+// The function name 'smallerElements' in context of code implies this specific problem
 vector<int> smallerElements(vector<int> arr, int n) {
-    stack<int> st;
-    st.push(-1);
-    vector<int> answer(arr);
+    stack<int> st;         // Monotonic stack to store potential smaller elements
+    st.push(-1);           // Push a sentinel value for elements with no smaller element
+    vector<int> answer(n); // Vector to store the results (same size as input array)
 
-    for(int i=n-1; i>=0; i--) {
+    // Iterate from right to left (n-1 down to 0)
+    for(int i = n - 1; i >= 0; i--) {
+        // While stack top is greater than or equal to current array element, pop it
+        // This maintains a strictly increasing order from bottom to top in the stack
         while(st.top() >= arr[i]) {
             st.pop();
         }
-
-        answer[i] = st.top();
-        st.push(arr[i]);
+        // After popping, st.top() is the first element to the left that is smaller than arr[i]
+        answer[i] = st.top(); // Store the result for arr[i]
+        st.push(arr[i]);      // Push current element onto stack as a candidate for elements further left
     }
 
-    return answer;
+    return answer; // Return the result array
 }
 
 int main() {
-    vector<int> arr = {2,3,1};
-    vector<int> ans = smallerElements(arr, arr.size());
+    vector<int> arr = {2, 3, 1}; // Example input array
+    int n = arr.size(); // Get array size
+    vector<int> ans = smallerElements(arr, n); // Call the function
 
+    // Print original array
     cout << "Original array : ";
-    for(int i=0; i<arr.size(); i++) {
+    for(int i = 0; i < n; i++) {
         cout << arr[i] << " ";
     }
     cout << endl;
 
+    // Print the array with smaller elements found
     cout << "Smaller array : ";
-    for(int i=0; i<arr.size(); i++) {
+    for(int i = 0; i < n; i++) {
         cout << ans[i] << " ";
     }
     cout << endl;
 
-    return 0;
+    /* Dry Run: arr = {2, 3, 1}, n = 3
+    i = 2 (arr[2] = 1):
+        st = [-1]
+        while (-1 >= 1) F
+        answer[2] = -1
+        st.push(1) -> st = [-1, 1]
+
+    i = 1 (arr[1] = 3):
+        st = [-1, 1]
+        while (1 >= 3) F
+        answer[1] = 1
+        st.push(3) -> st = [-1, 1, 3]
+
+    i = 0 (arr[0] = 2):
+        st = [-1, 1, 3]
+        while (3 >= 2) T -> st.pop() -> st = [-1, 1]
+        while (1 >= 2) F
+        answer[0] = 1
+        st.push(2) -> st = [-1, 1, 2]
+
+    Result 'ans' = {1, 1, -1}
+    */
+
+    return 0; // End program
 }
 ```
+
+### Problem
+
+  * For each element in an array, find the first element to its *right* (or *left*, depending on iteration) that is smaller than it.
+  * This code effectively finds the **"Next Smaller Element to the Left"** for each element, as it iterates from right to left. If it were iterated from left to right, it would be "Next Smaller Element to the Right". The common naming is "Next Smaller Element" (usually implies to the right) or "Previous Smaller Element" (to the left). Given the loop `for(int i=n-1; i>=0; i--)`, this is effectively finding the **Next Smaller Element to the Left**.
+
+### Core Idea: Monotonic Stack
+
+  * A **monotonic stack** maintains elements in a particular order (e.g., increasing or decreasing).
+  * When looking for a "smaller" element, we maintain an increasing stack.
+  * Iterate from right to left (`n-1` to `0`).
+  * **Stack Stores Candidates**: The stack stores elements that *could* be the next smaller element for future (left-side) elements.
+
+### Algorithm Steps
+
+1.  **Initialize Stack**: Push `-1` onto the stack. This acts as a default "no smaller element found" sentinel.
+2.  **Iterate Right-to-Left**: For each element `arr[i]` from the end to the beginning:
+      * **Pop Larger**: While the `st.top()` is greater than or equal to `arr[i]`, `pop` from the stack. This removes elements that are no longer candidates (because `arr[i]` is smaller).
+      * **Assign Answer**: The `st.top()` (after popping) is now the *next smaller element* to the left for `arr[i]`. Store it in `answer[i]`.
+      * **Push Current**: `push` `arr[i]` onto the stack. It now becomes a candidate for elements further to its left.
+
+-----
+
+
+

@@ -3,93 +3,171 @@ title: N Stack in An Array
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
-// N - No of stack
-// S - Size of array
-// Q - No of queries
+```cpp
+#include <bits/stdc++.h> // Standard headers
+using namespace std;     // Standard namespace
+
+// Class to implement N stacks in a single array
 class NStack {
-    int *arr, *top, *next;
-    int freeSpot;
+    int *arr;     // The main array to store elements of all N stacks
+    int *top;     // Array to store the top index for each of the N stacks
+    int *next;    // Array to manage linked list for free slots and stack elements
+    int freeSpot; // Stores the index of the next available free slot in 'arr'
 
-    public:
+public:
+    // Constructor: Initializes the multi-stack structure
+    // N: Number of stacks, S: Total size of the underlying array
     NStack(int N, int S) {
-        arr = new int[S];
-        top = new int[N];
-        next = new int[S];
+        arr = new int[S];  // Allocate memory for the main data array
+        top = new int[N];  // Allocate memory for 'top' pointers of N stacks
+        next = new int[S]; // Allocate memory for 'next' pointers
 
-        // Initialising top
-        for(int i=0; i<N; i++) {
+        // Initialize 'top' array: All stacks are initially empty (-1)
+        for(int i = 0; i < N; i++) {
             top[i] = -1;
         }
 
-        // Initialising next
-        for(int i=0; i<S-1; i++) {
-            next[i] = i+1;
+        // Initialize 'next' array: Create an initial free list
+        // Each index 'i' points to the next index 'i+1'
+        for(int i = 0; i < S - 1; i++) {
+            next[i] = i + 1;
         }
-        next[S-1] = -1;     // Last index of next
+        next[S - 1] = -1; // The last index points to -1, marking end of free list
 
-        // Initialising freeSpot
+        // Initialize 'freeSpot': The first index (0) is initially available
         freeSpot = 0;
     }
 
+    // Push operation: Pushes element 'X' onto stack 'M' (M is 1-indexed)
     bool push(int X, int M) {
-        // Check Overflow
+        // Check for overflow: If freeSpot is -1, no space available
         if(freeSpot == -1) {
-            return false;
+            return false; // Stack overflow
         }
 
-        // Step 1 : Find Index
+        // Step 1: Get the index from the free list
         int index = freeSpot;
 
-        // Step 2 : Update Freespot
+        // Step 2: Update freeSpot to the next available slot
         freeSpot = next[index];
 
-        // Step 3 : Insert in Array
+        // Step 3: Insert the data into the allocated spot
         arr[index] = X;
-   
-        // Step 4 : Update Next
-        next[index] = top[M-1];
 
-        // Step 5 : Update Top
-        top[M-1] = index;
+        // Step 4: Link the new element to the previous top of its stack
+        // The 'next' of this new element points to the old top
+        next[index] = top[M - 1]; // M is 1-indexed
 
-        return true;
+        // Step 5: Update the 'top' pointer for stack M
+        // The new element's index becomes the new top
+        top[M - 1] = index;
+
+        return true; // Push successful
     }
 
-    int pop(int M)  {
-        // Check Overflow
-        if(top[M-1] == -1) {
-            return -1;
+    // Pop operation: Pops an element from stack 'M' (M is 1-indexed)
+    int pop(int M) {
+        // Check for underflow: If top of stack M is -1, the stack is empty
+        if(top[M - 1] == -1) {
+            return -1; // Stack underflow
         }
 
-        // Step 1 : Find Index
-        int index = top[M-1];
+        // Step 1: Get the index of the element to be popped (current top)
+        int index = top[M - 1];
 
-        // Step 2 : Update Top
-        top[M-1] = next[index];
+        // Step 2: Update the 'top' pointer for stack M to the next element down
+        top[M - 1] = next[index];
 
-        // Step 3 : Update Next
+        // Step 3: Return the popped index to the free list
+        // The 'next' of this freed index points to the current head of the free list
         next[index] = freeSpot;
 
-        // Step 4 : Update Freespot
+        // Step 4: Update 'freeSpot' to the newly freed index
         freeSpot = index;
 
+        // Return the popped value
         return arr[index];
+    }
+    
+    // Destructor to free dynamically allocated memory
+    ~NStack() {
+        delete[] arr;
+        delete[] top;
+        delete[] next;
     }
 };
 
 int main() {
+    // Create an NStack object: 3 stacks (N=3) in a total array size of 6 (S=6)
     NStack nst(3, 6);
 
-    if(nst.push(10, 1)) cout << "TRUE\n"; else cout << "FALSE\n";
-    if(nst.push(20, 1)) cout << "TRUE\n"; else cout << "FALSE\n";
-    if(nst.push(30, 2)) cout << "TRUE\n"; else cout << "FALSE\n";
-    
-    cout << "Popped : " << nst.pop(1) << endl;
-    cout << "Popped : " << nst.pop(2) << endl;
+    // Example Push operations (data, stack_number)
+    if(nst.push(10, 1)) cout << "Pushed 10 to Stack 1: TRUE\n"; else cout << "Pushed 10 to Stack 1: FALSE\n";
+    if(nst.push(20, 1)) cout << "Pushed 20 to Stack 1: TRUE\n"; else cout << "Pushed 20 to Stack 1: FALSE\n";
+    if(nst.push(30, 2)) cout << "Pushed 30 to Stack 2: TRUE\n"; else cout << "Pushed 30 to Stack 2: FALSE\n";
+    if(nst.push(40, 3)) cout << "Pushed 40 to Stack 3: TRUE\n"; else cout << "Pushed 40 to Stack 3: FALSE\n";
+    if(nst.push(50, 1)) cout << "Pushed 50 to Stack 1: TRUE\n"; else cout << "Pushed 50 to Stack 1: FALSE\n";
+    if(nst.push(60, 2)) cout << "Pushed 60 to Stack 2: TRUE\n"; else cout << "Pushed 60 to Stack 2: FALSE\n";
+    // Attempt to push to full array (should overflow)
+    if(nst.push(70, 1)) cout << "Pushed 70 to Stack 1: TRUE\n"; else cout << "Pushed 70 to Stack 1: FALSE (Overflow)\n";
 
-    return 0;
+    cout << "\n--- Pop Operations ---\n";
+    // Example Pop operations (stack_number)
+    cout << "Popped from Stack 1: " << nst.pop(1) << endl; // Should pop 50
+    cout << "Popped from Stack 2: " << nst.pop(2) << endl; // Should pop 60
+    cout << "Popped from Stack 1: " << nst.pop(1) << endl; // Should pop 20
+    cout << "Popped from Stack 3: " << nst.pop(3) << endl; // Should pop 40
+    cout << "Popped from Stack 1: " << nst.pop(1) << endl; // Should pop 10
+    cout << "Popped from Stack 1: " << nst.pop(1) << endl; // Should be -1 (underflow)
+
+    return 0; // End program
 }
 ```
+
+### Problem
+
+  * Implement `N` separate stacks using a single, contiguous array of total size `S`.
+  * This optimizes space usage and avoids fixed-size partitioning.
+
+### Core Data Structures
+
+1.  **`int *arr`**: The main array of size `S` where all stack elements are stored.
+2.  **`int *top`**: An array of size `N`. `top[i]` stores the index of the top element of the `(i+1)`-th stack. `-1` means the stack is empty.
+3.  **`int *next`**: An array of size `S`. This acts as a linked list:
+      * If `arr[k]` is occupied by a stack element, `next[k]` stores the index of the element *below* `arr[k]` in that specific stack.
+      * If `arr[k]` is a free (unoccupied) slot, `next[k]` stores the index of the *next free slot* in the `freeList`.
+      * `-1` indicates the end of a stack or the end of the `freeList`.
+4.  **`int freeSpot`**: An integer storing the head (index) of the `freeList` in `arr`. It points to the next available slot. `-1` means no free slots are left.
+
+### Constructor `NStack(N, S)`
+
+  * Allocates `arr`, `top`, and `next` arrays.
+  * **Initialize `top`**: All `top[i]` are set to `-1` (all `N` stacks are initially empty).
+  * **Initialize `next` (Free List)**:
+      * For `i` from `0` to `S-2`, `next[i] = i+1`. This links all array indices sequentially, forming the initial free list.
+      * `next[S-1] = -1` (the last index marks the end of the free list).
+  * **Initialize `freeSpot`**: Set `freeSpot = 0` (the first index is the beginning of the free list).
+
+### `push(int X, int M)` (Push `X` onto Stack `M`)
+
+  * **`M` is 1-indexed** (stack number from 1 to `N`).
+  * **Check Overflow**: If `freeSpot == -1`, return `false` (no space left in `arr`).
+  * **Get Index**: `int index = freeSpot;` (get the next available slot).
+  * **Update `freeSpot`**: `freeSpot = next[index];` (move `freeSpot` to the next slot in the free list).
+  * **Insert Data**: `arr[index] = X;` (place `X` in the obtained slot).
+  * **Update `next`**: `next[index] = top[M-1];` (the new element's `next` pointer points to the *old* top of stack `M`).
+  * **Update `top`**: `top[M-1] = index;` (the new element's `index` becomes the *new* top of stack `M`).
+  * Return `true`.
+
+### `pop(int M)` (Pop from Stack `M`)
+
+  * **`M` is 1-indexed**.
+  * **Check Underflow**: If `top[M-1] == -1`, return `-1` (stack `M` is empty).
+  * **Get Index**: `int index = top[M-1];` (get the index of the element to be popped).
+  * **Update `top`**: `top[M-1] = next[index];` (the new top of stack `M` is the element below the popped one).
+  * **Return Index to Free List**: `next[index] = freeSpot;` (the popped `index` is now free, link it to the current `freeSpot`).
+  * **Update `freeSpot`**: `freeSpot = index;` (the popped `index` becomes the new head of the `freeList`).
+  * Return `arr[index]` (the value that was popped).
+
+-----
+

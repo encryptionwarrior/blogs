@@ -3,74 +3,119 @@ title: Two Stack In An Array
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Standard headers
+using namespace std;     // Standard namespace
 
+// Class for two stacks in one array
 class TwoStack {
-    public:
-    int *arr;
-    int limit1, limit2, maxSize;
+public:
+    int *arr;      // Shared array
+    int limit1;    // Top pointer for Stack 1 (left)
+    int limit2;    // Top pointer for Stack 2 (right)
+    int maxSize;   // Array capacity
 
+    // Constructor
     TwoStack(int size) {
-        maxSize = size;
-        arr = new int[size];
-        limit1 = -1;
-        limit2 = size;
+        maxSize = size;          // Set capacity
+        arr = new int[size];     // Allocate array
+        limit1 = -1;             // Stack 1 starts empty (left)
+        limit2 = size;           // Stack 2 starts empty (right)
     }
 
-    // Insertion for Stack1 : Left to Right
+    // Push to Stack 1 (left to right)
     void push1(int data) {
-        if(limit2-limit1 > 1) {
-            limit1++;
-            arr[limit1] = data;
+        if(limit2 - limit1 > 1) { // Check for space between stacks
+            limit1++;            // Move Stack 1 top
+            arr[limit1] = data;  // Insert data
         } else {
             cout << "Stack overflow!" << endl;
         }
     }
-    
-    // Insertion for Stack2 : Right to Left
+
+    // Push to Stack 2 (right to left)
     void push2(int data) {
-        if(limit2-limit1 > 1) {
-            limit2--;
-            arr[limit2] = data;
+        if(limit2 - limit1 > 1) { // Check for space between stacks
+            limit2--;            // Move Stack 2 top
+            arr[limit2] = data;  // Insert data
         } else {
             cout << "Stack overflow!" << endl;
         }
     }
 
+    // Pop from Stack 1
     void pop1() {
-        if(limit1 == -1) {
+        if(limit1 == -1) { // Check for Stack 1 underflow
             cout << "Stack underflow!" << endl;
         } else {
-            limit1--;
+            limit1--; // Decrement Stack 1 top
         }
     }
 
+    // Pop from Stack 2
     void pop2() {
-        if(limit2 == maxSize) {
+        if(limit2 == maxSize) { // Check for Stack 2 underflow
             cout << "Stack underflow!" << endl;
         } else {
-            limit2++;
+            limit2++; // Increment Stack 2 top
         }
     }
 };
 
 int main() {
-    // Creation of stack
-    TwoStack s(5);
+    TwoStack s(5); // Create two stacks with total size 5
 
-    s.push1(23);
-    s.push2(65);
+    s.push1(23); // Push to Stack 1
+    s.push2(65); // Push to Stack 2
 
-    s.push1(94);
-    s.push1(11);
-    s.push1(32);
+    s.push1(94); // Push to Stack 1
+    s.push1(11); // Push to Stack 1
+    s.push1(32); // Push to Stack 1 (now full for both)
 
-    s.pop2();
-    s.pop1();
-    s.pop1();
+    s.pop2(); // Pop from Stack 2
+    s.pop1(); // Pop from Stack 1
+    s.pop1(); // Pop from Stack 1
 
-    return 0;
+    return 0; // End program
 }
 ```
+
+### Core Concept
+
+The **Two-Stack in One Array** approach efficiently utilizes a single array to implement two separate stacks. The key idea is that the two stacks grow towards each other from opposite ends of the array, maximizing space utilization and preventing "fragmented" memory.
+
+### Key Components
+
+  * **`int *arr;`**: A single dynamic array that serves as the underlying storage for both stacks.
+  * **`int limit1;`**: This acts as the **top pointer for Stack 1**. It starts at `-1` (left end) and moves rightwards as elements are pushed.
+  * **`int limit2;`**: This acts as the **top pointer for Stack 2**. It starts at `maxSize` (right end) and moves leftwards as elements are pushed.
+  * **`int maxSize;`**: The total capacity of the shared array.
+
+-----
+
+### Key Operations & Their Logic
+
+  * **`TwoStack(int size)` (Constructor)**
+      * **Comment**: Initializes the shared array and sets initial positions for `limit1` and `limit2`.
+      * `limit1 = -1`: Stack 1 is initially empty, pointing before the first index.
+      * `limit2 = size`: Stack 2 is initially empty, pointing just after the last index.
+  * **`void push1(int data)` (Insertion for Stack 1)**
+      * **Comment**: Adds an element to Stack 1, growing from the left.
+      * **Overflow Check**: `if (limit2 - limit1 > 1)`: This is the crucial check. If there's at least one empty slot between `limit1` and `limit2` (i.e., `limit1 + 1 < limit2`), there's space. If `limit1 + 1 == limit2`, the stacks have met, and there's no space.
+      * **Insertion**: Increments `limit1` and places `data` at `arr[limit1]`.
+  * **`void push2(int data)` (Insertion for Stack 2)**
+      * **Comment**: Adds an element to Stack 2, growing from the right.
+      * **Overflow Check**: Same as `push1`: `if (limit2 - limit1 > 1)`.
+      * **Insertion**: Decrements `limit2` and places `data` at `arr[limit2]`.
+  * **`void pop1()` (Removal from Stack 1)**
+      * **Comment**: Removes the top element from Stack 1.
+      * **Underflow Check**: `if (limit1 == -1)`: Checks if Stack 1 is empty.
+      * **Removal**: Decrements `limit1`, effectively "removing" the top element.
+  * **`void pop2()` (Removal from Stack 2)**
+      * **Comment**: Removes the top element from Stack 2.
+      * **Underflow Check**: `if (limit2 == maxSize)`: Checks if Stack 2 is empty.
+      * **Removal**: Increments `limit2`, effectively "removing" the top element.
+
+-----
+
+

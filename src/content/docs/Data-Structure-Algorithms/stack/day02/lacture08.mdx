@@ -3,21 +3,104 @@ title: Minimum Cost to make string valid
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, string, stack)
+using namespace std;     // Standard namespace
 
+// Function to calculate minimum cost to balance a string of curly braces
 int minimumCost(string str) {
-    
+    // If string length is odd, it's impossible to balance
+    if (str.length() % 2 != 0) {
+        return -1;
+    }
+
+    stack<char> st; // Stack to store unmatched brackets
+
+    // Iterate through the string to find unmatched brackets
+    for (char ch : str) {
+        if (ch == '{') {
+            st.push(ch); // Push opening brace
+        } else { // Current character is '}'
+            // If stack is not empty and top is '{', they form a balanced pair
+            if (!st.empty() && st.top() == '{') {
+                st.pop(); // Pop the matching opening brace
+            } else {
+                st.push(ch); // No matching '{', so push this unmatched '}'
+            }
+        }
+    }
+
+    // After loop, stack contains only unmatched brackets (e.g., "{{", "}}", "}{")
+    int openCount = 0;  // Count of unmatched opening braces
+    int closeCount = 0; // Count of unmatched closing braces
+
+    // Count remaining unmatched braces in the stack
+    while (!st.empty()) {
+        if (st.top() == '{') {
+            openCount++;
+        } else { // st.top() == '}'
+            closeCount++;
+        }
+        st.pop();
+    }
+
+    // Calculate minimum reversals needed
+    // Each pair of same brackets (e.g., '{{' or '}}') needs 1 reversal.
+    // A '}{' pair needs 2 reversals.
+    // The formula (count + 1) / 2 correctly handles these cases.
+    int ans = (openCount + 1) / 2 + (closeCount + 1) / 2;
+    return ans;
 }
 
 int main() {
     string str;
     cout << "Enter the string : ";
-    getline(cin, str);
+    getline(cin, str); // Read the entire line
 
-    cout << "Required mimnimum cost : " << minimumCost(str) << endl;
+    cout << "Required minimum cost : " << minimumCost(str) << endl;
 
-    return 0;
+    /* Example Test Cases:
+    "{{{" -> -1 (odd length)
+    "{{}}" -> 0
+    "{{{" -> -1 (odd length)
+    "{{{{ " -> 2 (e.g., change two '{' to '}')
+    "}}}}" -> 2 (e.g., change two '}' to '{')
+    "}{" -> 2 (change '}' to '{' and '{' to '}')
+    "{{}{}}}" -> 1 (stack will have '}' at end, needs 1 reversal)
+        { -> push {
+        { -> push {
+        } -> pop {
+        { -> push {
+        } -> pop {
+        } -> pop {
+        } -> push }
+        Stack: {}. openCount=0, closeCount=1. Formula (0+1)/2 + (1+1)/2 = 0+1=1. Correct.
+    */
+
+    return 0; // End program
 }
 ```
+
+### Problem
+
+  * Given a string of curly braces `{}`.
+  * Find the minimum number of reversals needed to make it balanced.
+  * A reversal changes `{` to `}` or `}` to `{`.
+
+### Core Idea
+
+  * **Stack for Unmatched**: Use a stack to track only the *unmatched* brackets.
+  * **Pairing**: When an opening `{` is found, push it. When a closing `}` is found, if it matches a `{` on top of the stack, pop the `{` (they balance).
+  * **Unmatched `}`**: If a `}` is found and the stack is empty or its top is also a `}`, push the `}`. This means it's an unmatched closing brace.
+  * **Odd Length**: If the string length is odd, it's impossible to balance.
+
+### Cost Calculation (After processing string)
+
+  * The stack will contain only the remaining unbalanced brackets. Due to the logic, they will always be in the form `{{{...}}}` (all `}` on top, all `{` on bottom).
+  * Count `openCount` (unmatched `{`) and `closeCount` (unmatched `}`).
+  * **Formula**: `cost = (openCount + 1) / 2 + (closeCount + 1) / 2`
+      * This formula correctly handles cases like `{{` (1 reversal), `}}` (1 reversal), and `}{` (2 reversals).
+
+-----
+
+

@@ -3,53 +3,83 @@ title: Insert An Element At Bottom
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, stack, etc.)
+using namespace std;     // Standard namespace
 
-void inputStack(stack<int> &st) {
+// Function to take user input for stack elements
+void inputStack(stack<int> &st) { // Pass stack by reference to modify it
     int size;
     cout << "Enter the size : ";
-    cin >> size;
+    cin >> size; // Get desired size
 
     cout << "Enter stack elements : ";
-    for(int i=0; i<size; i++) {
+    for(int i=0; i<size; i++) { // Loop to get elements
         int temp;
-        cin >> temp;
-        st.push(temp);
+        cin >> temp; // Read element
+        st.push(temp); // Push onto stack
     }
 }
 
-void printStack(stack<int> st) {
+// Function to print stack elements (consumes the stack as it pops)
+void printStack(stack<int> st) { // Pass by value to print a copy, preserving original
     cout << "Stack : ";
-    while(!st.empty()) {
-        cout << st.top() << " ";
-        st.pop();
+    while(!st.empty()) { // Loop until stack is empty
+        cout << st.top() << " "; // Print top element
+        st.pop();               // Remove top element
     }
     cout << endl;
 }
 
-void insertBottom(stack<int> &st, int data) {
+// Recursive function to insert data at the bottom of the stack
+void insertBottom(stack<int> &st, int data) { // Pass stack by reference
+    // Base Case: If stack is empty, insert data
     if(st.empty()) {
-        st.push(data);
-        return;
+        st.push(data); // Data is now at the very bottom
+        return;        // End recursion for this branch
     }
 
-    int top = st.top();
-    st.pop();
-    insertBottom(st, data);
-    st.push(top);
+    // Step 1: Hold the top element and pop it
+    int top = st.top(); // Store top element
+    st.pop();           // Remove top element
+
+    // Step 2: Recursive call to reach the bottom
+    insertBottom(st, data); // Recurse to insert data deeper
+
+    // Step 3: Push back the held element (backtracking)
+    st.push(top); // Push the stored top element back
 }
 
 int main() {
-    stack<int> st;
-    inputStack(st);
+    stack<int> st; // Create a stack
 
-    printStack(st);
+    inputStack(st); // Populate the stack from user input
 
-    insertBottom(st, 10);
+    printStack(st); // Print the original stack
 
-    printStack(st);
-    return 0;
+    cout << "Inserting 10 at bottom..." << endl;
+    insertBottom(st, 10); // Call function to insert 10 at bottom
+
+    printStack(st); // Print the stack after insertion
+
+    return 0; // End program
 }
 ```
+
+### Core Idea
+
+  * **Recursion for Access**: Since stacks only allow LIFO access (top), recursion is used to temporarily "empty" the stack until the bottom is reached.
+  * **Base Case**: When the stack becomes empty, that's the "bottom," and the new element can be directly `push`ed.
+  * **Backtracking**: As the recursive calls return, the elements previously popped are `push`ed back, maintaining their original order above the new bottom element.
+
+### How it Works
+
+1.  **Base Case**: If the stack `st` is `empty()`, `push` the `data` and return. This `data` is now at the very bottom.
+2.  **Recursive Step**:
+      * Store the current `st.top()` in a temporary variable (`top`).
+      * `pop()` the current top element.
+      * Make a recursive call to `insertBottom(st, data)`, which will continue this process until the base case is met.
+      * After the recursive call returns (meaning `data` has been inserted at the bottom), `push()` the stored `top` element back onto the stack. This re-stacks the elements that were temporarily removed.
+
+-----
+

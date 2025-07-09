@@ -773,7 +773,7 @@ export default defineConfig({
                   items: [
                     {
                       label: "Reverse String",
-                      slug: "data-structure-algorithms/stack/day02/lacture02"
+                      slug: "data-structure-algorithms/stack/day02/lacture01"
                     },
                     {
                       label: "Delete Middle Of Stack",
@@ -786,10 +786,6 @@ export default defineConfig({
                     {
                       label: "Insert An Element At Bottom",
                       slug: "data-structure-algorithms/stack/day02/lacture04"
-                    },
-                    {
-                      label: "Reverse Stack using Recursion",
-                      slug: "data-structure-algorithms/stack/day02/lacture05"
                     },
                     {
                       label: "Reverse Stack using Recursion",
@@ -827,8 +823,12 @@ export default defineConfig({
                   ]
                 },
                 {
-                  label: "Celebrity Problem and Max Reactangle Matrix",
+                  label: "Celebrity Problem",
                   slug: "data-structure-algorithms/stack/day04"
+                },
+                {
+                  label: "Max Reactangle Matrix",
+                  slug: "data-structure-algorithms/stack/day07"
                 },
                 {
                   label: "N Stack in An Array",

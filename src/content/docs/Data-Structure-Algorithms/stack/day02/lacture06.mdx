@@ -3,68 +3,110 @@ title: Sort Stack
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, stack, etc.)
+using namespace std;     // Standard namespace
 
-void inputStack(stack<int> &st) {
+// Function to take user input for stack elements
+void inputStack(stack<int> &st) { // Pass by reference to modify original stack
     int size;
     cout << "Enter the size : ";
-    cin >> size;
+    cin >> size; // Get stack size
 
     cout << "Enter stack elements : ";
-    for(int i=0; i<size; i++) {
+    for(int i=0; i<size; i++) { // Loop to read elements
         int temp;
-        cin >> temp;
-        st.push(temp);
+        cin >> temp; // Read element
+        st.push(temp); // Push onto stack
     }
 }
 
-void printStack(stack<int> st) {
+// Function to print stack elements (consumes a copy of the stack)
+void printStack(stack<int> st) { // Pass by value to print a copy
     cout << "Stack : ";
-    while(!st.empty()) {
-        cout << st.top() << " ";
-        st.pop();
+    while(!st.empty()) { // Iterate while stack is not empty
+        cout << st.top() << " "; // Print top element
+        st.pop();               // Remove top element
     }
     cout << endl;
 }
 
-void insertSorted(stack<int> &st, int data) {
-    if(st.empty() || (!st.empty() && st.top() <= data)) {
-        st.push(data);
-        return;
+// Helper function: Inserts an element into a sorted stack while maintaining sort order
+// Assumes stack below 'top' (if any) is already sorted
+void insertSorted(stack<int> &st, int data) { // Pass by reference
+    // Base Case: If stack is empty OR data is greater than/equal to current top
+    // (This implies data should be pushed here or at the very bottom)
+    if(st.empty() || st.top() <= data) {
+        st.push(data); // Place data
+        return;        // Stop recursion
     }
 
-    int top = st.top();
-    st.pop();
+    int top = st.top(); // Store current top
+    st.pop();           // Remove current top
 
-    insertSorted(st, data);
-    st.push(top);
+    insertSorted(st, data); // Recursively find correct position for 'data'
+
+    st.push(top); // Push back stored top (backtracking)
 }
 
-void sortStack(stack<int> &st) {
-    if(st.empty()) {
+// Main function to sort the entire stack recursively
+void sortStack(stack<int> &st) { // Pass by reference
+    if(st.empty()) { // Base Case: Empty stack is sorted
         return;
     }
 
-    int top = st.top();
-    st.pop();
+    int top = st.top(); // Store current top element
+    st.pop();           // Remove current top
 
-    sortStack(st);
-    insertSorted(st, top);
+    sortStack(st); // Recursively sort the remaining stack
+
+    insertSorted(st, top); // Insert the stored top element into the now-sorted stack
 }
 
 int main() {
-    stack<int> st;
-    inputStack(st);
+    stack<int> st; // Create a stack
+    inputStack(st); // Populate stack from user
 
     cout << "Before Sorting : ";
-    printStack(st);
+    printStack(st); // Print original stack
 
-    sortStack(st);
+    sortStack(st); // Call function to sort the stack
 
     cout << "After Sorting : ";
-    printStack(st);
-    return 0;
+    printStack(st); // Print sorted stack
+
+    return 0; // End program
 }
 ```
+
+
+### Core Idea
+
+  * **Divide and Conquer**: The problem of sorting a stack is broken down into sorting a smaller stack and then correctly placing the current top element.
+  * **`insertSorted` Helper**: A key helper function that inserts an element into an *already sorted* stack while maintaining its sorted order.
+  * **Recursive Sort**:
+    1.  Pop the top element.
+    2.  Recursively sort the remaining stack.
+    3.  Insert the popped element into the now-sorted (smaller) stack using `insertSorted`.
+
+### How `insertSorted` Works
+
+  * **Goal**: Place `data` into `st` such that `st` remains sorted (smallest at bottom, largest at top).
+  * **Base Case**: If the stack is empty OR the current `st.top()` is less than or equal to `data`, then `data` can be safely pushed.
+  * **Recursive Step**:
+      * If `st.top()` is greater than `data`, it means `data` needs to go further down.
+      * Store `st.top()`, `pop()` it.
+      * Recursively call `insertSorted(st, data)`.
+      * Once the recursive call returns (meaning `data` is placed), `push()` the stored `top` back.
+
+### How `sortStack` Works
+
+  * **Goal**: Sort the entire stack.
+  * **Base Case**: If the stack is `empty()`, it's sorted, return.
+  * **Recursive Step**:
+      * Store `st.top()`, `pop()` it.
+      * Recursively call `sortStack(st)`: This will sort the remaining elements.
+      * Once the smaller stack is sorted, call `insertSorted(st, top)`. This places the original `top` element into its correct sorted position within the now-sorted substack.
+
+-----
+

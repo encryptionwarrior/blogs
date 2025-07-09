@@ -3,53 +3,88 @@ title: Valid Parenthesis
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, string, stack)
+using namespace std;     // Standard namespace
 
+// Helper function to check if a closing bracket matches an opening bracket
 bool matches(char a, char b) {
-    switch(a) {
+    switch(a) { // 'a' is the closing bracket
         case ')':
-            return (b == '(') ? true : false;
+            return (b == '(') ? true : false; // Check if 'b' is '('
         case '}':
-            return (b == '{') ? true : false;
+            return (b == '{') ? true : false; // Check if 'b' is '{'
         case ']':
-            return (b == '[') ? true : false;
+            return (b == '[') ? true : false; // Check if 'b' is '['
+        default:
+            return false; // Should not reach here for valid inputs
     }
 }
 
+// Main function to check if the expression has balanced parentheses
 bool isValid(string str) {
-    stack<char> st;
+    stack<char> st; // Stack to store opening brackets
 
-    for(int i=0; i<str.length(); i++) {
-        char ch = str[i];
+    for(int i=0; i<str.length(); i++) { // Iterate through each character
+        char ch = str[i]; // Current character
 
+        // If it's an opening bracket, push onto stack
         if(ch=='(' || ch=='{' || ch=='[') {
             st.push(ch);
-        } else {
+        }
+        // If it's a closing bracket
+        else {
+            // Check if stack is not empty AND top matches current closing bracket
             if(!st.empty() && matches(ch, st.top())) {
-                st.pop();
-            } else {
+                st.pop(); // Pop the matching opening bracket
+            }
+            // If stack is empty or doesn't match, it's unbalanced
+            else {
                 return false;
             }
         }
     }
 
+    // After iterating, if stack is empty, all brackets were balanced
     return (st.empty()) ? true : false;
 }
 
 int main() {
     string str;
 
-    cout << "Enter the expression : ";
-    getline(cin, str);
+    cout << "Enter the expression : "; // Prompt for expression
+    getline(cin, str);                 // Read the entire line
 
-    if(isValid(str)) {
+    if(isValid(str)) { // Call isValid to check balance
         cout << "Balanced" << endl;
     } else {
         cout << "Not Balanced" << endl;
     }
 
-    return 0;
+    return 0; // End program
 }
 ```
+
+
+### Core Idea
+
+  * **Stack for Open Brackets**: Use a stack to store opening brackets (`(`, `{`, `[`).
+  * **Matching Pairs**: When a closing bracket is encountered, check if the top of the stack has its corresponding opening bracket.
+  * **LIFO Property**: The last opening bracket pushed must be the first one matched and popped.
+
+### Algorithm Steps
+
+1.  **Iterate String**: Process the input string character by character.
+2.  **Opening Bracket**: If it's an opening bracket, `push` it onto the stack.
+3.  **Closing Bracket**: If it's a closing bracket:
+      * **Check Empty**: If the stack is empty, it's an unmatched closing bracket, so it's **unbalanced**.
+      * **Check Match**: If not empty, check if the closing bracket `matches` the `top` of the stack.
+          * If they match, `pop` the top.
+          * If they don't match, it's **unbalanced**.
+4.  **End of String**: After iterating through the entire string:
+      * If the stack is `empty()`, all brackets were balanced.
+      * If the stack is **not** `empty()`, there are unmatched opening brackets, so it's **unbalanced**.
+
+-----
+
+

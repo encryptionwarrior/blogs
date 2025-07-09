@@ -4,47 +4,56 @@ description: A guide in my new Starlight docs site.
 ---
 
 ### Celebrity Problem 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, vector, stack)
+using namespace std;     // Standard namespace
 
+// Function to find the celebrity in a given matrix
 int findCelebrity(vector<vector<int>> matrix) {
-    stack<int> st;
-    int size = matrix.size();
+    stack<int> st; // Stack to store potential celebrity candidates
+    int n = matrix.size(); // Size of the matrix (number of people)
 
-    // Step 1 :
-    for(int i=0; i<size; i++) {
+    // Step 1: Push all person indices onto the stack
+    for(int i = 0; i < n; i++) {
         st.push(i);
     }
 
-    // Step 2 :
-    while(st.size() != 1) {
-        int first = st.top();
+    // Step 2: Eliminate non-celebrity candidates
+    while(st.size() > 1) { // Continue until only one candidate remains
+        int a = st.top(); // Get top two candidates
         st.pop();
-        int second = st.top();
+        int b = st.top();
         st.pop();
-        
-        // Step 3 :
-        if(matrix[first][second] == 1) {
-            st.push(second);
-        } else {
-            st.push(first);
+
+        // Step 3: Determine who might be the celebrity based on knowing each other
+        if(matrix[a][b] == 1) { // If 'a' knows 'b'
+            // 'a' cannot be celebrity (because celebrity knows no one)
+            st.push(b); // 'b' is still a potential celebrity
+        } else { // If 'a' does NOT know 'b' (matrix[a][b] == 0)
+            // 'b' cannot be celebrity (because celebrity must be known by everyone)
+            st.push(a); // 'a' is still a potential celebrity
         }
     }
 
-    // Step 5 : Verifing potential celebrity
-    int candidate = st.top();
+    // Step 4: The single element left is the potential celebrity
+    int candidate = st.top(); // This is our final potential candidate
 
-    for(int i=0; i<size; i++) {
-        if(matrix[candidate][i] != 0) {
-            return -1;
-        }
-
-        if(matrix[i][candidate] != 1 && candidate != i) {
-            return -1;
+    // Step 5: Verify if the candidate meets both celebrity conditions
+    // Condition 1: Candidate must not know anyone
+    for(int i = 0; i < n; i++) {
+        if(matrix[candidate][i] == 1) { // If candidate knows anyone (M[candidate][i] is 1)
+            return -1; // Not a celebrity
         }
     }
 
+    // Condition 2: Everyone must know the candidate (except candidate themselves)
+    for(int i = 0; i < n; i++) {
+        if(matrix[i][candidate] == 0 && i != candidate) { // If someone (i != candidate) does NOT know candidate (M[i][candidate] is 0)
+            return -1; // Not a celebrity
+        }
+    }
+
+    // If both conditions are met, the candidate is indeed the celebrity
     return candidate;
 }
 
@@ -52,127 +61,69 @@ int main() {
     vector<vector<int>> matrix;
     int size;
 
-    cout << "Enter the size : ";
-    cin >> size;
+    cout << "Enter the size (N) of the matrix : ";
+    cin >> size; // Read matrix size
 
-    cout << "Enter the matrix : ";
-    for(int i=0; i<size; i++) {
-        vector<int> temp(size);
-        for(int i=0; i<size; i++) {
-            cin >> temp[i];
+    cout << "Enter the matrix elements (0s and 1s, N x N):" << endl;
+    for(int i = 0; i < size; i++) {
+        vector<int> row(size); // Create a row vector
+        for(int j = 0; j < size; j++) { // Corrected inner loop variable to 'j'
+            cin >> row[j]; // Read element for current row
         }
-        matrix.push_back(temp);
+        matrix.push_back(row); // Add row to matrix
     }
 
-    int celeb = findCelebrity(matrix);
-    cout << "Celebrity element : " << celeb << endl;
+    int celeb = findCelebrity(matrix); // Find the celebrity
+    cout << "Celebrity element : " << celeb << endl; // Print result
 
-    return 0;
+    /* Example Input (N=3):
+    0 1 0
+    0 0 0
+    0 1 0
+    Output: Celebrity element : 1
+    (Person 1 is known by 0 and 2, and 1 knows no one)
+
+    Example Input (N=3, No celebrity):
+    0 1 1
+    0 0 0
+    0 1 0
+    Output: Celebrity element : -1
+    (Person 1 is not known by person 0, but person 0 knows person 1 and 2)
+    */
+
+    return 0; // End program
 }
 ```
 
-### Max Rectangle In Binary Matrix With All 1s
-```c++
-#include <bits/stdc++.h>
-using namespace std;
 
-vector<int> nextSmallerElement(vector<int> arr) {
-    vector<int> solution(arr);
-    stack<int> st;
-    st.push(-1);
+### Problem Definition
 
-    for(int i=arr.size()-1; i>=0; i--) {
-        int curr = arr[i];
-        while(st.top() != -1 && arr[st.top()] >= curr) {
-            st.pop();
-        }
+  * Given an `N x N` matrix `M` where `M[i][j] = 1` means person `i` knows person `j`, and `0` otherwise.
+  * A **Celebrity** is a person who:
+    1.  Is known by everyone else.
+    2.  Does not know anyone else. (Except potentially themselves, `M[i][i]` is usually 0 but doesn't matter for the definition.)
 
-        solution[i] = st.top();
-        st.push(i);
-    }
+### Core Idea: Elimination using Stack
 
-    return solution;
-}
+  * **Pairwise Elimination**: The stack helps in efficiently eliminating non-celebrity candidates.
+  * If `A` knows `B` (`M[A][B] == 1`), then `A` cannot be the celebrity (as a celebrity knows no one). `B` might be.
+  * If `A` does **not** know `B` (`M[A][B] == 0`), then `B` cannot be the celebrity (as a celebrity must be known by everyone). `A` might be.
+  * This process eliminates one candidate in each comparison, leaving a single potential celebrity.
+  * **Verification**: The final candidate must be *rigorously checked* against the celebrity definition.
 
-vector<int> previousSmallerElement(vector<int> arr) {
-    vector<int> solution(arr);
-    stack<int> st;
-    st.push(-1);
+### Algorithm Steps
 
-    for(int i=0; i<arr.size(); i++) {
-        int curr = arr[i];
-        while(st.top() != -1 && arr[st.top()] >= curr) {
-            st.pop();
-        }
+1.  **Push All**: Push all `N` person indices (0 to `N-1`) onto a stack.
+2.  **Elimination Loop**: While the stack size is not `1`:
+      * Pop two persons, `A` and `B`.
+      * If `M[A][B] == 1` (A knows B): `A` is not celebrity. Push `B` back.
+      * Else (`M[A][B] == 0`, A does not know B): `B` is not celebrity. Push `A` back.
+3.  **Potential Celebrity**: The single element left in the stack is the `candidate`.
+4.  **Verification**: Iterate through all `N` persons (including the candidate itself):
+      * Check if `candidate` knows *anyone* (`M[candidate][i] == 1` for `i != candidate`). If yes, return `-1`.
+      * Check if *everyone* (except themselves) knows `candidate` (`M[i][candidate] == 0` for `i != candidate`). If not, return `-1`.
+5.  If all checks pass, return `candidate`.
 
-        solution[i] = st.top();
-        st.push(i);
-    }
+-----
 
-    return solution;
-}
 
-int largestRectangularArea(vector<int> height) {
-    int n = height.size();
-    int maxArea = 0;
-    vector<int> next = nextSmallerElement(height);
-    vector<int> prev = previousSmallerElement(height);
-
-    for(int i=0; i<n; i++) {
-        if(next[i] == -1) {
-            next[i] = n;
-        }
-
-        int length = height[i];
-        int breadth = next[i] - prev[i] - 1; 
-
-        int newArea = length * breadth;
-        maxArea = max(newArea, maxArea);
-    }
-
-    return maxArea;
-}
-
-int maxArea(vector<vector<int>> matrix) {
-    int area = largestRectangularArea(matrix[0]);
-    int n = matrix.size();
-    int m = matrix[0].size();
-
-    for(int i=1; i<n; i++) {
-        for(int j=0; j<n; j++) {
-            if(matrix[i][j] != 0) {
-                matrix[i][j] += matrix[i-1][j];
-            } else {
-                matrix[i][j] = 0;
-            }
-        }
-
-        int currArea = largestRectangularArea(matrix[i]);
-        area = max(area, currArea);
-    }
-
-    return area;
-}
-
-int main() {
-    vector<vector<int>> matrix;
-    int size;
-
-    cout << "Enter the size : ";
-    cin >> size;
-
-    cout << "Enter the matrix : ";
-    // 0 1 1 0 1 1 1 1 1 1 1 1 1 1 0 0
-    for(int i=0; i<size; i++) {
-        vector<int> temp(size);
-        for(int j=0; j<size; j++) {
-            cin >> temp[j];
-        }
-        matrix.push_back(temp);
-    }
-
-    cout << "Maximum area : " << maxArea(matrix) << endl;
-
-    return 0;
-}
-```

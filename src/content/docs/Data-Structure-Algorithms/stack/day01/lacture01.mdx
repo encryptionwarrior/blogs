@@ -4,44 +4,99 @@ description: A guide in my new Starlight docs site.
 ---
 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Includes standard libraries, including <stack> and <iostream>
+using namespace std;     // Allows using std:: functions directly (e.g., cout, stack)
 
 int main() {
     // Creation of stack
-    stack<int> s;
+    stack<int> s; // Declares a stack named 's' that will store integer values
 
     // Push operation
-    s.push(10);
-    s.push(61);
+    s.push(10); // Adds 10 to the top of the stack
+    s.push(61); // Adds 61 to the top of the stack (now 61 is the top element)
 
     // Size operation
-    cout << "Current size of stack : " << s.size() << endl;
+    cout << "Current size of stack : " << s.size() << endl; // Prints the number of elements in the stack
 
     // Peek operation
-    cout << "Top element : " << s.top() << endl;
+    cout << "Top element : " << s.top() << endl; // Prints the top element without removing it
 
     // Pop operation
-    s.pop();
+    s.pop(); // Removes the top element (61 is removed, 10 becomes the new top)
 
-    cout << "Current size of stack : " << s.size() << endl;
-    cout << "Top element : " << s.top() << endl;
+    cout << "Current size of stack : " << s.size() << endl; // Prints the updated size
+    cout << "Top element : " << s.top() << endl;             // Prints the new top element (which is 10)
 
-    if(s.empty()) {
+    // Check if stack is empty
+    if(s.empty()) { // Checks if the stack has no elements
         cout << "Stack is empty!" << endl;
     } else {
         cout << "Stack is not empty!" << endl;
     }
 
-    s.pop();
-    
+    s.pop(); // Removes the last element (10 is removed, stack becomes empty)
+
+    // Check if stack is empty again
     if(s.empty()) {
-        cout << "Stack is empty!" << endl;
+        cout << "Stack is empty!" << endl; // This condition will now be true
     } else {
         cout << "Stack is not empty!" << endl;
     }
 
-    cout << "Current size of stack : " << s.size() << endl;
-    return 0;
+    cout << "Current size of stack : " << s.size() << endl; // Prints the final size (which is 0)
+    return 0; // Indicates successful program execution
 }
 ```
+
+Here are quick revision notes for the provided C++ stack code, formatted in Markdown for easy copying:
+
+-----
+
+
+### Key Operations & Concepts
+
+  * **`stack<int> s;`**
+      * **Comment:** Creates a stack `s` that stores `int` type elements. Stacks follow a **LIFO (Last-In, First-Out)** principle.
+  * **`s.push(element);`**
+      * **Comment:** Adds `element` to the **top** of the stack.
+      * **Example:** `s.push(10);` `s.push(61);` (Stack: `[10, 61]` where 61 is on top)
+  * **`s.size();`**
+      * **Comment:** Returns the **number of elements** currently in the stack.
+      * **Example:** After `s.push(10); s.push(61);`, `s.size()` is `2`.
+  * **`s.top();`**
+      * **Comment:** Returns a **reference to the top element** of the stack. **Does not remove** the element. Calling `top()` on an empty stack leads to **undefined behavior**.
+      * **Example:** After `s.push(10); s.push(61);`, `s.top()` is `61`.
+  * **`s.pop();`**
+      * **Comment:** **Removes the top element** from the stack. **Does not return** the removed element. Calling `pop()` on an empty stack leads to **undefined behavior**.
+      * **Example:** After `s.push(10); s.push(61); s.pop();`, stack becomes `[10]`.
+  * **`s.empty();`**
+      * **Comment:** Returns `true` if the stack **contains no elements**, `false` otherwise. Useful to prevent `top()` or `pop()` on an empty stack.
+      * **Example:** If stack is `[]`, `s.empty()` is `true`.
+
+-----
+
+### Execution Flow & Output Trace
+
+  * **Initial:** `s` is empty.
+  * `s.push(10); s.push(61);`
+      * Stack: `[10, 61]` (61 is top)
+  * `cout << s.size();`
+      * Output: `Current size of stack : 2`
+  * `cout << s.top();`
+      * Output: `Top element : 61`
+  * `s.pop();`
+      * Stack: `[10]` (10 is top)
+  * `cout << s.size();`
+      * Output: `Current size of stack : 1`
+  * `cout << s.top();`
+      * Output: `Top element : 10`
+  * `if(s.empty()) { ... } else { ... }`
+      * `s` is not empty, so output: `Stack is not empty!`
+  * `s.pop();`
+      * Stack: `[]` (empty)
+  * `if(s.empty()) { ... } else { ... }`
+      * `s` is empty, so output: `Stack is empty!`
+  * `cout << s.size();`
+      * Output: `Current size of stack : 0`
+
+-----

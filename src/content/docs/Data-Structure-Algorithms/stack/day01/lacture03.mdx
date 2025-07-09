@@ -3,97 +3,157 @@ title: Linked List Implementation
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes standard libraries like iostream for input/output
+using namespace std;     // Allows direct use of standard namespace elements (e.g., cout, endl)
 
+// Represents a single node in the linked list
 class Node {
-    public:
-    int data;
-    Node *next;
+public:
+    int data;  // Data stored in the node
+    Node *next; // Pointer to the next node in the list
 
+    // Constructor for Node
     Node(int data) {
-        this->data = data;
-        this->next = NULL;
+        this->data = data;  // Initialize data with the given value
+        this->next = NULL;  // Initialize next pointer to NULL (no next node initially)
     }
 };
 
+// Implements the Stack data structure using a linked list
 class Stack {
-    public:
-    Node* head;
-    int count;
+public:
+    Node* head; // Pointer to the top of the stack (head of the linked list)
+    int count;  // Keeps track of the number of elements in the stack
 
+    // Constructor for Stack
     Stack() {
-        head = NULL;
-        count = 0;
+        head = NULL; // Initialize head to NULL, meaning the stack is empty
+        count = 0;   // Initialize count to 0
     }
 
+    // Pushes an element onto the stack
     void push(int data) {
-        Node* temp = new Node(data);
-        temp->next = head;
-        head = temp;
-        count++;
+        Node* temp = new Node(data); // Create a new node with the given data
+        temp->next = head;           // Link the new node to the current head (old top)
+        head = temp;                 // Update head to point to the new node (new top)
+        count++;                     // Increment the element count
     }
 
+    // Removes the top element from the stack
     void pop() {
-        if(head == NULL) {
-            cout << "Stack underflow!" << endl;
+        if(head == NULL) { // Check for stack underflow (if stack is empty)
+            cout << "Stack underflow!" << endl; // Print error message
         } else {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
-            count--;
+            Node* temp = head; // Store the current head (node to be deleted)
+            head = head->next; // Move head to the next node (new top)
+            delete temp;       // Deallocate memory of the old top node to prevent memory leak
+            count--;           // Decrement the element count
         }
     }
 
+    // Checks if the stack is empty
     bool isEmpty() {
+        // Returns true if head is NULL (stack has no elements), false otherwise
         return (head == NULL) ? true : false;
     }
 
+    // Returns the number of elements in the stack
     int size() {
-        return count;
+        return count; // Return the current count of elements
     }
 
+    // Returns the data of the top element without removing it
     int top() {
+        // Returns -1 if stack is empty, otherwise returns the data of the head node
         return (head == NULL) ? -1 : head->data;
     }
 };
 
 int main() {
-    // Creation of stack
+    // Creation of stack instance
     Stack s;
 
     // Push operation
-    s.push(10);
-    s.push(61);
+    s.push(10); // Add 10 to the stack (Stack: [10])
+    s.push(61); // Add 61 to the stack (Stack: [10, 61], 61 is top)
 
     // Size operation
-    cout << "Current size of stack : " << s.size() << endl;
+    cout << "Current size of stack : " << s.size() << endl; // Output: 2
 
     // Peek operation
-    cout << "Top element : " << s.top() << endl;
+    cout << "Top element : " << s.top() << endl; // Output: 61
 
     // Pop operation
-    s.pop();
+    s.pop(); // Remove 61 (Stack: [10], 10 is top)
 
-    cout << "Current size of stack : " << s.size() << endl;
-    cout << "Top element : " << s.top() << endl;
+    cout << "Current size of stack : " << s.size() << endl; // Output: 1
+    cout << "Top element : " << s.top() << endl;             // Output: 10
 
-    if(s.isEmpty()) {
+    // Check if stack is empty
+    if(s.isEmpty()) { // s is not empty
         cout << "Stack is empty!" << endl;
+    } else {
+        cout << "Stack is not empty!" << endl; // Output: Stack is not empty!
+    }
+
+    s.pop(); // Remove 10 (Stack: [], empty)
+
+    // Check if stack is empty again
+    if(s.isEmpty()) { // s is empty
+        cout << "Stack is empty!" << endl; // Output: Stack is empty!
     } else {
         cout << "Stack is not empty!" << endl;
     }
 
-    s.pop();
-    
-    if(s.isEmpty()) {
-        cout << "Stack is empty!" << endl;
-    } else {
-        cout << "Stack is not empty!" << endl;
-    }
-
-    cout << "Current size of stack : " << s.size() << endl;
-    return 0;
+    cout << "Current size of stack : " << s.size() << endl; // Output: 0
+    return 0; // Indicate successful program execution
 }
 ```
+-----
+
+### Core Components & Principles
+
+  * **`class Node`**: Represents a single element in the linked list. Each node holds `data` and a pointer `next` to the subsequent node.
+  * **`class Stack`**: Implements the stack data structure using `Node` objects.
+  * **LIFO (Last-In, First-Out)**: The fundamental principle. The most recently added element is the first to be removed.
+  * **`Node* head;`**: This pointer always points to the **top** of the stack. In a linked list implementation of a stack, `head` (or sometimes called `top`) is where all `push` and `pop` operations occur.
+  * **`int count;`**: Keeps track of the current number of elements in the stack.
+
+-----
+
+### Key Operations & Their Logic
+
+  * **`Node(int data)` (Node Constructor)**
+      * **Comment**: Initializes a new `Node` with the given `data` and sets its `next` pointer to `NULL`.
+  * **`Stack()` (Stack Constructor)**
+      * **Comment**: Initializes an empty stack by setting `head` to `NULL` and `count` to `0`.
+  * **`void push(int data)`**
+      * **Comment**: Adds a new element to the **top** of the stack.
+      * **Process**:
+        1.  Create a `temp` new `Node` with the given `data`.
+        2.  Make `temp->next` point to the current `head` (linking the new node to the old top).
+        3.  Update `head` to `temp` (the new node becomes the top).
+        4.  Increment `count`.
+      * **No Overflow**: Linked list-based stacks don't have a fixed size limit (unless explicitly imposed), so there's no "overflow" error unless memory runs out.
+  * **`void pop()`**
+      * **Comment**: Removes the element from the **top** of the stack.
+      * **Underflow Check**: `if (head == NULL)`: If `head` is `NULL`, the stack is empty.
+      * **Process**:
+        1.  Store the current `head` in a `temp` pointer.
+        2.  Move `head` to `head->next` (the second element becomes the new top).
+        3.  `delete temp`: Free the memory occupied by the old top node to prevent memory leaks.
+        4.  Decrement `count`.
+  * **`bool isEmpty()`**
+      * **Comment**: Checks if the stack is empty.
+      * **Logic**: Returns `true` if `head` is `NULL`, indicating no elements.
+  * **`int size()`**
+      * **Comment**: Returns the current number of elements in the stack.
+      * **Logic**: Simply returns the value of `count`.
+  * **`int top()`**
+      * **Comment**: Returns the top element without removing it.
+      * **Empty Check**: `return (head == NULL) ? -1 : head->data;`: Returns `-1` if the stack is empty (as a convention for error/no element), otherwise returns the `data` of the `head` node.
+
+-----
+
+

@@ -3,33 +3,50 @@ title: Reverse String
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes necessary headers: <iostream>, <string>, <stack>
+using namespace std;     // Use standard namespace
 
 int main() {
-    string str, answer;
-    stack<char> s;
+    string str, answer; // Declare strings for original and reversed
+    stack<char> s;      // Declare a stack to hold characters
 
-    cout << "Enter the string : ";
-    getline(cin, str);
+    cout << "Enter the string : "; // Prompt user for input
+    getline(cin, str);             // Read the entire line into 'str'
 
+    // Step 1: Push all characters of the string onto the stack
     for(int i=0; i<str.length(); i++) {
-        char ch = str[i];
-        s.push(ch);
+        char ch = str[i]; // Get character at current index
+        s.push(ch);       // Push character onto stack
     }
 
-    while(! s.empty()) {
-        char ch = s.top();
-        answer.push_back(ch);
-        s.pop();
+    // Step 2: Pop characters from stack and build reversed string
+    while(! s.empty()) {     // Continue while stack is not empty
+        char ch = s.top();   // Get top character
+        answer.push_back(ch); // Append character to 'answer' string
+        s.pop();             // Remove top character from stack
     }
 
+    // Print results
     cout << "Original string : ";
     cout << str;
     cout << "\nReversed string : ";
     cout << answer;
 
-    return 0;
+    return 0; // Indicate successful execution
 }
 ```
+
+### Core Idea
+
+  * **LIFO Property**: Stacks follow Last-In, First-Out. This means if you push characters "A", "B", "C", when you pop, you get "C", then "B", then "A". This naturally reverses the order.
+
+### Steps
+
+1.  **Push All**: Iterate through the original string and push each character onto the stack.
+2.  **Pop All**: Pop characters from the stack one by one and append them to a new string.
+3.  The new string will contain the reversed sequence.
+
+-----
+
+

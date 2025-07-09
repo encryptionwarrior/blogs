@@ -3,42 +3,77 @@ title: Delete Middle Of Stack
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, stack)
+using namespace std;     // Standard namespace
 
+// Recursive function to delete the middle element of a stack
+// st: The stack
+// count: Current depth from the top (0 for top, 1 for element below top, etc.)
+// size: Original total size of the stack
 void deleteMiddle(stack<int> &st, int count, int size) {
-    if(count == size/2) {
-        st.pop();
-        return;
+    // Base Case: If count reaches the middle index
+    if(count == size/2) { // For size=6, size/2=3. This is the 4th element from bottom (index 3).
+        st.pop();     // Remove the middle element
+        return;       // Stop recursion for this branch
     }
 
+    // Step 1: Store the top element
     int top = st.top();
-    st.pop();
+    st.pop(); // Remove the top element
 
-    deleteMiddle(st, count+1, size);
+    // Step 2: Recursive call for the rest of the stack
+    deleteMiddle(st, count + 1, size); // Go deeper into the stack
 
+    // Step 3: Backtrack - push stored element back after middle is handled
     st.push(top);
 }
 
 int main() {
-    stack<int> st;
-    st.push(5);
-    st.push(5);
-    st.push(5);
-    st.push(5);
-    st.push(5);
-    st.push(5);
+    stack<int> st; // Create a stack
 
-    int count = 0;
-    int n = st.size();
+    // Push elements onto the stack (6 elements)
+    st.push(5); // Bottom
+    st.push(5);
+    st.push(5);
+    st.push(5); // Middle element for size=6 (if counting from 0 at bottom)
+    st.push(5);
+    st.push(5); // Top
 
-    cout << "Size of stack : " << st.size() << endl;
+    int count = 0;   // Initialize count for recursion
+    int n = st.size(); // Get original stack size
 
-    deleteMiddle(st, count, n);
+    cout << "Size of stack : " << st.size() << endl; // Print original size (6)
 
-    cout << "Size of stack : " << st.size() << endl;
+    deleteMiddle(st, count, n); // Call the function to delete the middle element
 
-    return 0;
+    cout << "Size of stack : " << st.size() << endl; // Print new size (5)
+
+    // Optional: Print stack elements to verify (will show 5 elements)
+    // while(!st.empty()) {
+    //     cout << st.top() << " ";
+    //     st.pop();
+    // }
+    // cout << endl;
+
+    return 0; // End program
 }
 ```
+
+### Core Idea
+
+  * **Recursion for Access**: Since stacks only allow access to the top, recursion is used to temporarily "empty" the stack until the middle element is reached.
+  * **Middle Calculation**: For a stack of size `N`, the middle element is at `N/2` (0-indexed if counting from bottom) or `(N-1)/2` (0-indexed if counting from top). The code uses `size/2` as the target `count` (0-indexed from the current top being `count=0`).
+  * **Backtracking**: After the middle is handled, elements are pushed back onto the stack in their original order.
+
+### How it Works
+
+1.  **Base Case**: If the `count` reaches `size/2`, the current `st.top()` is the middle element. Pop it and return.
+2.  **Recursive Step**:
+      * Store the current `st.top()`.
+      * `pop()` the current top.
+      * Make a recursive call, incrementing `count`.
+      * After the recursive call returns (meaning the middle was handled), `push()` the stored element back.
+
+-----
+

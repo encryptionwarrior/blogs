@@ -3,87 +3,137 @@ title: Array Implementation
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes standard libraries like iostream for input/output
+using namespace std;     // Allows direct use of standard namespace elements (e.g., cout, endl)
 
+// Custom Stack class implementation
 class Stack {
-    public:
-    int *arr;
-    int limit, maxSize;
+public:
+    int *arr;      // Pointer to the array that will store stack elements
+    int limit;     // Acts as the 'top' pointer, indicating the index of the top element
+    int maxSize;   // Stores the maximum capacity of the stack
 
+    // Constructor to initialize the stack
     Stack(int maxSize) {
-        this->maxSize = maxSize;
-        arr = new int[maxSize];
-        limit = -1;
+        this->maxSize = maxSize;   // Set the maximum size for the stack
+        arr = new int[maxSize];    // Dynamically allocate an array of given size
+        limit = -1;                // Initialize limit to -1, indicating an empty stack
     }
 
+    // Function to add an element to the stack
     void push(int data) {
-        if(limit == maxSize-1) {
-            cout << "Stack overflow!" << endl;
-            return;
+        // Check for stack overflow
+        if(limit == maxSize-1) { // If limit has reached the last valid index
+            cout << "Stack overflow!" << endl; // Print error message
+            return; // Exit function
         }
 
-        limit++;
-        arr[limit] = data;
+        limit++;         // Increment limit to point to the next available slot
+        arr[limit] = data; // Place the data at the new top position
     }
 
+    // Function to remove an element from the stack
     void pop() {
-        if(limit == -1) {
-            cout << "Stack underflow!" << endl;
+        // Check for stack underflow
+        if(limit == -1) { // If limit is -1, the stack is empty
+            cout << "Stack underflow!" << endl; // Print error message
         } else {
-            limit--;
+            limit--; // Decrement limit, effectively removing the top element
         }
     }
 
+    // Function to check if the stack is empty
     bool isEmpty() {
+        // Returns true if limit is less than 0 (i.e., -1), false otherwise
         return (limit < 0) ? true : false;
     }
 
+    // Function to get the current number of elements in the stack
     int size() {
+        // Since limit is 0-indexed, limit + 1 gives the count of elements
         return limit+1;
     }
 
+    // Function to get the top element of the stack without removing it
     int top() {
+        // Returns -1 if stack is empty, otherwise returns the element at arr[limit]
         return (limit < 0) ? -1 : arr[limit];
     }
 };
 
 int main() {
-    // Creation of stack
+    // Creation of stack instance with a maximum size of 10
     Stack s(10);
 
     // Push operation
-    s.push(10);
-    s.push(61);
+    s.push(10); // Add 10 to the stack
+    s.push(61); // Add 61 to the stack (61 is now at the top)
 
     // Size operation
-    cout << "Current size of stack : " << s.size() << endl;
+    cout << "Current size of stack : " << s.size() << endl; // Output: 2
 
     // Peek operation
-    cout << "Top element : " << s.top() << endl;
+    cout << "Top element : " << s.top() << endl; // Output: 61
 
     // Pop operation
-    s.pop();
+    s.pop(); // Remove the top element (61 is removed, 10 becomes the top)
 
-    cout << "Current size of stack : " << s.size() << endl;
-    cout << "Top element : " << s.top() << endl;
+    cout << "Current size of stack : " << s.size() << endl; // Output: 1
+    cout << "Top element : " << s.top() << endl;             // Output: 10
 
-    if(s.isEmpty()) {
+    // Check if stack is empty
+    if(s.isEmpty()) { // Condition: s.isEmpty() is false
         cout << "Stack is empty!" << endl;
+    } else {
+        cout << "Stack is not empty!" << endl; // Output: Stack is not empty!
+    }
+
+    s.pop(); // Remove the last element (10 is removed, stack becomes empty)
+
+    // Check if stack is empty again
+    if(s.isEmpty()) { // Condition: s.isEmpty() is true
+        cout << "Stack is empty!" << endl; // Output: Stack is empty!
     } else {
         cout << "Stack is not empty!" << endl;
     }
 
-    s.pop();
-    
-    if(s.isEmpty()) {
-        cout << "Stack is empty!" << endl;
-    } else {
-        cout << "Stack is not empty!" << endl;
-    }
-
-    cout << "Current size of stack : " << s.size() << endl;
-    return 0;
+    cout << "Current size of stack : " << s.size() << endl; // Output: 0
+    return 0; // Indicate successful program execution
 }
 ```
+
+### Core Components & Principles
+
+  * **`class Stack`**: This defines a custom Stack data structure.
+  * **LIFO (Last-In, First-Out)**: Like a real-world stack of plates, the last item added is the first one removed.
+  * **`int *arr;`**: A dynamic array (pointer to `int`) used to store the stack elements.
+  * **`int limit;`**: This acts as the **top pointer** or **index of the top-most element**. It's initialized to `-1` to signify an empty stack.
+  * **`int maxSize;`**: Stores the maximum capacity of the stack, preventing overflow.
+
+-----
+
+### Key Operations & Their Logic
+
+  * **`Stack(int maxSize)` (Constructor)**
+      * **Comment**: Initializes the stack's capacity and allocates memory for the array. `limit` is set to `-1` indicating an empty stack.
+  * **`void push(int data)`**
+      * **Comment**: Adds an element to the stack.
+      * **Overflow Check**: `if (limit == maxSize - 1)`: If `limit` reaches the last valid index, the stack is full, preventing further additions.
+      * **Insertion**: Increments `limit` and then places `data` at `arr[limit]`.
+  * **`void pop()`**
+      * **Comment**: Removes the top element from the stack.
+      * **Underflow Check**: `if (limit == -1)`: If `limit` is `-1`, the stack is empty, preventing removal from an empty stack.
+      * **Removal**: Decrements `limit`, effectively "removing" the top element (though the data might still be in memory, it's no longer considered part of the stack).
+  * **`bool isEmpty()`**
+      * **Comment**: Checks if the stack is empty.
+      * **Logic**: Returns `true` if `limit < 0` (i.e., `limit` is `-1`), indicating no elements.
+  * **`int size()`**
+      * **Comment**: Returns the current number of elements in the stack.
+      * **Logic**: Returns `limit + 1` (since `limit` is a 0-based index, `limit + 1` gives the count of elements).
+  * **`int top()`**
+      * **Comment**: Returns the top element without removing it.
+      * **Empty Check**: `return (limit < 0) ? -1 : arr[limit];`: Returns `-1` if the stack is empty to indicate an error or no element, otherwise returns the element at `arr[limit]`.
+
+-----
+

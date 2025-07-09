@@ -3,67 +3,94 @@ title: Reverse Stack using Recursion
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, stack, etc.)
+using namespace std;     // Standard namespace
 
-void inputStack(stack<int> &st) {
+// Function to take user input for stack elements
+void inputStack(stack<int> &st) { // Pass stack by reference to modify it
     int size;
     cout << "Enter the size : ";
-    cin >> size;
+    cin >> size; // Get desired size
 
     cout << "Enter stack elements : ";
-    for(int i=0; i<size; i++) {
+    for(int i=0; i<size; i++) { // Loop to get elements
         int temp;
-        cin >> temp;
-        st.push(temp);
+        cin >> temp; // Read element
+        st.push(temp); // Push onto stack
     }
 }
 
-void printStack(stack<int> st) {
+// Function to print stack elements (consumes the stack copy)
+void printStack(stack<int> st) { // Pass by value to print a copy, preserving original
     cout << "Stack : ";
-    while(!st.empty()) {
-        cout << st.top() << " ";
-        st.pop();
+    while(!st.empty()) { // Loop until stack is empty
+        cout << st.top() << " "; // Print top element
+        st.pop();               // Remove top element
     }
     cout << endl;
 }
 
-void insertBottom(stack<int> &st, int data) {
-    if(st.empty()) {
+// Helper function: Inserts an element at the bottom of the stack recursively
+void insertBottom(stack<int> &st, int data) { // Pass stack by reference
+    if(st.empty()) { // Base Case: If stack is empty, insert data
         st.push(data);
         return;
     }
 
-    int top = st.top();
-    st.pop();
-    insertBottom(st, data);
-    st.push(top);
+    int top = st.top(); // Store current top
+    st.pop();           // Remove current top
+    insertBottom(st, data); // Recursive call to insert deeper
+    st.push(top);       // Push back stored top (backtracking)
 }
 
-void reverseStack(stack<int> &st) {
-    if(st.empty()) {
+// Main function to reverse the stack recursively
+void reverseStack(stack<int> &st) { // Pass stack by reference to modify it
+    if(st.empty()) { // Base Case: If stack is empty, nothing to reverse
         return;
     }
 
-    int top = st.top();
-    st.pop();
+    int top = st.top(); // Store current top element
+    st.pop();           // Remove current top
 
-    reverseStack(st);
-    insertBottom(st, top);
+    reverseStack(st); // Recursively reverse the remaining stack
+
+    insertBottom(st, top); // Insert the stored top element at the bottom of the now-reversed stack
 }
 
 int main() {
-    stack<int> st;
-    inputStack(st);
+    stack<int> st; // Create a stack
+    inputStack(st); // Populate stack from user
 
     cout << "Before Reverse : ";
-    printStack(st);
+    printStack(st); // Print original stack
 
-    reverseStack(st);
+    reverseStack(st); // Call function to reverse the stack
 
     cout << "After Reverse : ";
-    printStack(st);
-    return 0;
+    printStack(st); // Print reversed stack
+
+    return 0; // End program
 }
 ```
+
+-----
+
+### Core Idea
+
+  * **Combine Recursion & `insertBottom`**: This approach leverages the `insertBottom` function (which you've already seen) to place elements at the bottom of the stack, effectively reversing the order.
+  * **Divide and Conquer (Recursive Logic)**:
+    1.  Take the top element out.
+    2.  Recursively reverse the *remaining* stack.
+    3.  Once the rest is reversed, insert the saved top element at the *bottom* of this now-reversed substack. This makes it the new "bottom" element of the fully reversed stack.
+
+### How `reverseStack` Works
+
+1.  **Base Case**: If the stack is `empty()`, there's nothing to reverse, so return.
+2.  **Recursive Step**:
+      * Store the current `st.top()` in a temporary variable (`top`).
+      * `pop()` the current top element.
+      * Make a recursive call to `reverseStack(st)`: This will handle reversing the *rest* of the stack below the current `top`.
+      * After the recursive call returns (meaning the rest of the stack is now reversed), call `insertBottom(st, top)`. This places the original `top` element at the bottom of the now-reversed stack.
+
+-----

@@ -1,0 +1,160 @@
+---
+title:  Max Rectangle In Binary Matrix With All 1s
+description: A guide in my new Starlight docs site.
+---
+
+### Max Rectangle In Binary Matrix With All 1s
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, vector, stack, algorithm)
+using namespace std;     // Standard namespace
+
+// Finds the index of the next smaller element to the right for each element
+// Uses a monotonic stack, storing indices
+vector<int> nextSmallerElement(vector<int> arr) {
+    vector<int> solution(arr.size()); // Result array for NSE indices
+    stack<int> st;                     // Stack stores indices of elements
+    st.push(-1);                       // Sentinel: -1 means no smaller element to the right
+
+    for(int i = arr.size() - 1; i >= 0; i--) { // Iterate right to left
+        int curr = arr[i]; // Current element's value
+        // Pop elements from stack if their values are >= current element
+        while(st.top() != -1 && arr[st.top()] >= curr) {
+            st.pop();
+        }
+        solution[i] = st.top(); // Store index of NSE
+        st.push(i);             // Push current element's index
+    }
+    return solution;
+}
+
+// Finds the index of the previous smaller element to the left for each element
+// Uses a monotonic stack, storing indices
+vector<int> previousSmallerElement(vector<int> arr) {
+    vector<int> solution(arr.size()); // Result array for PSE indices
+    stack<int> st;                     // Stack stores indices of elements
+    st.push(-1);                       // Sentinel: -1 means no smaller element to the left
+
+    for(int i = 0; i < arr.size(); i++) { // Iterate left to right
+        int curr = arr[i]; // Current element's value
+        // Pop elements from stack if their values are >= current element
+        while(st.top() != -1 && arr[st.top()] >= curr) {
+            st.pop();
+        }
+        solution[i] = st.top(); // Store index of PSE
+        st.push(i);             // Push current element's index
+    }
+    return solution;
+}
+
+// Calculates the largest rectangular area in a single histogram (1D array)
+int largestRectangularArea(vector<int> height) {
+    int n = height.size();
+    int maxArea = 0; // Initialize max area
+
+    vector<int> next = nextSmallerElement(height);     // Find NSE for all bars
+    vector<int> prev = previousSmallerElement(height); // Find PSE for all bars
+
+    // For each bar, calculate area and update maxArea
+    for(int i = 0; i < n; i++) {
+        // Adjust NSE index if no smaller element to the right (extend to end)
+        if(next[i] == -1) {
+            next[i] = n;
+        }
+
+        int length = height[i];         // Height of the rectangle
+        // Width = (NSE index) - (PSE index) - 1
+        int breadth = next[i] - prev[i] - 1;
+
+        int newArea = length * breadth;       // Area for current bar as height
+        maxArea = max(newArea, maxArea); // Update global max area
+    }
+    return maxArea;
+}
+
+// Calculates the maximum rectangular area of '1's in a binary matrix
+int maxArea(vector<vector<int>> matrix) {
+    int n = matrix.size();    // Number of rows
+    int m = matrix[0].size(); // Number of columns (assuming non-empty matrix)
+
+    // Initialize max area with the largest area from the first row (as a histogram)
+    int area = largestRectangularArea(matrix[0]);
+
+    // Iterate through the rest of the rows, converting them into histograms
+    for(int i = 1; i < n; i++) {
+        for(int j = 0; j < m; j++) { // Corrected loop to use 'm' for columns
+            // If current cell is '1', add height from above
+            if(matrix[i][j] != 0) {
+                matrix[i][j] += matrix[i-1][j];
+            }
+            // If current cell is '0', its height in histogram is 0
+            else {
+                matrix[i][j] = 0;
+            }
+        }
+        // Calculate largest area for the current row (as a histogram)
+        int currArea = largestRectangularArea(matrix[i]);
+        // Update overall maximum area
+        area = max(area, currArea);
+    }
+    return area;
+}
+
+int main() {
+    vector<vector<int>> matrix;
+    int size; // Assuming square matrix based on user's input mechanism
+
+    cout << "Enter the size (N for N x N matrix): ";
+    cin >> size;
+
+    cout << "Enter the matrix elements (0s and 1s, N x N):" << endl;
+    for(int i = 0; i < size; i++) {
+        vector<int> temp_row(size); // Create a row vector of 'size' columns
+        for(int j = 0; j < size; j++) {
+            cin >> temp_row[j]; // Read element for current row
+        }
+        matrix.push_back(temp_row); // Add row to matrix
+    }
+
+    cout << "Maximum area of rectangle of 1s: " << maxArea(matrix) << endl;
+
+    /* Example Input (for size=4, matrix given by user: 0 1 1 0 1 1 1 1 1 1 1 1 1 1 0 0):
+    0 1 1 0
+    1 1 1 1
+    1 1 1 1
+    1 1 0 0
+    Expected output: 9
+    */
+
+    return 0; // End program
+}
+```
+
+### Problem
+
+  * Given a binary matrix (contains only 0s and 1s).
+  * Find the largest rectangle composed entirely of 1s.
+
+### Core Idea: Reduce to Histogram Problem
+
+  * **Row by Row**: The problem is solved by iterating through each row of the matrix.
+  * **Convert to Histogram**: For each row, consider it as the base of a histogram.
+      * The height of each bar `matrix[i][j]` in this histogram is the count of consecutive '1's going upwards from `matrix[i][j]` (including `matrix[i][j]` itself).
+      * If `matrix[i][j]` is `0`, its height is `0`, breaking any continuous '1's from above.
+  * **Reuse `largestRectangularArea`**: For each such generated histogram (row), use the "Largest Rectangular Area in Histogram" algorithm to find the maximum area within that row.
+  * **Overall Max**: Keep track of the maximum area found across all rows.
+
+### Algorithm Steps
+
+1.  **Initialize**:
+      * Calculate `maxArea` for the **first row** (`matrix[0]`) using `largestRectangularArea`. This row naturally acts as a histogram.
+2.  **Iterate Rows (from 2nd row)**: For `i` from `1` to `n-1` (where `n` is rows):
+      * **Update Current Row as Histogram Heights**: For each cell `matrix[i][j]` in the current row:
+          * If `matrix[i][j] == 1`, update its value to `matrix[i][j] += matrix[i-1][j]`. This accumulates heights from the row above.
+          * If `matrix[i][j] == 0`, reset its value to `0`.
+      * **Calculate Area for Current Histogram**: Call `largestRectangularArea(matrix[i])` (the modified row) to find the maximum area for the histogram formed by this row.
+      * **Update Overall Maximum**: `maxArea = max(maxArea, current_row_area)`.
+3.  Return the final `maxArea`.
+
+-----
+
+

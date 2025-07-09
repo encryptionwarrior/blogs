@@ -3,70 +3,172 @@ title: Get Min In 0(1) TC
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-// Design a special stack with getMin() method which works in O(1) time 
-    // and O(1) pace complexity!
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, stack, etc.)
+using namespace std;     // Standard namespace
 
-#include <bits/stdc++.h>
-using namespace std;
-
+// Class to implement a stack with O(1) getMin() and O(1) space complexity
 class SpecialStack {
-    stack<int> st;
-    int minE;
+    stack<int> st; // The main stack to store elements (some might be modified)
+    int minE;      // Stores the current minimum element in the stack
 
-    public:
+public:
+    // Pushes an element 'data' onto the stack
     void push(int data) {
+        // Case 1: Stack is empty
         if(st.empty()) {
-            st.push(data);
-            minE = data;
-        } else {
-
+            st.push(data); // Push data directly
+            minE = data;   // First element is also the first minimum
+        }
+        // Case 2: Stack is not empty
+        else {
+            // If current data is smaller than or equal to current minimum (new minimum found)
             if(data < minE) {
-                st.push(2*data - minE);
-                minE = data;
-            } else {
-                st.push(data);
+                // Push a modified value to stack to encode previous minimum
+                // Modified value = (2 * new_min - old_min)
+                st.push(2 * data - minE);
+                minE = data; // Update minE to the new minimum
             }
-
+            // If current data is greater than current minimum (not a new minimum)
+            else {
+                st.push(data); // Push data directly
+            }
         }
     }
 
+    // Pops an element from the stack
     int pop() {
+        // Check for underflow
         if(st.empty()) {
-            return -1;
+            return -1; // Indicate error/empty stack
         } else {
-            int curr = st.top();
-            st.pop();
+            int curr = st.top(); // Get the element from top of stack
+            st.pop();            // Remove it from stack
 
+            // If the popped element is greater than current minE
+            // it means it was a normal element, and minE is still correct
             if(curr > minE) {
-                return curr;
-            } else {
-                int prevMin = minE;
-                minE = 2*minE - curr;
-                return prevMin;
+                return curr; // Return the popped element directly
             }
-
+            // If the popped element is less than or equal to current minE
+            // it means curr is a modified value (2*new_min - old_min)
+            // and minE was the actual value being popped
+            else {
+                int prevMin = minE; // Store the current minE (which is the actual value being popped)
+                // Restore the previous minimum using the formula: old_min = 2 * current_min - modified_value
+                minE = 2 * minE - curr;
+                return prevMin; // Return the actual value that was popped
+            }
         }
     }
 
+    // Returns the top element of the stack
     int top() {
         if(st.empty()) {
-            return -1;
+            return -1; // Indicate empty stack
         } else {
+            // If stack's top is greater than minE, it's a regular element
+            // Otherwise, it's a modified value, and minE holds the actual top
             return (st.top() > minE) ? st.top() : minE;
         }
     }
 
+    // Checks if the stack is empty
     bool isEmpty() {
         return st.empty();
     }
 
+    // Returns the current minimum element in the stack
     int getMin() {
+        // If stack is empty, there is no minimum
         return (st.empty()) ? -1 : minE;
     }
 };
 
 int main() {
+    // Example Usage:
+    SpecialStack s;
+    s.push(10); // Stack: [10], minE: 10
+    cout << "Push 10. Top: " << s.top() << ", Min: " << s.getMin() << endl; // Top: 10, Min: 10
+
+    s.push(8);  // Stack: [10, (2*8-10)=6], minE: 8
+    cout << "Push 8. Top: " << s.top() << ", Min: " << s.getMin() << endl;  // Top: 8, Min: 8
+
+    s.push(12); // Stack: [10, 6, 12], minE: 8
+    cout << "Push 12. Top: " << s.top() << ", Min: " << s.getMin() << endl; // Top: 12, Min: 8
+
+    s.push(5);  // Stack: [10, 6, 12, (2*5-8)=2], minE: 5
+    cout << "Push 5. Top: " << s.top() << ", Min: " << s.getMin() << endl;  // Top: 5, Min: 5
+
+    cout << "Pop: " << s.pop() << endl; // Popped: 5. Stack: [10, 6, 12], minE: 8 (recovers old min)
+    cout << "Top: " << s.top() << ", Min: " << s.getMin() << endl; // Top: 12, Min: 8
+
+    cout << "Pop: " << s.pop() << endl; // Popped: 12. Stack: [10, 6], minE: 8
+    cout << "Top: " << s.top() << ", Min: " << s.getMin() << endl; // Top: 8, Min: 8
+
+    cout << "Pop: " << s.pop() << endl; // Popped: 8. Stack: [10], minE: 10 (recovers old min)
+    cout << "Top: " << s.top() << ", Min: " << s.getMin() << endl; // Top: 10, Min: 10
+
+    cout << "Pop: " << s.pop() << endl; // Popped: 10. Stack: [], minE: 10 (or -1, effectively)
+    cout << "Top: " << s.top() << ", Min: " << s.getMin() << endl; // Top: -1, Min: -1 (or last set minE)
+
+    cout << "Pop (empty): " << s.pop() << endl; // Popped: -1 (empty)
+
     return 0;
 }
 ```
+
+### Problem
+
+  * Design a stack that supports `push`, `pop`, `top`, `isEmpty`, and `getMin` operations, all in O(1) time complexity.
+  * Crucially, the `getMin` operation must also work in O(1) space complexity, meaning no auxiliary stack for minimums.
+
+### Core Idea: Encoding Previous Minimum
+
+  * **`minE` Variable**: A single integer variable `minE` always stores the current minimum element present in the stack.
+  * **Modification During Push (When New Minimum Arrives)**:
+      * If `data` (the element to be pushed) is less than `minE`:
+          * We can't push `data` directly, because when `data` is popped later, we won't know what the *previous* minimum was.
+          * Instead, push a `modified_value = (2 * data - minE)` onto the stack.
+          * Then, update `minE = data` (as `data` is the new minimum).
+      * If `data` is greater than or equal to `minE`, simply `push(data)` onto the stack. `minE` remains unchanged.
+  * **Modification During Pop (When Current Minimum is Popped)**:
+      * If `curr` (the element popped from the stack) is greater than `minE`:
+          * It means `curr` was a regular element, not a modified one. Just return `curr`.
+      * If `curr` is less than or equal to `minE`:
+          * This implies `curr` was a `modified_value` that replaced an old `minE`.
+          * The actual value being popped is the current `minE`. Store this in a temporary variable (`prevMin`).
+          * The *new* `minE` (the one that was present before `prevMin` became the minimum) needs to be recovered.
+          * Use the formula: `new_minE = (2 * minE - curr)`. (Derived from `curr = 2 * new_minE - old_minE`).
+          * Update `minE` to `new_minE`.
+          * Return `prevMin` (the actual value popped).
+
+### Explanation of `2*data - minE` trick:
+
+  * When `data` is the new minimum, we store `2*data - minE_old`.
+  * Let `val_to_push = 2*data - minE_old`.
+  * When we `pop` `val_to_push`, and `val_to_push <= minE_current` (where `minE_current` is `data`):
+      * The actual value being removed is `minE_current`.
+      * The *previous* minimum was `minE_old`.
+      * From `val_to_push = 2*minE_current - minE_old`, we can derive `minE_old = 2*minE_current - val_to_push`. This is how we restore `minE`.
+
+### Operations Summary
+
+  * **`push(data)`**:
+      * If `st.empty()`: `st.push(data)`, `minE = data`.
+      * Else if `data < minE`: `st.push(2*data - minE)`, `minE = data`.
+      * Else: `st.push(data)`.
+  * **`pop()`**:
+      * If `st.empty()`: return -1.
+      * `curr = st.top()`, `st.pop()`.
+      * If `curr > minE`: return `curr`.
+      * Else (`curr <= minE`): `prevMin = minE`, `minE = 2*minE - curr`, return `prevMin`.
+  * **`top()`**:
+      * If `st.empty()`: return -1.
+      * If `st.top() > minE`: return `st.top()`.
+      * Else (`st.top() <= minE`): return `minE` (as `st.top()` is a modified value, and `minE` holds the actual top element).
+  * **`getMin()`**: Return `minE`.
+  * **`isEmpty()`**: Return `st.empty()`.
+
+-----
+

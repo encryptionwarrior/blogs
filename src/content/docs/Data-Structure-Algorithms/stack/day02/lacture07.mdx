@@ -3,57 +3,98 @@ title: Reduntant Brackets
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, string, stack)
+using namespace std;     // Standard namespace
 
+// Function to check if an expression contains redundant brackets
 bool redundantBracket(string str) {
-    stack<char> st;
+    stack<char> st; // Stack to store operators and opening brackets
 
-    for(int i=0; i<str.length(); i++) {
-        bool redundancy = true;
-        char ch = str[i];
+    for(int i = 0; i < str.length(); i++) { // Iterate through the expression
+        char ch = str[i]; // Current character
 
-        if(ch=='(' || ch=='+' || ch=='-' || ch=='-' || ch=='/') {
+        // If it's an opening bracket or an operator, push onto stack
+        if(ch == '(' || ch == '+' || ch == '-' || ch == '*' || ch == '/') {
             st.push(ch);
-        } else {
+        }
+        // If it's a closing bracket ')' or an operand (like 'a', 'b') - though operands are usually ignored
+        else {
+            if(ch == ')') { // Only process if it's a closing bracket
+                bool isRedundant = true; // Assume current bracket is redundant initially
 
-            if(ch == ')') {
-
+                // Pop elements until the matching opening '(' is found
                 while(st.top() != '(') {
-                    char top = st.top();
-                    if(top=='+' || top=='-' || top=='-' || top=='/') {
-                        redundancy = false;
+                    char topElement = st.top();
+                    // If an operator is found, the bracket is NOT redundant
+                    if(topElement == '+' || topElement == '-' || topElement == '*' || topElement == '/') {
+                        isRedundant = false; // Found an operator, so not redundant
                     }
-                    st.pop();
-                }
-                
-                if(redundancy == true) {
-                    return false;
+                    st.pop(); // Pop the operator/operand
                 }
 
-                st.pop();
+                // After loop, if 'isRedundant' is still true, it means no operator was found
+                if(isRedundant == true) {
+                    return true; // Redundant bracket found!
+                }
+                st.pop(); // Pop the matching opening '('
             }
-
-        } 
+            // Other characters (operands like 'a', 'b', 'c') are simply ignored.
+            // If they are not handled, ensure they don't break logic.
+            // For this problem, we only care about brackets and operators.
+        }
     }
 
-    return true;
+    // If loop finishes, no redundant brackets were found
+    return false; // No redundant brackets detected
 }
 
 int main() {
     string str;
-    stack<char> st;
-    
-    cout << "Enter the expression : ";
-    getline(cin, str);
 
-    if(redundantBracket(str)) {
-        cout << "TRUE" << endl;
+    cout << "Enter the expression : "; // Prompt for expression
+    getline(cin, str);                 // Read the entire line
+
+    if(redundantBracket(str)) { // Check for redundancy
+        cout << "TRUE (Redundant bracket found)" << endl;
     } else {
-        cout << "FALSE" << endl;
+        cout << "FALSE (No redundant bracket)" << endl;
     }
 
-    return 0;
+    // Test cases:
+    // ((a+b)) -> TRUE
+    // (a+(b)/c) -> TRUE
+    // (a+b) -> FALSE
+    // (a+(b*c)) -> FALSE
+
+    return 0; // End program
 }
 ```
+
+### Core Idea
+
+  * **Stack for Tracking**: Use a stack to keep track of opening brackets and operators.
+  * **Redundancy**: A pair of parentheses `()` is redundant if it encloses *no operators* (only an operand or another redundant sub-expression). Example: `(a)`, `((a+b))`
+  * **Algorithm**:
+    1.  Push opening brackets and operators onto the stack.
+    2.  When a closing bracket `)` is found:
+          * Pop elements from the stack until the corresponding opening `(` is found.
+          * During this popping, if you encounter *any* operator (`+`, `-`, `*`, `/`), it means the `()` pair is *not* redundant.
+          * If you reach the `(` without encountering any operator, then the `()` pair is redundant.
+
+### How it Works
+
+1.  **Iterate**: Loop through the expression character by character.
+2.  **Push**: If the character is an opening bracket `(` or an operator (`+`, `-`, `*`, `/`), push it onto the stack.
+3.  **Handle `)`**: If the character is a closing bracket `)`:
+      * Set a `redundancy` flag to `true` (assume redundant until an operator is found).
+      * **Pop till `(`**: Continuously pop elements from the stack until the matching `(` is found.
+      * **Check Operators**: For each popped element:
+          * If it's an operator, set `redundancy = false` (this means the bracket pair contains an operation, so it's not redundant).
+      * **Check Redundancy Flag**: After popping up to `(`, if `redundancy` is still `true`, it means no operator was found inside this pair, so it's a redundant bracket. Return `false` (meaning "redundant bracket found").
+      * Finally, pop the `(` from the stack.
+4.  **End of String**: If the loop finishes without returning `false`, it means no redundant brackets were found. Return `true` (meaning "no redundant brackets").
+
+-----
+
+

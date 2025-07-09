@@ -3,72 +3,152 @@ title: Largest Reactange In Histogram
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Standard headers (iostream, vector, stack, algorithm for max)
+using namespace std;     // Standard namespace
 
+// Finds the index of the next smaller element to the right for each element
+// Uses a monotonic stack
 vector<int> nextSmallerElement(vector<int> arr) {
-    vector<int> solution(arr);
-    stack<int> st;
-    st.push(-1);
+    vector<int> solution(arr.size()); // Result array for next smaller element indices
+    stack<int> st;                     // Stack to store indices
+    st.push(-1);                       // Sentinel value: -1 indicates no smaller element to the right
 
-    for(int i=arr.size()-1; i>=0; i--) {
-        int curr = arr[i];
+    // Iterate from right to left
+    for(int i = arr.size() - 1; i >= 0; i--) {
+        int curr = arr[i]; // Current element's value
+
+        // Pop elements from stack whose values are >= current element's value
+        // Maintain increasing order of values (based on indices) in the stack from bottom to top
         while(st.top() != -1 && arr[st.top()] >= curr) {
             st.pop();
         }
 
-        solution[i] = st.top();
-        st.push(i);
+        solution[i] = st.top(); // The element at stack's top is the next smaller element's index
+        st.push(i);             // Push current element's index onto stack
     }
-
     return solution;
 }
 
+// Finds the index of the previous smaller element to the left for each element
+// Uses a monotonic stack
 vector<int> previousSmallerElement(vector<int> arr) {
-    vector<int> solution(arr);
-    stack<int> st;
-    st.push(-1);
+    vector<int> solution(arr.size()); // Result array for previous smaller element indices
+    stack<int> st;                     // Stack to store indices
+    st.push(-1);                       // Sentinel value: -1 indicates no smaller element to the left
 
-    for(int i=0; i<arr.size(); i++) {
-        int curr = arr[i];
+    // Iterate from left to right
+    for(int i = 0; i < arr.size(); i++) {
+        int curr = arr[i]; // Current element's value
+
+        // Pop elements from stack whose values are >= current element's value
+        // Maintain increasing order of values (based on indices) in the stack from bottom to top
         while(st.top() != -1 && arr[st.top()] >= curr) {
             st.pop();
         }
 
-        solution[i] = st.top();
-        st.push(i);
+        solution[i] = st.top(); // The element at stack's top is the previous smaller element's index
+        st.push(i);             // Push current element's index onto stack
     }
-
     return solution;
 }
 
+// Calculates the largest rectangular area in a histogram
 int largestRectangularArea(vector<int> height) {
     int n = height.size();
-    int maxArea = 0;
+    int maxArea = 0; // Initialize maximum area
+
+    // Step 1: Find next smaller element for each bar
     vector<int> next = nextSmallerElement(height);
+    // Step 2: Find previous smaller element for each bar
     vector<int> prev = previousSmallerElement(height);
 
-    for(int i=0; i<n; i++) {
+    // Step 3: Calculate area for each bar as a potential height
+    for(int i = 0; i < n; i++) {
+        // If no smaller element to the right, extend to the end of the histogram
         if(next[i] == -1) {
-            next[i] = n;
+            next[i] = n; // Set index to 'n' (one past last valid index)
         }
 
-        int length = height[i];
-        int breadth = next[i] - prev[i] - 1; 
+        int length = height[i];         // Height of the current bar
+        // Width is (index of next smaller) - (index of previous smaller) - 1
+        // This gives the count of bars *between* them, plus the current bar itself
+        int breadth = next[i] - prev[i] - 1;
 
-        int newArea = length * breadth;
-        maxArea = max(newArea, maxArea);
+        int newArea = length * breadth;       // Calculate area for this bar
+        maxArea = max(newArea, maxArea); // Update maxArea if current area is larger
     }
 
-    return maxArea;
+    return maxArea; // Return the maximum area found
 }
 
 int main() {
-    vector<int> height = {2, 1, 5, 6, 2, 3};
+    vector<int> height = {2, 1, 5, 6, 2, 3}; // Example histogram heights
 
+    // Calculate and print the largest rectangular area
     cout << "Required area : " << largestRectangularArea(height) << endl;
+    // Expected output for {2, 1, 5, 6, 2, 3}:
+    // next: [1, -1, 5, 5, -1, -1] -> transformed next: [1, 6, 5, 5, 6, 6]
+    // prev: [-1, -1, 1, 2, 1, 4]
+    // i=0, h=2: n=1, p=-1, b=1-(-1)-1=1, A=2*1=2
+    // i=1, h=1: n=6, p=-1, b=6-(-1)-1=6, A=1*6=6
+    // i=2, h=5: n=5, p=1, b=5-1-1=3, A=5*3=15
+    // i=3, h=6: n=5, p=2, b=5-2-1=2, A=6*2=12
+    // i=4, h=2: n=6, p=1, b=6-1-1=4, A=2*4=8
+    // i=5, h=3: n=6, p=4, b=6-4-1=1, A=3*1=3
+    // Max area is 15.
 
-    return 0;
+    return 0; // End program
 }
 ```
+
+### Problem
+
+  * Given an array `height` representing the heights of bars in a histogram.
+  * Each bar has a width of 1.
+  * Find the largest rectangular area possible within the histogram.
+
+### Core Idea
+
+  * For each bar, its height (`height[i]`) can be the *height* of a potential rectangle.
+  * The *width* of this rectangle is determined by how far left and how far right we can extend *without encountering a bar smaller than `height[i]`*.
+  * This means we need:
+      * **Next Smaller Element (NSE)**: The index of the first bar to the *right* that is smaller than `height[i]`.
+      * **Previous Smaller Element (PSE)**: The index of the first bar to the *left* that is smaller than `height[i]`.
+  * The width for `height[i]` will be `NSE_index - PSE_index - 1`.
+  * Use a **monotonic stack** to efficiently find NSE and PSE for all elements.
+
+### Algorithm Steps
+
+1.  **`nextSmallerElement(arr)`**:
+
+      * Iterate from right to left (`n-1` to `0`).
+      * Stack stores **indices** of elements in increasing order of their values.
+      * For `arr[i]`: pop from stack while `arr[st.top()] >= arr[i]`.
+      * `solution[i] = st.top()`.
+      * Push `i` onto stack.
+      * Initial `st.push(-1)` as sentinel.
+
+2.  **`previousSmallerElement(arr)`**:
+
+      * Iterate from left to right (`0` to `n-1`).
+      * Stack stores **indices** of elements in increasing order of their values.
+      * For `arr[i]`: pop from stack while `arr[st.top()] >= arr[i]`.
+      * `solution[i] = st.top()`.
+      * Push `i` onto stack.
+      * Initial `st.push(-1)` as sentinel.
+
+3.  **`largestRectangularArea(height)`**:
+
+      * Call `nextSmallerElement` to get `next` array.
+      * Call `previousSmallerElement` to get `prev` array.
+      * **Handle Edge Cases for NSE/PSE**: If `next[i]` is `-1` (meaning no smaller element to the right), it implies the bar can extend to the very end of the histogram. In this case, treat `next[i]` as `n` (array size).
+      * **Calculate Area**: For each `i` from `0` to `n-1`:
+          * `length = height[i]`
+          * `breadth = next[i] - prev[i] - 1` (This is the count of elements between PSE and NSE, including `i`)
+          * `newArea = length * breadth`
+          * Update `maxArea = max(maxArea, newArea)`
+      * Return `maxArea`.
+
+-----
+
