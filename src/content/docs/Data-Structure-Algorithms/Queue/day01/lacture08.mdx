@@ -3,134 +3,279 @@ title: Doubly Ended Queue Implementation
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
 
+```cpp
+#include <bits/stdc++.h> // Includes necessary headers like iostream
+using namespace std;     // Uses the standard namespace
+
+// Custom Deque implementation using a fixed-size circular array
 class Deque {
-    int *arr;
-    int size, front, rear;
+    int *arr;  // Pointer to the dynamic array
+    int size;  // Maximum capacity of the deque
+    int front; // Index of the front element
+    int rear;  // Index of the rear (back) element. Points to the last inserted item.
 
-    public:
+public:
+    // Constructor: Initializes the Deque
     Deque(int S) {
-        size = S;
-        arr = new int[size];
-        front = rear = -1;
+        size = S;          // Set the maximum size
+        arr = new int[size]; // Allocate memory for the array
+        front = -1;        // Initialize front to -1 (indicates empty deque)
+        rear = -1;         // Initialize rear to -1 (indicates empty deque)
     }
 
+    // Pushes an element to the front of the deque
     void push_front(int val) {
-        // Overflow Condition
-        if((front==0 && rear==size-1) || (front != 0 && rear == (front-1)%(size-1))) {
+        // Overflow Condition (Deque is full)
+        // Case 1: front is at 0 and rear is at size-1 (linear full)
+        // Case 2: front is not 0, and rear is directly behind front (wrapped around full)
+        // (front-1 + size) % size ensures correct positive modulo for wrapping
+        if((front == 0 && rear == size-1) || (front != -1 && rear == (front - 1 + size) % size)) {
             cout << "Deque Overflow!" << endl;
             return;
         }
 
-        // For empty Deque
+        // Case 1: Deque is empty (first element being pushed)
         if(front == -1) {
-            front = rear = 0;
-            arr[front] = val;
-        } else if(front == 0 && rear != size-1) {     // To maintain cyclic nature
-            front = size-1;
-            arr[front] = val;
-        } else {        // Normal flow
+            front = rear = 0; // Set both to 0
+        }
+        // Case 2: front is at the beginning (0), but space is available at the end (size-1)
+        else if(front == 0) {
+            front = size-1; // Wrap front to the end of the array
+        }
+        // Case 3: Normal push_front: decrement front
+        else {
             front--;
         }
 
-        arr[front] = val;
+        arr[front] = val; // Insert the value at the calculated front position
     }
 
+    // Pushes an element to the back of the deque
     void push_back(int val) {
-        // Overflow condition
-        if((front == 0 && rear == size-1) || (front != 0 && rear == (front-1)%(size-1))) {
+        // Overflow Condition (Same as push_front for consistency)
+        if((front == 0 && rear == size-1) || (front != -1 && rear == (front - 1 + size) % size)) {
             cout << "Deque overflow!" << endl;
             return;
-        } else if(front == -1) {        // For first element
-            front = rear = 0;
-        } else if(rear == size-1 && front != 0) {
-            // If front is in middle of the queue and rear is at the end
-            rear = 0;
-        } else {
+        }
+        // Case 1: Deque is empty (first element being pushed)
+        else if(front == -1) {
+            front = rear = 0; // Set both to 0
+        }
+        // Case 2: rear is at the end (size-1), but space is available at the beginning (0)
+        else if(rear == size-1) {
+            rear = 0; // Wrap rear to the beginning of the array
+        }
+        // Case 3: Normal push_back: increment rear
+        else {
             rear++;
         }
 
-        arr[rear] = val;
+        arr[rear] = val; // Insert the value at the calculated rear position
     }
 
+    // Removes an element from the front of the deque
     void pop_front() {
+        // Underflow Condition (Deque is empty)
         if(front == -1) {
             cout << "Deque underflow!" << endl;
-        } else if(front == rear) {
-            front = rear = -1;
-        } else if(front == size-1) {
-            front = 0;
-        } else {
+            return;
+        }
+        // Case 1: Only one element left in the deque (deque becomes empty after pop)
+        else if(front == rear) {
+            front = rear = -1; // Reset to empty state
+        }
+        // Case 2: front is at the end (size-1), so wrap it to 0
+        else if(front == size-1) {
+            front = 0; // Wrap front to the beginning
+        }
+        // Case 3: Normal pop_front: increment front
+        else {
             front++;
         }
     }
 
+    // Removes an element from the back of the deque
     void pop_back() {
+        // Underflow Condition (Deque is empty)
         if(front == -1) {
             cout << "Deque underflow!" << endl;
-        } else if(front == rear) {
-            front = rear = -1;
-        } else if(rear == 0) {
-            rear = size-1;
-        } else {
+            return;
+        }
+        // Case 1: Only one element left in the deque (deque becomes empty after pop)
+        else if(front == rear) {
+            front = rear = -1; // Reset to empty state
+        }
+        // Case 2: rear is at the beginning (0), so wrap it to size-1
+        else if(rear == 0) {
+            rear = size-1; // Wrap rear to the end
+        }
+        // Case 3: Normal pop_back: decrement rear
+        else {
             rear--;
         }
     }
 
+    // Checks if the deque is empty
     bool empty() {
-        return (front==-1) ? true : false;
+        return (front == -1); // Deque is empty if front is -1
     }
 
+    // Returns the element at the front of the deque without removing it
     int frontElement() {
-        return (this->empty()) ? -1 : arr[front];
+        return (this->empty()) ? -1 : arr[front]; // Return -1 if empty, else value at front
     }
 
+    // Returns the element at the back of the deque without removing it
     int backElement() {
-        return (this->empty()) ? -1 : arr[rear-1];
+        // Corrected: 'rear' points to the last inserted element, so arr[rear] is the back element.
+        // The original arr[rear-1] would be incorrect, especially when rear is 0.
+        return (this->empty()) ? -1 : arr[rear]; // Return -1 if empty, else value at rear
     }
 
+    // Returns the current number of elements in the deque
     int queueSize() {
-        return (front==rear) ? 0 : (rear-front);
+        // This size calculation is incorrect for a circular array when elements wrap.
+        // It only works if elements are in a linear segment (front <= rear).
+        // Correct calculation for circular buffer:
+        if (front == -1) return 0; // Deque is truly empty
+        if (rear >= front) {
+            return rear - front + 1; // Linear segment: count from front to rear
+        } else {
+            // Wrapped segment: (elements from front to end) + (elements from 0 to rear)
+            return (size - front) + (rear + 1);
+        }
+    }
+
+    // Destructor to free dynamically allocated memory
+    ~Deque() {
+        delete[] arr;
     }
 };
 
 int main() {
-    Deque q(10);
-    q.push_front(11);
+    Deque d(5); // Create a deque with a maximum size of 5
 
-    cout << "Front element of q : " << q.frontElement() << endl;
-    cout << "Back element of q : " << q.backElement() << endl;
-    q.push_back(15);
-    cout << "Front element of q : " << q.frontElement() << endl;
-    cout << "Back element of q : " << q.backElement() << endl;
+    // Test push_front and push_back
+    d.push_front(11); // Deque: [11, _, _, _, _], f=0, r=0
+    cout << "Push front 11. Front: " << d.frontElement() << ", Back: " << d.backElement() << endl;
 
-    q.push_back(23);
-    q.push_front(30);
+    d.push_back(15);  // Deque: [11, 15, _, _, _], f=0, r=1
+    cout << "Push back 15. Front: " << d.frontElement() << ", Back: " << d.backElement() << endl;
 
-    cout << "Size of queue : " << q.queueSize() << endl;
+    d.push_back(23);  // Deque: [11, 15, 23, _, _], f=0, r=2
+    d.push_front(30); // Deque: [30, 11, 15, 23, _], f=4, r=2
+    cout << "Push back 23, push front 30. Front: " << d.frontElement() << ", Back: " << d.backElement() << endl;
 
-    cout << endl << "Front before pop : " << q.frontElement() << endl;
-    cout << "Back before pop : " << q.backElement() << endl;
-    q.pop_front();    
-    cout << "Front after pop : " << q.frontElement() << endl;
-    cout << "Back after pop : " << q.backElement() << endl << endl;
+    cout << "Size of deque : " << d.queueSize() << endl; // Should be 4
 
-    q.pop_back();
-    q.pop_back();
+    // Test overflow (filling up)
+    d.push_front(40); // Deque: [30, 11, 15, 23, 40], f=3, r=2
+    cout << "Push front 40. Front: " << d.frontElement() << ", Back: " << d.backElement() << endl;
+    cout << "Size of deque : " << d.queueSize() << endl; // Should be 5
 
-    cout << "Size of queue : " << q.queueSize() << endl;
+    d.push_back(50); // This should cause an overflow, as deque is full
+    cout << "Attempt push back 50. Front: " << d.frontElement() << ", Back: " << d.backElement() << endl;
 
-    q.pop_front();
+    cout << endl << "Front before pop : " << d.frontElement() << endl; // 40
+    cout << "Back before pop : " << d.backElement() << endl;   // 23
 
-    if(q.empty()) {
-        cout << "Queue is empty!" << endl;
+    d.pop_front(); // Pop 40. Deque: [30, 11, 15, 23, _], f=4 (wraps to 0), r=2
+    cout << "Pop front. Front: " << d.frontElement() << ", Back: " << d.backElement() << endl; // Front: 30, Back: 23
+
+    d.pop_back();  // Pop 23. Deque: [30, 11, 15, _, _], f=4, r=1
+    d.pop_back();  // Pop 15. Deque: [30, 11, _, _, _], f=4, r=0
+    cout << "Pop back twice. Front: " << d.frontElement() << ", Back: " << d.backElement() << endl; // Front: 30, Back: 11
+
+    cout << "Size of deque : " << d.queueSize() << endl; // Should be 2 (30, 11)
+
+    d.pop_front(); // Pop 30. Deque: [_, 11, _, _, _], f=0 (wraps), r=0
+    cout << "Pop front. Front: " << d.frontElement() << ", Back: " << d.backElement() << endl; // Front: 11, Back: 11
+    
+    d.pop_front(); // Pop 11. Deque: [_, _, _, _, _], f=-1, r=-1 (empty)
+
+    if(d.empty()) {
+        cout << "Deque is empty!" << endl;
     } else {
-        cout << "Queue is not empty!" << endl;
+        cout << "Deque is not empty!" << endl;
     }
+
+    d.pop_front(); // Try to pop from empty deque (underflow)
 
     return 0;
 }
 ```
+
+
+### Concept
+
+  * **Deque (Double-Ended Queue)**: A dynamic array-based data structure that allows efficient insertion and deletion (`O(1)`) at *both* its `front` and `back` ends.
+  * This implementation uses a **circular array** to efficiently manage space and avoid the limitations of a linear array (where `rear` might hit the end even if `front` has moved, leading to overflow despite available space).
+
+### Key Data Members
+
+  * **`int *arr`**: The dynamic array to store deque elements.
+  * **`int size`**: The maximum capacity of the deque.
+  * **`int front`**: Index of the element at the front of the deque.
+  * **`int rear`**: Index of the element at the rear (back) of the deque.
+      * **Important**: In this specific implementation, `rear` points to the *last inserted element*.
+
+### Initialization
+
+  * `Deque(int S)` (Constructor):
+      * Initializes `size = S`.
+      * Allocates memory for `arr` of size `S`.
+      * Sets `front = -1` and `rear = -1`. This effectively marks the deque as empty.
+
+### Operations and Logic
+
+1.  **`push_front(int val)`**: Adds `val` to the front.
+
+      * **Overflow Check**:
+          * Checks if the deque is full. A common strategy is `(front == 0 && rear == size - 1)` (linear full) or `rear == (front - 1 + size) % size` (wrapped full). The provided code uses these conditions.
+      * **First Element**: If `front == -1` (deque is empty), set `front = rear = 0`.
+      * **Wrap `front`**: If `front` is `0` (beginning of array) and `rear` is not `size-1` (space at end), `front` wraps to `size-1`.
+      * **Normal Decrement**: Otherwise, `front` decrements (`front--`).
+      * `arr[front] = val;` inserts the value at the calculated `front` position.
+
+2.  **`push_back(int val)`**: Adds `val` to the back.
+
+      * **Overflow Check**: Same logic as `push_front`.
+      * **First Element**: If `front == -1` (deque is empty), set `front = rear = 0`.
+      * **Wrap `rear`**: If `rear` is `size-1` (end of array) and `front` is not `0` (space at beginning), `rear` wraps to `0`.
+      * **Normal Increment**: Otherwise, `rear` increments (`rear++`).
+      * `arr[rear] = val;` inserts the value at the calculated `rear` position.
+
+3.  **`pop_front()`**: Removes from the front.
+
+      * **Underflow Check**: If `front == -1` (deque is empty), print "Underflow\!".
+      * **Last Element Popped**: If `front == rear` (only one element), set `front = rear = -1` (deque becomes empty).
+      * **Wrap `front`**: If `front` is `size-1` (end of array), `front` wraps to `0`.
+      * **Normal Increment**: Otherwise, `front` increments (`front++`).
+
+4.  **`pop_back()`**: Removes from the back.
+
+      * **Underflow Check**: If `front == -1` (deque is empty), print "Underflow\!".
+      * **Last Element Popped**: If `front == rear` (only one element), set `front = rear = -1` (deque becomes empty).
+      * **Wrap `rear`**: If `rear` is `0` (beginning of array), `rear` wraps to `size-1`.
+      * **Normal Decrement**: Otherwise, `rear` decrements (`rear--`).
+
+5.  **`empty()`**: Returns `true` if `front == -1`, indicating the deque is empty.
+
+6.  **`frontElement()`**: Returns `arr[front]` if not empty, else `-1`.
+
+7.  **`backElement()`**:
+
+      * **Note**: In this code, `rear` points to the *last element*. Thus, `arr[rear]` should be the back element. The provided `arr[rear-1]` is incorrect and can lead to errors when `rear` is `0` (after wrapping).
+      * Returns `arr[rear]` if not empty, else `-1`.
+
+8.  **`queueSize()`**:
+
+      * **Note**: The provided `(rear-front)` is incorrect for a circular array.
+      * Correct calculation for circular array:
+          * If `front == -1` (empty), size is `0`.
+          * If `front <= rear`, size is `rear - front + 1`.
+          * If `front > rear` (wrapped), size is `(size - front) + (rear + 1)`.
+
+-----
+

@@ -3,48 +3,92 @@ title: Doubly Ended Queue STL
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <iostream>
-#include <queue>
-using namespace std;
+```cpp
+#include <iostream> // For input/output operations (cout, endl)
+#include <deque>    // Required header for std::deque
+using namespace std; // Uses the standard namespace
 
 int main() {
 
-    deque<int> q;
-    q.push_front(11);
-    q.push_back(14);
+    deque<int> q; // Declare a deque of integers. It's often named 'q' when used as a queue.
 
+    q.push_front(11); // Add 11 to the front of the deque
+    // Deque: [11] (front=11, back=11)
 
-    cout << "Front element of q : " << q.front() << endl;
-    cout << "Back element of q : " << q.back() << endl;
-    // q.push(15);
-    // cout << "Front element of q : " << q.front() << endl;
-    // cout << "Back element of q : " << q.back() << endl;
+    q.push_back(14); // Add 14 to the back of the deque
+    // Deque: [11, 14] (front=11, back=14)
 
-    // q.push(23);
-    // q.push(30);
+    cout << "Front element of q : " << q.front() << endl; // Access the front element (11)
+    cout << "Back element of q : " << q.back() << endl;   // Access the back element (14)
 
-    // cout << "Size of queue : " << q.size() << endl;
+    // The rest of the code was commented out in the original submission.
+    // Uncomment the following lines to see more deque operations in action:
 
-    // cout << endl << "Front before pop : " << q.front() << endl;
-    // cout << "Back before pop : " << q.back() << endl;
-    // q.pop();    
-    // cout << "Front after pop : " << q.front() << endl;
-    // cout << "Back after pop : " << q.back() << endl << endl;
+    /*
+    q.push_back(15); // Add 15 to the back
+    // Deque: [11, 14, 15]
+    cout << "Front element of q : " << q.front() << endl; // Front element is still 11
+    cout << "Back element of q : " << q.back() << endl;   // Back element is now 15
 
-    // q.pop();
-    // q.pop();
+    q.push_front(23); // Add 23 to the front
+    q.push_back(30);  // Add 30 to the back
+    // Deque: [23, 11, 14, 15, 30]
 
-    // cout << "Size of queue : " << q.size() << endl;
+    cout << "Size of deque : " << q.size() << endl; // Get the number of elements (5)
 
-    // q.pop();
+    cout << endl << "Front before pop : " << q.front() << endl; // Front element: 23
+    cout << "Back before pop : " << q.back() << endl;           // Back element: 30
 
-    // if(q.empty()) {
-    //     cout << "Queue is empty!" << endl;
-    // } else {
-    //     cout << "Queue is not empty!" << endl;
-    // }
+    q.pop_front(); // Remove the front element (23)
+    // Deque: [11, 14, 15, 30]
+    cout << "Front after pop_front : " << q.front() << endl; // New front element: 11
+    cout << "Back after pop_front : " << q.back() << endl << endl; // Back element remains 30
 
-    return 0;
+    q.pop_back(); // Remove 30
+    q.pop_front(); // Remove 11
+    // Deque: [14, 15]
+
+    cout << "Size of deque : " << q.size() << endl; // Size is now 2
+
+    q.pop_back(); // Remove 15
+    q.pop_front(); // Remove 14
+    // Deque: [] (empty)
+
+    // Check if the deque is empty
+    if(q.empty()) {
+        cout << "Deque is empty!" << endl;
+    } else {
+        cout << "Deque is not empty!" << endl;
+    }
+    */
+
+    return 0; // End of program
 }
 ```
+
+### Concept
+
+  * **Deque (Double-Ended Queue)**: A sequence container that allows efficient insertion and deletion at *both* its `front` and `back` ends.
+  * Unlike `std::vector`, `std::deque` does not invalidate pointers or references to elements other than the one erased from the container.
+  * It's a versatile data structure that can function as a queue, a stack, or a combination of both.
+
+### Key Operations
+
+  * **`push_front(element)`**: Adds an `element` to the `front` of the deque.
+  * **`push_back(element)`**: Adds an `element` to the `back` of the deque.
+  * **`pop_front()`**: Removes the element from the `front` of the deque. **Does not return the element.** You must use `front()` first to retrieve the value.
+  * **`pop_back()`**: Removes the element from the `back` of the deque. **Does not return the element.** You must use `back()` first to retrieve the value.
+  * **`front()`**: Returns a reference to the element at the `front` of the deque. **Does not remove it.**
+  * **`back()`**: Returns a reference to the element at the `back` of the deque. **Does not remove it.**
+  * **`size()`**: Returns the number of elements currently in the deque.
+  * **`empty()`**: Returns `true` if the deque is empty, `false` otherwise.
+  * **Random Access**: Deques also support efficient random access using `[]` operator or `at()`.
+
+### Important Notes
+
+  * Always check `!dq.empty()` before calling `dq.front()`, `dq.back()`, `dq.pop_front()`, or `dq.pop_back()` to avoid undefined behavior (accessing/modifying an empty deque).
+  * `std::deque` internally manages its memory using blocks, providing efficiency for both ends, but its memory might not be contiguous like `std::vector`.
+
+-----
+
+

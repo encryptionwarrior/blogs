@@ -3,45 +3,80 @@ title: Queue STL Implementation
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes <queue> and other standard libraries
+using namespace std;     // Uses the standard namespace
 
 int main() {
 
-    queue<int> q;
-    q.push(11);
+    queue<int> q; // Declare a queue of integers
 
-    cout << "Front element of q : " << q.front() << endl;
-    cout << "Back element of q : " << q.back() << endl;
-    q.push(15);
-    cout << "Front element of q : " << q.front() << endl;
-    cout << "Back element of q : " << q.back() << endl;
+    q.push(11); // Add 11 to the back of the queue
+    // Queue: [11] (front=11, back=11)
 
-    q.push(23);
-    q.push(30);
+    cout << "Front element of q : " << q.front() << endl; // Access the front element (11)
+    cout << "Back element of q : " << q.back() << endl;   // Access the back element (11)
 
-    cout << "Size of queue : " << q.size() << endl;
+    q.push(15); // Add 15 to the back
+    // Queue: [11, 15] (front=11, back=15)
+    cout << "Front element of q : " << q.front() << endl; // Front element is still 11
+    cout << "Back element of q : " << q.back() << endl;   // Back element is now 15
 
-    cout << endl << "Front before pop : " << q.front() << endl;
-    cout << "Back before pop : " << q.back() << endl;
-    q.pop();    
-    cout << "Front after pop : " << q.front() << endl;
-    cout << "Back after pop : " << q.back() << endl << endl;
+    q.push(23); // Add 23 to the back
+    q.push(30); // Add 30 to the back
+    // Queue: [11, 15, 23, 30]
 
-    q.pop();
-    q.pop();
+    cout << "Size of queue : " << q.size() << endl; // Get the number of elements (4)
 
-    cout << "Size of queue : " << q.size() << endl;
+    cout << endl << "Front before pop : " << q.front() << endl; // Front element: 11
+    cout << "Back before pop : " << q.back() << endl << endl;   // Back element: 30
 
-    q.pop();
+    q.pop(); // Remove the front element (11)
+    // Queue: [15, 23, 30]
 
+    cout << "Front after pop : " << q.front() << endl; // New front element: 15
+    cout << "Back after pop : " << q.back() << endl << endl;   // Back element remains 30
+
+    q.pop(); // Remove 15
+    q.pop(); // Remove 23
+    // Queue: [30]
+
+    cout << "Size of queue : " << q.size() << endl; // Size is now 1
+
+    q.pop(); // Remove 30
+    // Queue: [] (empty)
+
+    // Check if the queue is empty
     if(q.empty()) {
         cout << "Queue is empty!" << endl;
     } else {
         cout << "Queue is not empty!" << endl;
     }
 
-    return 0;
+    return 0; // End of program
 }
 ```
+
+### Concept
+
+  * **Queue**: A **First-In, First-Out (FIFO)** data structure.
+  * Elements are added to the `back` (or `rear`) and removed from the `front`.
+  * Analogy: A line of people where the first person in line is the first to be served.
+
+### Key Operations
+
+  * **`push(element)`**: Adds an `element` to the `back` of the queue.
+  * **`pop()`**: Removes the element from the `front` of the queue. **Does not return the element.** You must use `front()` first to retrieve the value.
+  * **`front()`**: Returns a reference to the element at the `front` of the queue. **Does not remove it.**
+  * **`back()`**: Returns a reference to the element at the `back` of the queue. **Does not remove it.**
+  * **`size()`**: Returns the number of elements currently in the queue.
+  * **`empty()`**: Returns `true` if the queue is empty, `false` otherwise.
+
+### Important Notes
+
+  * Always check `!q.empty()` before calling `q.front()` or `q.pop()` to avoid undefined behavior (accessing an empty queue).
+  * `std::queue` is a **container adapter**. By default, it uses `std::deque` as its underlying container. You can specify other sequence containers (like `std::list`) but not `std::vector`.
+
+-----
+
+

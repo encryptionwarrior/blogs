@@ -3,103 +3,205 @@ title: Queue Linked List Implementation
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes iostream and other utilities
+using namespace std;     // Uses the standard namespace
 
+// Node class: Defined but NOT USED in this specific Queue implementation.
+// This class would typically be used for a linked list based queue.
 class Node {
     int data;
     Node* next;
 
-    public:
+public:
     Node(int data) {
         this->data = data;
         this->next = NULL;
     }
 };
 
+// Custom Queue implementation using a fixed-size array
 class Queue {
-    int *arr;
-    int size, front, rear;
+    int *arr;    // Pointer to the dynamic array that stores queue elements
+    int size;    // Maximum capacity of the queue
+    int front;   // Index of the front element
+    int rear;    // Index where the next element will be inserted
 
-    public:
+public:
+    // Constructor: Initializes the queue
     Queue(int S) {
-        size = S;
-        arr = new int[size];
-        front = rear = 0;
+        size = S;          // Set the maximum size of the queue
+        arr = new int[size]; // Dynamically allocate the array
+        front = 0;         // Initialize front pointer to 0
+        rear = 0;          // Initialize rear pointer to 0 (queue is empty when front == rear)
     }
 
+    // Push operation: Adds an element to the rear of the queue
     void push(int val) {
-        if(rear == size-1) {
-            cout << "Queue overflow!" << endl;
+        // Check for overflow: If rear has reached the end of the array (size)
+        if(rear == size) { // The condition should typically be rear == size for a fixed-size array where 'rear' points to next available
+            cout << "Queue overflow!" << endl; // Cannot add more elements
         } else {
-            arr[rear++] = val;
+            arr[rear] = val; // Insert the value at the rear position
+            rear++;          // Increment rear to point to the next available spot
         }
     }
 
+    // Pop operation: Removes an element from the front of the queue
     void pop() {
+        // Check for underflow: If front and rear are at the same position, queue is empty
         if(front == rear) {
-            cout << "Queue underflow!" << endl;
+            cout << "Queue underflow!" << endl; // Cannot remove from empty queue
         } else {
-            front++;
+            front++; // Increment front to logically remove the element
 
+            // If front catches up to rear, it means the queue has become empty
+            // Reset both front and rear to 0 to reuse the array space from start
+            // NOTE: This basic implementation is a linear queue and can still lead to space issues
+            // once 'rear' hits 'size' (or size-1 for 0-indexed capacity), even if 'front' has moved significantly.
+            // A circular queue addresses this by wrapping around indices.
             if(front == rear) {
-                front = rear = 0;
+                front = 0;
+                rear = 0;
             }
         }
     }
 
+    // Returns the element at the front of the queue without removing it
     int frontElement() {
-        return (front==rear) ? -1 : arr[front];
+        // If queue is empty, return -1 (or throw an exception)
+        return (front == rear) ? -1 : arr[front];
     }
 
+    // Returns the element at the back of the queue without removing it
     int backElement() {
-        return (front==rear) ? -1 : arr[rear-1];
+        // If queue is empty, return -1
+        // Else, return the element just before 'rear' (as rear points to the next available slot)
+        return (front == rear) ? -1 : arr[rear - 1];
     }
 
+    // Returns the current number of elements in the queue
     int queueSize() {
-        return (front==rear) ? 0 : (rear-front);
+        // Size is the difference between rear and front pointers
+        return (rear - front);
     }
 
+    // Checks if the queue is empty
     bool empty() {
-        return (front==rear) ? true : false;
+        // Queue is empty if front and rear pointers are at the same position
+        return (front == rear) ? true : false;
+    }
+    
+    // Destructor to free dynamically allocated memory
+    ~Queue() {
+        delete[] arr;
     }
 };
 
 int main() {
-    Queue q(10);
-    q.push(11);
+    Queue q(5); // Create a queue with a maximum size of 5
 
-    cout << "Front element of q : " << q.frontElement() << endl;
-    cout << "Back element of q : " << q.backElement() << endl;
+    q.push(11); // Add elements
+    cout << "Front element of q : " << q.frontElement() << endl; // 11
+    cout << "Back element of q : " << q.backElement() << endl;   // 11
+    
     q.push(15);
-    cout << "Front element of q : " << q.frontElement() << endl;
-    cout << "Back element of q : " << q.backElement() << endl;
+    cout << "Front element of q : " << q.frontElement() << endl; // 11
+    cout << "Back element of q : " << q.backElement() << endl;   // 15
 
     q.push(23);
     q.push(30);
+    q.push(40); // Queue is now [11, 15, 23, 30, 40], front=0, rear=5
 
-    cout << "Size of queue : " << q.queueSize() << endl;
+    cout << "Size of queue : " << q.queueSize() << endl; // Size: 5
 
-    cout << endl << "Front before pop : " << q.frontElement() << endl;
-    cout << "Back before pop : " << q.backElement() << endl;
-    q.pop();    
-    cout << "Front after pop : " << q.frontElement() << endl;
-    cout << "Back after pop : " << q.backElement() << endl << endl;
+    q.push(50); // This will cause overflow, as rear == size (5 == 5)
+    
+    cout << endl << "Front before pop : " << q.frontElement() << endl; // 11
+    cout << "Back before pop : " << q.backElement() << endl;   // 40
+    
+    q.pop(); // Remove 11. Queue: [_, 15, 23, 30, 40], front=1, rear=5
+    cout << "Front after pop : " << q.frontElement() << endl; // 15
+    cout << "Back after pop : " << q.backElement() << endl << endl; // 40
 
-    q.pop();
-    q.pop();
+    q.pop(); // Remove 15. Queue: [_, _, 23, 30, 40], front=2, rear=5
+    q.pop(); // Remove 23. Queue: [_, _, _, 30, 40], front=3, rear=5
 
-    cout << "Size of queue : " << q.queueSize() << endl;
+    cout << "Size of queue : " << q.queueSize() << endl; // Size: 2 (30, 40)
 
-    q.pop();
+    q.pop(); // Remove 30. Queue: [_,_,_,_,40], front=4, rear=5
+    q.pop(); // Remove 40. Queue: [_,_,_,_,_], front=5, rear=5. Then resets to front=0, rear=0
 
+    cout << "Size of queue : " << q.queueSize() << endl; // Size: 0 (after reset)
+
+    // Check if empty
     if(q.empty()) {
         cout << "Queue is empty!" << endl;
     } else {
         cout << "Queue is not empty!" << endl;
     }
 
+    q.pop(); // Try to pop from empty queue (underflow)
+
     return 0;
 }
 ```
+
+### Concept
+
+  * **Queue**: A **First-In, First-Out (FIFO)** data structure.
+  * Elements are added to the `rear` and removed from the `front`.
+  * This is a basic array implementation, which can suffer from **space wastage** (fixed size) and **linear time complexity** for some operations if not handled carefully (e.g., if you were to shift elements on pop).
+  * **This specific implementation has a limitation**: It's a **linear queue**. Once `rear` reaches `size-1`, even if elements have been popped from the front, new elements cannot be pushed. This leads to inefficient space utilization. A **circular queue** solves this.
+
+### Key Data Members
+
+  * **`int *arr`**: The dynamic array to store queue elements.
+  * **`int size`**: The maximum capacity of the queue.
+  * **`int front`**: Index of the element at the front of the queue.
+  * **`int rear`**: Index where the next element will be inserted (one position past the last element).
+
+### Operations and Logic
+
+1.  **`Queue(int S)` (Constructor)**:
+
+      * Initializes `size` to `S`.
+      * Allocates memory for `arr` of size `S`.
+      * Sets `front = 0` and `rear = 0`. Initially, `front == rear` signifies an empty queue.
+
+2.  **`push(int val)`**:
+
+      * **Overflow Check**: If `rear == size`, the array is full. Print "Queue overflow\!".
+      * Otherwise, `arr[rear]` stores `val`, then `rear` is incremented (`rear++`).
+
+3.  **`pop()`**:
+
+      * **Underflow Check**: If `front == rear`, the queue is empty. Print "Queue underflow\!".
+      * Otherwise, increment `front` (`front++`). This logically removes the element from the front.
+      * **Reset Condition**: If `front == rear` *after* incrementing `front`, it means the queue became empty after the pop. In this case, reset both `front` and `rear` back to `0` to reuse the array from the beginning. This is crucial for avoiding `front` always moving forward and hitting `size-1` prematurely, though it doesn't solve the *linear* queue issue of `rear` hitting `size-1`.
+
+4.  **`frontElement()`**:
+
+      * Returns `arr[front]` if the queue is not empty (`front != rear`).
+      * Returns `-1` (or throws an error) if the queue is empty.
+
+5.  **`backElement()`**:
+
+      * Returns `arr[rear-1]` if the queue is not empty (`front != rear`).
+      * Returns `-1` (or throws an error) if the queue is empty. (Note: `rear-1` is used because `rear` points to the *next available slot*).
+
+6.  **`queueSize()`**:
+
+      * Returns `rear - front`. If `front == rear`, size is `0`.
+
+7.  **`empty()`**:
+
+      * Returns `true` if `front == rear`, `false` otherwise.
+
+### Limitation of this Linear Array Implementation
+
+  * **Space Wastage**: Even if elements are popped from the front, `rear` keeps moving forward. Once `rear` reaches `size-1`, `push` will report "overflow" even if there's free space at the beginning of the array. This is solved by using a **Circular Queue**.
+
+-----
+
+

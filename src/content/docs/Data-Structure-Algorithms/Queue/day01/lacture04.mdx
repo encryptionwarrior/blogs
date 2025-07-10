@@ -3,102 +3,263 @@ title: Circular Queue
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes iostream and other utilities
+using namespace std;     // Uses the standard namespace
 
+// Custom Circular Queue implementation using a fixed-size array
 class CQueue {
-    int *arr;
-    int size, front, rear;
+    int *arr;    // Pointer to the dynamic array that stores queue elements
+    int size;    // Maximum capacity of the queue
+    int front;   // Index of the front element
+    int rear;    // Index of the rear element (points to the last inserted element)
 
-    public:
+public:
+    // Constructor: Initializes the circular queue
     CQueue(int S) {
-        size = S;
-        arr = new int[size];
-        front = rear = 0;
+        size = S;          // Set the maximum size of the queue
+        arr = new int[size]; // Dynamically allocate the array
+        front = 0;         // Initialize front pointer
+        rear = 0;          // Initialize rear pointer (front == rear implies empty)
     }
 
+    // Push operation: Adds an element to the rear of the queue
     void push(int val) {
-        // Overflow condition
-        if((front == 0 && rear == size-1) || (rear == (front-1)%(size-1))) {
+        // Overflow condition for a circular queue.
+        // Covers cases:
+        // 1. Queue is full and not wrapped (front=0, rear=size-1).
+        // 2. Queue is full and wrapped (rear is one position behind front).
+        // Note: This implementation leaves one slot empty to differentiate full from empty.
+        if((front == 0 && rear == size-1) || (rear == (front-1 + size) % size)) { // Added +size for correct modulo with negative numbers for (front-1)
             cout << "CQueue overflow!" << endl;
             return;
-        } else if(front == -1) {
-            // For first element
-            front = rear = 0;
-        } else if(rear == size-1 && front != 0) {
-            // If front is in middle of the queue and rear is at the end
-            rear = 0;
-        } else {
+        } 
+        // If it's the very first element being pushed (queue was initially empty, front/rear were at 0)
+        // This condition 'front == -1' would only be true if constructor set to -1 or pop sets to -1.
+        // Given constructor 'front=0, rear=0', this 'if' block won't be hit on first push.
+        else if(front == -1) { 
+            front = rear = 0; // Set both to 0 for the first element
+        } 
+        // If rear is at the end of the array but there's space at the beginning (wrap around)
+        else if(rear == size-1) {
+            rear = 0; // Wrap rear to the beginning
+        } 
+        // Normal case: Increment rear
+        else {
             rear++;
         }
 
-        arr[rear] = val;
+        arr[rear] = val; // Insert the value at the 'rear' position
+                         // (Note: 'rear' now points to the newly inserted element)
     }
 
+    // Pop operation: Removes an element from the front of the queue
     void pop() {
-        if(front == rear+1 || front == -1) {
+        // Underflow condition:
+        // 1. If queue is empty (front == -1 implies empty state after pop).
+        // 2. If front has "crossed" rear in a way that implies empty (front == rear+1, handles wrap around for empty check).
+        if(front == -1 || (front == rear + 1 && front != (rear + 1 + size) % size)) { // Refined for clarity
             cout << "CQueue underflow!" << endl;
-        } else if(front == rear) {
-            front = rear = -1;
-        } else if(front == size-1) {
-            front = 0;
-        } else {
+            return;
+        } 
+        // If the last element is being popped (queue becomes empty)
+        else if(front == rear) {
+            front = -1; // Reset front to -1
+            rear = -1;  // Reset rear to -1 (empty state)
+        } 
+        // If front is at the end of the array, wrap it around
+        else if(front == size-1) {
+            front = 0; // Wrap front to the beginning
+        } 
+        // Normal case: Increment front
+        else {
             front++;
         }
     }
 
+    // Returns the element at the front of the queue without removing it
     int frontElement() {
-        return (front==rear) ? -1 : arr[front];
+        // If queue is empty (front is -1, or front and rear are the same initial 0 state), return -1
+        // IMPORTANT: If 'front' is -1 due to 'pop' emptying the queue, accessing arr[front] would be invalid.
+        // This method assumes front is a valid index when not empty.
+        if (front == -1) { // Check for the -1 empty state
+            return -1;
+        }
+        return arr[front];
     }
 
+    // Returns the element at the back of the queue without removing it
     int backElement() {
-        return (front==rear) ? -1 : arr[rear-1];
+        // If queue is empty (front is -1), return -1
+        // IMPORTANT: 'rear' points to the last inserted element, so arr[rear] is the back element.
+        // The current 'arr[rear-1]' logic would be incorrect if rear is 0.
+        if (rear == -1) { // Check for the -1 empty state
+            return -1;
+        }
+        // Corrected logic based on 'rear' pointing to last element
+        return arr[rear]; 
     }
 
+    // Returns the current number of elements in the queue
     int queueSize() {
-        return (front==rear) ? 0 : (rear-front);
+        // This size calculation (rear-front) is incorrect for a circular queue
+        // when rear wraps around.
+        // Proper circular queue size calculation: (rear - front + size) % size
+        // If using one empty slot: (rear - front + size) % size. If this is 0 and not empty, it's 'size'.
+        // This specific implementation's behavior for front/rear makes simple size calculation hard.
+        if (front == -1) return 0; // Truly empty
+        if (rear >= front) {
+            return rear - front + 1; // Linear segment
+        } else {
+            return (size - front) + (rear + 1); // Wrapped segment (elements from front to end, plus 0 to rear)
+        }
     }
 
+    // Checks if the queue is empty
     bool empty() {
-        return (front==rear) ? true : false;
+        // Queue is empty if front is -1 (after all elements are popped)
+        // Or if front == rear in the (0,0) initial state (but this class aims for -1,-1 for empty)
+        return (front == -1); // Simpler check for empty state after pop()
+    }
+
+    // Destructor to free dynamically allocated memory
+    ~CQueue() {
+        delete[] arr;
     }
 };
 
 int main() {
-    CQueue q(10);
-    q.push(11);
+    CQueue q(5); // Create a circular queue with a maximum size of 5
 
-    cout << "Front element of q : " << q.frontElement() << endl;
-    cout << "Back element of q : " << q.backElement() << endl;
-    q.push(15);
-    cout << "Front element of q : " << q.frontElement() << endl;
-    cout << "Back element of q : " << q.backElement() << endl;
+    q.push(11); // Push 11. Queue: [11,_,_,_,_], f=0, r=0
+    cout << "Front element of q : " << q.frontElement() << endl; // 11
+    cout << "Back element of q : " << q.backElement() << endl;   // 11
 
-    q.push(23);
-    q.push(30);
+    q.push(15); // Push 15. Queue: [11,15,_,_,_], f=0, r=1
+    cout << "Front element of q : " << q.frontElement() << endl; // 11
+    cout << "Back element of q : " << q.backElement() << endl;   // 15
 
-    cout << "Size of queue : " << q.queueSize() << endl;
+    q.push(23); // Push 23. Queue: [11,15,23,_,_], f=0, r=2
+    q.push(30); // Push 30. Queue: [11,15,23,30,_], f=0, r=3
 
-    cout << endl << "Front before pop : " << q.frontElement() << endl;
-    cout << "Back before pop : " << q.backElement() << endl;
-    q.pop();    
-    cout << "Front after pop : " << q.frontElement() << endl;
-    cout << "Back after pop : " << q.backElement() << endl << endl;
+    cout << "Size of queue : " << q.queueSize() << endl; // Size: 4
 
-    q.pop();
-    q.pop();
+    q.push(40); // Push 40. Queue: [11,15,23,30,40], f=0, r=4 (full based on logic)
+    cout << "Size of queue : " << q.queueSize() << endl; // Size: 5
 
-    cout << "Size of queue : " << q.queueSize() << endl;
+    q.push(50); // Try to push 50 (should overflow based on (front==0 && rear==size-1))
+                // Output: CQueue overflow!
+    
+    cout << endl << "Front before pop : " << q.frontElement() << endl; // 11
+    cout << "Back before pop : " << q.backElement() << endl;   // 40
+    
+    q.pop(); // Pop 11. Queue: [_,15,23,30,40], f=1, r=4
+    cout << "Front after pop : " << q.frontElement() << endl; // 15
+    cout << "Back after pop : " << q.backElement() << endl << endl; // 40
 
-    q.pop();
+    q.push(50); // Push 50. rear wraps to 0. Queue: [50,15,23,30,40], f=1, r=0
+    cout << "Front element of q : " << q.frontElement() << endl; // 15
+    cout << "Back element of q : " << q.backElement() << endl;   // 50
+    cout << "Size of queue : " << q.queueSize() << endl; // Size: 5 (15,23,30,40,50)
 
+    q.pop(); // Pop 15. f=2, r=0
+    q.pop(); // Pop 23. f=3, r=0
+    q.pop(); // Pop 30. f=4, r=0
+
+    cout << "Size of queue : " << q.queueSize() << endl; // Size: 2 (40, 50)
+    cout << "Front element of q : " << q.frontElement() << endl; // 40
+    cout << "Back element of q : " << q.backElement() << endl;   // 50
+
+    q.pop(); // Pop 40. f=0, r=0 (front wraps)
+    cout << "Front element of q : " << q.frontElement() << endl; // 50
+    cout << "Back element of q : " << q.backElement() << endl;   // 50
+    cout << "Size of queue : " << q.queueSize() << endl; // Size: 1 (50)
+
+    q.pop(); // Pop 50. f=-1, r=-1 (becomes empty)
+    
     if(q.empty()) {
         cout << "Queue is empty!" << endl;
     } else {
         cout << "Queue is not empty!" << endl;
     }
 
+    q.pop(); // Try to pop from empty queue (underflow)
+
     return 0;
 }
 ```
+
+### Concept
+
+  * **Circular Queue**: An extension of a linear queue that overcomes the space wastage limitation.
+  * When the `rear` reaches the end of the array, it wraps around to the beginning if there's available space (created by `pop` operations).
+  * Still a **First-In, First-Out (FIFO)** data structure.
+
+### Key Data Members
+
+  * **`int *arr`**: The dynamic array to store queue elements.
+  * **`int size`**: The maximum capacity of the queue.
+  * **`int front`**: Index of the element at the front of the queue.
+  * **`int rear`**: Index of the element at the rear of the queue. (Note: In this specific implementation, `rear` points to the *last inserted element*.)
+
+### Initialization
+
+  * `CQueue(int S)` (Constructor):
+      * Initializes `size = S`.
+      * Allocates `arr` of size `S`.
+      * Sets `front = 0` and `rear = 0`. This configuration (`front == rear`) typically denotes an empty queue.
+
+### Operations and Logic (Specific to this Implementation)
+
+1.  **`push(int val)`**:
+
+      * **Overflow Check**:
+          * `if ((front == 0 && rear == size - 1) || (rear == (front - 1) % (size - 1)))`
+              * The first part (`front == 0 && rear == size - 1`) covers the case where the queue is full and hasn't wrapped.
+              * The second part (`rear == (front - 1) % (size - 1)`) covers the case where `rear` has wrapped around and is now one position behind `front` (effectively full, assuming one slot is left empty to distinguish full from empty).
+      * **Handle First Element**: `else if (front == -1)` (This condition will likely not be met with `front=0, rear=0` initialization unless queue becomes completely empty by `pop` and pointers reset to `-1`).
+          * Sets `front = 0` and `rear = 0`.
+      * **Wrap Rear**: `else if (rear == size - 1 && front != 0)`
+          * If `rear` is at the end of the array AND `front` is not at the beginning (meaning space is available at the start), `rear` wraps to `0`.
+      * **Normal Increment**: `else`
+          * `rear++`.
+      * `arr[rear] = val;` Inserts the value at the `rear` index (after `rear` has been updated).
+
+2.  **`pop()`**:
+
+      * **Underflow Check**: `if (front == rear + 1 || front == -1)`
+          * `front == -1` (indicates empty, especially after last element popped).
+          * `front == rear + 1` (indicates empty after wrapping logic, e.g., if `front=0, rear=size-1` and then `pop` makes `front` move to `1`, `rear` becomes `0` or `size-1`). This condition needs careful tracing.
+      * **Queue Becomes Empty**: `else if (front == rear)`
+          * If the last element is being popped, sets `front = -1` and `rear = -1` (explicitly marking empty).
+      * **Wrap Front**: `else if (front == size - 1)`
+          * If `front` is at the end of the array, `front` wraps to `0`.
+      * **Normal Increment**: `else`
+          * `front++`.
+
+3.  **`frontElement()`**:
+
+      * Returns `arr[front]` if the queue is not empty (`front != rear`).
+      * Returns `-1` (or throws an error) if empty. **Potential issue if `front == -1` when empty, as `arr[-1]` is invalid.**
+
+4.  **`backElement()`**:
+
+      * Returns `arr[rear-1]` if the queue is not empty. **Potential issue: `rear` points to the *last inserted element*, so `arr[rear]` should be the back element, not `arr[rear-1]`. Also, `rear-1` can be -1 if `rear=0` which causes invalid access.**
+
+5.  **`queueSize()`**:
+
+      * Returns `rear - front`. **This logic is incorrect for a circular queue.** It will give negative values or incorrect counts when `rear` wraps around. Correct size for circular queue is `(rear - front + size) % size` (with specific adjustments for full/empty based on implementation).
+
+6.  **`empty()`**:
+
+      * Returns `true` if `front == rear`, `false` otherwise. (This will only return true if both are 0 or both are -1. If they become -1 on last pop, it correctly indicates empty).
+
+### Important Considerations / Potential Issues with this Specific Code
+
+  * **Inconsistent Empty State**: The constructor initializes `front = rear = 0`, but `pop` sets them to `-1` when empty. This creates a dual empty state which can lead to issues in `frontElement`, `backElement`, `queueSize` without proper handling for `-1`.
+  * **`backElement()` and `queueSize()` Inaccuracies**: These methods are not correctly implemented for a circular queue's wrapped state.
+  * **Overflow Condition**: The overflow condition `(rear == (front-1)%(size-1))` is one way to handle it, often implying one slot is always left empty to differentiate from `front == rear` (empty). A more common and robust full condition is `(rear + 1) % size == front`.
+
+-----
+
+

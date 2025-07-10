@@ -3,48 +3,92 @@ title: Queue Reversal
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes standard libraries like iostream, queue, stack
+using namespace std;     // Uses the standard namespace
 
+// Function to reverse a queue using an auxiliary stack (Approach 1)
 void Rev_Queue_App1(queue<int> &Q) {
-    stack<int> temp;
+    stack<int> temp; // Declare an auxiliary stack
 
+    // Step 1: Transfer all elements from queue to stack
+    // Elements are popped from queue (FIFO) and pushed onto stack (LIFO)
+    // The first element of Q will be at the bottom of temp, last at top.
     while(!Q.empty()) {
-        temp.push(Q.front());
-        Q.pop();
+        temp.push(Q.front()); // Get front element from queue and push to stack
+        Q.pop();              // Remove the front element from queue
     }
 
+    // Step 2: Transfer all elements from stack back to queue
+    // Elements are popped from stack (LIFO) and pushed onto queue (FIFO)
+    // The last element of original Q (top of stack) goes in first, effectively reversing order.
     while(!temp.empty()) {
-        Q.push(temp.top());
-        temp.pop();
+        Q.push(temp.top()); // Get top element from stack and push to queue
+        temp.pop();         // Remove the top element from stack
     }
 }
 
+// Helper function to print the elements of a queue (consumes the queue)
 void print(queue<int> Q) {
+    // Loop while the queue is not empty
     while(!Q.empty()) {
-        cout << Q.front() << " ";
-        Q.pop();
+        cout << Q.front() << " "; // Print the front element
+        Q.pop();                  // Remove the front element
     }
-
-    cout << endl;
+    cout << endl; // Print a newline at the end
 }
 
 int main() {
-    queue<int> Q;
+    queue<int> Q; // Declare a queue of integers
 
+    // Push elements into the queue
     Q.push(77);
     Q.push(65);
     Q.push(98);
     Q.push(46);
     Q.push(32);
+    // Initial Queue: [77, 65, 98, 46, 32] (Front: 77, Rear: 32)
 
     cout << "Before reverse : ";
-    print(Q);
+    print(Q); // Print the queue before reversal
 
-    Rev_Queue_App1(Q);
+    Rev_Queue_App1(Q); // Call the function to reverse the queue
 
-    cout << "Before reverse : ";
-    print(Q);
+    cout << "After reverse : "; // Corrected output string (original had "Before reverse")
+    print(Q); // Print the queue after reversal
+    // Expected Output Queue: [32, 46, 98, 65, 77] (Front: 32, Rear: 77)
+
+    return 0; // End of program
 }
 ```
+
+### Problem
+
+  * Reverse the order of elements in a given queue.
+  * A queue follows FIFO (First-In, First-Out) principle. Reversing it means making it LIFO (Last-In, First-Out).
+
+### Approach 1: Using an Auxiliary Stack
+
+  * **Core Idea**: Leverage the Last-In, First-Out (LIFO) property of a stack to counteract the First-In, First-Out (FIFO) property of a queue.
+  * **Steps**:
+    1.  **Transfer to Stack**: Dequeue all elements from the original `queue` one by one and `push` them onto an auxiliary `stack`.
+          * The element that was at the `front` of the queue will be at the `bottom` of the stack.
+          * The element that was at the `rear` of the queue will be at the `top` of the stack.
+    2.  **Transfer back to Queue**: `Pop` all elements from the auxiliary `stack` one by one and `enqueue` them back into the original `queue`.
+          * The element at the `top` of the stack (which was the last element of the original queue) will be `enqueued first`, becoming the new `front`.
+          * This process continues until the stack is empty, effectively reversing the order of elements in the queue.
+
+### Complexity Analysis
+
+  * **Time Complexity**: O(N)
+      * Each of the N elements is dequeued from the queue once.
+      * Each of the N elements is pushed onto the stack once.
+      * Each of the N elements is popped from the stack once.
+      * Each of the N elements is enqueued back into the queue once.
+      * Total operations are proportional to N (4N operations), hence O(N).
+  * **Space Complexity**: O(N)
+      * An auxiliary `stack` is used to store all N elements from the queue.
+
+-----
+
+
