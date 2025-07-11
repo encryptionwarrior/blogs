@@ -3,24 +3,27 @@ title: BST - Deletion
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, queue, etc.)
 
-using namespace std;
+using namespace std;     // Use the standard namespace
 
+// Definition of a Node in the Binary Search Tree
 class Node {
-    public:
-        int data;
-        Node* left;
-        Node* right;
+public:
+    int data;     // Data value of the node
+    Node* left;   // Pointer to the left child
+    Node* right;  // Pointer to the right child
 
-        Node(int data) {
-            this->data = data;
-            this->left = NULL;
-            this->right = NULL;
-        }
+    // Constructor to initialize a new node
+    Node(int data) {
+        this->data = data;
+        this->left = NULL;  // Initially, left child is NULL
+        this->right = NULL; // Initially, right child is NULL
+    }
 };
 
+// Function to insert a new node with 'data' into the BST
 Node* insertIntoBST(Node* root, int data) {
     if(root == NULL) {
         root = new Node(data);
@@ -29,44 +32,49 @@ Node* insertIntoBST(Node* root, int data) {
 
     if(data > root->data) {
         root->right = insertIntoBST(root->right, data);
-    } else {
+    } else { // Handles duplicates by placing them on the left
         root->left = insertIntoBST(root->left, data);
     }
 
     return root;
 }
 
+// Function to take input from the user and build the BST
 void takeinput(Node* &root) {
     int data;
+    cout << "Enter data for node (enter -1 to stop): ";
     cin >> data;
 
     while(data != -1) {
         root = insertIntoBST(root, data);
+        cout << "Enter data for node (enter -1 to stop): ";
         cin >> data;
     }
 }
 
+// Function to perform Level Order Traversal (BFS) of the BST
 void levelOrderTraversal(Node* root) {
     if(root == NULL) {
+        cout << "Tree is empty." << endl;
         return;
     }
 
     queue<Node*> Q;
     Q.push(root);
-    Q.push(NULL);
+    Q.push(NULL); // Marker for end of level
 
     while(!Q.empty()) {
         Node* FrontNode = Q.front();
         Q.pop();
 
         if(FrontNode == NULL) {
-            cout << endl;
-            
-            if(!Q.empty()) {
+            cout << endl; // Newline for next level
+
+            if(!Q.empty()) { // If queue is not empty, push another NULL marker
                 Q.push(NULL);
             }
         } else {
-            cout << FrontNode->data << " ";
+            cout << FrontNode->data << " "; // Print node data
 
             if(FrontNode->left) {
                 Q.push(FrontNode->left);
@@ -79,81 +87,217 @@ void levelOrderTraversal(Node* root) {
     }
 }
 
+// Helper function to find the minimum value in a subtree
+// (used to find the in-order successor for deletion)
 int minVal(Node* root) {
     if(root == NULL) {
-        return -1;
+        return -1; // Or throw an error, depending on desired error handling
     }
-
     Node* temp = root;
-    while(temp->left) {
+    while(temp->left != NULL) {
         temp = temp->left;
     }
-
     return temp->data;
 }
 
+// Function to delete a node with specific 'data' from the BST recursively.
+// Returns the root of the modified subtree.
+// Time Complexity: O(H) (height of the tree)
+// Space Complexity: O(H) (recursion stack)
 Node* DeletionInBST(Node* root, int data) {
+    // Base Case 1: If the current subtree is empty, node not found.
     if(root == NULL) {
         return root;
     }
 
+    // If the current node is the one to be deleted
     if(root->data == data) {
-        
-        // 0 Child
-        if(root->left==NULL && root->right==NULL) {
-            delete root;
-            return NULL;
+        // Case 1: 0 Child (Leaf Node)
+        if(root->left == NULL && root->right == NULL) {
+            delete root; // Free memory
+            return NULL; // Return NULL to its parent
         }
 
-        // 1 Child
-        // Left Child
-        if(root->left!=NULL && root->right==NULL) {
-            Node* temp = root->left;
-            delete root;
-            return temp;
+        // Case 2: 1 Child
+        // Subcase A: Has Left Child only
+        if(root->left != NULL && root->right == NULL) {
+            Node* temp = root->left; // Store left child
+            delete root;             // Delete current node
+            return temp;             // Return left child to parent
         }
-        // Right Child
-        if(root->left==NULL && root->right!=NULL) {
-            Node* temp = root->right;
-            delete root;
-            return temp;
-        }
-
-        // 2 Child
-        if(root->left!=NULL && root->right!=NULL) {
-            int mini = minVal(root->right);
-            root->data = mini;
-            root->right = DeletionInBST(root->right, mini);
-            return root;
+        // Subcase B: Has Right Child only
+        if(root->left == NULL && root->right != NULL) {
+            Node* temp = root->right; // Store right child
+            delete root;              // Delete current node
+            return temp;              // Return right child to parent
         }
 
-    } else if(data > root->data) {
+        // Case 3: 2 Children
+        if(root->left != NULL && root->right != NULL) {
+            // Find the in-order successor (smallest in right subtree)
+            int successor_val = minVal(root->right);
+            
+            // Replace current node's data with successor's data
+            root->data = successor_val;
+            
+            // Recursively delete the successor from the right subtree
+            root->right = DeletionInBST(root->right, successor_val);
+            
+            return root; // Return current node (now with successor's data)
+        }
+    } 
+    // If the current node is NOT the one to be deleted,
+    // traverse left or right based on BST property
+    else if(data > root->data) {
+        // If data is greater, go to right subtree
         root->right = DeletionInBST(root->right, data);
         return root;
-    } else {
+    } else { // data < root->data
+        // If data is smaller, go to left subtree
         root->left = DeletionInBST(root->left, data);
         return root;
     }
+    return root; // Should not be reached if all cases are covered.
 }
 
 int main() {
     Node* root = NULL;
-    int key;
+    int key_to_delete;
 
-    cout << "Enter data to create BST : ";
-    takeinput(root);
+    cout << "--- Creating Binary Search Tree ---" << endl;
+    takeinput(root); // Build the initial BST
 
-    cout << "Enter the key to delete : ";
-    cin >> key;
+    cout << endl << "Before Deletion (Level Order Traversal) : " << endl;
+    levelOrderTraversal(root); // Print tree before deletion
 
-    cout << endl << "Before Deletion : " << endl;
-    levelOrderTraversal(root);
-    
-    root = DeletionInBST(root, key);
+    cout << endl << "Enter the key to delete : ";
+    cin >> key_to_delete; // Get the key to delete from user
 
-    cout << endl << "After Deletion : " << endl;
-    levelOrderTraversal(root);
+    // Perform deletion and update the root of the tree
+    root = DeletionInBST(root, key_to_delete);
+
+    cout << endl << "After Deletion (Level Order Traversal) : " << endl;
+    levelOrderTraversal(root); // Print tree after deletion
 
     return 0;
 }
+
+/*
+Example INPUT for tree creation:
+50 20 70 10 30 60 80 -1
+
+Initial Tree (Level Order):
+50
+20 70
+10 30 60 80
+
+Scenario 1: Delete a Leaf Node (e.g., 10)
+Enter the key to delete : 10
+After Deletion (Level Order Traversal) :
+50
+20 70
+30 60 80
+
+Scenario 2: Delete a Node with 1 Child (e.g., 70, which has 60 and 80)
+Let's rebuild and try deleting 70 from the original tree (70 has right child 80 if 60 wasn't inserted to left, or if 60 was inserted as right child of 70 (which is wrong BST property)).
+With input 50 20 70 10 30 60 80 -1, 70 has 60 (left) and 80 (right) children. So it's 2-child case.
+Let's use a tree where 70 has only one child, e.g., 50 20 70 10 30 80 -1 (no 60).
+Tree:
+        50
+       /  \
+      20  70
+     / \   \
+    10 30  80
+Enter the key to delete : 70
+After Deletion (Level Order Traversal) :
+50
+20 80
+10 30
+
+Scenario 3: Delete a Node with 2 Children (e.g., 50)
+Enter the key to delete : 50
+Original Tree:
+        50
+       /  \
+      20  70
+     / \  / \
+    10 30 60 80
+In-order successor of 50 is 60 (min of right subtree).
+After Deletion (Level Order Traversal) :
+60
+20 70
+10 30 80
+*/
 ```
+
+
+### 1\. Binary Search Tree (BST) Recap
+
+  * A Binary Search Tree (BST) maintains a specific ordering: values in the left subtree are less than the root, and values in the right subtree are greater than the root. This property is crucial for insertion, search, and deletion.
+
+### 2\. Supporting Functions (Briefly)
+
+  * `Node` class: Defines the structure of a BST node (`data`, `left`, `right`).
+  * `insertIntoBST`: Standard recursive function to add elements to the BST.
+  * `takeinput`: Utility to build the BST from user input.
+  * `levelOrderTraversal`: Utility to print the tree level by level, helpful for verifying deletions.
+  * `minVal`: Helper function to find the minimum value in a subtree. This is used in the 2-child deletion case. It finds the leftmost node.
+
+### 3\. `DeletionInBST(Node* root, int data)` Function (Recursive Deletion)
+
+  * **Purpose**: Removes a node with the specified `data` value from the BST while preserving its properties.
+
+  * **Core Idea**: Deletion is complex because it must maintain the BST ordering. The strategy depends on how many children the node to be deleted has.
+
+  * **Logic Flow**:
+
+    1.  **Base Case (Node Not Found)**:
+
+          * If `root == NULL`, the tree (or current subtree) is empty, or the `data` was not found. Return `NULL`.
+
+    2.  **Node Found (`root->data == data`)**: This is the node to delete. Now, handle the 3 cases:
+
+          * **Case 1: Node has 0 children (Leaf Node)**
+
+              * **Condition**: `root->left == NULL && root->right == NULL`
+              * **Action**: `delete root;` (free memory).
+              * **Return**: `NULL` (to set the parent's pointer to this node to `NULL`).
+
+          * **Case 2: Node has 1 Child**
+
+              * **Subcase A: Has Left Child Only**
+                  * **Condition**: `root->left != NULL && root->right == NULL`
+                  * **Action**: Store `root->left` in a temporary pointer (`Node* temp = root->left;`). `delete root;`.
+                  * **Return**: `temp` (the left child becomes the new connection for the parent of the deleted node).
+              * **Subcase B: Has Right Child Only**
+                  * **Condition**: `root->left == NULL && root->right != NULL`
+                  * **Action**: Store `root->right` in a temporary pointer (`Node* temp = root->right;`). `delete root;`.
+                  * **Return**: `temp` (the right child becomes the new connection for the parent of the deleted node).
+
+          * **Case 3: Node has 2 Children**
+
+              * **Condition**: `root->left != NULL && root->right != NULL`
+              * **Strategy**: To maintain BST properties, the deleted node must be replaced by either its **in-order successor** (smallest node in its right subtree) or its **in-order predecessor** (largest node in its left subtree).
+              * **Code's Approach (In-order Successor)**:
+                1.  Find the minimum value in the right subtree: `int mini = minVal(root->right);`. This `mini` is the in-order successor.
+                2.  Replace the `data` of the current `root` (the node to be deleted) with `mini`: `root->data = mini;`.
+                3.  Recursively call `DeletionInBST` on the *right subtree* to delete the *original* in-order successor node (`mini`'s original location): `root->right = DeletionInBST(root->right, mini);`. The successor node is guaranteed to have at most one child (a right child), simplifying *its* deletion.
+                4.  **Return**: `root` (the current node, which now contains the successor's data).
+
+    3.  **Recursive Search (Node Not Yet Found)**:
+
+          * If `data > root->data`: The node to delete is in the right subtree. Recursively call `DeletionInBST(root->right, data)` and assign the result back to `root->right`. Then, return `root`.
+          * If `data < root->data`: The node to delete is in the left subtree. Recursively call `DeletionInBST(root->left, data)` and assign the result back to `root->left`. Then, return `root`.
+
+### 4\. Complexity Analysis for Deletion
+
+  * **Time Complexity**: `O(H)`
+      * `H` is the height of the BST. In the worst case, searching for the node and then searching for the in-order successor both involve traversing down paths proportional to the height.
+      * **Best Case (Balanced BST)**: `H = log N`. So, `O(log N)`.
+      * **Worst Case (Skewed BST/Linear Chain)**: `H = N`. So, `O(N)`.
+  * **Space Complexity**: `O(H)`
+      * Due to the recursion call stack.
+
+-----
+
+

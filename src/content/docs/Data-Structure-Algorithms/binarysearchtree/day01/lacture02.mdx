@@ -3,94 +3,223 @@ title: BST Traversal
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, queue, etc.)
 
-using namespace std;
+using namespace std; // Use the standard namespace
 
+// Definition of a Node in the Binary Search Tree
 class Node {
-    public:
-        int data;
-        Node* left;
-        Node* right;
+public:
+    int data;     // Data value of the node
+    Node* left;   // Pointer to the left child
+    Node* right;  // Pointer to the right child
 
-        Node(int data) {
-            this->data = data;
-            this->left = NULL;
-            this->right = NULL;
-        }
+    // Constructor to initialize a new node
+    Node(int data) {
+        this->data = data;
+        this->left = NULL;  // Initially, left child is NULL
+        this->right = NULL; // Initially, right child is NULL
+    }
 };
 
+// Function to insert a new node with 'data' into the BST
+// Returns the root of the (potentially updated) subtree
 Node* insertIntoBST(Node* root, int data) {
+    // Base Case: If the current subtree is empty (found insertion point)
     if(root == NULL) {
-        root = new Node(data);
-        return root;
+        root = new Node(data); // Create a new node
+        return root;           // This new node becomes the root of this subtree
     }
 
+    // Recursive Step: Decide whether to go right or left based on BST properties
     if(data > root->data) {
+        // If data is greater, insert into the right subtree
         root->right = insertIntoBST(root->right, data);
-    } else {
+    } else { // data <= root->data (handles duplicates by placing them on the left)
+        // If data is smaller or equal, insert into the left subtree
         root->left = insertIntoBST(root->left, data);
     }
 
-    return root;
+    return root; // Return the current root (after potentially updating its children)
 }
 
+// Function to take input from the user and build the BST
+// 'root' is passed by reference (Node* &root) so the actual root pointer in main can be updated
 void takeinput(Node* &root) {
     int data;
-    cin >> data;
+    cout << "Enter data for node (enter -1 to stop): ";
+    cin >> data; // Read the first data element
 
+    // Loop until the sentinel value -1 is entered
     while(data != -1) {
-        root = insertIntoBST(root, data);
-        cin >> data;
+        root = insertIntoBST(root, data); // Insert data into the BST
+        cout << "Enter data for node (enter -1 to stop): ";
+        cin >> data;                      // Read the next data element
     }
 }
 
+// --- Recursive Tree Traversal Functions ---
+
+// Pre-order Traversal: Root -> Left -> Right
 void preOrderRecursive(Node* root) {
+    // Base Case: If the current node is NULL, return (nothing to process)
     if(root == NULL) {
         return;
     }
 
+    // 1. Process the current node (print data)
     cout << root->data << " ";
+    // 2. Recursively traverse the left subtree
     preOrderRecursive(root->left);
+    // 3. Recursively traverse the right subtree
     preOrderRecursive(root->right);
 }
 
+// In-order Traversal: Left -> Root -> Right
+// For a BST, this traversal always prints nodes in sorted order.
 void inOrderRecursive(Node* root) {
-    if(root == NULL) {
+    // Base Case: If the current node is NULL, return
+    if(ifroot == NULL) { // Corrected syntax error here: if(root == NULL)
         return;
     }
 
+    // 1. Recursively traverse the left subtree
     inOrderRecursive(root->left);
+    // 2. Process the current node (print data)
     cout << root->data << " ";
+    // 3. Recursively traverse the right subtree
     inOrderRecursive(root->right);
 }
 
+// Post-order Traversal: Left -> Right -> Root
 void postOrderRecursive(Node* root) {
+    // Base Case: If the current node is NULL, return
     if(root == NULL) {
         return;
     }
 
+    // 1. Recursively traverse the left subtree
     postOrderRecursive(root->left);
+    // 2. Recursively traverse the right subtree
     postOrderRecursive(root->right);
+    // 3. Process the current node (print data)
     cout << root->data << " ";
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the BST to NULL
 
-    cout << "Enter data to create BST : ";
+    // Build the BST by taking input from the user
+    cout << "--- Creating Binary Search Tree ---" << endl;
     takeinput(root);
 
+    // Perform and print different recursive traversals
     cout << endl << "InOrder Traversal : ";
-    inOrderRecursive(root);
+    inOrderRecursive(root); // Should print sorted elements
 
     cout << endl << "PreOrder Traversal : ";
     preOrderRecursive(root);
 
     cout << endl << "PostOrder Traversal : ";
     postOrderRecursive(root);
+    cout << endl; // Extra newline for formatting
 
-    return 0;
+    return 0; // End of the program
 }
+
+/*
+Example INPUT:
+Enter data for node (enter -1 to stop): 50
+Enter data for node (enter -1 to stop): 20
+Enter data for node (enter -1 to stop): 70
+Enter data for node (enter -1 to stop): 10
+Enter data for node (enter -1 to stop): 30
+Enter data for node (enter -1 to stop): 60
+Enter data for node (enter -1 to stop): 80
+Enter data for node (enter -1 to stop): -1
+
+Expected Tree Structure:
+        50
+       /  \
+      20  70
+     / \  / \
+    10 30 60 80
+
+Expected Output for above input:
+InOrder Traversal : 10 20 30 50 60 70 80
+PreOrder Traversal : 50 20 10 30 70 60 80
+PostOrder Traversal : 10 30 20 60 80 70 50
+*/
 ```
+
+### 1\. Binary Search Tree (BST) Recap
+
+  * A Binary Search Tree (BST) is a hierarchical data structure where:
+      * For any given node, all values in its **left subtree** are **less than** the node's value.
+      * All values in its **right subtree** are **greater than** the node's value.
+      * Both left and right subtrees are themselves BSTs.
+  * **Property**: In-order traversal of a BST always yields elements in sorted (ascending) order.
+
+### 2\. `Node` Class
+
+  * The fundamental building block of the BST.
+  * Contains `data` (the value), `left` (pointer to the left child), and `right` (pointer to the right child).
+
+### 3\. `insertIntoBST` and `takeinput` (Briefly)
+
+  * `insertIntoBST`: A recursive function to add new data into the BST while maintaining the BST properties. It finds the correct position (an empty spot) and creates a new node there.
+  * `takeinput`: A utility function that continuously reads integers from the user (`-1` to stop) and calls `insertIntoBST` for each integer to build the tree.
+
+### 4\. Tree Traversal Basics
+
+  * **Traversal**: The process of visiting (processing) each node in a tree exactly once.
+  * **Recursive Nature**: The simplest way to implement these fundamental traversals is recursively, leveraging the tree's recursive definition.
+
+### 5\. Recursive Traversal Types
+
+The three main recursive traversals are defined by the order in which the current node (`Root`), its Left subtree, and its Right subtree are processed:
+
+#### a. Pre-order Traversal (Root -\> Left -\> Right)
+
+  * **Logic**:
+    1.  Process the current `Root` node.
+    2.  Recursively traverse the `Left` subtree.
+    3.  Recursively traverse the `Right` subtree.
+  * **Use Cases**:
+      * To create a copy of the tree.
+      * To get the prefix expression of an expression tree.
+      * Useful for showing structural information of the tree.
+
+#### b. In-order Traversal (Left -\> Root -\> Right)
+
+  * **Logic**:
+    1.  Recursively traverse the `Left` subtree.
+    2.  Process the current `Root` node.
+    3.  Recursively traverse the `Right` subtree.
+  * **Use Cases**:
+      * **Crucial for BSTs**: Always prints elements in **sorted (ascending) order**.
+      * To get the infix expression of an expression tree.
+
+#### c. Post-order Traversal (Left -\> Right -\> Root)
+
+  * **Logic**:
+    1.  Recursively traverse the `Left` subtree.
+    2.  Recursively traverse the `Right` subtree.
+    3.  Process the current `Root` node.
+  * **Use Cases**:
+      * To delete the tree (delete children first, then parent).
+      * To get the postfix expression of an expression tree.
+
+### 6\. Complexity Analysis for Traversals
+
+  * **Time Complexity**: `O(N)` for all three recursive traversals.
+      * Each node in the tree is visited and processed exactly once.
+  * **Space Complexity**: `O(H)`
+      * This is due to the recursion call stack, where `H` is the height of the tree.
+      * **Worst Case (Skewed Tree)**: `H = N` (linear chain), leading to `O(N)` space.
+      * **Best Case (Balanced Tree)**: `H = log N`, leading to `O(log N)` space.
+
+-----
+
+

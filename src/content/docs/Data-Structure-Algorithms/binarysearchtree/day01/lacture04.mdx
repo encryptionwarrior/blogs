@@ -3,24 +3,28 @@ title: BST - Min - Max
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream)
 
-using namespace std;
+using namespace std;     // Use the standard namespace
 
+// Definition of a Node in the Binary Search Tree
 class Node {
-    public:
-        int data;
-        Node* left;
-        Node* right;
+public:
+    int data;     // Data value of the node
+    Node* left;   // Pointer to the left child
+    Node* right;  // Pointer to the right child
 
-        Node(int data) {
-            this->data = data;
-            this->left = NULL;
-            this->right = NULL;
-        }
+    // Constructor to initialize a new node
+    Node(int data) {
+        this->data = data;
+        this->left = NULL;  // Initially, left child is NULL
+        this->right = NULL; // Initially, right child is NULL
+    }
 };
 
+// Function to insert a new node with 'data' into the BST
+// (Standard BST insertion, used to build the tree)
 Node* insertIntoBST(Node* root, int data) {
     if(root == NULL) {
         root = new Node(data);
@@ -29,58 +33,142 @@ Node* insertIntoBST(Node* root, int data) {
 
     if(data > root->data) {
         root->right = insertIntoBST(root->right, data);
-    } else {
+    } else { // Handles duplicates by placing them on the left
         root->left = insertIntoBST(root->left, data);
     }
 
     return root;
 }
 
+// Function to take input from the user and build the BST
 void takeinput(Node* &root) {
     int data;
+    cout << "Enter data for node (enter -1 to stop): ";
     cin >> data;
 
     while(data != -1) {
         root = insertIntoBST(root, data);
+        cout << "Enter data for node (enter -1 to stop): ";
         cin >> data;
     }
 }
 
+// Function to find the minimum value in the BST iteratively.
+// The minimum value is always the leftmost node in a BST.
+// Time Complexity: O(H) (height of the tree)
+// Space Complexity: O(1)
 int minVal(Node* root) {
+    // If the tree is empty, no minimum value exists.
     if(root == NULL) {
-        return -1;
+        return -1; // Or throw an exception, or return a special indicator.
     }
 
-    Node* temp = root;
-    while(temp->left) {
-        temp = temp->left;
+    Node* temp = root; // Start from the root
+
+    // Traverse left until the leftmost node is reached (node with no left child)
+    while(temp->left != NULL) { // While there is a left child to go to
+        temp = temp->left;      // Move to the left child
     }
 
-    return temp->data;
+    return temp->data; // The leftmost node holds the minimum value
 }
 
+// Function to find the maximum value in the BST iteratively.
+// The maximum value is always the rightmost node in a BST.
+// Time Complexity: O(H) (height of the tree)
+// Space Complexity: O(1)
 int maxVal(Node* root) {
+    // If the tree is empty, no maximum value exists.
     if(root == NULL) {
-        return -1;
-    }
-    
-    Node* temp = root;
-    while(temp->right) {
-        temp = temp->right;
+        return -1; // Or throw an exception, or return a special indicator.
     }
 
-    return temp->data;
+    Node* temp = root; // Start from the root
+
+    // Traverse right until the rightmost node is reached (node with no right child)
+    while(temp->right != NULL) { // While there is a right child to go to
+        temp = temp->right;       // Move to the right child
+    }
+
+    return temp->data; // The rightmost node holds the maximum value
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the BST to NULL
 
-    cout << "Enter data to create BST : ";
+    // Build the BST by taking input from the user
+    cout << "--- Creating Binary Search Tree ---" << endl;
     takeinput(root);
+    cout << endl;
 
-    cout << endl << "Minimum Value : " << minVal(root);
-    cout << endl << "Maximum Value : " << maxVal(root);
+    // Find and print the minimum value
+    cout << "Minimum Value : " << minVal(root) << endl;
+    // Find and print the maximum value
+    cout << "Maximum Value : " << maxVal(root) << endl;
 
-    return 0;
+    return 0; // End of the program
 }
+
+/*
+Example INPUT for tree creation:
+50 20 70 10 30 60 80 -1
+
+Expected Tree Structure:
+        50
+       /  \
+      20  70
+     / \  / \
+    10 30 60 80
+
+Expected Output for above input:
+Minimum Value : 10
+Maximum Value : 80
+*/
 ```
+
+### 1\. Binary Search Tree (BST) Recap
+
+  * A Binary Search Tree (BST) is a hierarchical data structure where:
+      * All values in its **left subtree** are **less than** the node's data.
+      * All values in its **right subtree** are **greater than** the node's data.
+      * Both left and right subtrees are also BSTs.
+  * This strict ordering property is what enables efficient finding of min/max elements.
+
+### 2\. `Node` Class
+
+  * The basic building block of the BST, containing `data`, `left` (child pointer), and `right` (child pointer).
+
+### 3\. `insertIntoBST` and `takeinput` (Briefly)
+
+  * `insertIntoBST`: A recursive function to add new data into the BST while maintaining its properties.
+  * `takeinput`: A utility function that reads integer input from the user (`-1` to stop) to build the BST.
+
+### 4\. `minVal(Node* root)` Function
+
+  * **Purpose**: To find the smallest value stored in the BST.
+  * **Core Idea**: By the definition of a BST, the smallest value in the entire tree will always be found by traversing as far left as possible from the root.
+  * **Logic (Iterative)**:
+    1.  **Handle Empty Tree**: If `root` is `NULL`, the tree is empty, and there's no minimum value. The code returns -1, which can serve as an indicator (though ideally an exception or `std::optional` would be used for robust handling).
+    2.  **Traverse Left**: Initialize a temporary pointer `temp` to the `root`. Then, repeatedly move `temp` to its `left` child (`temp = temp->left`) as long as `temp->left` is not `NULL`.
+    3.  **Return Value**: Once the loop terminates, `temp` will be pointing to the leftmost node, which holds the minimum value. Return `temp->data`.
+
+### 5\. `maxVal(Node* root)` Function
+
+  * **Purpose**: To find the largest value stored in the BST.
+  * **Core Idea**: Similarly, by the definition of a BST, the largest value in the entire tree will always be found by traversing as far right as possible from the root.
+  * **Logic (Iterative)**:
+    1.  **Handle Empty Tree**: If `root` is `NULL`, the tree is empty, and there's no maximum value. Returns -1.
+    2.  **Traverse Right**: Initialize a temporary pointer `temp` to the `root`. Then, repeatedly move `temp` to its `right` child (`temp = temp->right`) as long as `temp->right` is not `NULL`.
+    3.  **Return Value**: Once the loop terminates, `temp` will be pointing to the rightmost node, which holds the maximum value. Return `temp->data`.
+
+### 6\. Complexity Analysis for Min/Max Operations
+
+  * **Time Complexity**: `O(H)` for both `minVal` and `maxVal`.
+      * `H` is the height of the BST. In the worst case, the traversal goes from the root down to a leaf along a single path.
+      * **Best Case (Balanced BST)**: `H = log N`. So, `O(log N)`.
+      * **Worst Case (Skewed BST/Linear Chain)**: `H = N`. So, `O(N)`.
+  * **Space Complexity**: `O(1)`
+      * Both functions use a constant amount of extra space (a few pointers), regardless of the tree size. (This is for the iterative version; a recursive version would have `O(H)` space due to the call stack).
+
+-----
+

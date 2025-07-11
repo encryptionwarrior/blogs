@@ -3,75 +3,263 @@ title: Max BST in Binary Tree
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BST.h"
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, limits for INT_MIN/MAX, algorithm for max/min)
+#include "BST.h"         // Assumed to contain Node class, buildBinaryTree (for general tree input)
 
-class Info {
-    public:
-        int maxi;
-        int mini;
-        bool isBST;
-        int size;
+using namespace std;     // Use the standard namespace
 
-        Info() {
-            this->maxi = INT_MIN;
-            this->mini = INT_MAX;
-            this->isBST = true;
-            this->size = 0;
-        }
-
-        Info(int min, int max, bool isBST, int size) {
-            this->maxi = max;
-            this->mini = min;
-            this->isBST = isBST;
-            this->size = size;
-        }
+// Note: The Node class and buildBinaryTree (or takeinput if it builds general tree)
+// are assumed to be defined in "BST.h" or a similar header.
+/*
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+    Node(int data) { // Constructor for Node
+        this->data = data;
+        this->left = NULL;
+        this->right = NULL;
+    }
 };
 
+Node* buildBinaryTree(Node* root) { ... } // Function to build a general binary tree
+*/
+
+// Helper class to encapsulate information returned by recursive calls.
+class Info {
+public:
+    int maxi;  // Maximum value in the subtree.
+    int mini;  // Minimum value in the subtree.
+    bool isBST; // True if the subtree is a valid BST.
+    int size;  // Size (number of nodes) of the subtree.
+
+    // Default constructor for an empty/null subtree.
+    Info() {
+        this->maxi = INT_MIN; // Max of empty subtree should be min possible to allow parent to be > it.
+        this->mini = INT_MAX; // Min of empty subtree should be max possible to allow parent to be < it.
+        this->isBST = true;   // An empty subtree is considered a valid BST.
+        this->size = 0;       // Size of an empty subtree is 0.
+    }
+
+    // Parameterized constructor.
+    Info(int min, int max, bool isBST, int size) {
+        this->maxi = max;
+        this->mini = min;
+        this->isBST = isBST;
+        this->size = size;
+    }
+};
+
+// Function to find the largest BST subtree within a general Binary Tree.
+// Uses a post-order traversal approach.
+// 'root': Current node of the general binary tree.
+// 'answer': Reference to an integer that stores the maximum BST size found globally.
+// Time Complexity: O(N) where N is the number of nodes in the binary tree.
+// Space Complexity: O(H) for recursion stack (H = height of tree).
 Info* MaxBST(Node* root, int &answer) {
+    // Base case: If current node is NULL (empty subtree).
     if(root == NULL) {
-        Info* temp = new Info();
+        Info* temp = new Info(); // Create and return an Info object for an empty BST.
         return temp;
     }
 
+    // Recursively get information from left and right subtrees (post-order traversal).
     Info* left = MaxBST(root->left, answer);
     Info* right = MaxBST(root->right, answer);
 
+    // Create a new Info object to store results for the current node's subtree.
     Info* currNode = new Info();
 
+    // Calculate the total size of the current subtree (regardless of BST property).
     currNode->size = left->size + right->size + 1;
+    // Calculate the true maximum value in the current subtree.
     currNode->maxi = max(root->data, right->maxi);
+    // Calculate the true minimum value in the current subtree.
     currNode->mini = min(root->data, left->mini);
 
+    // Check if the subtree rooted at 'root' is a valid BST.
+    // Conditions:
+    // 1. Left subtree must be a BST.
+    // 2. Right subtree must be a BST.
+    // 3. Current node's data must be greater than max in left subtree.
+    // 4. Current node's data must be less than min in right subtree.
     if(left->isBST && right->isBST && (root->data > left->maxi) && (root->data < right->mini)) {
-        currNode->isBST = true;
+        currNode->isBST = true; // This subtree is a BST.
     } else {
-        currNode->isBST = false;
+        currNode->isBST = false; // This subtree is not a BST.
     }
 
+    // If the current subtree is a BST, update the global maximum answer.
     if(currNode->isBST) {
         answer = max(answer, currNode->size);
     }
+    // Note: If the current subtree is NOT a BST, it means no larger BST can be
+    // formed by including this 'root'. Its 'size' is not used for 'answer',
+    // but its 'maxi'/'mini' and 'isBST' (false) properties are still passed up.
 
-    return currNode;
+    return currNode; // Return the Info object for the current subtree to its parent.
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize root of the general binary tree.
 
-    cout << "Enter data to create a tree : ";
-    root = buildBinaryTree(root);
-    
-    int answer = INT_MIN;
+    cout << "Enter data to create a tree (use -1 for NULL children) : ";
+    // Assuming buildBinaryTree takes input level by level or pre-order to build a general tree.
+    // Example format: 1 2 3 -1 -1 4 -1 -1 5 -1 -1 (for a simple tree)
+    root = buildBinaryTree(root); 
+
+    // Initialize 'answer' to INT_MIN or 0. If a single node is the largest BST, answer will be 1.
+    // If the tree can be empty and an empty BST is considered size 0, initialize to 0.
+    int answer = 0; // Better to initialize to 0 for size, as min size of BST is 1, or 0 for empty.
+
+    // Call MaxBST to find the largest BST size. 'answer' will be updated by reference.
     Info* solve = MaxBST(root, answer);
+    // Note: 'solve' points to the Info object for the entire tree, which might not be a BST.
+    // The actual largest BST size is accumulated in 'answer'.
 
-    cout << endl << "Max BST : " << answer;
-    
+    cout << endl << "Size of the largest BST in the given Binary Tree : " << answer << endl;
+
     return 0;
 }
 
-// 50 40 60 70 -1
-// 55 45 35 65 47 -1
+/*
+Example Input for building a general Binary Tree:
+(A typical input for buildBinaryTree might be like level order)
+Input: 50 40 70 30 45 60 80 -1 -1 -1 -1 -1 -1 -1 -1
+
+This input creates a tree structure:
+          50
+         /  \
+        40   70
+       / \   / \
+      30 45 60 80
+
+In this specific case, the entire tree IS a BST.
+Left subtree of 50: (40, 30, 45) -> valid BST (max 45)
+Right subtree of 50: (70, 60, 80) -> valid BST (min 60)
+50 > 45 and 50 < 60. So, 50-rooted tree is a BST. Size = 7.
+Output should be 7.
+
+Another Example:
+Input: 10 20 30 -1 -1 -1 -1
+Tree:
+   10
+  /
+ 20
+/
+30
+This is a skewed tree.
+Subtree at 30: {30} is BST, size 1. answer = 1.
+Subtree at 20: Left is {30}. 20 < 30. Not a BST if it expects left to be smaller.
+                20 is root, left is 30, right is NULL.
+                Max in left is 30. 20 > 30 is FALSE. So {20, 30} is NOT BST.
+Subtree at 10: Not a BST.
+The largest BST would be {30} or {20} if 20 was a root of a valid BST.
+Output will be 1.
+
+Corrected example for a tricky case:
+Input: 60 40 80 30 50 70 90 -1 -1 -1 -1 -1 -1 -1 -1
+Tree:
+         60
+        /  \
+       40   80
+      / \   / \
+     30 50 70 90
+This whole tree is a BST. Max BST size = 7.
+
+Consider a tree that is NOT a BST, but contains one:
+Input: 10 20 5 -1 -1 -1 -1
+Tree:
+   10
+  /  \
+ 20   5
+
+- Leaf 20: Info(20, 20, true, 1). answer = 1.
+- Leaf 5: Info(5, 5, true, 1). answer = 1.
+- Root 10:
+    - left: Info(20, 20, true, 1) -> left->maxi = 20
+    - right: Info(5, 5, true, 1) -> right->mini = 5
+    - Check for 10: left.isBST=T, right.isBST=T.
+        - root->data (10) > left->maxi (20) -> FALSE
+        - So, 10-rooted tree is NOT a BST.
+- Final answer remains 1 (from either {20} or {5}).
+*/
 ```
+
+
+### 1\. Binary Tree vs. BST
+
+  * **Binary Tree**: A tree data structure in which each node has at most two children, referred to as the left child and the right child. No specific ordering property is guaranteed.
+  * **Binary Search Tree (BST)**: A specialized binary tree where for every node, all values in its left subtree are smaller than the node's data, and all values in its right subtree are larger than the node's data.
+
+### 2\. The Problem: Largest BST Subtree
+
+  * Given a general Binary Tree (which may or may not satisfy BST properties), find the largest subtree (in terms of number of nodes) that *is* a valid BST.
+
+### 3\. Approach: Post-order Traversal with Information Passing
+
+  * This problem is effectively solved by a **post-order traversal** (`Left -> Right -> Root`).
+  * For each node in the tree, we need to determine:
+    1.  Whether its subtree *is* a BST.
+    2.  If it is a BST, what are the minimum and maximum values within that BST subtree?
+    3.  If it is a BST, what is its size (number of nodes)?
+  * This information is passed *up* from children to their parent, allowing the parent to make a decision about its own BST property. A global variable tracks the maximum BST size found so far.
+
+### 4\. `Info` Class
+
+  * **Purpose**: A custom class designed to bundle all the necessary information that each recursive call needs to return to its parent.
+  * **Members**:
+      * `maxi` (int): The maximum value found in the current subtree.
+      * `mini` (int): The minimum value found in the current subtree.
+      * `isBST` (bool): `true` if the current subtree rooted at `root` is a valid BST; `false` otherwise.
+      * `size` (int): The number of nodes in the current subtree (relevant only if `isBST` is true for this subtree).
+  * **Initialization for `NULL` node**: When a `NULL` child is encountered (base case), it represents an "empty BST" with a `size` of 0, `isBST` as `true`, `mini` as `INT_MAX` (so any value is greater than it), and `maxi` as `INT_MIN` (so any value is smaller than it). These extreme values allow correct comparisons for parent nodes.
+
+### 5\. `MaxBST(Node* root, int &answer)` Function
+
+  * **Purpose**: Recursively traverses the Binary Tree, processing subtrees in a post-order fashion to determine their BST properties and update the overall largest BST size.
+
+  * **Parameters**:
+
+      * `Node* root`: The current node being processed.
+      * `int &answer`: A reference to an integer variable that will store the size of the largest BST found so far across the entire tree. Using a reference allows global updates.
+
+  * **Logic Flow**:
+
+    1.  **Base Case**:
+          * `if(root == NULL)`: If we reach a null node, it signifies an empty subtree.
+          * Return an `Info` object initialized for an empty BST (`mini = INT_MAX, maxi = INT_MIN, isBST = true, size = 0`).
+    2.  **Recursive Calls**:
+          * `Info* left = MaxBST(root->left, answer);`: Get information about the left subtree.
+          * `Info* right = MaxBST(root->right, answer);`: Get information about the right subtree.
+    3.  **Process Current Node (`currNode`)**:
+          * Create a new `Info* currNode` to store results for the current `root`.
+          * `currNode->size = left->size + right->size + 1;`: The size of the subtree rooted at `root` is the sum of its children's sizes plus itself. (This is the total size, not necessarily a BST size yet).
+          * `currNode->maxi = max(root->data, right->maxi);`: The maximum value in the current subtree is `root->data` or the max from its right child.
+          * `currNode->mini = min(root->data, left->mini);`: The minimum value in the current subtree is `root->data` or the min from its left child.
+    4.  **Check BST Property for `currNode`'s Subtree**:
+          * `if(left->isBST && right->isBST && (root->data > left->maxi) && (root->data < right->mini))`:
+              * For the current subtree rooted at `root` to be a BST, all three conditions must be true:
+                1.  Left subtree must itself be a BST (`left->isBST`).
+                2.  Right subtree must itself be a BST (`right->isBST`).
+                3.  `root->data` must be greater than the maximum value in its left subtree (`root->data > left->maxi`).
+                4.  `root->data` must be less than the minimum value in its right subtree (`root->data < right->mini`).
+          * If all conditions met, `currNode->isBST = true;` else `currNode->isBST = false;`.
+    5.  **Update Global Answer**:
+          * `if(currNode->isBST)`: If the current subtree *is* a valid BST, then its `size` is a candidate for the `answer`.
+          * `answer = max(answer, currNode->size);`: Update `answer` if `currNode->size` is larger.
+    6.  **Return `currNode`**: Pass the `Info` object for the current subtree up to its parent.
+
+### 6\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * Each node in the binary tree is visited exactly once. At each node, constant time operations (comparisons, max/min, object creation) are performed.
+  * **Space Complexity**: `O(H)`
+      * `O(H)` for the recursion stack, where `H` is the height of the binary tree. In the worst case (a skewed tree), `H` can be `N`, leading to `O(N)` space.
+      * `O(N)` for creating `Info` objects (one for each node). However, these are returned and typically fall out of scope, so the active memory at any time is `O(H)`. If not manually deleted, a memory leak would occur. For competitive programming, `new` without `delete` is common if the program ends.
+
+-----
+
+

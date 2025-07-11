@@ -3,75 +3,222 @@ title: Perorder to BST
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BST.h"
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, vector, limits for INT_MIN/MAX)
+#include "BST.h"         // Assumed to contain Node class, levelOrderTraversal
 
-// void inOrder(Node* root, vector<int>& ans) {
-//     if(root == NULL) {
-//         return;
-//     }
+using namespace std;     // Use the standard namespace
 
-//     inOrder(root->left, ans);
-//     ans.push_back(root->data);
-//     inOrder(root->right, ans);
-// }
+// Note: The Node class and levelOrderTraversal are assumed to be defined in "BST.h".
+/*
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+    Node(int data) { // Constructor for Node
+        this->data = data;
+        this->left = NULL;
+        this->right = NULL;
+    }
+};
 
-// Node* balanceBST(vector<int>& arr, int start, int end) {
-//     if(end-start < 0) {
-//         return NULL;
-//     }
+void levelOrderTraversal(Node* root) { ... }
+*/
 
-//     int mid = start + (end-start)/2;
-//     Node* temp = new Node(arr[mid]);
-
-//     temp->left = balanceBST(arr, start, mid-1);
-//     temp->right = balanceBST(arr, mid+1, end);
-
-//     return temp;
-// }
-
-Node* createPreorder(vector<int> &inorder, int &index, int min, int max) {
-    if(index >= inorder.size()) {
+// Function to construct a BST from its preorder traversal.
+// 'preorder': The vector containing the preorder traversal sequence.
+// 'index': A reference to the current position in the 'preorder' vector.
+// 'min', 'max': The allowed range for the data of the current node being created.
+// Time Complexity: O(N) where N is number of nodes in preorder.
+// Space Complexity: O(H) for recursion stack, where H is the height of the constructed BST.
+Node* createPreorder(vector<int> &preorder, int &index, int min, int max) {
+    // Base Case 1: If all elements from preorder traversal are processed.
+    if(index >= preorder.size()) {
         return NULL;
     }
 
-    int data = inorder[index];
+    // Get the data for the potential current node.
+    int data = preorder[index];
 
+    // Base Case 2: If the current data is outside the allowed range (min, max).
+    // This node does not belong here, it's either for a parent or a different subtree.
     if(data < min || data > max) {
         return NULL;
     }
 
+    // Create a new node with the current data. This node is the root of its subtree.
     Node* temp = new Node(data);
-    index++;
+    index++; // Increment index to move to the next element in preorder for children.
 
-    temp->left = createPreorder(inorder, index, min, data);
-    temp->right = createPreorder(inorder, index, data, max);
+    // Recursively build the left child.
+    // For the left child, its maximum value must be the current node's data.
+    // Its minimum value remains the inherited 'min'.
+    temp->left = createPreorder(preorder, index, min, data);
 
+    // Recursively build the right child.
+    // For the right child, its minimum value must be the current node's data.
+    // Its maximum value remains the inherited 'max'.
+    temp->right = createPreorder(preorder, index, data, max);
+
+    // Return the newly created node (root of this subtree).
     return temp;
 }
 
 int main() {
-    Node* root = NULL;
-    vector<int> preorder;
-    int index = 0;
+    Node* root = NULL; // Initialize root of the BST
+    vector<int> preorder; // To store the user-input preorder traversal
+    int index = 0;        // Index to track current position in preorder vector
 
     cout << "Enter elements of preorder traversal (-1 to stop) : ";
-    int temp = -1;
-    do {
-        cin >> temp;
-        preorder.push_back(temp);
-    } while(temp != -1);
+    int val;
+    // Read preorder elements until -1 is entered
+    while(cin >> val && val != -1) {
+        preorder.push_back(val);
+    }
+    // Note: The original code had a do-while loop which would push -1 into the vector.
+    // Modified to stop before pushing -1 to keep 'preorder' clean.
 
+    // Start building the BST from the preorder traversal.
+    // Initial call uses INT_MIN and INT_MAX as bounds for the very first root.
     root = createPreorder(preorder, index, INT_MIN, INT_MAX);
 
-    cout << endl << "Level Order Traversal : " << endl;
-    levelOrderTraversal(root);
+    cout << endl << "Level Order Traversal of Constructed BST : " << endl;
+    levelOrderTraversal(root); // Print the constructed BST in level order
 
     return 0;
 }
 
-// 20 10 5 15 13 35 30 42 -1
-// 5 3 6 4 2 7 8 -1
+/*
+Example Input for preorder traversal:
+20 10 5 15 13 35 30 42 -1
+
+Expected BST structure (visualize the flow):
+             20 (root, range -inf to +inf)
+             /  \
+           10    35
+          /  \   /  \
+         5   15 30   42
+            /
+           13
+
+Level Order Traversal of Constructed BST:
+20 10 35 5 15 30 42 13
+
+Let's trace:
+createPreorder(preorder, 0, INT_MIN, INT_MAX)
+  - data = 20. Valid. temp = Node(20). index=1.
+  - temp->left = createPreorder(preorder, 1, INT_MIN, 20)
+    - data = 10. Valid. temp_left = Node(10). index=2.
+    - temp_left->left = createPreorder(preorder, 2, INT_MIN, 10)
+      - data = 5. Valid. temp_left_left = Node(5). index=3.
+      - temp_left_left->left = createPreorder(preorder, 3, INT_MIN, 5)
+        - data = 15. INVALID (15 > 5). Return NULL.
+      - temp_left_left->right = createPreorder(preorder, 3, 5, 10)
+        - data = 15. INVALID (15 > 10). Return NULL.
+      - Return Node(5)
+    - temp_left->right = createPreorder(preorder, 3, 10, 20)
+      - data = 15. Valid. temp_left_right = Node(15). index=4.
+      - temp_left_right->left = createPreorder(preorder, 4, 10, 15)
+        - data = 13. Valid. temp_left_right_left = Node(13). index=5.
+        - temp_left_right_left->left = createPreorder(preorder, 5, 10, 13)
+          - data = 35. INVALID (35 > 13). Return NULL.
+        - temp_left_right_left->right = createPreorder(preorder, 5, 13, 15)
+          - data = 35. INVALID (35 > 15). Return NULL.
+        - Return Node(13)
+      - temp_left_right->right = createPreorder(preorder, 5, 15, 20)
+        - data = 35. INVALID (35 > 20). Return NULL.
+      - Return Node(15)
+    - Return Node(10)
+  - temp->right = createPreorder(preorder, 5, 20, INT_MAX)
+    - data = 35. Valid. temp_right = Node(35). index=6.
+    - temp_right->left = createPreorder(preorder, 6, 20, 35)
+      - data = 30. Valid. temp_right_left = Node(30). index=7.
+      - temp_right_left->left = createPreorder(preorder, 7, 20, 30)
+        - data = 42. INVALID (42 > 30). Return NULL.
+      - temp_right_left->right = createPreorder(preorder, 7, 30, 35)
+        - data = 42. INVALID (42 > 35). Return NULL.
+      - Return Node(30)
+    - temp_right->right = createPreorder(preorder, 7, 35, INT_MAX)
+      - data = 42. Valid. temp_right_right = Node(42). index=8.
+      - temp_right_right->left = createPreorder(preorder, 8, 35, 42)
+        - index = 8. (preorder.size() is 8, so index == preorder.size()). Return NULL.
+      - temp_right_right->right = createPreorder(preorder, 8, 42, INT_MAX)
+        - index = 8. Return NULL.
+      - Return Node(42)
+    - Return Node(35)
+  - Return Node(20)
+
+This trace confirms the logic and builds the correct BST.
+*/
 ```
+
+### 1\. Binary Search Tree (BST) Recap
+
+  * A Binary Search Tree (BST) has a strict ordering: for any node, all values in its left subtree are smaller, and all values in its right subtree are larger.
+  * **Preorder Traversal**: Visits nodes in the order: **Root -\> Left Child -\> Right Child**.
+
+### 2\. Core Idea for Constructing BST from Preorder
+
+  * Unlike constructing from In-order + Pre-order/Post-order (which requires both traversals), a BST can be uniquely constructed from just its Preorder traversal. This is because the BST property itself provides implicit information about relative ordering.
+  * **Algorithm Intuition**:
+      * The first element in the preorder sequence is always the root of the current subtree.
+      * For each subsequent element in the preorder sequence, we determine if it belongs in the left subtree or the right subtree based on its value relative to the current root and the allowed `min` and `max` bounds inherited from its ancestors.
+      * We pass `min` and `max` bounds recursively:
+          * For the left child, the new `max` bound becomes the parent's value.
+          * For the right child, the new `min` bound becomes the parent's value.
+
+### 3\. Supporting Components (Briefly)
+
+  * `Node` class: Defines the structure of a BST node (`data`, `left`, `right`).
+  * `levelOrderTraversal`: Function (assumed in `BST.h`) to visualize the constructed BST.
+  * `INT_MIN`, `INT_MAX`: Constants from `<limits>` (or implicitly from `<bits/stdc++.h>`) used for initial min/max bounds.
+
+### 4\. `createPreorder(vector<int> &inorder, int &index, int min, int max)` Function
+
+  * **Purpose**: Recursively builds the BST from the preorder traversal array.
+
+  * **Parameters**:
+
+      * `vector<int> &preorder`: The vector containing the preorder traversal sequence. (Note: The parameter name is `inorder` in the provided code, but it's used as `preorder`. I will use `preorder` in comments for clarity).
+      * `int &index`: A **reference** to an integer. This is critical. It acts as a global pointer to the current element being processed in the `preorder` array. As we consume elements to build nodes, this `index` must be updated across all recursive calls.
+      * `int min`: The minimum permissible value for the node we are currently trying to create. Any value less than `min` cannot be placed here.
+      * `int max`: The maximum permissible value for the node we are currently trying to create. Any value greater than `max` cannot be placed here.
+
+  * **Logic Flow**:
+
+    1.  **Base Case 1: All elements processed**:
+          * `if(index >= preorder.size())`: If the `index` has gone beyond the last element of the `preorder` array, it means we have no more nodes to form. Return `NULL`.
+    2.  **Fetch Candidate Data**:
+          * `int data = preorder[index];` Get the current element from the `preorder` array. This is a potential node's value.
+    3.  **Base Case 2: Value out of bounds**:
+          * `if(data < min || data > max)`: If the current `data` is outside the allowed `min` and `max` range for this position in the BST, this node cannot be placed here. It belongs to a different subtree (either an ancestor already processed or a later sibling). Return `NULL`.
+    4.  **Create Node**:
+          * `Node* temp = new Node(data);` If the data is valid for this position, create a new `Node` with this `data`.
+    5.  **Advance Index**:
+          * `index++;` **Crucially**, increment the `index` to move to the next element in the `preorder` sequence. This element will be considered for the left or right child.
+    6.  **Build Left Subtree**:
+          * `temp->left = createPreorder(preorder, index, min, data);` Recursively call to build the left child. For the left child, its maximum allowed value is the current node's `data`. Its minimum allowed value remains the inherited `min`.
+    7.  **Build Right Subtree**:
+          * `temp->right = createPreorder(preorder, index, data, max);` Recursively call to build the right child. For the right child, its minimum allowed value is the current node's `data`. Its maximum allowed value remains the inherited `max`.
+    8.  **Return Node**:
+          * `return temp;` Return the newly created node as the root of this subtree.
+
+  * **Initial Call in `main`**:
+
+      * `root = createPreorder(preorder, index, INT_MIN, INT_MAX);`
+      * The initial `index` is `0`. `INT_MIN` and `INT_MAX` provide the widest possible range for the very first root node.
+
+### 5\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * Each node in the `preorder` array is visited (and potentially created) exactly once. The recursive calls effectively traverse the tree structure.
+  * **Space Complexity**: `O(H)`
+      * Due to the recursion call stack, where `H` is the height of the resulting BST.
+      * **Worst Case (Skewed Tree)**: `H = N`, leading to `O(N)` space (e.g., preorder `1 2 3 4`).
+      * **Best Case (Balanced Tree)**: `H = log N`, leading to `O(log N)` space (e.g., preorder `10 5 2 8 15 12 18`).
+
+-----
+
+
+

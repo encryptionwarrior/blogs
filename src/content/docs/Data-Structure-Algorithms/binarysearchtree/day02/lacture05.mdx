@@ -3,63 +3,202 @@ title: BST - InOrder Predecessor Successor
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BST.h"
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, utility for pair)
+#include "BST.h"         // Assumed to contain Node class, insertIntoBST, takeinput, levelOrderTraversal
 
+using namespace std;     // Use the standard namespace
+
+// Note: The Node class, insertIntoBST, takeinput, and levelOrderTraversal
+// are assumed to be defined in "BST.h".
+/*
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+    Node(int data) { ... }
+};
+
+Node* insertIntoBST(Node* root, int data) { ... }
+void takeinput(Node* &root) { ... }
+void levelOrderTraversal(Node* root) { ... }
+*/
+
+// Function to find the in-order predecessor and successor of a given 'key' in a BST.
+// Returns a pair: {predecessor, successor}. Returns -1 if not found.
+// Time Complexity: O(H) where H is the height of the tree.
+// Space Complexity: O(1)
 pair<int, int> predecessorSuccessor(Node* root, int key) {
-    Node* KeyNode = root;
+    // Initialize predecessor and successor with -1 (or other indicator for not found)
     int pred = -1;
     int succ = -1;
-    
-    while(KeyNode->data != key) {
+
+    // --- Phase 1: Traverse to find the key node and capture ancestor candidates ---
+    Node* KeyNode = root; // Start search from root
+
+    // Important: The loop condition `KeyNode->data != key` implicitly assumes 'key' is present.
+    // A robust version would be `while(KeyNode != NULL && KeyNode->data != key)`.
+    while(KeyNode != NULL && KeyNode->data != key) { 
         if(KeyNode->data > key) {
+            // If current node's data is greater than key:
+            // It could be a successor. Store it and go left to find a smaller successor.
             succ = KeyNode->data;
             KeyNode = KeyNode->left;
-        } else {
+        } else { // KeyNode->data < key
+            // If current node's data is smaller than key:
+            // It could be a predecessor. Store it and go right to find a larger predecessor.
             pred = KeyNode->data;
             KeyNode = KeyNode->right;
         }
     }
 
-    // Prdecessor
+    // After the loop, KeyNode points to the node with 'key' (if found) or NULL (if not found).
+    // If key was not found, the `pred` and `succ` from the path are the closest values.
+    // If KeyNode is NULL here, it means the key was not found.
+    if (KeyNode == NULL) {
+        return {pred, succ}; // Return candidates from path if key not found
+    }
+
+    // --- Phase 2: Refine predecessor and successor based on KeyNode's children ---
+
+    // Find Actual Predecessor:
+    // If the KeyNode has a left subtree, the predecessor is the maximum value in that subtree.
     Node* leftTree = KeyNode->left;
     while(leftTree != NULL) {
-        pred = leftTree->data;
-        leftTree = leftTree->right;
+        pred = leftTree->data; // Update pred with current node's data
+        leftTree = leftTree->right; // Keep going right to find the maximum in left subtree
     }
 
-    // Successor
+    // Find Actual Successor:
+    // If the KeyNode has a right subtree, the successor is the minimum value in that subtree.
     Node* rightTree = KeyNode->right;
     while(rightTree != NULL){
-        succ = rightTree->data;
-        rightTree = rightTree->left;
+        succ = rightTree->data; // Update succ with current node's data
+        rightTree = rightTree->left; // Keep going left to find the minimum in right subtree
     }
 
-    return {pred, succ};
+    return {pred, succ}; // Return the found predecessor and successor
 }
 
 int main() {
-    Node* root = NULL;
-    int key;
+    Node* root = NULL; // Initialize root of the BST
+    int key;           // The key element for which to find pred/succ
 
     cout << "Enter data to create BST : ";
-    takeinput(root);
+    takeinput(root); // Build the BST
 
     cout << "Enter the value of key element : ";
-    cin >> key;
+    cin >> key; // Get the key from the user
 
     cout << endl << "Level Order Traversal : " << endl;
-    levelOrderTraversal(root);
+    levelOrderTraversal(root); // Print the tree structure (optional, for verification)
 
-    int index = 0;
+    // Call the function to find predecessor and successor
     pair<int, int> ans = predecessorSuccessor(root, key);
 
+    // Print the results
     cout << "Predecessor : " << ans.first << endl;
     cout << "Successor   : " << ans.second << endl;
+    
     return 0;
 }
 
-// 9 6 2 8 11 19 7 12 25 -1
+/*
+Example Input for tree creation (from problem description):
+9 6 2 8 11 19 7 12 25 -1
+
+Expected Tree Structure (approximate):
+          9
+         / \
+        6   11
+       / \   \
+      2   8   19
+         /   /  \
+        7   12  25
+
+Example Scenarios:
+1. Enter key: 9 (Root node, 2 children)
+   - Pred: max in left subtree (8)
+   - Succ: min in right subtree (11)
+   Output: Predecessor : 8, Successor   : 11
+
+2. Enter key: 7 (Leaf node)
+   - Pred: 6 (ancestor)
+   - Succ: 8 (ancestor)
+   Output: Predecessor : 6, Successor   : 8
+
+3. Enter key: 2 (Leftmost node, no left subtree)
+   - Pred: -1 (no smaller element)
+   - Succ: 6 (ancestor)
+   Output: Predecessor : -1, Successor   : 6
+
+4. Enter key: 25 (Rightmost node, no right subtree)
+   - Pred: 19 (ancestor)
+   - Succ: -1 (no larger element)
+   Output: Predecessor : 19, Successor   : -1
+
+5. Enter key: 10 (Key not in tree, but between 9 and 11)
+   - Pred: 9 (closest smaller)
+   - Succ: 11 (closest larger)
+   Output: Predecessor : 9, Successor   : 11
+   (This depends on the corrected `while` loop, otherwise might crash)
+*/
 ```
+
+### 1\. Binary Search Tree (BST) Recap
+
+  * A Binary Search Tree (BST) maintains a specific ordering: for any node, all values in its **left subtree** are **less than** its data, and all values in its **right subtree** are **greater than** its data.
+
+### 2\. Predecessor and Successor Definitions
+
+For a given `key` in a BST:
+
+  * **Predecessor**: The largest node value in the BST that is **smaller than** the `key`.
+
+      * If the `key` node exists and has a **left subtree**, its predecessor is the **maximum value in its left subtree** (the rightmost node in the left subtree).
+      * If the `key` node exists but has **no left subtree**, its predecessor is the closest ancestor that is smaller than it. This ancestor is found by looking at the path from the root to the `key` node: it's the last ancestor for which the `key` node (or its ancestors) was in the right subtree.
+
+  * **Successor**: The smallest node value in the BST that is **larger than** the `key`.
+
+      * If the `key` node exists and has a **right subtree**, its successor is the **minimum value in its right subtree** (the leftmost node in the right subtree).
+      * If the `key` node exists but has **no right subtree**, its successor is the closest ancestor that is larger than it. This ancestor is found by looking at the path from the root to the `key` node: it's the last ancestor for which the `key` node (or its ancestors) was in the left subtree.
+
+  * **Handling Key Not Found**: If the `key` itself is not present in the BST, the `pred` will be the greatest value less than `key` that *is* in the tree, and `succ` will be the smallest value greater than `key` that *is* in the tree. The algorithm often works correctly for this scenario too.
+
+### 3\. `predecessorSuccessor(Node* root, int key)` Function
+
+  * **Purpose**: To find both the in-order predecessor and in-order successor of a given `key` in the BST.
+
+  * **Approach (Two-Phase Strategy):**
+
+      * **Phase 1: Search for the `key` node and capture potential ancestors for `pred` and `succ`.**
+
+        1.  Initialize `pred = -1` and `succ = -1`. These will store our candidates.
+        2.  Traverse the tree using `KeyNode` pointer, starting from `root`.
+        3.  While `KeyNode->data != key` (and assuming `KeyNode` is not `NULL`):
+              * If `KeyNode->data > key`: The current `KeyNode->data` is greater than `key`. It's a candidate for the `successor`. Update `succ = KeyNode->data`, and move `KeyNode = KeyNode->left` to find a potentially smaller successor.
+              * If `KeyNode->data < key`: The current `KeyNode->data` is smaller than `key`. It's a candidate for the `predecessor`. Update `pred = KeyNode->data`, and move `KeyNode = KeyNode->right` to find a potentially larger predecessor.
+        4.  When the loop finishes, `KeyNode` points to the node containing `key`. At this point, `pred` and `succ` hold the closest ancestor values if the actual `key` node does not have a left/right subtree.
+
+      * **Phase 2: Find actual `pred` and `succ` from the `KeyNode`'s subtrees.**
+
+        1.  **Finding Predecessor**:
+              * If `KeyNode->left` is not `NULL`: The actual predecessor is the largest element in the `KeyNode`'s left subtree. Traverse `leftTree = KeyNode->left` and keep moving `leftTree = leftTree->right` until `leftTree->right` is `NULL`. Set `pred = leftTree->data`.
+        2.  **Finding Successor**:
+              * If `KeyNode->right` is not `NULL`: The actual successor is the smallest element in the `KeyNode`'s right subtree. Traverse `rightTree = KeyNode->right` and keep moving `rightTree = rightTree->left` until `rightTree->left` is `NULL`. Set `succ = rightTree->data`.
+
+  * **Return Value**: Returns a `std::pair<int, int>` where `.first` is `pred` and `.second` is `succ`.
+
+  * **Important Note on Code's `while(KeyNode->data != key)`**: This loop implicitly assumes the `key` *will always be found* in the tree. If the `key` is not present, `KeyNode` would eventually become `NULL` (`KeyNode->left` or `KeyNode->right` becoming `NULL`), leading to a null pointer dereference (`KeyNode->data`) and a crash. A robust implementation would be `while(KeyNode != NULL && KeyNode->data != key)`.
+
+### 4\. Complexity Analysis
+
+  * **Time Complexity**: `O(H)`
+      * `H` is the height of the BST. The initial search for the `key` takes `O(H)`. Finding the min/max in a subtree also takes `O(H)` in the worst case (skewed tree), but more precisely, `O(log N)` on average and `O(depth_of_node)` + `O(height_of_subtree)` after finding the node. Effectively, it's proportional to the height.
+  * **Space Complexity**: `O(1)`
+      * This iterative approach uses a constant amount of extra space (a few pointers), making it very space-efficient. (A recursive approach would use `O(H)` for the call stack).
+
+-----
+
+

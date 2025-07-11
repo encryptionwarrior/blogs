@@ -3,64 +3,226 @@ title: BST - LCA
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BST.h"
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, etc.)
+#include "BST.h"         // Assumed to contain Node class, insertIntoBST, takeinput, levelOrderTraversal, searchNode
 
-// Recursive Way
-// Node* LCAinBST(Node* root, Node* P, Node* Q) {
-//     if(root == NULL) {
-//         return NULL;
-//     }
+using namespace std;     // Use the standard namespace
 
-//     if(root->data < P->data && root->data < Q->data) {
-//         return LCAinBST(root->right, P, Q);
-//     }
+// Note: The Node class, insertIntoBST, takeinput, levelOrderTraversal, and searchNode
+// are assumed to be defined in "BST.h".
+/*
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+    Node(int data) { ... }
+};
 
-//     if(root->data > P->data && root->data > Q->data) {
-//         return LCAinBST(root->left, P, Q);
-//     }
+Node* insertIntoBST(Node* root, int data) { ... }
+void takeinput(Node* &root) { ... }
+void levelOrderTraversal(Node* root) { ... }
+// Assumed searchNode function to get Node* from data
+Node* searchNode(Node* root, int key) {
+    if (root == NULL || root->data == key) return root;
+    if (key < root->data) return searchNode(root->left, key);
+    return searchNode(root->right, key);
+}
+*/
 
-//     return root;
-// }
-
-// Iterative Way
+// Recursive Way (commented out) - Alternative implementation for LCA in BST
+/*
 Node* LCAinBST(Node* root, Node* P, Node* Q) {
+    // Base Case: If root is NULL, no LCA found in this path.
+    if(root == NULL) {
+        return NULL;
+    }
+
+    // If both P and Q are in the right subtree of root
+    if(root->data < P->data && root->data < Q->data) {
+        return LCAinBST(root->right, P, Q);
+    }
+
+    // If both P and Q are in the left subtree of root
+    if(root->data > P->data && root->data > Q->data) {
+        return LCAinBST(root->left, P, Q);
+    }
+
+    // If P and Q are on opposite sides of root, or root is P/Q, then root is the LCA.
+    return root;
+}
+*/
+
+// Iterative Way - Function to find the Lowest Common Ancestor (LCA) of two nodes P and Q in a BST.
+// Time Complexity: O(H) where H is the height of the tree.
+// Space Complexity: O(1)
+Node* LCAinBST(Node* root, Node* P, Node* Q) {
+    // Iterate until we find the LCA or reach a NULL node (shouldn't happen if P and Q are in tree)
     while(root != NULL) {
+        // Case 1: Both P and Q are in the RIGHT subtree of the current root.
+        // This means current root's data is smaller than both P and Q.
         if(root->data < P->data && root->data < Q->data) {
-            root = root->right;
-        } else if (root->data > P->data && root->data > Q->data) {
-            root = root->left;
-        } else {
-            return root;
+            root = root->right; // Move to the right child
+        }
+        // Case 2: Both P and Q are in the LEFT subtree of the current root.
+        // This means current root's data is larger than both P and Q.
+        else if (root->data > P->data && root->data > Q->data) {
+            root = root->left; // Move to the left child
+        }
+        // Case 3: Current root is the LCA.
+        // This happens if P and Q are on opposite sides of root,
+        // or if root itself is P or Q.
+        else {
+            return root; // Found the LCA
         }
     }
+    // This line should ideally not be reached if P and Q are guaranteed to be in the tree.
+    return NULL; // In case P or Q (or both) were not found or tree is empty.
 }
 
 int main() {
-    Node* root = NULL;
-    int d1, d2;
+    Node* root = NULL; // Initialize root of the BST
+    int d1, d2;        // Data values for the two nodes P and Q
 
     cout << "Enter data to create BST : ";
-    takeinput(root);
+    takeinput(root); // Build the BST
 
-    cout << "Enter the two node values : ";
-    cin >> d1 >> d2;
+    cout << "Enter the two node values (d1 d2) : ";
+    cin >> d1 >> d2; // Get the values for nodes P and Q
 
     cout << endl << "Level Order Traversal : " << endl;
-    levelOrderTraversal(root);
+    levelOrderTraversal(root); // Print the tree structure (optional, for verification)
 
+    // Find the actual Node* pointers for d1 and d2.
+    // Assumes searchNode function is available and returns NULL if not found.
     Node* P = searchNode(root, d1);
     Node* Q = searchNode(root, d2);
-    
+
+    // Check if both nodes were found before trying to find LCA
+    if (P == NULL || Q == NULL) {
+        cout << "One or both nodes not found in the BST." << endl;
+        return 1; // Exit with error code
+    }
+
+    // Find the Lowest Common Ancestor
     Node* AnsNode = LCAinBST(root, P, Q);
 
-    cout << "Lowest Common Anchestor of " << P->data << " & " << Q->data <<" is : ";
-    cout << AnsNode->data << endl;
+    // Print the result
+    if (AnsNode != NULL) {
+        cout << "Lowest Common Ancestor of " << P->data << " & " << Q->data <<" is : ";
+        cout << AnsNode->data << endl;
+    } else {
+        cout << "LCA could not be determined (possibly an issue with tree or nodes)." << endl;
+    }
 
     return 0;
 }
 
-// 14 12 28 8 4 10 9 11 19 32 18 17 22 21 24 39 -1
+/*
+Example Input for tree creation:
+14 12 28 8 4 10 9 11 19 32 18 17 22 21 24 39 -1
+
+Expected Tree Structure (partial):
+            14
+           /  \
+          12   28
+         / \   /  \
+        8  10 19   32
+       /  / \ / \   \
+      4  9  11 18 22 39
+                 / \
+                17 21
+                     \
+                      24
+
+Example Scenarios:
+1. Enter the two node values : 4 11
+   Expected LCA: 10 (or 8 depending on exact structure) -> Actually 10, then 12, then 14.
+   Path to 4: 14 -> 12 -> 8 -> 4
+   Path to 11: 14 -> 12 -> 10 -> 11
+   LCA is 12 (as 4 is left of 12, 11 is left of 12, but 10 is also left of 12)
+   Let's trace LCAinBST(14, 4, 11):
+     - 14: (4<14, 11<14) -> root = 12
+     - 12: (4<12, 11<12) -> root = 8
+     - 8: (4<8, 11>8) -> return 8.
+   Output: Lowest Common Ancestor of 4 & 11 is : 8 (Correct, 8 is the split point for 4 and 11)
+
+2. Enter the two node values : 17 24
+   Expected LCA: 22
+   Path to 17: 14 -> 28 -> 19 -> 18 -> 17
+   Path to 24: 14 -> 28 -> 19 -> 22 -> 24
+   LCA is 19.
+   Let's trace LCAinBST(14, 17, 24):
+     - 14: (17>14, 24>14) -> root = 28
+     - 28: (17<28, 24<28) -> root = 19
+     - 19: (17<19, 24>19) -> return 19.
+   Output: Lowest Common Ancestor of 17 & 24 is : 19 (Correct)
+
+3. Enter the two node values : 4 14
+   Expected LCA: 14 (P is a descendant of Q, Q is a descendant of P is wrong logic here). Q (14) is ancestor of P (4). So LCA is 14.
+   Let's trace LCAinBST(14, 4, 14):
+     - 14: (4<14, 14>=14) -> return 14. (Because 4 is less than 14, but 14 is NOT less than 14).
+   Output: Lowest Common Ancestor of 4 & 14 is : 14 (Correct)
+*/
 ```
+
+### 1\. Binary Search Tree (BST) Recap
+
+  * A Binary Search Tree (BST) follows a specific ordering:
+      * Left child (and its subtree) values are **less than** the parent.
+      * Right child (and its subtree) values are **greater than** the parent.
+  * This ordering is fundamental for efficiently finding the LCA.
+
+### 2\. Lowest Common Ancestor (LCA) Definition
+
+  * The **Lowest Common Ancestor (LCA)** of two nodes `P` and `Q` in a tree is the deepest node that is an ancestor of both `P` and `Q`.
+  * A node can be an ancestor of itself.
+
+### 3\. Supporting Components (Briefly)
+
+  * `Node` class: Defines the structure of a BST node (`data`, `left`, `right`).
+  * `insertIntoBST`, `takeinput`, `levelOrderTraversal`: Functions (assumed in `BST.h`) to build and visualize the tree.
+  * `searchNode(root, data)`: An assumed function (likely in `BST.h`) that takes the tree `root` and a `data` value, and returns a `Node*` pointer to the node containing that `data`. (Crucial for `main` to get `Node* P` and `Node* Q` from `d1` and `d2`).
+
+### 4\. `LCAinBST(Node* root, Node* P, Node* Q)` Function (Iterative Approach)
+
+  * **Purpose**: To find the LCA of two given nodes `P` and `Q` in a BST.
+
+  * **Core Idea for BSTs**:
+
+      * If both `P` and `Q` are smaller than the current `root`, the LCA must be in the `left` subtree.
+      * If both `P` and `Q` are larger than the current `root`, the LCA must be in the `right` subtree.
+      * If one is smaller and the other is larger (or one of them *is* the current `root`), then the current `root` is the LCA. This is because all nodes smaller than `root` are to its left, and all larger nodes are to its right. So, if `P` and `Q` "straddle" the `root`, or `root` itself is one of them, `root` is the meeting point (LCA).
+
+  * **Logic Flow**:
+
+    1.  Start a `while` loop that continues as long as `root` is not `NULL`.
+    2.  **Condition 1: Both P and Q are smaller than current `root`**:
+          * `if (root->data < P->data && root->data < Q->data)`:
+          * This means `root` is too large to be the LCA (both `P` and `Q` are on its right). The LCA must be further down in the `right` subtree.
+          * Move `root = root->right;`
+    3.  **Condition 2: Both P and Q are larger than current `root`**:
+          * `else if (root->data > P->data && root->data > Q->data)`:
+          * This means `root` is too small to be the LCA (both `P` and `Q` are on its left). The LCA must be further down in the `left` subtree.
+          * Move `root = root->left;`
+    4.  **Condition 3: `root` is the LCA**:
+          * `else`: This `else` block is executed when neither of the above conditions is true. This implies:
+              * `P->data <= root->data <= Q->data` (or `Q->data <= root->data <= P->data`)
+              * OR `root` is `P` itself
+              * OR `root` is `Q` itself.
+          * In any of these scenarios, the current `root` is the LCA. Return `root;`
+
+  * **Recursive Way (Commented out in code)**: Follows the same logic but uses recursive calls instead of a `while` loop. The base case is `if(root == NULL) return NULL;`.
+
+### 5\. Complexity Analysis
+
+  * **Time Complexity**: `O(H)`
+      * `H` is the height of the BST. In each step of the iteration, we move down one level of the tree towards the LCA.
+      * **Best Case (Balanced BST)**: `H = log N`. So, `O(log N)`.
+      * **Worst Case (Skewed BST/Linear Chain)**: `H = N`. So, `O(N)`.
+  * **Space Complexity**: `O(1)` for the iterative approach, as it uses a constant amount of extra space. (For the recursive approach, it would be `O(H)` due to the call stack).
+
+-----
+
+

@@ -3,65 +3,211 @@ title: Normal BST to Balanced BST
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BST.h"
-using namespace std;
 
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, vector, etc.)
+#include "BST.h"         // Assumed to contain Node class, insertIntoBST, takeinput, levelOrderTraversal
+
+using namespace std;     // Use the standard namespace
+
+// Note: The Node class, insertIntoBST, takeinput, and levelOrderTraversal
+// are assumed to be defined in "BST.h".
+/*
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+    Node(int data) { ... }
+};
+
+Node* insertIntoBST(Node* root, int data) { ... }
+void takeinput(Node* &root) { ... }
+void levelOrderTraversal(Node* root) { ... }
+*/
+
+// Helper function: Performs an in-order traversal of the BST
+// and stores all node data into the 'ans' vector in sorted order.
+// This is the first step to get data in a linear, sorted format.
+// Time Complexity: O(N)
+// Space Complexity: O(H) for recursion stack
 void inOrder(Node* root, vector<int>& ans) {
+    // Base case: If current node is NULL, return.
     if(root == NULL) {
         return;
     }
 
+    // Recursively traverse the left subtree.
     inOrder(root->left, ans);
+    // Process current node: add its data to the vector.
     ans.push_back(root->data);
+    // Recursively traverse the right subtree.
     inOrder(root->right, ans);
 }
 
+// Helper function: Builds a balanced BST from a sorted array.
+// This is the second step to construct the new balanced tree.
+// Time Complexity: O(N) (each element processed once)
+// Space Complexity: O(log N) for recursion stack (due to balanced construction)
 Node* balanceBST(vector<int>& arr, int start, int end) {
-    if(end-start < 0) {
+    // Base case: If the subarray is empty (start index > end index), return NULL.
+    if(start > end) { // Equivalent to end-start < 0
         return NULL;
     }
 
-    int mid = start + (end-start)/2;
+    // Find the middle element. This will be the root of the current subtree.
+    int mid = start + (end - start) / 2;
+    // Create a new node for the root of this subtree.
     Node* temp = new Node(arr[mid]);
 
-    temp->left = balanceBST(arr, start, mid-1);
-    temp->right = balanceBST(arr, mid+1, end);
+    // Recursively build the left subtree from the left half of the array.
+    temp->left = balanceBST(arr, start, mid - 1);
+    // Recursively build the right subtree from the right half of the array.
+    temp->right = balanceBST(arr, mid + 1, end);
 
+    // Return the root of the newly constructed balanced subtree.
     return temp;
 }
 
-Node* NormalToBalance(Node* &root) {
+// Main function to convert a normal BST to a balanced BST.
+// This function orchestrates the two helper functions.
+// Time Complexity: O(N)
+// Space Complexity: O(N)
+Node* NormalToBalance(Node* &root) { // 'root' is passed by reference, but not directly reassigned in this function
+    // If the original BST is empty, the balanced one is also empty.
     if(root == NULL) {
         return NULL;
     }
 
+    // Step 1: Perform in-order traversal to get all node data in a sorted vector.
     vector<int> arr;
     inOrder(root, arr);
 
-    Node* newBST = balanceBST(arr, 0, arr.size()-1);
+    // Step 2: Build a new balanced BST from the sorted vector.
+    // '0' is the starting index and 'arr.size()-1' is the ending index of the vector.
+    Node* newBSTroot = balanceBST(arr, 0, arr.size() - 1);
 
-    return newBST;
+    // Return the root of the newly created balanced BST.
+    return newBSTroot;
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize root of the original BST
 
     cout << "Enter data to create BST : ";
-    takeinput(root);
+    takeinput(root); // Build the original BST (can be unbalanced)
 
-    cout << endl << "Level Order Traversal of Normal BST : " << endl;
-    levelOrderTraversal(root);
+    cout << endl << "Level Order Traversal of Original BST : " << endl;
+    levelOrderTraversal(root); // Print the original BST
 
+    // Convert the original BST to a new balanced BST.
+    // 'newRoot' will point to the root of the balanced tree.
     Node* newRoot = NormalToBalance(root);
 
     cout << endl << "Level Order Traversal of Balanced BST : " << endl;
-    levelOrderTraversal(newRoot);
+    levelOrderTraversal(newRoot); // Print the newly created balanced BST
+
+    // Note: The original 'root' still points to the old (potentially unbalanced) tree.
+    // If you need to clean up the old tree, you would add logic here.
 
     return 0;
 }
 
-// 10 8 12 5 15 2 18 -1
-// 5 3 6 4 2 7 8 -1
+/*
+Example Input for tree creation (can lead to unbalanced trees):
+10 8 12 5 15 2 18 -1
+Original Tree:
+       10
+      /  \
+     8   12
+    /     \
+   5       15
+  /         \
+ 2           18
+
+In-order sorted elements: 2, 5, 8, 10, 12, 15, 18
+
+Balanced BST construction from sorted array:
+- mid = 10 -> Root is 10
+- left of 10: [2, 5, 8] -> mid = 5 -> Left child of 10 is 5
+  - left of 5: [2] -> mid = 2 -> Left child of 5 is 2
+  - right of 5: [8] -> mid = 8 -> Right child of 5 is 8
+- right of 10: [12, 15, 18] -> mid = 15 -> Right child of 10 is 15
+  - left of 15: [12] -> mid = 12 -> Left child of 15 is 12
+  - right of 15: [18] -> mid = 18 -> Right child of 15 is 18
+
+Expected Balanced Tree (Level Order):
+       10
+      /  \
+     5    15
+    / \   / \
+   2  8  12 18
+
+Output of Level Order Traversal of Balanced BST:
+10 5 15 2 8 12 18
+*/
 ```
+
+
+### 1\. Binary Search Tree (BST) Recap
+
+  * A Binary Search Tree (BST) organizes nodes such that left children are smaller and right children are larger.
+  * **Balanced BST**: A balanced BST (like an AVL tree or Red-Black tree) ensures that its height remains `O(log N)` where `N` is the number of nodes. This prevents degenerate cases (like a skewed tree) where operations (search, insert, delete) could take `O(N)` time. Balancing aims to keep these operations efficient at `O(log N)`.
+
+### 2\. Core Idea for Balancing a BST
+
+The most common strategy to balance an arbitrary BST is:
+
+1.  Perform an **In-order traversal** of the existing BST to get all its elements in **sorted order**.
+2.  Build a new, **balanced BST** from this sorted list of elements.
+
+### 3\. Supporting Components (Briefly)
+
+  * `Node` class: Defines the structure of a BST node (`data`, `left`, `right`).
+  * `insertIntoBST`, `takeinput`, `levelOrderTraversal`: Functions (assumed in `BST.h`) to build and visualize the original BST.
+
+### 4\. `inOrder(Node* root, vector<int>& ans)` Function
+
+  * **Purpose**: This is a helper function that performs a standard in-order traversal on the BST to collect all node data into a `vector<int>`.
+  * **Logic**: Standard recursive in-order: `left -> root -> right`.
+    1.  **Base Case**: If `root` is `NULL`, return.
+    2.  **Traverse Left**: Recursively call `inOrder` on `root->left`.
+    3.  **Process Node**: Add `root->data` to the `ans` vector.
+    4.  **Traverse Right**: Recursively call `inOrder` on `root->right`.
+  * **Result**: `ans` vector contains all BST node values in sorted (ascending) order.
+
+### 5\. `balanceBST(vector<int>& arr, int start, int end)` Function
+
+  * **Purpose**: Recursively constructs a perfectly balanced BST from a given sorted array (or subarray).
+  * **Core Idea**: For a sorted array, the middle element always becomes the root of the current (sub)tree to ensure balance. Elements to its left form the left subtree, and elements to its right form the right subtree.
+  * **Logic**:
+    1.  **Base Case**: `if(start > end)` (or `end-start < 0` as used in code): This means the current subarray is empty. Return `NULL`.
+    2.  **Find Middle**: `int mid = start + (end - start) / 2;` Calculates the middle index. This `mid` element will be the root of the current subtree.
+    3.  **Create Root Node**: `Node* temp = new Node(arr[mid]);` Creates a new node with the middle element's value.
+    4.  **Build Left Subtree**: `temp->left = balanceBST(arr, start, mid - 1);` Recursively calls itself to build the left subtree using the elements from `start` to `mid-1`.
+    5.  **Build Right Subtree**: `temp->right = balanceBST(arr, mid + 1, end);` Recursively calls itself to build the right subtree using the elements from `mid+1` to `end`.
+    6.  **Return Root**: Return `temp`, which is the root of the newly formed balanced subtree.
+
+### 6\. `NormalToBalance(Node* &root)` Function
+
+  * **Purpose**: Orchestrates the entire process of converting an unbalanced BST to a balanced one.
+  * **Logic Flow**:
+    1.  **Handle Empty Input**: If the initial `root` is `NULL`, return `NULL`.
+    2.  **Collect Sorted Data**: Create an empty `vector<int> arr;` and call `inOrder(root, arr);`. This populates `arr` with all node data in sorted order.
+    3.  **Build Balanced BST**: Call `balanceBST(arr, 0, arr.size() - 1);` passing the full sorted array and its bounds. This function will return the root of the newly constructed balanced BST.
+    4.  **Return New Root**: Return the root of the balanced BST. (Note: The `root` parameter here is passed by reference, but its value is not directly modified in this function; `main` receives the new root as `newRoot`. The `&` is not strictly necessary for this specific usage, but generally indicates an intent to modify `root`.)
+
+### 7\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * `O(N)` for the `inOrder` traversal to collect all `N` node data.
+      * `O(N)` for `balanceBST` to create `N` new nodes and set up pointers (each node is visited and created once).
+      * Total: `O(N)`.
+  * **Space Complexity**: `O(N)`
+      * `O(N)` for storing all `N` integer data values in the `vector<int> arr`.
+      * `O(H)` for the recursion stack of `inOrder` traversal (max `O(N)` for skewed).
+      * `O(H_new)` for the recursion stack of `balanceBST` (max `O(log N)` for a perfectly balanced tree, but in worst case of input array/recursion depth can be `O(N)` if not handled carefully). In this balanced construction, `H_new` is `O(log N)`.
+      * Total: Dominated by the vector storage, so `O(N)`.
+
+-----
+

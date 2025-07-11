@@ -3,75 +3,98 @@ title: BST Implementation
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, queue, etc.)
 
-using namespace std;
+using namespace std; // Use the standard namespace
 
+// Definition of a Node in the Binary Search Tree
 class Node {
-    public:
-        int data;
-        Node* left;
-        Node* right;
+public:
+    int data;     // Data value of the node
+    Node* left;   // Pointer to the left child
+    Node* right;  // Pointer to the right child
 
-        Node(int data) {
-            this->data = data;
-            this->left = NULL;
-            this->right = NULL;
-        }
+    // Constructor to initialize a new node
+    Node(int data) {
+        this->data = data;
+        this->left = NULL;  // Initially, left child is NULL
+        this->right = NULL; // Initially, right child is NULL
+    }
 };
 
+// Function to insert a new node with 'data' into the BST
+// Returns the root of the (potentially updated) subtree
 Node* insertIntoBST(Node* root, int data) {
+    // Base Case: If the current subtree is empty (found insertion point)
     if(root == NULL) {
-        root = new Node(data);
-        return root;
+        root = new Node(data); // Create a new node
+        return root;           // This new node becomes the root of this subtree
     }
 
+    // Recursive Step: Decide whether to go right or left
     if(data > root->data) {
+        // If data is greater, insert into the right subtree
         root->right = insertIntoBST(root->right, data);
-    } else {
+    } else { // data <= root->data (handles duplicates by placing them on the left)
+        // If data is smaller or equal, insert into the left subtree
         root->left = insertIntoBST(root->left, data);
     }
 
-    return root;
+    return root; // Return the current root (after potentially updating its children)
 }
 
+// Function to take input from the user and build the BST
+// 'root' is passed by reference (Node* &root) so the actual root pointer in main can be updated
 void takeinput(Node* &root) {
     int data;
-    cin >> data;
+    cout << "Enter data for node (enter -1 to stop): ";
+    cin >> data; // Read the first data element
 
+    // Loop until the sentinel value -1 is entered
     while(data != -1) {
-        root = insertIntoBST(root, data);
-        cin >> data;
+        root = insertIntoBST(root, data); // Insert data into the BST
+        cout << "Enter data for node (enter -1 to stop): ";
+        cin >> data;                      // Read the next data element
     }
 }
 
+// Function to perform Level Order Traversal (BFS) of the BST
+// Prints nodes level by level, with newlines between levels
 void levelOrderTraversal(Node* root) {
+    // If the tree is empty, nothing to traverse
     if(root == NULL) {
         return;
     }
 
-    queue<Node*> Q;
-    Q.push(root);
-    Q.push(NULL);
+    queue<Node*> Q; // Create a queue for BFS
+    Q.push(root);   // Push the root node
+    Q.push(NULL);   // Push a NULL marker to signify the end of the first level
 
+    // Loop until the queue is empty
     while(!Q.empty()) {
-        Node* FrontNode = Q.front();
-        Q.pop();
+        Node* FrontNode = Q.front(); // Get the front node
+        Q.pop();                     // Remove it from the queue
 
         if(FrontNode == NULL) {
-            cout << endl;
-            
+            // If FrontNode is NULL, it means we have finished a level
+            cout << endl; // Print a newline to move to the next level
+
+            // If there are still nodes in the queue, it means there's a next level.
+            // Push another NULL marker to delineate the end of that next level.
             if(!Q.empty()) {
                 Q.push(NULL);
             }
         } else {
+            // If FrontNode is a valid node, print its data
             cout << FrontNode->data << " ";
 
+            // Enqueue its left child if it exists
             if(FrontNode->left) {
                 Q.push(FrontNode->left);
             }
 
+            // Enqueue its right child if it exists
             if(FrontNode->right) {
                 Q.push(FrontNode->right);
             }
@@ -80,14 +103,115 @@ void levelOrderTraversal(Node* root) {
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the BST to NULL
 
-    cout << "Enter data to create BST : ";
+    // Build the BST by taking input from the user
+    cout << "--- Creating Binary Search Tree ---" << endl;
     takeinput(root);
 
-    cout << endl << "Level Order Traversal : ";
+    // Perform and print the Level Order Traversal of the created BST
+    cout << endl << "Level Order Traversal of BST:" << endl;
     levelOrderTraversal(root);
+    cout << endl; // Extra newline for formatting
 
-    return 0;
+    return 0; // End of the program
 }
+
+/*
+Example INPUT:
+Enter data for node (enter -1 to stop): 50
+Enter data for node (enter -1 to stop): 20
+Enter data for node (enter -1 to stop): 70
+Enter data for node (enter -1 to stop): 10
+Enter data for node (enter -1 to stop): 30
+Enter data for node (enter -1 to stop): 60
+Enter data for node (enter -1 to stop): 80
+Enter data for node (enter -1 to stop): -1
+
+Expected Level Order Traversal Output:
+50
+20 70
+10 30 60 80
+*/
 ```
+
+Here are quick revision notes and the commented code for a Binary Search Tree (BST) implementation, including insertion and level-order traversal, formatted in Markdown for easy copying.
+
+-----
+
+## Binary Search Tree (BST) Quick Revision Notes
+
+-----
+
+### 1\. Binary Search Tree (BST) Properties
+
+  * A Binary Search Tree (BST) is a special type of binary tree where for every node:
+      * All nodes in its **left subtree** have values **less than** the node's data.
+      * All nodes in its **right subtree** have values **greater than** the node's data.
+      * Both the left and right subtrees must also be Binary Search Trees.
+  * **No Duplicates (typically)**: Most BST implementations assume no duplicate values. If duplicates are allowed, a consistent policy must be followed (e.g., always insert duplicates into the left subtree or always into the right subtree). This code's `insertIntoBST` puts duplicates in the left.
+  * **Ordering**: The BST property ensures that an in-order traversal of the tree will yield the elements in sorted (ascending) order.
+
+### 2\. `Node` Class
+
+  * Represents a single node in the BST.
+  * `data`: Stores the integer value of the node.
+  * `left`: Pointer to the left child node.
+  * `right`: Pointer to the right child node.
+  * `Node(int data)`: Constructor to initialize a new node with given `data` and `NULL` children.
+
+### 3\. `insertIntoBST(Node* root, int data)` (Recursive Insertion)
+
+  * **Purpose**: Inserts a new data value into the correct position in the BST.
+  * **Logic**:
+    1.  **Base Case**: If `root` is `NULL`, it means we've found the correct empty spot. Create a new `Node` with the given `data` and return it. This new node becomes the `root` of a new subtree (or a leaf node).
+    2.  **Recursive Step**:
+          * If `data` is **greater than** `root->data`, the new node belongs in the right subtree. Recursively call `insertIntoBST` on `root->right` and assign the returned (potentially new) subtree to `root->right`.
+          * If `data` is **less than or equal to** `root->data` (handling duplicates by placing them on the left), the new node belongs in the left subtree. Recursively call `insertIntoBST` on `root->left` and assign the returned (potentially new) subtree to `root->left`.
+    3.  **Return**: After the recursive call, return the current `root` (which might have been updated with a new child).
+
+### 4\. `takeinput(Node* &root)`
+
+  * **Purpose**: Reads integer data from standard input to build the BST.
+  * **Logic**:
+    1.  Prompts the user to enter data.
+    2.  Reads integers one by one until `-1` is entered (acting as a sentinel value to stop input).
+    3.  For each valid integer, it calls `insertIntoBST` to insert it into the `root`.
+  * **`Node* &root`**: The `&` symbol means `root` is passed by reference. This is crucial because `insertIntoBST` returns the *new* root (if the initial `root` was `NULL`), and we need to update the `root` pointer in `main` directly.
+
+### 5\. `levelOrderTraversal(Node* root)`
+
+  * **Purpose**: Prints the nodes of the BST level by level (Breadth-First Search - BFS).
+  * **Logic**:
+    1.  Uses a `queue<Node*> Q` to store nodes to be visited.
+    2.  A `NULL` marker is used in the queue to indicate the end of a level.
+    3.  **Initialization**: Push the `root` and then a `NULL` marker to the queue.
+    4.  **Loop**: While the queue is not empty:
+          * Dequeue `FrontNode`.
+          * **If `FrontNode == NULL`**:
+              * This signifies the end of a level. Print a new line (`endl`).
+              * If the queue is not empty after this (meaning there are still nodes in the next level), push another `NULL` marker to delineate the next level.
+          * **If `FrontNode` is a valid node**:
+              * Print its `data`.
+              * If `FrontNode->left` exists, enqueue it.
+              * If `FrontNode->right` exists, enqueue it.
+
+### 6\. Complexity Analysis
+
+  * **For `insertIntoBST` and `takeinput`**:
+
+      * **Time Complexity**: `O(H)` for each insertion, where `H` is the height of the BST.
+          * **Best Case (Balanced BST)**: `H = log N`. So, `O(log N)` per insertion. For `N` insertions: `O(N log N)`.
+          * **Worst Case (Skewed BST/Linear Chain)**: `H = N`. So, `O(N)` per insertion. For `N` insertions: `O(N^2)`.
+      * **Space Complexity**: `O(H)` due to recursion stack for insertion.
+
+  * **For `levelOrderTraversal`**:
+
+      * **Time Complexity**: `O(N)`
+          * Every node is enqueued and dequeued exactly once.
+      * **Space Complexity**: `O(W)`
+          * `W` is the maximum width of the tree (max number of nodes at any level). In the worst case (e.g., a complete binary tree), `W` can be `O(N)`. So, `O(N)` space for the queue.
+
+-----
+
+

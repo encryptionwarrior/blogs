@@ -3,102 +3,267 @@ title: Merge2BST InOrder
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BST.h"
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, vector, utility for pair, etc.)
+#include "BST.h"         // Assumed to contain Node class, takeinput, levelOrderTraversal
 
+using namespace std;     // Use the standard namespace
+
+// Note: The Node class, takeinput, and levelOrderTraversal
+// are assumed to be defined in "BST.h".
+/*
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+    Node(int data) { // Constructor for Node
+        this->data = data;
+        this->left = NULL;
+        this->right = NULL;
+    }
+};
+
+void takeinput(Node* &root) { ... }
+void levelOrderTraversal(Node* root) { ... }
+*/
+
+// Helper function: Performs an in-order traversal of a BST
+// and stores all node data into the 'ans' vector in sorted order.
+// Time Complexity: O(N), where N is the number of nodes in the tree.
+// Space Complexity: O(H) for recursion stack, where H is the tree's height.
 void inOrder(Node* root, vector<int>& ans) {
     if(root == NULL) {
         return;
     }
-
-    inOrder(root->left, ans);
-    ans.push_back(root->data);
-    inOrder(root->right, ans);
+    inOrder(root->left, ans);      // Traverse left
+    ans.push_back(root->data);     // Process current node
+    inOrder(root->right, ans);     // Traverse right
 }
 
+// Helper function: Merges two sorted arrays (arr1 and arr2) into a single sorted array.
+// This is a standard merge step from merge sort.
+// Time Complexity: O(N1 + N2), where N1 and N2 are sizes of arr1 and arr2.
+// Space Complexity: O(N1 + N2) for the 'solution' vector.
 vector<int> mergeArrays(vector<int> arr1, vector<int> arr2) {
-    if(arr1.size() == 0 || arr2.size() == 0) {
-        return (arr1.size()) ? arr1 : arr2;
-    }
+    // Handle edge cases where one or both arrays are empty.
+    if(arr1.empty() && arr2.empty()) return {};
+    if(arr1.empty()) return arr2;
+    if(arr2.empty()) return arr1;
 
-    int i=0, j=0;
-    vector<int> solution;
+    int i = 0, j = 0;
+    vector<int> solution; // To store the merged sorted elements
 
-    while(i<arr1.size() && j<arr2.size()) {
+    // Compare elements from both arrays and add the smaller one to 'solution'.
+    while(i < arr1.size() && j < arr2.size()) {
         if(arr1[i] < arr2[j]) {
             solution.push_back(arr1[i++]);
         } else {
             solution.push_back(arr2[j++]);
         }
     }
-    
-    while(i<arr1.size()) {
+
+    // Add any remaining elements from arr1 (if arr2 was exhausted).
+    while(i < arr1.size()) {
         solution.push_back(arr1[i++]);
     }
-    
-    while(j<arr2.size()) {
+
+    // Add any remaining elements from arr2 (if arr1 was exhausted).
+    while(j < arr2.size()) {
         solution.push_back(arr2[j++]);
     }
 
     return solution;
 }
 
+// Helper function: Builds a balanced BST from a sorted array.
+// This is crucial for ensuring the merged tree is balanced.
+// Time Complexity: O(N), where N is the number of elements in 'arr'.
+// Space Complexity: O(log N) for recursion stack due to balanced construction.
 Node* createBST(vector<int> &arr, int start, int end) {
+    // Base case: If subarray is empty, return NULL.
     if(start > end) {
         return NULL;
     }
 
-    int mid = start + (end-start)/2;
+    // Find the middle element; it becomes the root of the current subtree.
+    int mid = start + (end - start) / 2;
     Node* temp = new Node(arr[mid]);
 
-    temp->left = createBST(arr, start, mid-1);
-    temp->right = createBST(arr, mid+1, end);
+    // Recursively build the left subtree from the left half of the array.
+    temp->left = createBST(arr, start, mid - 1);
+    // Recursively build the right subtree from the right half of the array.
+    temp->right = createBST(arr, mid + 1, end);
 
-    return temp;
+    return temp; // Return the root of the constructed subtree.
 }
 
+// Main function to merge two BSTs into a single balanced BST.
+// Time Complexity: O(N1 + N2), where N1 and N2 are nodes in root1 and root2.
+// Space Complexity: O(N1 + N2) for storing arrays.
 Node* MergeBST(Node* root1, Node* root2) {
+    // Step 1: Extract sorted elements from both BSTs using in-order traversal.
     vector<int> arr1;
     vector<int> arr2;
-
     inOrder(root1, arr1);
     inOrder(root2, arr2);
 
+    // Step 2: Merge the two sorted arrays into a single sorted array.
     vector<int> resultArray = mergeArrays(arr1, arr2);
-    Node* answer = createBST(resultArray, 0, resultArray.size()-1);
 
-    cout << endl << "Level Order Traversal of merged BST (infunc) : " << endl;
+    // Step 3: Build a new balanced BST from the combined sorted array.
+    Node* answer = createBST(resultArray, 0, resultArray.size() - 1);
+
+    // Optional: Print level order traversal of the merged BST from within this function.
+    // This helps in verifying the output immediately after creation.
+    cout << endl << "Level Order Traversal of merged BST (inside MergeBST function) : " << endl;
     levelOrderTraversal(answer);
-    return answer;
+
+    return answer; // Return the root of the newly merged and balanced BST.
 }
 
 int main() {
-    Node* root1 = NULL;
-    Node* root2 = NULL;
-    int target;
+    Node* root1 = NULL; // Initialize root of the first BST
+    Node* root2 = NULL; // Initialize root of the second BST
 
-    cout << "Enter data to create BST 1 : ";
-    takeinput(root1);
-    
-    cout << "Enter data to create BST 2 : ";
-    takeinput(root2);
+    cout << "Enter data to create BST 1 (e.g., 50 40 60 70 -1) : ";
+    takeinput(root1); // Build BST 1
+
+    cout << "Enter data to create BST 2 (e.g., 55 45 35 65 47 -1) : ";
+    takeinput(root2); // Build BST 2
 
     cout << endl << "Level Order Traversal of BST 1 : " << endl;
-    levelOrderTraversal(root1);
-    
+    levelOrderTraversal(root1); // Print BST 1
+
     cout << endl << "Level Order Traversal of BST 2 : " << endl;
-    levelOrderTraversal(root2);
-    
+    levelOrderTraversal(root2); // Print BST 2
+
+    // Call the MergeBST function to get the merged and balanced BST.
     Node* result = MergeBST(root1, root2);
 
-    cout << endl << "Level Order Traversal of merged BST : " << endl;
+    // Print the level order traversal of the final merged BST from main.
+    // This confirms the returned 'result' pointer is correct.
+    cout << endl << "Level Order Traversal of final merged BST (from main) : " << endl;
     levelOrderTraversal(result);
-    
+
     return 0;
 }
 
-// 50 40 60 70 -1
-// 55 45 35 65 47 -1
+/*
+Example Inputs:
+BST 1: 50 40 60 70 -1
+BST 2: 55 45 35 65 47 -1
+
+BST 1 (In-order): 40, 50, 60, 70
+BST 2 (In-order): 35, 45, 47, 55, 65
+
+Merged Sorted Array: 35, 40, 45, 47, 50, 55, 60, 65, 70
+
+Expected Merged and Balanced BST (Level Order Traversal):
+(Middle element of merged array is 50, so it's the root)
+          50
+         /  \
+        40   60
+       / \   / \
+      35 45 55 70
+         /   /
+        47  65
+
+Output of Level Order Traversal:
+50 40 60 35 45 55 70 47 65
+*/
 ```
+
+
+### 1\. Binary Search Tree (BST) Recap
+
+  * A Binary Search Tree (BST) organizes nodes such that left children are smaller and right children are larger.
+  * **In-order Traversal**: Visiting nodes in `Left -> Root -> Right` order yields elements in **strictly ascending (sorted) order**.
+  * **Balanced BST**: A BST where the height is minimized (`O(log N)`), ensuring efficient operations.
+
+### 2\. Core Idea for Merging Two BSTs
+
+The most common and efficient strategy to merge two BSTs into a *single balanced BST* involves three main steps:
+
+1.  **Convert to Sorted Arrays**: Extract all elements from both BSTs into separate sorted arrays (or vectors) using in-order traversal.
+2.  **Merge Sorted Arrays**: Combine these two sorted arrays into a single, larger sorted array.
+3.  **Build Balanced BST**: Construct a new, perfectly balanced BST from this combined sorted array.
+
+### 3\. Supporting Components (Briefly)
+
+  * `Node` class: Defines the structure of a BST node (`data`, `left`, `right`).
+  * `takeinput`, `levelOrderTraversal`: Functions (assumed in `BST.h`) to build and visualize the BSTs.
+
+### 4\. `inOrder(Node* root, vector<int>& ans)` Function
+
+  * **Purpose**: Helper function to perform an in-order traversal of a BST and collect all node data into a `vector<int>` in sorted order.
+  * **Logic**: Standard recursive in-order traversal (`Left -> Root -> Right`).
+    1.  Base case: If `root` is `NULL`, return.
+    2.  Recursively traverse `root->left`.
+    3.  Add `root->data` to the `ans` vector.
+    4.  Recursively traverse `root->right`.
+
+### 5\. `mergeArrays(vector<int> arr1, vector<int> arr2)` Function
+
+  * **Purpose**: Merges two already sorted input vectors (`arr1` and `arr2`) into a single, sorted `vector<int>`.
+  * **Logic**: Uses the classic **two-pointer technique**, similar to the merge step in Merge Sort.
+    1.  Initialize two pointers, `i` for `arr1` and `j` for `arr2`, both starting at 0.
+    2.  Initialize an empty `solution` vector.
+    3.  Loop `while (i < arr1.size() && j < arr2.size())`:
+          * Compare `arr1[i]` and `arr2[j]`.
+          * Add the smaller element to `solution` and advance its respective pointer.
+    4.  After the main loop, one of the arrays might still have remaining elements. Add all remaining elements from `arr1` (if any) to `solution`.
+    5.  Add all remaining elements from `arr2` (if any) to `solution`.
+    6.  Return the `solution` vector.
+
+### 6\. `createBST(vector<int> &arr, int start, int end)` Function
+
+  * **Purpose**: Recursively builds a perfectly balanced BST from a given sorted array (or subarray).
+  * **Logic**:
+    1.  **Base Case**: If `start > end`, the subarray is empty; return `NULL`.
+    2.  **Find Middle**: Calculate `mid = start + (end - start) / 2`. This `mid` element will be the root of the current subtree.
+    3.  **Create Node**: Create a new `Node` with `arr[mid]`.
+    4.  **Build Left Subtree**: Recursively call `createBST` for the left subarray (`start` to `mid-1`).
+    5.  **Build Right Subtree**: Recursively call `createBST` for the right subarray (`mid+1` to `end`).
+    6.  Return the newly created root node.
+
+### 7\. `MergeBST(Node* root1, Node* root2)` Function
+
+  * **Purpose**: The main function that orchestrates the merging of the two BSTs.
+  * **Logic Flow**:
+    1.  **Extract Elements**:
+          * Call `inOrder(root1, arr1)` to get sorted elements from the first BST.
+          * Call `inOrder(root2, arr2)` to get sorted elements from the second BST.
+    2.  **Merge Sorted Lists**:
+          * Call `mergeArrays(arr1, arr2)` to combine the two sorted lists into one `resultArray`.
+    3.  **Build Final BST**:
+          * Call `createBST(resultArray, 0, resultArray.size()-1)` to construct a new, balanced BST from the `resultArray`.
+    4.  **Print & Return**:
+          * (Optional, but present in code) Print the level order traversal of the newly formed merged BST for verification.
+          * Return the root of the `answer` (the merged BST).
+
+### 8\. Complexity Analysis
+
+  * Let `N1` be the number of nodes in `BST1` and `N2` be the number of nodes in `BST2`.
+
+  * `N = N1 + N2` is the total number of nodes in the merged BST.
+
+  * **Time Complexity**: `O(N1 + N2)` which is `O(N)`.
+
+      * `inOrder` for `BST1`: `O(N1)`.
+      * `inOrder` for `BST2`: `O(N2)`.
+      * `mergeArrays`: `O(N1 + N2) = O(N)`.
+      * `createBST`: `O(N1 + N2) = O(N)`.
+      * Total: `O(N)`.
+
+  * **Space Complexity**: `O(N)`
+
+      * `O(N1)` for `arr1`, `O(N2)` for `arr2`.
+      * `O(N1 + N2) = O(N)` for `resultArray`.
+      * `O(H1)` + `O(H2)` for `inOrder` recursion stacks (max `O(N1)` + `O(N2)`).
+      * `O(log N)` for `createBST` recursion stack (due to balanced construction).
+      * Total: `O(N)` due to vector storage.
+
+-----
+
+

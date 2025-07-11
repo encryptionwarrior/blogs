@@ -3,61 +3,185 @@ title: Flatten BST to Sorted List
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BST.h"
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, vector, etc.)
+#include "BST.h"         // Assumed to contain Node class, insertIntoBST, takeinput, levelOrderTraversal
 
+using namespace std;     // Use the standard namespace
+
+// Note: The Node class, insertIntoBST, takeinput, and levelOrderTraversal
+// are assumed to be defined in "BST.h".
+/*
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+    Node(int data) { ... }
+};
+
+Node* insertIntoBST(Node* root, int data) { ... }
+void takeinput(Node* &root) { ... }
+void levelOrderTraversal(Node* root) { ... }
+*/
+
+// Helper function: Performs an in-order traversal of the BST
+// and stores pointers to all nodes in the 'ans' vector in sorted order.
+// Time Complexity: O(N)
+// Space Complexity: O(H) for recursion stack
 void inOrder(Node* root, vector<Node*>& ans) {
+    // Base case: If current node is NULL, return.
     if(root == NULL) {
         return;
     }
 
+    // Recursively traverse the left subtree.
     inOrder(root->left, ans);
+    // After left subtree, add the current node's pointer to the vector.
     ans.push_back(root);
+    // Recursively traverse the right subtree.
     inOrder(root->right, ans);
 }
 
 
+// Function to flatten a BST into a sorted singly linked list (right-skewed tree).
+// The 'root' is passed by reference so its pointer can be updated to the new head.
+// Time Complexity: O(N) (O(N) for in-order + O(N) for relinking)
+// Space Complexity: O(N) (for storing node pointers in vector)
 void flattenBST(Node* &root) {
+    // If the tree is empty, nothing to flatten.
     if(root == NULL) {
         return;
     }
 
+    // Step 1: Get all node pointers in sorted order using in-order traversal.
     vector<Node*> arr;
-    inOrder(root, arr);
+    inOrder(root, arr); // 'arr' now contains Node* pointers in ascending data order
 
-    for(int i=0; i<arr.size()-1; i++) {
-        arr[i]->left = NULL;
-        arr[i]->right = arr[i+1];
+    // Step 2: Relink the nodes to form a right-skewed linked list.
+    // Iterate from the first node up to the second-to-last node.
+    for(int i = 0; i < arr.size() - 1; i++) {
+        arr[i]->left = NULL;      // Set left child to NULL for all nodes
+        arr[i]->right = arr[i+1]; // Link current node's right to the next node in sorted order
     }
 
-    arr[arr.size()-1]->left = NULL;
-    arr[arr.size()-1]->right = NULL;
+    // Step 3: Handle the last node in the flattened list (the largest element).
+    arr[arr.size()-1]->left = NULL;  // Its left child is NULL
+    arr[arr.size()-1]->right = NULL; // Its right child is NULL (end of the list)
 
+    // Step 4: Update the root of the original tree to point to the new head (smallest element).
     root = arr[0];
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize root of the BST
 
     cout << "Enter data to create BST : ";
-    takeinput(root);
+    takeinput(root); // Build the BST
 
-    cout << endl << "Level Order Traversal : " << endl;
-    levelOrderTraversal(root);
+    cout << endl << "Level Order Traversal (Original BST) : " << endl;
+    levelOrderTraversal(root); // Print the original tree structure
 
-    flattenBST(root);
+    flattenBST(root); // Flatten the BST
 
-    Node* temp = root;
-    cout << "Flatten BST : ";
+    // Traverse and print the flattened BST (which is now a linked list via 'right' pointers).
+    Node* temp = root; // Start from the new root (smallest element)
+    cout << endl << "Flattened BST (traverse using right pointers) : ";
     while(temp != NULL) {
-        cout << temp->data << " ";
-        temp = temp->right;
+        cout << temp->data << " "; // Print current node's data
+        temp = temp->right;       // Move to the next node using its right pointer
     }
+    cout << endl; // Newline at the end of output
 
     return 0;
 }
 
-// 14 12 28 8 4 10 9 11 19 32 18 17 22 21 24 39 -1
+/*
+Example Input for tree creation:
+14 12 28 8 4 10 9 11 19 32 18 17 22 21 24 39 -1
+
+Original Tree Structure (approximate):
+            14
+           /  \
+          12   28
+         / \   /  \
+        8  10 19   32
+       /  / \ / \   \
+      4  9  11 18 22 39
+                 / \
+                17 21
+                     \
+                      24
+
+In-order sorted sequence of elements:
+4, 8, 9, 10, 11, 12, 14, 17, 18, 19, 21, 22, 24, 28, 32, 39
+
+Output of Flattened BST:
+Flattened BST : 4 8 9 10 11 12 14 17 18 19 21 22 24 28 32 39
+*/
 ```
+
+
+### 1\. Binary Search Tree (BST) Recap
+
+  * A Binary Search Tree (BST) maintains the property that for any node, values in its left subtree are smaller, and values in its right subtree are greater.
+  * **Crucial Property**: An **In-order traversal** of a BST visits nodes in **strictly ascending (sorted) order**. This is the foundation of the flattening process.
+
+### 2\. What is "Flattening" a BST?
+
+  * Flattening a BST means transforming it into a linear structure, essentially a **singly linked list**, where all nodes appear in their sorted order.
+  * In the context of trees, this typically means a **right-skewed tree**: each node will only have a `right` child (pointing to the next element in sorted order), and its `left` child will be `NULL`.
+
+### 3\. Supporting Components (Briefly)
+
+  * `Node` class: Defines the structure of a BST node (`data`, `left`, `right`).
+  * `insertIntoBST`, `takeinput`, `levelOrderTraversal`: Functions (assumed in `BST.h`) to build and visualize the initial BST.
+
+### 4\. `inOrder(Node* root, vector<Node*>& ans)` Function
+
+  * **Purpose**: This is a helper function that performs an in-order traversal of the BST and collects *pointers* to all the nodes into a `vector<Node*>`.
+  * **Logic**:
+    1.  **Base Case**: If `root` is `NULL`, simply return (end of a branch).
+    2.  **Traverse Left**: Recursively call `inOrder` on `root->left`.
+    3.  **Collect Node Pointer**: After processing the left subtree, add the `root` pointer itself to the `ans` vector. (This is the "visit" step in in-order traversal).
+    4.  **Traverse Right**: Recursively call `inOrder` on `root->right`.
+  * **Result**: After this function completes, the `ans` vector will contain `Node*` pointers to all nodes in the BST, ordered by their data values (smallest to largest).
+
+### 5\. `flattenBST(Node* &root)` Function
+
+  * **Purpose**: To modify the original BST in-place (by manipulating its pointers) so it becomes a sorted singly linked list.
+
+  * **Core Idea**:
+
+    1.  Get all node pointers in sorted order using the `inOrder` helper.
+    2.  Iterate through this sorted list of node pointers. For each node, set its `left` child to `NULL` and its `right` child to point to the next node in the sorted sequence.
+    3.  The original `root` of the BST needs to be updated to point to the first node of this new linear structure (which is the smallest element).
+
+  * **Logic Flow**:
+
+    1.  **Handle Empty Tree**: If the input `root` is `NULL`, there's nothing to flatten, so return.
+    2.  **Collect Node Pointers**: Create an empty `vector<Node*> arr;` and call `inOrder(root, arr);`. This populates `arr` with node pointers in sorted order.
+    3.  **Relink Nodes**:
+          * Loop from `i = 0` up to `arr.size() - 2`:
+              * `arr[i]->left = NULL;` (Ensure no left child for the flattened list).
+              * `arr[i]->right = arr[i+1];` (Link current node to the next node in the sorted sequence).
+          * Handle the **last node** in the `arr` (the largest element in the original BST):
+              * `arr[arr.size()-1]->left = NULL;` (No left child).
+              * `arr[arr.size()-1]->right = NULL;` (It's the end of the linked list).
+    4.  **Update Tree Root**: `root = arr[0];`
+          * The original `root` pointer of the BST is updated to point to the first node (smallest element) of the newly formed linked list. This `root` is passed by reference (`Node* &root`) to allow this modification.
+
+### 6\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * `O(N)` for the `inOrder` traversal to collect all `N` node pointers.
+      * `O(N)` for the loop that iterates through the vector and relinks all `N` nodes.
+      * Total: `O(N)`.
+  * **Space Complexity**: `O(N)`
+      * `O(N)` for storing all `N` `Node*` pointers in the `vector<Node*> arr`.
+      * `O(H)` for the recursion stack of `inOrder` traversal, where `H` is the height of the tree (in worst case `O(N)`).
+      * Total: Dominated by the vector storage, so `O(N)`.
+
+-----
+
+
