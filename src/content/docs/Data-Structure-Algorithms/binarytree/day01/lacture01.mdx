@@ -3,64 +3,82 @@ title: Binary Tree Introduction
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes iostream, queue, stack, etc. for common operations
+using namespace std;     // Uses the standard namespace
 
+// Definition for a Binary Tree Node
 class Node {
-    public:
-        int data;
-        Node* left;
-        Node* right;
+public:
+    int data;     // Data stored in the node
+    Node* left;   // Pointer to the left child node
+    Node* right;  // Pointer to the right child node
 
-        Node(int d) {
-            this->data = d;
-            this->left = NULL;
-            this->right = NULL;
-        }
+    // Constructor for a Node
+    Node(int d) {
+        this->data = d;
+        this->left = NULL;  // Initialize left child to NULL
+        this->right = NULL; // Initialize right child to NULL
+    }
 };
 
+// Function to build a Binary Tree recursively (pre-order like input)
+// Input: Use -1 to represent a NULL node.
 Node* buildTree(Node* root) {
     int data;
-    cout << "Enter the data : ";
-    cin >> data;
-    root = new Node(data);
+    cout << "Enter the data (-1 for NULL) : "; // Prompt user for node data
+    cin >> data;                              // Read data
 
+    root = new Node(data); // Create a new node with the entered data
+
+    // Base case: If data is -1, it means this node is NULL
     if(data == -1) {
-        return NULL;
+        return NULL; // Return NULL, stopping the recursion for this branch
     }
 
-    cout << "LEFT of " << data << " : ";
-    root->left = buildTree(root->left);
-    
-    cout << "RIGHT of " << data << " : ";
-    root->right = buildTree(root->right);
+    // Recursive call for the left child
+    cout << "Enter LEFT child of " << data << " : ";
+    root->left = buildTree(root->left); // Recursively build the left subtree
 
-    return root;
+    // Recursive call for the right child
+    cout << "Enter RIGHT child of " << data << " : ";
+    root->right = buildTree(root->right); // Recursively build the right subtree
+
+    return root; // Return the constructed root of the (sub)tree
 }
 
+// Function to perform Level Order Traversal (Breadth-First Search)
+// Prints nodes level by level, with each level on a new line.
 void levelOrderTraversal(Node* root) {
-    queue<Node*> Q;
-    Q.push(root);
-    Q.push(NULL);
+    if (root == NULL) { // Handle empty tree case
+        return;
+    }
 
+    queue<Node*> Q; // Create a queue to store nodes for level order traversal
+    Q.push(root);   // Push the root node
+    Q.push(NULL);   // Push a NULL marker to indicate the end of the first level
+
+    // Loop until the queue is empty
     while(!Q.empty()) {
-        Node* temp = Q.front();
-        Q.pop();
+        Node* temp = Q.front(); // Get the front node from the queue
+        Q.pop();                // Remove the front node
 
-        if(temp == NULL) {
-            cout << endl;
+        if(temp == NULL) { // If the popped element is the NULL marker
+            cout << endl;  // Print a newline (end of current level)
 
+            // If the queue is not empty after printing newline,
+            // it means there are more levels, so push another NULL marker
             if(!Q.empty()) {
                 Q.push(NULL);
             }
-        } else {
-            cout << temp->data << " ";
+        } else { // If the popped element is a valid node
+            cout << temp->data << " "; // Print its data
 
+            // If left child exists, push it to the queue
             if(temp->left) {
                 Q.push(temp->left);
             }
-
+            // If right child exists, push it to the queue
             if(temp->right) {
                 Q.push(temp->right);
             }
@@ -68,90 +86,195 @@ void levelOrderTraversal(Node* root) {
     }
 }
 
+// Function to perform In-order Traversal (Left -> Root -> Right)
 void inOrderTraversal(Node* root) {
+    // Base case: If current node is NULL, return
     if(root == NULL) {
         return;
     }
 
-    inOrderTraversal(root->left);
-    cout << root->data << " ";
-    inOrderTraversal(root->right);
+    inOrderTraversal(root->left);  // Recursively traverse left subtree
+    cout << root->data << " ";    // Print data of the current node
+    inOrderTraversal(root->right); // Recursively traverse right subtree
 }
 
+// Function to perform Pre-order Traversal (Root -> Left -> Right)
 void preOrderTraversal(Node* root) {
+    // Base case: If current node is NULL, return
     if(root == NULL) {
         return;
     }
 
-    cout << root->data << " ";
-    preOrderTraversal(root->left);
-    preOrderTraversal(root->right);
+    cout << root->data << " ";     // Print data of the current node
+    preOrderTraversal(root->left);  // Recursively traverse left subtree
+    preOrderTraversal(root->right); // Recursively traverse right subtree
 }
 
+// Function to perform Post-order Traversal (Left -> Right -> Root)
 void postOrderTraversal(Node* root) {
+    // Base case: If current node is NULL, return
     if(root == NULL) {
         return;
     }
 
-    postOrderTraversal(root->left);
-    postOrderTraversal(root->right);
-    cout << root->data << " ";
+    postOrderTraversal(root->left);  // Recursively traverse left subtree
+    postOrderTraversal(root->right); // Recursively traverse right subtree
+    cout << root->data << " ";      // Print data of the current node
 }
 
+// Function to build a Binary Tree level by level (iterative)
 Node* BuildLevelOrder(Node* root) {
-    queue<Node*> Q;
+    queue<Node*> Q; // Queue to manage nodes for level-order insertion
+
     int data;
-    cout << "Enter data : ";
-    cin >> data;
-    root = new Node(data);
-    Q.push(root);
+    cout << "Enter root data : "; // Prompt for root data
+    cin >> data;                  // Read root data
+    root = new Node(data);        // Create the root node
+    Q.push(root);                 // Push root to the queue
 
+    // Loop until the queue is empty
     while(!Q.empty()) {
-        Node* temp = Q.front();
-        Q.pop();
+        Node* temp = Q.front(); // Get the front node (current parent)
+        Q.pop();                // Remove it from the queue
 
-        cout << "Enter leftnode of " << temp->data << " : ";
+        // Prompt for left child data
+        cout << "Enter left node of " << temp->data << " (-1 for NULL) : ";
         int leftData;
         cin >> leftData;
 
+        // If left child exists (not -1), create it and push to queue
         if(leftData != -1) {
             temp->left = new Node(leftData);
             Q.push(temp->left);
         }
 
-        cout << "Enter rightnode of " << temp->data << " : ";
+        // Prompt for right child data
+        cout << "Enter right node of " << temp->data << " (-1 for NULL) : ";
         int rightData;
         cin >> rightData;
 
+        // If right child exists (not -1), create it and push to queue
         if(rightData != -1) {
             temp->right = new Node(rightData);
             Q.push(temp->right);
         }
     }
 
-    return root;
+    return root; // Return the constructed root
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize root to NULL
 
-    // Creating a tree
+    // Building a tree using level-order input
+    // Example input sequence for BuildLevelOrder (for a tree like: 1 -> (2,3) -> (4,5,6,7) ):
+    // 1 2 3 4 5 6 7 -1 -1 -1 -1 -1 -1 -1 -1
     root = BuildLevelOrder(root);
 
     cout << "\nLevel Order Traversal : " << endl;
-    levelOrderTraversal(root);
+    levelOrderTraversal(root); // Perform and print level order traversal
 
-    // cout << "\nIn Order Traversal : " << endl;
+    // Uncomment the following lines to test other traversals:
+
+    // cout << "\nIn Order Traversal : ";
     // inOrderTraversal(root);
-    
-    // cout << "\nPre Order Traversal : " << endl;
-    // preOrderTraversal(root);
-    
-    // cout << "\nPost Order Traversal : " << endl;
-    // postOrderTraversal(root);
+    // cout << endl;
 
-    return 0;
+    // cout << "\nPre Order Traversal : ";
+    // preOrderTraversal(root);
+    // cout << endl;
+
+    // cout << "\nPost Order Traversal : ";
+    // postOrderTraversal(root);
+    // cout << endl;
+
+    return 0; // End of program
 }
 
-// 1 3 7 -1 -1 11 -1 -1 5 17 -1 -1 -1
+/*
+Example input for BuildLevelOrder to build a tree:
+        1
+       / \
+      2   3
+     / \ / \
+    4  5 6  7
+
+Input sequence:
+1 (for root)
+2 (for left of 1)
+3 (for right of 1)
+4 (for left of 2)
+5 (for right of 2)
+6 (for left of 3)
+7 (for right of 3)
+-1 (for left of 4)
+-1 (for right of 4)
+-1 (for left of 5)
+-1 (for right of 5)
+-1 (for left of 6)
+-1 (for right of 6)
+-1 (for left of 7)
+-1 (for right of 7)
+*/
 ```
+
+### 1\. Binary Tree Basics
+
+  * **Node**: The fundamental building block of a tree, containing `data` and pointers (`left`, `right`) to its children.
+  * **Root**: The topmost node of a tree.
+  * **Left Child / Right Child**: Nodes directly connected below a parent node.
+  * **Leaf Node**: A node with no children (both `left` and `right` pointers are `NULL`).
+  * **`NULL` (or `-1` in input)**: Represents the absence of a node or a child.
+
+### 2\. Tree Building Methods
+
+  * **`buildTree(Node* root)` (Recursive Pre-order Build)**
+
+      * **Logic**: Builds the tree recursively by taking input in a pre-order fashion (Root -\> Left -\> Right).
+      * It prompts for data for the current node, then recursively calls itself for the left child, and then for the right child.
+      * Uses `-1` as a sentinel value to indicate a `NULL` child (base case for recursion).
+      * **Use Case**: Useful when you want to visualize or construct a tree directly from a pre-order sequence where `NULL` nodes are explicitly marked.
+
+  * **`BuildLevelOrder(Node* root)` (Iterative Level-order Build)**
+
+      * **Logic**: Builds the tree level by level using a `queue`.
+      * First, the root node is created and pushed into the queue.
+      * Then, it iteratively dequeues a node, prompts for its left and right children's data. If children exist (not `-1`), they are created and enqueued.
+      * **Use Case**: Ideal for constructing a complete or almost complete binary tree, or when input is naturally available level by level.
+
+### 3\. Tree Traversals
+
+Traversals are ways to visit every node in a tree.
+
+  * **`levelOrderTraversal(Node* root)` (Breadth-First Search - BFS)**
+
+      * **Logic**: Visits nodes level by level (from top to bottom, left to right).
+      * Uses a `queue` to keep track of nodes to visit.
+      * A `NULL` marker is pushed into the queue after each level's nodes to demarcate levels, allowing printing on separate lines.
+      * **Use Cases**: Printing tree level by level, shortest path in unweighted trees, network broadcasting.
+
+  * **`inOrderTraversal(Node* root)` (Depth-First Search - DFS)**
+
+      * **Logic**: Left Subtree -\> Root -\> Right Subtree. (Recursive)
+      * **Output for BST**: Prints elements in **sorted order** if the tree is a Binary Search Tree (BST).
+      * **Use Cases**: Getting sorted elements from a BST, common for expression tree evaluation.
+
+  * **`preOrderTraversal(Node* root)` (Depth-First Search - DFS)**
+
+      * **Logic**: Root -\> Left Subtree -\> Right Subtree. (Recursive)
+      * **Use Cases**: Creating a copy of the tree, serializing a tree, for prefix expressions.
+
+  * **`postOrderTraversal(Node* root)` (Depth-First Search - DFS)**
+
+      * **Logic**: Left Subtree -\> Right Subtree -\> Root. (Recursive)
+      * **Use Cases**: Deleting a tree (delete children before parent), for postfix expressions.
+
+### 4\. Complexity
+
+  * **Time Complexity**: All traversals and building operations (if done efficiently) are typically `O(N)` where N is the number of nodes in the tree, as each node is visited/processed a constant number of times.
+  * **Space Complexity**:
+      * **Recursive Traversals (In-order, Pre-order, Post-order)**: `O(H)` where H is the height of the tree (due to recursion stack). In worst case (skewed tree), `H = N`, so `O(N)`. In best case (balanced tree), `H = log N`, so `O(log N)`.
+      * **Level Order Traversal / BuildLevelOrder**: `O(W)` where W is the maximum width of the tree (due to queue storage). In worst case (complete tree), `W = N/2`, so `O(N)`.
+
+-----
+

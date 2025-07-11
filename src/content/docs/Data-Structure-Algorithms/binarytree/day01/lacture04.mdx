@@ -3,33 +3,97 @@ title: Post-order Traversal
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (like iostream)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
-void postOrderRecursive(Node* root) {
+// Function to perform In-Order Traversal recursively
+// (Left Subtree -> Root -> Right Subtree)
+void inOrderRecursive(Node* root) {
+    // Base Case: If the current node is NULL, stop recursion for this branch.
     if(root == NULL) {
         return;
     }
 
-    postOrderRecursive(root->left);
-    postOrderRecursive(root->right);
+    // 1. Recur for Left Subtree: Call the function for the left child.
+    inOrderRecursive(root->left);
+
+    // 2. Process the Root: Print the data of the current node.
     cout << root->data << " ";
+
+    // 3. Recur for Right Subtree: Call the function for the right child.
+    inOrderRecursive(root->right);
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
-    // Creating a tree
+    // Creating a tree: This function is assumed to be defined in "BinaryTree.h"
+    // It typically takes input in a pre-order fashion (e.g., 1 3 7 -1 -1 11 -1 -1 5 17 -1 -1 -1)
     root = buildTree(root);
 
-    cout << "\nPost Order Traversal : " << endl;
-    postOrderRecursive(root);
+    cout << "\nIn Order Traversal : " << endl; // Output label
+    inOrderRecursive(root);                   // Perform and print the in-order traversal
+    cout << endl; // Add a newline for better formatting after traversal output
 
-    return 0;
+    return 0; // End of the program
 }
 
-// INPUT : 1 3 7 -1 -1 11 -1 -1 5 17 -1 -1 -1
+/*
+Example INPUT for buildTree function (for reference):
+1 3 7 -1 -1 11 -1 -1 5 17 -1 -1 -1
+
+This input creates a tree structure like this:
+        1
+       / \
+      3   5
+     / \   \
+    7  11  17
+
+In-Order Traversal output for this tree will be: 7 3 11 1 5 17
+*/
 ```
+
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. In-Order Traversal
+
+  * **Definition**: A way to visit (or "traverse") all nodes in a Binary Tree. In In-order traversal, the order of visiting is:
+
+    1.  **Left Subtree** (Recursively traverse the left child)
+    2.  **Root** (Process the current node)
+    3.  **Right Subtree** (Recursively traverse the right child)
+
+  * **Recursive Algorithm**:
+
+      * **Base Case**: If the current node is `NULL` (meaning you've reached beyond a leaf or an empty tree), simply return.
+      * **Recursive Step**:
+        1.  Make a recursive call to `inOrderRecursive` for the `root->left` child.
+        2.  Process the data of the current `root` node (e.g., print it).
+        3.  Make a recursive call to `inOrderRecursive` for the `root->right` child.
+
+  * **Key Characteristic & Use Cases**:
+
+      * **Sorted Output for BSTs**: If the binary tree is a **Binary Search Tree (BST)**, an in-order traversal will output the elements in **non-decreasing (sorted) order**. This is one of its most common and significant applications.
+      * Commonly used for expression tree evaluation (for infix expressions).
+
+### 3\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * Each node in the tree is visited exactly once.
+  * **Space Complexity**: `O(H)`
+      * This is due to the recursion call stack. `H` is the height of the tree.
+      * In the worst case (a skewed tree, resembling a linked list), `H` can be `N`, leading to `O(N)` space.
+      * In the best case (a perfectly balanced tree), `H` is `log N`, leading to `O(log N)` space.
+
+-----
+
+

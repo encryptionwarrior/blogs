@@ -3,72 +3,193 @@ title: Diameter Of Binary Tree
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (like iostream, algorithm for max, utility for pair)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Helper function to calculate the height of a Binary Tree recursively
+// Height is defined as the number of nodes on the longest path from the root to a leaf.
 int getHeight(Node* root) {
+    // Base Case: If the current node is NULL (empty subtree), its height is 0.
     if(root == NULL) {
         return 0;
     }
 
+    // Recursively get the height of the left subtree
     int h1 = getHeight(root->left);
+    // Recursively get the height of the right subtree
     int h2 = getHeight(root->right);
 
+    // The height of the current node is 1 (for itself)
+    // plus the maximum of the heights of its left and right subtrees.
     return max(h1, h2) + 1;
 }
 
+// Less optimized function to calculate the diameter of a Binary Tree recursively
+// Time Complexity: O(N^2) in worst case (skewed tree) due to repeated getHeight calls.
 int getDiameter(Node* root) {
+    // Base Case: If the tree is empty, diameter is 0.
     if(root == NULL) {
         return 0;
     }
 
+    // Option 1: Diameter lies entirely in the left subtree
     int d1 = getDiameter(root->left);
+    // Option 2: Diameter lies entirely in the right subtree
     int d2 = getDiameter(root->right);
+    // Option 3: Diameter passes through the current root node
+    // It's the height of left subtree + height of right subtree + 1 (for the root itself)
     int d3 = getHeight(root->left) + getHeight(root->right) + 1;
 
+    // The diameter for the current tree is the maximum of these three possibilities.
     return max(d1, max(d2, d3));
 }
 
+// Optimized function to calculate the diameter of a Binary Tree recursively
+// Returns a pair: {diameter, height} of the subtree rooted at 'root'.
+// Time Complexity: O(N) because each node is visited once.
 pair<int, int> getDiameterOptimised(Node* root) {
+    // Base Case: If the current node is NULL, diameter is 0 and height is 0.
     if(root == NULL) {
-        return {0,0};
+        return {0, 0}; // {diameter, height}
     }
 
-    pair<int, int> d1 = getDiameterOptimised(root->left);
-    pair<int, int> d2 = getDiameterOptimised(root->right);
-    pair<int, int> ans;
+    // Recursively get the diameter and height of the left subtree
+    pair<int, int> leftResult = getDiameterOptimised(root->left);
+    // Recursively get the diameter and height of the right subtree
+    pair<int, int> rightResult = getDiameterOptimised(root->right);
 
-    ans.second = max(d1.second, d2.second) + 1;
+    pair<int, int> ans; // Pair to store result for the current node
 
-    int opt1 = d1.first;
-    int opt2 = d2.first;
-    int opt3 = d1.second + d2.second + 1;
+    // Calculate height of the current node: 1 + max(left_subtree_height, right_subtree_height)
+    ans.second = max(leftResult.second, rightResult.second) + 1;
 
+    // Calculate diameter of the current node's subtree:
+    // Option 1: Diameter of left subtree
+    int opt1 = leftResult.first;
+    // Option 2: Diameter of right subtree
+    int opt2 = rightResult.first;
+    // Option 3: Diameter passing through the current node
+    // This is the height of left subtree + height of right subtree + 1 (for the current node)
+    int opt3 = leftResult.second + rightResult.second + 1;
+
+    // The overall diameter for the current subtree is the maximum of these three options.
     ans.first = max(opt1, max(opt2, opt3));
 
-    return ans;
+    return ans; // Return the calculated {diameter, height} pair
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree. 'buildTree' function is assumed to be defined in "BinaryTree.h"
+    // It typically takes input in a pre-order fashion.
+    // Example Input for a tree: 1 2 4 -1 -1 5 -1 -1 3 6 -1 -1 7 -1 -1
+    // This creates:
+    //      1
+    //     / \
+    //    2   3
+    //   / \ / \
+    //  4  5 6  7
     root = buildTree(root);
 
+    // Uncomment the next line to use the less optimized diameter calculation
     // int Diameter = getDiameter(root);
-    pair<int, int> Diameter = getDiameterOptimised(root);
 
-    cout << endl << "Diameter of the tree is : " << Diameter.first << endl;
+    // Call the optimized function to get the diameter and height.
+    // We only care about the diameter (first element of the pair) for the main tree.
+    pair<int, int> DiameterResult = getDiameterOptimised(root);
 
-    return 0;
+    // Print the calculated diameter
+    cout << endl << "Diameter of the tree is : " << DiameterResult.first << endl;
+
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        3 4 -1 -1 6 -1 -1
-        5 4 2 -1 6 -1 -1 7 -1 8 -1 9 -1 -1 10 -1 -1
-        8 2 4 -1 -1 6 2 -1 -1 5 -1 -1 5 -1 9 -1 6 4 2 -1 -1 3 -1 -1 7 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 3 4 -1 -1 6 -1 -1
+    Tree Structure:
+            3
+           / \
+          4   6
+    Height: 2
+    Diameter: 2 (path 4-3-6)
+
+2.  Input: 1 2 4 -1 -1 5 -1 -1 3 6 -1 -1 7 -1 -1
+    Tree Structure:
+            1
+           / \
+          2   3
+         / \ / \
+        4  5 6  7
+    Height: 3
+    Diameter: 5 (path 4-2-1-3-7 or 5-2-1-3-6, etc.)
+
+3.  Input: 8 2 4 -1 -1 6 2 -1 -1 5 -1 -1 5 -1 9 -1 6 4 2 -1 -1 3 -1 -1 7 -1 -1
+    This is a very long pre-order sequence, designed to test more complex trees.
+    The diameter will depend on the longest path in the tree formed by this input.
 */
 ```
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Height of a Binary Tree (`getHeight` function)
+
+  * **Definition**: The height of a binary tree is the **number of nodes** on the longest path from the root node to any leaf node. (An empty tree has height 0, a single node tree has height 1).
+  * **Logic**: Recursively, the height of a node is `1 + max(height_of_left_subtree, height_of_right_subtree)`.
+  * **Time Complexity**: `O(N)` (each node visited once).
+  * **Space Complexity**: `O(H)` (recursion stack, H = height).
+
+### 3\. Diameter of a Binary Tree
+
+  * **Definition**: The diameter of a binary tree is the **length of the longest path between any two nodes** in the tree. This path may or may not pass through the root of the entire tree.
+  * **Key Insight**: The longest path between two nodes in any subtree (rooted at `X`) can be one of three types:
+    1.  The path lies entirely within `X`'s **left subtree**.
+    2.  The path lies entirely within `X`'s **right subtree**.
+    3.  The path **passes through `X`**. In this case, its length is `Height(left_subtree_of_X) + Height(right_subtree_of_X) + 1` (the `+1` is for node `X` itself).
+  * The overall diameter of the tree is the maximum of these three values, considered for *every node* in the tree.
+
+### 4\. Approaches to Calculate Diameter
+
+#### a) `getDiameter(Node* root)` (Naive/Less Optimized)
+
+  * **Logic**:
+      * Recursively calculates the diameter of the left subtree (`d1`) and the right subtree (`d2`).
+      * Calculates the path through the current `root` (`d3`) by summing `getHeight(left_child)` and `getHeight(right_child)` and adding `1`.
+      * Returns the maximum of `d1`, `d2`, and `d3`.
+  * **Drawback**: This approach involves redundant calculations. For each node, `getHeight` is called on its children, and `getHeight` itself traverses subtrees. This means the same subtrees are traversed multiple times.
+  * **Time Complexity**: `O(N^2)` in the worst case (e.g., a skewed tree where `getHeight` is called on every node for every ancestor). In best case (balanced), it can be better but still often worse than `O(N)`.
+  * **Space Complexity**: `O(H)` (recursion stack).
+
+#### b) `getDiameterOptimised(Node* root)` (Optimized)
+
+  * **Logic**: This approach calculates **both the diameter and the height** for each subtree in a single recursive traversal.
+  * **Return Type**: It typically returns a `pair<int, int>` where:
+      * `pair.first` represents the `diameter` of the subtree rooted at the current node.
+      * `pair.second` represents the `height` of the subtree rooted at the current node.
+  * **Algorithm**:
+    1.  **Base Case**: If `root` is `NULL`, return `{0, 0}` (diameter 0, height 0).
+    2.  **Recursive Calls**: Recursively call `getDiameterOptimised` for `left` and `right` children to get their `(diameter, height)` pairs.
+    3.  **Calculate Current Node's Height**: `current_height = max(left_pair.second, right_pair.second) + 1`.
+    4.  **Calculate Current Node's Diameter**:
+          * `option1 = left_pair.first` (diameter from left subtree)
+          * `option2 = right_pair.first` (diameter from right subtree)
+          * `option3 = left_pair.second + right_pair.second + 1` (path passing through current node)
+          * `current_diameter = max(option1, max(option2, option3))`
+    5.  **Return**: Return `{current_diameter, current_height}`.
+  * **Advantage**: By returning both height and diameter from each recursive call, redundant `getHeight` calculations are avoided.
+  * **Time Complexity**: `O(N)`
+      * Each node is visited exactly once.
+  * **Space Complexity**: `O(H)` (recursion stack).
+
+-----
+

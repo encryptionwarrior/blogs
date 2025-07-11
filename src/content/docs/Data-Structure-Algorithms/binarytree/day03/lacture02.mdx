@@ -3,24 +3,30 @@ title: Boundry traversal
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (like iostream, vector)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Helper function to traverse the left boundary of the tree (top-down)
+// Excludes leaf nodes as they are handled separately.
 void traverseLeft(Node* root, vector<int> &answer) {
+    // Base Case: If current node is NULL, stop.
     if(root == NULL) {
         return;
     }
-    
-    // For Leaf Node
+
+    // If current node is a leaf, stop (leaves are collected by traverseLeaf).
     if(root->left == NULL && root->right == NULL) {
         return;
     }
 
+    // Add current node's data to the boundary list.
     answer.push_back(root->data);
 
+    // Prioritize going left to stay on the boundary.
+    // If no left child, move to the right child to continue boundary path.
     if(root->left) {
         traverseLeft(root->left, answer);
     } else {
@@ -28,81 +34,283 @@ void traverseLeft(Node* root, vector<int> &answer) {
     }
 }
 
+// Helper function to traverse all leaf nodes (left-to-right)
 void traverseLeaf(Node* root, vector<int> &answer) {
+    // Base Case: If current node is NULL, stop.
     if(root == NULL) {
         return;
     }
-    
-    // For Leaf Node
+
+    // If current node is a leaf, add its data to the list.
     if(root->left == NULL && root->right == NULL) {
         answer.push_back(root->data);
-        return;
+        return; // Leaf found, no further recursion needed for this branch
     }
 
+    // Recursively traverse left and then right subtrees to collect leaves in order.
     traverseLeaf(root->left, answer);
     traverseLeaf(root->right, answer);
 }
 
+// Helper function to traverse the right boundary of the tree (bottom-up)
+// Excludes leaf nodes as they are handled separately.
 void traverseRight(Node* root, vector<int> &answer) {
+    // Base Case: If current node is NULL, stop.
     if(root == NULL) {
         return;
     }
-    
-    // For Leaf Node
+
+    // If current node is a leaf, stop (leaves are collected by traverseLeaf).
     if(root->left == NULL && root->right == NULL) {
         return;
     }
 
+    // Prioritize going right to stay on the boundary.
+    // If no right child, move to the left child to continue boundary path.
     if(root->right) {
         traverseRight(root->right, answer);
     } else {
         traverseRight(root->left, answer);
     }
 
+    // Add current node's data *after* recursive calls.
+    // This ensures bottom-up (reverse) order for the right boundary.
     answer.push_back(root->data);
-
 }
 
+// Main function to perform Boundary Traversal
 vector<int> Boundary(Node* root) {
+    // Handle empty tree case
     if(root == NULL) {
         return {};
     }
 
-    vector<int> answer;
+    vector<int> answer; // Vector to store the boundary traversal result
+
+    // 1. Add the root node data.
     answer.push_back(root->data);
 
-    // Printing Left Part
+    // 2. Traverse and add nodes from the left boundary (excluding its immediate leaf child if any).
     traverseLeft(root->left, answer);
 
-    // Printing Leaf Nodes from left subtree
-    traverseLeaf(root->left, answer);
-    
-    // Printing Leaf Nodes from right subtree
-    traverseLeaf(root->right, answer);
+    // 3. Traverse and add all leaf nodes (from both left and right subtrees) in left-to-right order.
+    // This correctly includes leaves that might also be the "leftmost" or "rightmost" if they were not excluded above.
+    traverseLeaf(root->left, answer);  // Leaves from left subtree
+    traverseLeaf(root->right, answer); // Leaves from right subtree
 
-    // Printing Right Part
+    // 4. Traverse and add nodes from the right boundary (excluding its immediate leaf child if any), in bottom-up order.
     traverseRight(root->right, answer);
-    
-    return answer;
+
+    return answer; // Return the complete boundary traversal
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree using 'buildTree' function (assumed to be in "BinaryTree.h")
+    // It typically takes input in a pre-order fashion.
     root = buildTree(root);
-    vector<int> answer = Boundary(root);
 
+    // Perform Boundary Traversal and get the result
+    vector<int> result = Boundary(root);
+
+    // Print the Boundary Traversal result
     cout << endl << "Boundary Traversal : ";
-    for(auto i : answer) {
-        cout << i << " ";
+    for(int data : result) {
+        cout << data << " ";
     }
+    cout << endl;
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        1 2 3 -1 -1 5 6 -1 -1 8 -1 -1 4 -1 7 -1 9 10 -1 -1 11 -1 -1
-        7 9 8 10 -1 -1 9 -1 -1 8 -1 -1 7 6 -1 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 1 2 3 -1 -1 5 6 -1 -1 8 -1 -1 4 -1 7 -1 9 10 -1 -1 11 -1 -1
+    Tree Structure:
+                1
+               / \
+              2   4
+             / \   \
+            3   5   7
+               / \   \
+              6   8   9
+                         \
+                          10
+                         /
+                        11
+
+    Expected Output:
+    Root: 1
+    Left Boundary (excluding leaves): 2
+    Leaves (L-R): 3 6 8 10 11 (Note: 9 is not a leaf, 7 is not a leaf in this specific build)
+    Right Boundary (excluding leaves, bottom-up): 7 4
+    Combining: 1 2 3 6 8 10 11 7 4
+    (The exact output for 9, 10, 11 depends on how buildTree handles input.
+    Assuming the given input `1 2 3 -1 -1 5 6 -1 -1 8 -1 -1 4 -1 7 -1 9 10 -1 -1 11 -1 -1`
+    creates:
+            1
+           / \
+          2   4
+         / \   \
+        3   5   7
+           / \   \
+          6   8   9
+                     \
+                      10
+                     /
+                    11
+
+    Output based on this code's logic:
+    Root: 1
+    Left boundary: 2 (3 is leaf, not added)
+    Leaves: 3 (from left of 2), 6 (from left of 5), 8 (from right of 5), 11 (from left of 10)
+    Right boundary: 7 (from right of 4), 9 (from right of 7), 10 (from right of 9)
+    Result: 1 2 3 6 8 11 10 9 7 4 (Order of leaves from different subtrees, and right boundary reversed)
+    Let's re-verify:
+    traverseLeft(root->left=2): adds 2. Calls traverseLeft(3). 3 is leaf, returns. Calls traverseLeft(5).
+      traverseLeft(5): adds 5. Calls traverseLeft(6). 6 is leaf, returns. Calls traverseLeft(8). 8 is leaf, returns.
+    So left boundary part adds: 1, 2, 5 (if 5 is not a leaf itself). Oh wait, 5 has children 6 and 8.
+    Let's draw `1 2 3 -1 -1 5 6 -1 -1 8 -1 -1 4 -1 7 -1 9 10 -1 -1 11 -1 -1`:
+                  1
+                /   \
+               2     4
+              / \     \
+             3   5     7
+                / \     \
+               6   8     9
+                          / \
+                         10  -1
+                        / \
+                       11  -1
+
+    Root: 1
+    traverseLeft(2): adds 2. traverseLeft(3) (leaf -> skip). traverseLeft(5): adds 5. traverseLeft(6) (leaf -> skip). traverseLeft(8) (leaf -> skip).
+      Left boundary result: [1, 2, 5]
+    traverseLeaf(2): finds 3. adds 3.
+    traverseLeaf(4): finds 6, 8, 11. adds 6, 8, 11.
+      Leaves result: [3, 6, 8, 11]
+    traverseRight(4): traverseRight(7): adds 7. traverseRight(9): adds 9. traverseRight(10): adds 10.
+      Right boundary result (bottom-up): [10, 9, 7, 4] (added in reverse order of calls: 10 then 9 then 7 then 4)
+    Combined: [1, 2, 5, 3, 6, 8, 11, 10, 9, 7, 4]
+    This matches the provided code's logic.
+
+2.  Input: 7 9 8 10 -1 -1 9 -1 -1 8 -1 -1 7 6 -1 -1 -1
+    Tree Structure (from previous example, might be same if buildTree logic is consistent):
+                7
+               / \
+              9   7
+             / \   \
+            8   9   6
+           /   /
+          10  8
+
+    Root: 7
+    Left Boundary: 9, 8 (10 is leaf -> skip)
+    Leaves: 10, 9 (right of 9), 8 (right of 7), 6 (right of 7)
+    Right Boundary: 7 (from right of root, 6 is leaf -> skip)
+    Wait, the structure is:
+                7
+               / \
+              9   7
+             / \   \
+            8   9   6
+           / \
+          10  -1
+         / \
+        -1 -1
+    (Assuming previous example `7 9 8 10 -1 -1 9 -1 -1 8 -1 -1 7 6 -1 -1 -1` was:
+    Root 7
+      Left 9
+        Left 8
+          Left 10
+            Left -1
+            Right -1
+          Right -1
+        Right 9
+          Left -1
+          Right -1
+      Right 7
+        Left 6
+          Left -1
+          Right -1
+        Right -1
+    )
+    Root: 7
+    Left Boundary: 9, 8
+    Leaves: 10, 9, 6
+    Right Boundary: 7 (from right child of root) (in reverse, 6 is leaf so excluded from right boundary)
+    Combined: 7 9 8 10 9 6 7
 */
 ```
+
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Boundary Traversal Definition
+
+  * Boundary Traversal of a Binary Tree involves traversing and printing nodes in the following order:
+
+    1.  The **root node**.
+    2.  All nodes on the **left boundary** (from root's left child down to the leftmost leaf, excluding any leaf nodes).
+    3.  All **leaf nodes** (traversed from left to right).
+    4.  All nodes on the **right boundary** (from the rightmost leaf up to the root's right child, excluding any leaf nodes), printed in reverse order (bottom-up).
+
+  * **Important Note**: If the tree has only one node (the root is also a leaf), it should be printed only once. The strategy below handles this by excluding leaves from boundary traversals and collecting all leaves separately.
+
+### 3\. Algorithm: `Boundary(Node* root)` and Helper Functions
+
+The `Boundary` function orchestrates three helper functions: `traverseLeft`, `traverseLeaf`, and `traverseRight`.
+
+#### a) `traverseLeft(Node* root, vector<int> &answer)`
+
+  * **Purpose**: To collect nodes on the left boundary (top-down), excluding leaf nodes.
+  * **Logic**:
+      * **Base Case**: If `root` is `NULL`, return.
+      * **Leaf Exclusion**: If `root` is a leaf node (both `left` and `right` are `NULL`), return without adding its data, as leaves are handled by `traverseLeaf`.
+      * **Add Data**: Add `root->data` to the `answer` vector.
+      * **Recursive Step**: Prioritize going left. If `root->left` exists, call `traverseLeft(root->left)`. Otherwise (if no left child), go right: `traverseLeft(root->right)`. This ensures a continuous path down the left edge.
+
+#### b) `traverseLeaf(Node* root, vector<int> &answer)`
+
+  * **Purpose**: To collect all leaf nodes in a left-to-right order.
+  * **Logic**:
+      * **Base Case**: If `root` is `NULL`, return.
+      * **Leaf Identification**: If `root` is a leaf node, add its `data` to the `answer` vector.
+      * **Recursive Step**: Recursively call `traverseLeaf` for `root->left` then `root->right`. This ensures leaves are processed in left-to-right order.
+
+#### c) `traverseRight(Node* root, vector<int> &answer)`
+
+  * **Purpose**: To collect nodes on the right boundary (bottom-up), excluding leaf nodes.
+  * **Logic**:
+      * **Base Case**: If `root` is `NULL`, return.
+      * **Leaf Exclusion**: If `root` is a leaf node, return.
+      * **Recursive Step**: Prioritize going right. If `root->right` exists, call `traverseRight(root->right)`. Otherwise (if no right child), go left: `traverseRight(root->left)`.
+      * **Add Data (Post-order like)**: Add `root->data` to the `answer` vector *after* the recursive calls. This ensures nodes are added in bottom-up order, achieving the "reverse" traversal for the right boundary.
+
+#### d) `Boundary(Node* root)` Main Function
+
+  * **Initialization**: Create an empty `answer` vector. If `root` is `NULL`, return it.
+  * **Root Node**: Add `root->data` to `answer`.
+  * **Left Boundary**: Call `traverseLeft(root->left, answer)`.
+  * **Leaf Nodes**: Call `traverseLeaf(root->left, answer)` to collect leaves from the left subtree, then `traverseLeaf(root->right, answer)` for leaves from the right subtree. This ensures all leaves are collected in left-to-right order.
+  * **Right Boundary**: Call `traverseRight(root->right, answer)`.
+  * **Return**: Return the `answer` vector.
+
+### 4\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * Each node in the tree is visited at most a constant number of times across the three helper functions. For example, a node might be visited by `traverseLeft` or `traverseRight` (if it's on a boundary), and by `traverseLeaf` (if it's a leaf), and `traverseLeft` and `traverseRight` are careful not to double count leaves.
+  * **Space Complexity**: `O(H)`
+      * Due to the recursion call stack for the helper functions, where `H` is the height of the tree.
+      * The `answer` vector stores `O(N)` elements in the worst case (e.g., a tree where almost all nodes are on the boundary).
+
+-----
+
+

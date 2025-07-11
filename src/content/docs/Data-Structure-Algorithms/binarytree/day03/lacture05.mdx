@@ -3,66 +3,211 @@ title: Bottom View
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, queue, vector, map, utility for pair)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Function to perform Bottom View Traversal of a Binary Tree
+// Nodes are printed column by column, from bottom to top within each column.
+// Time Complexity: O(N log W) where N is nodes, W is tree width
+// Space Complexity: O(N) in worst case (for map and queue)
 vector<int> BottomView(Node* root) {
+    // Base Case: If the tree is empty, return an empty vector.
     if(root == NULL) {
         return {};
     }
 
-    vector<int> answer;
+    vector<int> answer; // Final vector to store the Bottom View result
 
+    // map<Horizontal_Distance, Node_Data>
+    // BottomNode stores the data of the last (lowest) node encountered for each HD.
+    // std::map automatically keeps keys (HDs) sorted, ensuring output is left-to-right.
     map<int, int> BottomNode;
-    queue<pair<Node*, int> > Q;
+
+    // Queue for BFS traversal: stores {Node*, Horizontal_Distance}
+    queue<pair<Node*, int>> Q;
+
+    // Start BFS: push root with HD=0
     Q.push(make_pair(root, 0));
 
+    // Perform BFS traversal
     while(!Q.empty()) {
+        // Get the front element from the queue
         pair<Node*, int> temp = Q.front();
-        Q.pop();
+        Q.pop(); // Remove it from the queue
 
+        // Extract node and its horizontal distance (HD)
         Node* FrontNode = temp.first;
         int HorizDist = temp.second;
 
+        // Key step: Unconditionally update the map.
+        // Because BFS processes level by level, the LAST node to update this HD's entry
+        // will be the deepest one for that HD.
         BottomNode[HorizDist] = FrontNode->data;
 
+        // Enqueue left child if it exists: HD decreases by 1
         if(FrontNode->left) {
-            Q.push(make_pair(FrontNode->left, HorizDist-1));
+            Q.push(make_pair(FrontNode->left, HorizDist - 1));
         }
 
+        // Enqueue right child if it exists: HD increases by 1
         if(FrontNode->right) {
-            Q.push(make_pair(FrontNode->right, HorizDist+1));
+            Q.push(make_pair(FrontNode->right, HorizDist + 1));
         }
     }
 
-    for(auto i : BottomNode) {
-        answer.push_back(i.second);
+    // After BFS, BottomNode map contains all nodes visible from the bottom, sorted by HD.
+    // Iterate through the map to populate the final answer vector.
+    for(auto const& entry : BottomNode) { // 'entry' is a pair<HD, Node_Data>
+        answer.push_back(entry.second); // Add the node's data (value part of the map entry)
     }
 
-    return answer;
+    return answer; // Return the complete Bottom View traversal
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree using 'buildTree' function (assumed to be in "BinaryTree.h")
+    // It typically takes input in a pre-order fashion.
     root = buildTree(root);
-    vector<int> answer = BottomView(root);
 
+    // Perform Bottom View Traversal
+    vector<int> result = BottomView(root);
+
+    // Print the Bottom View Traversal result
     cout << endl << "Bottom View : ";
-    for(auto i : answer) {
-        cout << i << " ";
+    for(int data : result) {
+        cout << data << " ";
     }
+    cout << endl;
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        1 2 4 -1 -1 5 -1 -1 3 6 -1 -1 7 -1 -1
-        1 2 -1 4 5 -1 -1 -1 3 -1 -1
-        1 2 4 -1 -1 5 -1 -1 3 6 -1 8 -1 -1 7 -1 9 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 1 2 4 -1 -1 5 -1 -1 3 6 -1 -1 7 -1 -1
+    Tree Structure:
+                1 (HD=0)
+               / \
+              2   3 (HD=-1, HD=1)
+             / \ / \
+            4  5 6  7 (HD=-2, HD=0, HD=0, HD=2)
+
+    Vertical Lines (HDs) and visible nodes from bottom:
+    HD: -2 -> 4 (only node at this HD)
+    HD: -1 -> 2 (only node at this HD)
+    HD: 0  -> 5 (or 6, depending on insertion order if levels are same for HD=0. In BFS, 5 processed before 6 for same level, so 6 would overwrite 5)
+                Correct processing for HD=0, nodes are 1(L0), 5(L2), 6(L2). 6 is last to overwrite for HD=0. So 6.
+    HD: 1  -> 3 (only node at this HD)
+    HD: 2  -> 7 (only node at this HD)
+    Output: Bottom View : 4 2 6 3 7
+
+2.  Input: 1 2 -1 4 5 -1 -1 -1 3 -1 -1
+    Tree Structure:
+              1 (0)
+             / \
+            2   3 ( -1, 1)
+             \
+              4 (0)
+             /
+            5 (-1)
+
+    Vertical Lines (HDs) and visible nodes from bottom:
+    HD: -1 -> 5 (deeper than 2)
+    HD: 0  -> 4 (deeper than 1)
+    HD: 1  -> 3 (only node)
+    Output: Bottom View : 5 4 3
+
+3.  Input: 1 2 4 -1 -1 5 -1 -1 3 6 -1 8 -1 -1 7 -1 9 -1 -1
+    Tree Structure:
+                1 (0)
+               / \
+              2(-1) 3(1)
+             / \   / \
+            4(-2) 5(0) 6(0) 7(2)
+                          / \
+                         8(-1) 9(1)
+
+    Vertical Lines (HDs) and visible nodes from bottom:
+    HD: -2 -> 4
+    HD: -1 -> 8 (deeper than 2)
+    HD: 0  -> 6 (deeper than 1, 5; 6 is processed after 5, overwrites 5)
+    HD: 1  -> 9 (deeper than 3)
+    HD: 2  -> 7
+    Output: Bottom View : 4 8 6 9 7
 */
 ```
+
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Bottom View of a Binary Tree Definition
+
+  * **Definition**: The Bottom View of a Binary Tree is the set of nodes visible when looking at the tree from directly below.
+  * **Key Property**: For any given **horizontal distance (column)**, only the **lowest node** (the node with the largest level) at that distance is part of the Bottom View. If multiple nodes exist at the same horizontal distance AND the same maximal level, the one encountered last during a level-order (BFS) traversal (which typically means the rightmost among them) is included.
+  * **Horizontal Distance (HD) Convention**:
+      * **Root Node**: Assigned a Horizontal Distance (HD) of `0`.
+      * **Left Child**: For a node at `HD`, its left child will be at `HD - 1`.
+      * **Right Child**: For a node at `HD`, its right child will be at `HD + 1`.
+
+### 3\. Algorithm: `BottomView(Node* root)` (BFS Approach)
+
+  * **Core Idea**: Uses Breadth-First Search (BFS) to traverse the tree level by level. A `map` is used to store the node encountered for each horizontal distance. The crucial aspect is that for each `HD`, the map is *always updated* with the latest node encountered. Since BFS explores level by level (top-down), the *last* node processed for a particular HD will naturally be the one at the deepest level for that HD, ensuring it's the bottom-most visible node.
+
+  * **Data Structures Used**:
+
+      * `queue<pair<Node*, int>> Q`: This queue is used for the BFS. Each element is a `pair` containing:
+          * `Node*`: The current tree node.
+          * `int`: The `HorizontalDistance` (HD) of that node. (Level is implicitly handled by BFS's level-by-level traversal).
+      * `map<int, int> BottomNode`: This map is crucial for storing the Bottom View nodes:
+          * **Key (`int` HD)**: Represents the horizontal distance. `std::map` inherently sorts keys, ensuring the output is ordered from left to right (smallest HD to largest HD).
+          * **Value (`int` node data)**: Stores the `data` of the node that is visible from the bottom at that specific `HD`.
+
+  * **Steps**:
+
+    1.  **Handle Empty Tree**: If `root` is `NULL`, return an empty vector.
+    2.  **Initialization**:
+          * Push the `root` node into the queue `Q`, along with its initial HD `0`: `Q.push({root, 0});`.
+    3.  **BFS Traversal (`while(!Q.empty())`)**:
+          * Dequeue the `temp` element from the front of the `Q`.
+          * Extract `FrontNode` (the actual tree node) and its `HorizDist`.
+          * **Record Bottom Node for HD**: `BottomNode[HorizDist] = FrontNode->data;` This is the key step. For any given `HorizDist`, this line *unconditionally overwrites* the `map` entry. Because BFS processes nodes level by level (top-down), the last node to update `BottomNode[HorizDist]` will be the deepest one for that `HD`.
+          * **Enqueue Children**:
+              * If `FrontNode->left` exists: Enqueue it with `HD-1`.
+              * If `FrontNode->right` exists: Enqueue it with `HD+1`.
+    4.  **Construct Final Result**: After the BFS loop completes, `BottomNode` map contains the data of all visible nodes from the bottom, sorted by their horizontal distance.
+          * Iterate through `BottomNode` (which iterates by sorted HDs).
+          * For each `pair<HD, data>` in `BottomNode`, add `data` to the `answer` vector.
+    5.  **Return**: Return the `answer` vector containing the Bottom View nodes.
+
+### 4\. Complexity Analysis for `BottomView`
+
+  * **Time Complexity**: `O(N log W)`
+
+      * `N`: Number of nodes in the tree.
+      * `W`: Width of the tree (number of distinct horizontal distances).
+      * BFS traversal itself is `O(N)`.
+      * Map operations (insertions/updates) take `O(log K)` time, where `K` is the number of elements in the map (at most `W`). So, `N` map operations contribute `O(N log W)`.
+      * Iterating through the map at the end is `O(W)`.
+      * Overall, `O(N log W)`. In the worst case (a skewed tree), `W` can be `O(N)`, leading to `O(N log N)`.
+
+  * **Space Complexity**: `O(N)`
+
+      * `Q` (queue) can store up to `O(W)` nodes.
+      * `BottomNode` (map) stores up to `O(W)` entries, each containing a node's data.
+      * `answer` vector stores `O(W)` elements.
+      * Therefore, the space complexity is dominated by these structures, leading to `O(W)`. Since `W` can be `O(N)` (e.g., a perfect binary tree has `W = N/2 + 1`), the space is `O(N)` in the worst case.
+
+-----
+
+

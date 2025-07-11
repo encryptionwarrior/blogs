@@ -3,72 +3,175 @@ title: Zig-Zag traversal
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes iostream, queue, vector, etc. for common operations
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Function to perform Zig-Zag (Spiral) Level Order Traversal
+// Visits nodes level by level, alternating direction (L->R, R->L, L->R, ...)
 vector<int> ZigZag(Node* root) {
+    // Base Case: If the tree is empty, return an empty vector.
     if(root == NULL) {
         return {};
     }
 
-    queue<Node*> Q;
-    vector<int> answer;
+    queue<Node*> Q;       // Queue for standard BFS traversal
+    vector<int> answer;   // Final vector to store the zig-zag traversal result
 
-    Q.push(root);
-    bool L2R = true;
+    Q.push(root);         // Start by pushing the root node
+    bool L2R = true;      // Flag to track direction: true for Left-to-Right, false for Right-to-Left
 
+    // Main loop: Continue as long as there are nodes in the queue (levels to process)
     while(!Q.empty()) {
-        int size = Q.size();
-        vector<int> result(size);
+        int levelSize = Q.size(); // Get the number of nodes in the current level
+        vector<int> currentLevelNodes(levelSize); // Temporary vector to store nodes of the current level in correct order
 
-        // Level Process
-        for(int i=0; i<size; i++) {
-            Node* FrontNode = Q.front();
-            Q.pop();
+        // Process all nodes in the current level
+        for(int i = 0; i < levelSize; i++) {
+            Node* frontNode = Q.front(); // Get the node at the front of the queue
+            Q.pop();                     // Remove the node from the queue
 
-            int index = L2R ? i : size-i-1;
-            result[index] = FrontNode->data;
+            // Determine the index to place the node's data in the 'currentLevelNodes' vector
+            // If L2R, place normally (0, 1, 2...). If !L2R, place in reverse (size-1, size-2...).
+            int index = L2R ? i : levelSize - i - 1;
+            currentLevelNodes[index] = frontNode->data; // Store data at the calculated index
 
-            if(FrontNode->left) {
-                Q.push(FrontNode->left);
+            // Enqueue children for the next level (always Left then Right for standard BFS queue order)
+            if(frontNode->left) {
+                Q.push(frontNode->left);
             }
-
-            if(FrontNode->right) {
-                Q.push(FrontNode->right);
+            if(frontNode->right) {
+                Q.push(frontNode->right);
             }
         }
-        
-        // Change Direction
+
+        // After processing the entire level, toggle the direction for the next level
         L2R = !L2R;
 
-        for(auto i : result) {
-            answer.push_back(i);
+        // Add the nodes from the current level's ordered vector to the final answer vector
+        for(int data : currentLevelNodes) {
+            answer.push_back(data);
         }
     }
 
-    return answer;
+    return answer; // Return the complete zig-zag traversal
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree using 'buildTree' function (assumed to be in "BinaryTree.h")
+    // It typically takes input in a pre-order fashion.
     root = buildTree(root);
-    vector<int> answer = ZigZag(root);
 
+    // Perform Zig-Zag Traversal and get the result
+    vector<int> result = ZigZag(root);
+
+    // Print the Zig-Zag Traversal result
     cout << endl << "Zigzag Traversal : ";
-    for(auto i : answer) {
-        cout << i << " ";
+    for(int data : result) {
+        cout << data << " ";
     }
+    cout << endl;
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        1 2 3 -1 -1 5 -1 -1 4 -1 6 7 -1 -1 8 -1 -1
-        7 9 8 10 -1 -1 9 -1 -1 8 -1 -1 7 6 -1 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 1 2 3 -1 -1 5 -1 -1 4 -1 6 7 -1 -1 8 -1 -1
+    Tree Structure:
+                1
+               / \
+              2   4
+             / \ / \
+            3  5 6  8
+                 /
+                7
+    Level 0 (L->R): 1
+    Level 1 (R->L): 4 2
+    Level 2 (L->R): 3 5 6 8
+    Level 3 (R->L): 7
+    Output: Zigzag Traversal : 1 4 2 3 5 6 8 7
+
+2.  Input: 7 9 8 10 -1 -1 9 -1 -1 8 -1 -1 7 6 -1 -1 -1
+    Tree Structure:
+                7
+               / \
+              9   7
+             / \   \
+            8   9   6
+           /   /
+          10  8
+    Level 0 (L->R): 7
+    Level 1 (R->L): 7 9
+    Level 2 (L->R): 8 9 6
+    Level 3 (R->L): 8 10
+    Output: Zigzag Traversal : 7 7 9 8 9 6 8 10
 */
 ```
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Level Order Traversal (BFS) Basics
+
+  * Standard Level Order Traversal (Breadth-First Search) visits nodes level by level, always from left to right within each level. It typically uses a queue.
+
+### 3\. Zig-Zag (Spiral) Traversal
+
+  * **Definition**: A variation of level order traversal where nodes are visited level by level, but the direction of traversal alternates for each level:
+      * Level 1: Left to Right
+      * Level 2: Right to Left
+      * Level 3: Left to Right
+      * And so on...
+
+### 4\. Algorithm: `ZigZag(Node* root)`
+
+  * **Core Idea**: Uses a standard BFS (Queue) to process nodes level by level. For each level, it determines the direction (Left-to-Right or Right-to-Left) and stores the nodes in a temporary vector in that specific order before adding them to the final result.
+
+  * **Data Structures Used**:
+
+      * `queue<Node*> Q`: For performing standard Level Order Traversal (BFS). Nodes are enqueued/dequeued in standard left-to-right order.
+      * `vector<int> result`: A temporary vector to store the node data for the *current level* in the correct zig-zag order.
+      * `bool L2R`: A flag to keep track of the current level's direction (`true` for Left-to-Right, `false` for Right-to-Left).
+
+  * **Steps**:
+
+    1.  **Handle Empty Tree**: If `root` is `NULL`, return an empty vector.
+    2.  **Initialization**:
+          * Push `root` into the queue `Q`.
+          * Initialize `L2R = true` (start with Left-to-Right for the first level).
+    3.  **Main Loop (`while(!Q.empty())`)**: Continues as long as there are nodes to process.
+          * **Get Level Size**: `int size = Q.size();` determines how many nodes are in the current level.
+          * **Prepare Current Level Storage**: `vector<int> result(size);` creates a temporary vector of the correct size for the current level's nodes.
+          * **Process Current Level Nodes**: Loop `for(int i=0; i<size; i++)`:
+              * `Node* FrontNode = Q.front(); Q.pop();`: Dequeue the node.
+              * **Determine Placement Index**:
+                  * If `L2R` is `true` (Left-to-Right): `index = i`. Nodes are placed directly at their sequential index.
+                  * If `L2R` is `false` (Right-to-Left): `index = size - i - 1`. Nodes are placed at the reverse index to achieve right-to-left order.
+              * `result[index] = FrontNode->data;`: Store the node's data at the calculated index in the `result` vector.
+              * **Enqueue Children**: If `FrontNode->left` exists, enqueue it. If `FrontNode->right` exists, enqueue it. (Children are *always* enqueued in standard left-to-right order; the zig-zag effect comes from how they are placed in `result`).
+          * **Toggle Direction**: After processing all nodes for the current level, `L2R = !L2R;` flips the direction for the next level.
+          * **Append to Final Answer**: Iterate through the `result` vector and add its elements to the `answer` vector.
+    4.  **Return**: Return the `answer` vector containing all nodes in zig-zag order.
+
+### 5\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * Each node is enqueued and dequeued exactly once. Operations within the loop (dequeuing, placing in `result`, enqueuing children) are constant time. The final loop to append `result` to `answer` also processes each node once overall.
+  * **Space Complexity**: `O(W)`
+      * `Q` (queue) stores nodes up to the maximum width of the tree (`W`).
+      * `result` (vector) temporarily stores nodes of the widest level (`W`).
+      * `answer` (vector) stores all `N` nodes.
+      * So, the dominant space is `O(N)` for the `answer` vector, and `O(W)` for auxiliary space. In the worst case (complete binary tree), `W` can be `N/2`, so `O(N)`.
+
+-----
+

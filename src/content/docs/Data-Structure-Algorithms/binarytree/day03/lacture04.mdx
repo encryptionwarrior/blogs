@@ -3,27 +3,33 @@ title: Top View
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
 
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, queue, vector, map, utility for pair)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
+using namespace std;     // Uses the standard namespace
+
+// --- Incomplete/Potentially Incorrect Recursive Approach for Top View ---
+// This approach often fails for general binary trees where hidden nodes might exist.
+// It works for specific cases like strictly skewed trees or perfect binary trees.
 void TraverseLeft(Node* root, vector<int>& answer) {
     if(root == NULL) {
         return;
     }
-
+    // Traverse left first (like in-order traversal for left side)
     TraverseLeft(root->left, answer);
+    // Add current node's data (adds bottom-up for left spine)
     answer.push_back(root->data);
 }
 
 void TraverseRight(Node* root, vector<int>& answer) {
     if(root == NULL) {
         return;
-    } 
-
+    }
+    // Add current node's data first (like pre-order traversal for right side)
     answer.push_back(root->data);
+    // Traverse right
     TraverseRight(root->right, answer);
 }
 
@@ -34,76 +40,236 @@ vector<int> TopView(Node* root) {
 
     vector<int> answer;
 
-    // Left Part
+    // Collect nodes from the left spine (bottom-up)
     TraverseLeft(root->left, answer);
 
-    // Root Node
+    // Add the root node
     answer.push_back(root->data);
 
-    // Right Part
+    // Collect nodes from the right spine (top-down)
     TraverseRight(root->right, answer);
 
     return answer;
 }
+// ------------------------------------------------------------------------
 
+
+// --- Correct BFS-based Approach for Top View ---
+// This is the standard and robust method for calculating Top View.
+// Time Complexity: O(N log W) where N is nodes, W is tree width
+// Space Complexity: O(N) in worst case (for map and queue)
 vector<int> TopView2(Node* root) {
+    // Base Case: If the tree is empty, return an empty vector.
     if(root == NULL) {
         return {};
     }
 
-    vector<int> answer;
-    map<int, int> TopNode;
-    queue<pair<Node*, int> > Q;
+    vector<int> answer; // Final vector to store the Top View result
 
+    // map<Horizontal_Distance, Node_Data>
+    // TopNode stores the data of the first (highest) node encountered for each HD.
+    // std::map automatically keeps keys (HDs) sorted, ensuring output is left-to-right.
+    map<int, int> TopNode;
+
+    // Queue for BFS traversal: stores {Node*, Horizontal_Distance}
+    queue<pair<Node*, int>> Q;
+
+    // Start BFS: push root with HD=0
     Q.push(make_pair(root, 0));
 
+    // Perform BFS traversal
     while(!Q.empty()) {
+        // Get the front element from the queue
         pair<Node*, int> temp = Q.front();
-        Q.pop();
+        Q.pop(); // Remove it from the queue
 
+        // Extract node and its horizontal distance (HD)
         Node* FrontNode = temp.first;
         int HorizDist = temp.second;
 
-        // If one value is present for a HD, then do nothing
+        // If this Horizontal Distance has NOT been encountered yet,
+        // it means this is the TOPMOST node for this HD. Store its data.
         if(TopNode.find(HorizDist) == TopNode.end()) {
             TopNode[HorizDist] = FrontNode->data;
         }
 
+        // Enqueue left child if it exists: HD decreases by 1
         if(FrontNode->left) {
-            Q.push(make_pair(FrontNode->left, HorizDist-1));
+            Q.push(make_pair(FrontNode->left, HorizDist - 1));
         }
 
+        // Enqueue right child if it exists: HD increases by 1
         if(FrontNode->right) {
-            Q.push(make_pair(FrontNode->right, HorizDist+1));
+            Q.push(make_pair(FrontNode->right, HorizDist + 1));
         }
     }
 
-    for(auto i : TopNode) {
-        answer.push_back(i.second);
+    // After BFS, TopNode map contains all nodes visible from the top, sorted by HD.
+    // Iterate through the map to populate the final answer vector.
+    for(auto const& entry : TopNode) { // 'entry' is a pair<HD, Node_Data>
+        answer.push_back(entry.second); // Add the node's data (value part of the map entry)
     }
 
-    return answer;
+    return answer; // Return the complete Top View traversal
 }
 
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree using 'buildTree' function (assumed to be in "BinaryTree.h")
+    // It typically takes input in a pre-order fashion.
     root = buildTree(root);
-    vector<int> answer = TopView2(root);
 
+    // Perform Top View Traversal using the correct BFS-based approach (TopView2)
+    vector<int> result = TopView2(root);
+
+    // Print the Top View Traversal result
     cout << endl << "Top View : ";
-    for(auto i : answer) {
-        cout << i << " ";
+    for(int data : result) {
+        cout << data << " ";
     }
+    cout << endl;
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        1 2 4 -1 -1 5 -1 -1 3 6 -1 -1 7 -1 -1
-        1 2 3 -1 -1 5 6 -1 -1 8 -1 -1 4 -1 7 -1 9 10 -1 -1 11 -1 -1
-        1 2 4 -1 -1 5 -1 -1 3 6 -1 8 -1 -1 7 -1 9 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 1 2 4 -1 -1 5 -1 -1 3 6 -1 -1 7 -1 -1
+    Tree Structure:
+                1 (HD=0)
+               / \
+              2   3 (HD=-1, HD=1)
+             / \ / \
+            4  5 6  7 (HD=-2, HD=0, HD=0, HD=2)
+
+    Vertical Lines (HDs) and visible nodes:
+    HD: -2 -> 4
+    HD: -1 -> 2
+    HD: 0  -> 1 (5 and 6 are at HD=0 but Level=2, hidden by 1 at Level=0)
+    HD: 1  -> 3
+    HD: 2  -> 7
+    Output: Top View : 4 2 1 3 7
+
+2.  Input: 1 2 3 -1 -1 5 6 -1 -1 8 -1 -1 4 -1 7 -1 9 10 -1 -1 11 -1 -1
+    (Complex Tree structure, example from previous problems)
+    Tree Structure:
+                  1 (0)
+                /   \
+               2(-1) 4(1)
+              / \     \
+             3(-2) 5(0)  7(2)
+                    / \   \
+                   6(-1) 8(1)  9(3)
+                              /
+                             10(2)
+                            /
+                           11(1)
+
+    Vertical Lines (HDs) and visible nodes:
+    HD: -2 -> 3
+    HD: -1 -> 2
+    HD: 0  -> 1 (5 is at HD=0, Level=2, hidden by 1)
+    HD: 1  -> 4 (8 and 11 are at HD=1, but higher levels, hidden by 4)
+    HD: 2  -> 7 (10 is at HD=2, but higher level, hidden by 7)
+    HD: 3  -> 9
+
+    Output: Top View : 3 2 1 4 7 9
+
+3.  Input: 1 2 4 -1 -1 5 -1 -1 3 6 -1 8 -1 -1 7 -1 9 -1 -1
+    Tree Structure:
+                1 (0)
+               / \
+              2(-1) 3(1)
+             / \   / \
+            4(-2) 5(0) 6(0) 7(2)
+                          / \
+                         8(-1) 9(1)
+
+    HD: -2 -> 4
+    HD: -1 -> 2 (8 is at HD=-1, Level=3, hidden by 2)
+    HD: 0  -> 1 (5, 6 are at HD=0, Level=2, hidden by 1)
+    HD: 1  -> 3 (9 is at HD=1, Level=3, hidden by 3)
+    HD: 2  -> 7
+
+    Output: Top View : 4 2 1 3 7
 */
 ```
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Top View of a Binary Tree Definition
+
+  * **Definition**: The Top View of a Binary Tree is the set of nodes visible when looking at the tree from directly above.
+  * **Key Property**: For any given **horizontal distance (column)**, only the **highest node** (the node with the smallest level) at that distance is part of the Top View.
+  * **Horizontal Distance (HD) Convention**:
+      * **Root Node**: Assigned a Horizontal Distance (HD) of `0`.
+      * **Left Child**: For a node at `HD`, its left child will be at `HD - 1`.
+      * **Right Child**: For a node at `HD`, its right child will be at `HD + 1`.
+
+### 3\. Algorithm: `TopView2(Node* root)` (Correct BFS Approach)
+
+  * **Core Idea**: Uses Breadth-First Search (BFS) to traverse the tree level by level. A `map` is used to store the first node encountered for each horizontal distance. Since BFS explores nodes top-down (level by level), the first node encountered for a particular HD will always be the highest node in that vertical column, ensuring it's part of the Top View.
+
+  * **Data Structures Used**:
+
+      * `queue<pair<Node*, int>> Q`: This queue is used for the BFS. Each element is a `pair` containing:
+          * `Node*`: The current tree node.
+          * `int`: The `HorizontalDistance` (HD) of that node. (Level is implicitly handled by BFS's level-by-level traversal).
+      * `map<int, int> TopNode`: This map is crucial for storing the Top View nodes:
+          * **Key (`int` HD)**: Represents the horizontal distance. `std::map` inherently sorts keys, ensuring the output is ordered from left to right (smallest HD to largest HD).
+          * **Value (`int` node data)**: Stores the `data` of the node that is visible from the top at that specific `HD`.
+
+  * **Steps**:
+
+    1.  **Handle Empty Tree**: If `root` is `NULL`, return an empty vector.
+    2.  **Initialization**:
+          * Push the `root` node into the queue `Q`, along with its initial HD `0`: `Q.push({root, 0});`.
+    3.  **BFS Traversal (`while(!Q.empty())`)**:
+          * Dequeue the `temp` element from the front of the `Q`.
+          * Extract `FrontNode` (the actual tree node) and its `HorizDist`.
+          * **Record Top Node for HD**:
+              * `if(TopNode.find(HorizDist) == TopNode.end())`: This condition checks if an entry for `HorizDist` already exists in `TopNode`.
+              * If it **does not exist** (i.e., this is the *first* node encountered at this `HorizDist`): `TopNode[HorizDist] = FrontNode->data;` - store its data.
+              * If it **already exists**: Do nothing. This ensures that only the highest node (first encountered in BFS) for that HD is kept.
+          * **Enqueue Children**:
+              * If `FrontNode->left` exists: Enqueue it with `HD-1`.
+              * If `FrontNode->right` exists: Enqueue it with `HD+1`.
+    4.  **Construct Final Result**: After the BFS loop completes, `TopNode` contains the data of all visible nodes, sorted by their horizontal distance.
+          * Iterate through `TopNode` (which iterates by sorted HDs).
+          * For each `pair<HD, data>` in `TopNode`, add `data` to the `answer` vector.
+    5.  **Return**: Return the `answer` vector containing the Top View nodes.
+
+### 4\. Complexity Analysis for `TopView2`
+
+  * **Time Complexity**: `O(N log W)`
+
+      * `N`: Number of nodes in the tree.
+      * `W`: Width of the tree (number of distinct horizontal distances).
+      * BFS traversal itself is `O(N)`.
+      * Inserting into `std::map` takes `O(log K)` time, where `K` is the number of elements already in the map. Here, the map will have at most `W` distinct horizontal distances. So, `N` insertions and lookups contribute `O(N log W)`.
+      * Iterating through the map at the end is `O(W)`.
+      * Overall, `O(N log W)`. In the worst case (a skewed tree), `W` can be `O(N)`, leading to `O(N log N)`.
+
+  * **Space Complexity**: `O(N)`
+
+      * `Q` (queue) can store up to `O(W)` nodes.
+      * `TopNode` (map) stores up to `O(W)` entries, each containing a node's data.
+      * `answer` vector stores `O(W)` elements.
+      * Therefore, the space complexity is dominated by these structures, leading to `O(W)`. Since `W` can be `O(N)` (e.g., a perfect binary tree has `W = N/2 + 1`), the space is `O(N)` in the worst case.
+
+-----
+
+### **Note on `TopView` (Recursive Approach)**
+
+The `TopView` function implemented using `traverseLeft` and `traverseRight` helper functions is **not generally correct** for all binary tree structures. It works for some specific tree shapes (like perfectly balanced or strictly skewed trees), but it fails to correctly identify the highest node for a given horizontal distance when a lower-level node is visible due to an open path, but an earlier traversed parent node (which is not directly above) might block it, or when a node is hidden by another node at the same HD but a higher level in a non-trivial configuration. The BFS-based `TopView2` approach is robust and generally accepted for this problem.
+
+-----
+

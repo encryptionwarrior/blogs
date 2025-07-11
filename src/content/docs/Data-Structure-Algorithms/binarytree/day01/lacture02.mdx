@@ -3,33 +3,95 @@ title: Pre-order Traversal
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (like iostream)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Function to perform Pre-Order Traversal recursively
+// (Root -> Left Subtree -> Right Subtree)
 void preOrderRecursive(Node* root) {
+    // Base Case: If the current node is NULL, stop recursion for this branch.
     if(root == NULL) {
         return;
     }
 
+    // 1. Process the Root: Print the data of the current node.
     cout << root->data << " ";
+
+    // 2. Recur for Left Subtree: Call the function for the left child.
     preOrderRecursive(root->left);
+
+    // 3. Recur for Right Subtree: Call the function for the right child.
     preOrderRecursive(root->right);
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
-    // Creating a tree
+    // Creating a tree: This function is assumed to be defined in "BinaryTree.h"
+    // It typically takes input in a pre-order fashion (e.g., 1 3 7 -1 -1 11 -1 -1 5 17 -1 -1 -1)
     root = buildTree(root);
 
-    cout << "\nPre Order Traversal : " << endl;
-    preOrderRecursive(root);
+    cout << "\nPre Order Traversal : " << endl; // Output label
+    preOrderRecursive(root);                   // Perform and print the pre-order traversal
+    cout << endl; // Add a newline for better formatting after traversal output
 
-    return 0;
+    return 0; // End of the program
 }
 
-// INPUT : 1 3 7 -1 -1 11 -1 -1 5 17 -1 -1 -1
+/*
+Example INPUT for buildTree function (for reference):
+1 3 7 -1 -1 11 -1 -1 5 17 -1 -1 -1
+
+This input creates a tree structure like this:
+        1
+       / \
+      3   5
+     / \   \
+    7  11  17
+*/
 ```
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Pre-Order Traversal
+
+  * **Definition**: A way to visit (or "traverse") all nodes in a Binary Tree. In Pre-order traversal, the order of visiting is:
+
+    1.  **Root** (Process the current node)
+    2.  **Left Subtree** (Recursively traverse the left child)
+    3.  **Right Subtree** (Recursively traverse the right child)
+
+  * **Recursive Algorithm**:
+
+      * **Base Case**: If the current node is `NULL` (meaning you've reached beyond a leaf or an empty tree), simply return.
+      * **Recursive Step**:
+        1.  Process the data of the current `root` node (e.g., print it).
+        2.  Make a recursive call to `preOrderRecursive` for the `root->left` child.
+        3.  Make a recursive call to `preOrderRecursive` for the `root->right` child.
+
+  * **Use Cases**:
+
+      * Creating a **copy** of a binary tree.
+      * **Serializing** a tree (converting it into a sequence of bits to store or transmit), as it reconstructs the tree uniquely.
+      * Representing expressions in **prefix notation**.
+
+### 3\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * Each node in the tree is visited exactly once.
+  * **Space Complexity**: `O(H)`
+      * This is due to the recursion call stack. `H` is the height of the tree.
+      * In the worst case (a skewed tree, resembling a linked list), `H` can be `N`, leading to `O(N)` space.
+      * In the best case (a perfectly balanced tree), `H` is `log N`, leading to `O(log N)` space.
+
+-----
+
+

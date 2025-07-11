@@ -3,72 +3,218 @@ title: Vertical Order traversal
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, queue, vector, map, utility for pair)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Function to perform Vertical Order Traversal of a Binary Tree
+// Nodes are printed column by column, from top to bottom within each column.
 vector<int> VerticalOrder(Node* root) {
+    // Base Case: If the tree is empty, return an empty vector.
     if(root == NULL) {
         return {};
     }
 
-    vector<int> answer;
-    map<int, map<int, vector<int> > > NodeMap;
-    queue<pair<Node*, pair<int, int> > > Q;
+    vector<int> answer; // Final vector to store the vertical order traversal result
 
+    // map<Horizontal_Distance, map<Level, vector<Node_Data>>>
+    // NodeMap stores nodes grouped by HD, then by Level, then collects data.
+    // std::map automatically keeps keys (HDs and Levels) sorted.
+    map<int, map<int, vector<int>>> NodeMap;
+
+    // Queue for BFS traversal: stores {Node*, {Horizontal_Distance, Level}}
+    queue<pair<Node*, pair<int, int>>> Q;
+
+    // Start BFS: push root with HD=0 and Level=0
     Q.push(make_pair(root, make_pair(0,0)));
 
+    // Perform BFS traversal
     while(!Q.empty()) {
-        pair<Node*, pair<int, int> > temp = Q.front();
-        Q.pop();
+        // Get the front element from the queue
+        pair<Node*, pair<int, int>> temp = Q.front();
+        Q.pop(); // Remove it from the queue
 
+        // Extract node, horizontal distance (HD), and level
         Node* FrontNode = temp.first;
         int HorizDist = temp.second.first;
         int Lvl = temp.second.second;
 
+        // Store the node's data in the NodeMap based on its HD and Level
         NodeMap[HorizDist][Lvl].push_back(FrontNode->data);
 
+        // Enqueue left child if it exists: HD decreases by 1, Level increases by 1
         if(FrontNode->left) {
             Q.push(make_pair(FrontNode->left, make_pair(HorizDist-1, Lvl+1)));
         }
 
+        // Enqueue right child if it exists: HD increases by 1, Level increases by 1
         if(FrontNode->right) {
             Q.push(make_pair(FrontNode->right, make_pair(HorizDist+1, Lvl+1)));
         }
     }
 
-    for(auto i : NodeMap) {
-        for(auto j : i.second) {
-            for(auto k : j.second) {
-                
-                answer.push_back(k);
-
+    // After BFS, NodeMap contains all nodes sorted by HD, then by Level.
+    // Now, iterate through the map to populate the final answer vector.
+    for(auto const& hd_entry : NodeMap) { // Iterate through each Horizontal Distance
+        // hd_entry.first is the HD, hd_entry.second is the inner map<Level, vector<int>>
+        for(auto const& level_entry : hd_entry.second) { // Iterate through each Level within this HD
+            // level_entry.first is the Level, level_entry.second is the vector<int> of node data
+            for(int node_data : level_entry.second) { // Iterate through node data at this HD and Level
+                answer.push_back(node_data); // Add to final answer
             }
         }
     }
 
-    return answer;
+    return answer; // Return the complete vertical order traversal
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree using 'buildTree' function (assumed to be in "BinaryTree.h")
+    // It typically takes input in a pre-order fashion.
     root = buildTree(root);
-    vector<int> answer = VerticalOrder(root);
 
+    // Perform Vertical Order Traversal and get the result
+    vector<int> result = VerticalOrder(root);
+
+    // Print the Vertical Order Traversal result
     cout << endl << "Vertical Order Traversal : ";
-    for(auto i : answer) {
-        cout << i << " ";
+    for(int data : result) {
+        cout << data << " ";
     }
+    cout << endl;
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        1 2 3 -1 -1 5 6 -1 -1 8 -1 -1 4 -1 7 -1 9 10 -1 -1 11 -1 -1
-        1 2 4 -1 -1 5 -1 -1 3 6 -1 8 -1 -1 7 -1 9 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 1 2 3 -1 -1 5 6 -1 -1 8 -1 -1 4 -1 7 -1 9 10 -1 -1 11 -1 -1
+    (Assuming this input generates the tree as discussed in previous responses, e.g., the complex one)
+    Tree Structure example:
+                  1 (0,0)
+                /   \
+               2(-1,1) 4(1,1)
+              / \     \
+             3(-2,2) 5(0,2)  7(2,2)
+                    / \     \
+                   6(-1,3) 8(1,3)  9(3,3)
+                                  /
+                                 10(2,4)
+                                /
+                               11(1,5)
+
+    HD: -2 -> 3
+    HD: -1 -> 2, 6
+    HD: 0  -> 1, 5
+    HD: 1  -> 4, 8, 11
+    HD: 2  -> 7, 10
+    HD: 3  -> 9
+
+    Output: Vertical Order Traversal : 3 2 6 1 5 4 8 11 7 10 9
+    (The exact order might slightly vary based on how nodes on same HD & Level are added, but map handles levels.
+    The crucial bit is that nodes with same HD and same LEVEL are added to the vector in order of their BFS discovery)
+
+2.  Input: 1 2 4 -1 -1 5 -1 -1 3 6 -1 8 -1 -1 7 -1 9 -1 -1
+    Tree Structure:
+                1 (0,0)
+               / \
+              2(-1,1) 3(1,1)
+             / \     / \
+            4(-2,2) 5(0,2) 6(0,2) 7(2,2)
+                          / \     / \
+                         8(-1,3)   9(1,3)
+
+    HD: -2 -> 4
+    HD: -1 -> 2, 8
+    HD: 0  -> 1, 5, 6
+    HD: 1  -> 3, 9
+    HD: 2  -> 7
+
+    Output: Vertical Order Traversal : 4 2 8 1 5 6 3 9 7
+    (Here, for HD=0 and Level=2, 5 comes before 6 as it's processed first in BFS).
 */
 ```
+
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Vertical Order Traversal Definition
+
+  * **Definition**: Nodes are traversed and collected column by column based on their horizontal distance from the root.
+      * All nodes at the same horizontal distance belong to the same "vertical line".
+      * Within each vertical line, nodes are typically traversed from top to bottom (i.e., by increasing level).
+      * If multiple nodes fall on the same horizontal distance AND the same level (which is rare in standard binary trees, but possible), their relative order (e.g., left-to-right as in level order) is usually preserved.
+
+### 3\. Horizontal Distance (HD) and Level Convention
+
+  * **Root Node**: Assigned a Horizontal Distance (HD) of `0` and Level `0`.
+  * **Left Child**: For a node at `(HD, Level)`, its left child will be at `(HD - 1, Level + 1)`.
+  * **Right Child**: For a node at `(HD, Level)`, its right child will be at `(HD + 1, Level + 1)`.
+
+### 4\. Algorithm: `VerticalOrder(Node* root)`
+
+  * **Core Idea**: Uses Breadth-First Search (BFS) to traverse the tree. While traversing, it keeps track of each node's horizontal distance (HD) and its level. A `map` of `map` (or `map` of `vector` where custom sorting might be needed for levels) is used to store nodes, which naturally sorts them by HD and then by Level.
+
+  * **Data Structures Used**:
+
+      * `queue<pair<Node*, pair<int, int>>> Q`: This queue is used for the BFS. Each element in the queue is a `pair` containing:
+          * `Node*`: The current tree node.
+          * `pair<int, int>`: Another pair representing `{HorizontalDistance, Level}` of that node.
+      * `map<int, map<int, vector<int>>> NodeMap`: This nested map is crucial for storing and sorting nodes:
+          * **Outer Map Key (`int` HD)**: Stores nodes grouped by their horizontal distance. `std::map` inherently sorts keys, ensuring vertical lines are processed from left to right (smallest HD to largest HD).
+          * **Inner Map Key (`int` Level)**: Stores nodes within a specific horizontal distance, grouped by their level. `std::map` inherently sorts keys, ensuring nodes within a vertical line are processed from top to bottom (smallest Level to largest Level).
+          * **Innermost Value (`vector<int>`)**: Stores the `data` of nodes. A `vector` is used to handle cases where multiple nodes might fall on the exact same HD and Level (though less common in a strict binary tree).
+
+  * **Steps**:
+
+    1.  **Handle Empty Tree**: If `root` is `NULL`, return an empty vector.
+    2.  **Initialization**:
+          * Push the `root` node into the queue `Q`, along with its initial HD `0` and Level `0`: `Q.push({root, {0, 0}});`.
+    3.  **BFS Traversal (`while(!Q.empty())`)**:
+          * Dequeue the `temp` element from the front of the `Q`.
+          * Extract `FrontNode` (the actual tree node), `HorizDist`, and `Lvl` from `temp`.
+          * **Store in `NodeMap`**: Add `FrontNode->data` to the `vector` associated with its `HorizDist` and `Lvl` in `NodeMap`: `NodeMap[HorizDist][Lvl].push_back(FrontNode->data);`.
+          * **Enqueue Children**:
+              * If `FrontNode->left` exists: Enqueue it with `HD-1` and `Lvl+1`.
+              * If `FrontNode->right` exists: Enqueue it with `HD+1` and `Lvl+1`.
+    4.  **Construct Final Result**: After the BFS loop completes, `NodeMap` holds all nodes correctly grouped and sorted.
+          * Iterate through `NodeMap` (outer map for HDs).
+          * For each HD, iterate through its inner map (for Levels).
+          * For each Level, iterate through the `vector` of node data.
+          * Add each node's `data` to the `answer` vector.
+    5.  **Return**: Return the `answer` vector containing all node data in vertical order.
+
+### 5\. Complexity Analysis
+
+  * **Time Complexity**: `O(N log W + N log H)` or effectively `O(N log N)` in worst case.
+
+      * `N`: Number of nodes in the tree.
+      * `W`: Width of the tree (number of distinct horizontal distances).
+      * `H`: Height of the tree (number of distinct levels).
+      * BFS traversal itself is `O(N)`.
+      * Inserting into `std::map` takes `O(log K)` time, where `K` is the number of elements already in the map.
+          * The outer map has `W` entries.
+          * The inner maps have up to `H` entries.
+          * Thus, insertions dominate: `N` insertions into `NodeMap` which involves `log W` for outer map and `log H` for inner map lookup/insertion on average.
+      * Iterating through the map at the end is `O(N)` because it visits each stored node once.
+      * Overall, `O(N log W)` if levels within a column are just appended to vector and not sorted, but with `map<int, map<int, vector<int>>>` it's `O(N log W + N log H)`. Since `W` and `H` can be `O(N)` in worst-case (skewed tree), it can be `O(N log N)`.
+
+  * **Space Complexity**: `O(N)`
+
+      * `Q` (queue) can store up to `O(W)` nodes.
+      * `NodeMap` stores all `N` nodes. In the worst case (a skewed tree), `NodeMap` might have `N` distinct horizontal distances, each containing one node.
+      * `answer` vector stores `O(N)` elements.
+      * Therefore, the space complexity is dominated by storing all nodes in `NodeMap` and `answer`, leading to `O(N)`.
+
+-----
+

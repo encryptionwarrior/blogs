@@ -3,76 +3,194 @@ title: Check Balanced Binary Tree
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (like iostream, algorithm for max, utility for pair, cstdlib for abs)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Helper function to calculate the height of a Binary Tree recursively
+// Height is defined as the number of nodes on the longest path from the root to a leaf.
 int getHeight(Node* root) {
+    // Base Case: If the current node is NULL (empty subtree), its height is 0.
     if(root == NULL) {
         return 0;
     }
 
+    // Recursively get the height of the left subtree
     int h1 = getHeight(root->left);
+    // Recursively get the height of the right subtree
     int h2 = getHeight(root->right);
 
+    // The height of the current node is 1 (for itself)
+    // plus the maximum of the heights of its left and right subtrees.
     return max(h1, h2) + 1;
 }
 
+// Less optimized function to check if a Binary Tree is balanced
+// Time Complexity: O(N^2) in worst case (skewed tree) due to repeated getHeight calls.
 bool isBalanced(Node* root) {
+    // Base Case: An empty tree is considered balanced.
     if(root == NULL) {
         return true;
     }
 
-    bool isLeft = isBalanced(root->left);
-    bool isRight = isBalanced(root->right);
+    // 1. Recursively check if the left subtree is balanced.
+    bool isLeftBalanced = isBalanced(root->left);
+    // 2. Recursively check if the right subtree is balanced.
+    bool isRightBalanced = isBalanced(root->right);
 
-    bool diff = abs(getHeight(root->left) - getHeight(root->right)) <= 1;
+    // 3. Check if the height difference between current node's left and right subtrees is at most 1.
+    //    getHeight calls are made here, leading to redundant computations.
+    bool heightDifferenceCheck = abs(getHeight(root->left) - getHeight(root->right)) <= 1;
 
-    return isLeft && isRight && diff;
+    // The current tree (rooted at 'root') is balanced if all three conditions are true.
+    return isLeftBalanced && isRightBalanced && heightDifferenceCheck;
 }
 
+// Optimized function to check if a Binary Tree is balanced
+// Simultaneously calculates height and checks balance in a single traversal.
+// Returns a pair: {isBalanced_status, height_of_subtree}.
+// Time Complexity: O(N) because each node is visited once.
 pair<bool, int> isBalancedOptimised(Node* root) {
+    // Base Case: An empty tree is balanced, and its height is 0.
     if(root == NULL) {
-        return {true, 0};
+        return {true, 0}; // {isBalanced, height}
     }
 
-    pair<bool, int> left = isBalancedOptimised(root->left);
-    pair<bool, int> right = isBalancedOptimised(root->right);
+    // 1. Recursively get balance status and height of the left subtree.
+    pair<bool, int> leftResult = isBalancedOptimised(root->left);
+    // 2. Recursively get balance status and height of the right subtree.
+    pair<bool, int> rightResult = isBalancedOptimised(root->right);
 
-    bool isLeft = left.first;
-    bool isRight = right.first;
+    // Extract results from recursive calls
+    bool isLeftBalanced = leftResult.first;
+    bool isRightBalanced = rightResult.first;
 
-    bool diff = abs(left.second - right.second) <= 1;
+    // 3. Check height difference for the current node: abs(left_height - right_height) <= 1
+    bool heightDifferenceCheck = abs(leftResult.second - rightResult.second) <= 1;
 
-    pair<bool, int> ans;
-    ans.first = isLeft && isRight && diff;
-    ans.second = max(left.second, right.second) + 1;
+    pair<bool, int> ans; // Pair to store result for the current node
 
-    return ans;
+    // The current subtree is balanced if its children are balanced AND their heights differ by at most 1.
+    ans.first = isLeftBalanced && isRightBalanced && heightDifferenceCheck;
+    // Calculate the height of the current subtree: 1 + max(left_height, right_height)
+    ans.second = max(leftResult.second, rightResult.second) + 1;
+
+    return ans; // Return the calculated {isBalanced, height} pair
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree. 'buildTree' function is assumed to be defined in "BinaryTree.h"
+    // It typically takes input in a pre-order fashion.
+    // Example Input for a balanced tree: 1 2 4 -1 -1 5 -1 -1 3 6 -1 -1 7 -1 -1
+    // Example Input for an unbalanced tree: 1 2 3 -1 -1 -1 4 -1 -1
     root = buildTree(root);
 
-    // bool check = isBalanced(root);
+    // Call the optimized function to check if the tree is balanced.
+    // We only care about the boolean balance status (first element of the pair).
     bool check = isBalancedOptimised(root).first;
 
+    // Print whether the tree is balanced or not
     if(check) {
         cout << endl << "Balanced Tree!" << endl;
     } else {
         cout << endl << "Not a balanced tree!" << endl;
     }
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        1 10 5 -1 -1 -1 39 -1 -1
-        1 10 5 -1 -1 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 1 10 5 -1 -1 -1 39 -1 -1
+    Tree Structure:
+           1
+          / \
+         10  39
+        /
+       5
+    - Height(5) = 1
+    - Height(10) = max(Height(5), 0) + 1 = 2
+    - Height(39) = 1
+    - For node 1: abs(Height(10) - Height(39)) = abs(2 - 1) = 1.
+    - Left subtree (rooted at 10) is balanced. Right subtree (rooted at 39) is balanced.
+    Output: Balanced Tree!
+
+2.  Input: 1 10 5 -1 -1 -1 -1
+    Tree Structure (highly skewed):
+           1
+          /
+         10
+        /
+       5
+    - Height(5) = 1
+    - Height(10) = max(Height(5), 0) + 1 = 2
+    - Height(1) = max(Height(10), 0) + 1 = 3
+    - For node 1: abs(Height(10) - Height(NULL)) = abs(2 - 0) = 2.
+    - Since 2 > 1, the tree is NOT balanced.
+    Output: Not a balanced tree!
 */
 ```
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Height of a Binary Tree (`getHeight` function)
+
+  * **Definition**: The height of a binary tree is the **number of nodes** on the longest path from the root node to any leaf node. (An empty tree has height 0, a single node tree has height 1).
+  * **Logic**: Recursively, the height of a node is `1 + max(height_of_left_subtree, height_of_right_subtree)`.
+  * **Time Complexity**: `O(N)` (each node visited once).
+  * **Space Complexity**: `O(H)` (recursion stack, H = height).
+
+### 3\. Balanced Binary Tree
+
+  * **Definition**: A binary tree is considered **balanced** if, for **every single node** in the tree, the absolute difference between the height of its left subtree and the height of its right subtree is **at most 1**.
+      * This condition must hold true for the root, its children, their children, and so on, down to every leaf node.
+
+### 4\. Approaches to Check Balance
+
+#### a) `isBalanced(Node* root)` (Naive/Less Optimized)
+
+  * **Logic**:
+      * **Base Case**: An empty tree (`NULL` root) is considered balanced, returns `true`.
+      * **Recursive Step**:
+        1.  Recursively check if the `left` subtree is balanced (`isLeft`).
+        2.  Recursively check if the `right` subtree is balanced (`isRight`).
+        3.  Calculate the height difference between the left and right subtrees of the *current* node using `getHeight()`. Check if `abs(height(left) - height(right)) <= 1`.
+        4.  Return `true` only if all three conditions (`isLeft`, `isRight`, `diff`) are true.
+  * **Drawback**: This approach is inefficient because `getHeight` is called repeatedly for every node at each level. For a node `X`, `getHeight(X->left)` and `getHeight(X->right)` will traverse their subtrees. If `isBalanced` is called on `X`'s parent, these subtrees will be traversed again.
+  * **Time Complexity**: `O(N^2)` in the worst case (e.g., a skewed tree). This is because `getHeight` (O(N)) is called for each node, resulting in redundant traversals.
+  * **Space Complexity**: `O(H)` (recursion stack).
+
+#### b) `isBalancedOptimised(Node* root)` (Optimized)
+
+  * **Logic**: This approach checks for balance and calculates height simultaneously in a single recursive traversal. It avoids redundant height calculations.
+  * **Return Type**: It returns a `pair<bool, int>` where:
+      * `pair.first`: `true` if the subtree rooted at the current node is balanced, `false` otherwise.
+      * `pair.second`: The `height` of the subtree rooted at the current node.
+  * **Algorithm**:
+    1.  **Base Case**: If `root` is `NULL`, return `{true, 0}` (balanced, height 0).
+    2.  **Recursive Calls**: Recursively call `isBalancedOptimised` for `left` and `right` children to get their `(is_balanced, height)` pairs.
+    3.  **Check Current Node's Balance**:
+          * `isLeftBalanced = left.first`
+          * `isRightBalanced = right.first`
+          * `heightDiffCheck = abs(left.second - right.second) <= 1`
+          * `current_is_balanced = isLeftBalanced && isRightBalanced && heightDiffCheck`
+    4.  **Calculate Current Node's Height**: `current_height = max(left.second, right.second) + 1`.
+    5.  **Return**: Return `{current_is_balanced, current_height}`.
+  * **Advantage**: Each node is visited exactly once. During that visit, its balance status and height are determined based on already computed values from its children.
+  * **Time Complexity**: `O(N)`
+      * Each node is visited exactly once.
+  * **Space Complexity**: `O(H)` (recursion stack).
+
+-----
+
+

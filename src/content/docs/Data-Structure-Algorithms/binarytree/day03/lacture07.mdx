@@ -3,44 +3,171 @@ title: Right View
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, vector)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Function to find the Right View of a Binary Tree using recursion.
+// This function performs a modified traversal prioritizing the right child first (Root -> Right -> Left).
+// Parameters:
+//   root: The current node being processed.
+//   answer: A reference to the vector that will store the Right View nodes.
+//   lvl: The current level of the 'root' node (root of the whole tree is level 0).
 void RightView(Node* root, vector<int>& answer, int lvl) {
+    // Base Case: If the current node is NULL, stop the recursion for this path.
     if(root == NULL) {
         return;
     }
 
+    // Check if this is the first time we are visiting a node at the current 'lvl'.
+    // 'answer.size()' tells us how many levels have already had their rightmost node recorded.
+    // If 'lvl' matches 'answer.size()', it means we are at a NEW level for which we
+    // haven't added a rightmost node yet. Since we prioritize right traversal,
+    // this node MUST be the rightmost for this level.
     if(lvl == answer.size()) {
-        answer.push_back(root->data);
+        answer.push_back(root->data); // Add the node's data to the Right View list.
     }
 
-    RightView(root->right, answer, lvl+1);
-    RightView(root->left, answer, lvl+1);
+    // Recursively call for the right child FIRST.
+    // This is the critical difference from Left View and ensures that the
+    // rightmost path is explored before the left, correctly identifying
+    // the rightmost node for each level.
+    RightView(root->right, answer, lvl + 1);
+
+    // Recursively call for the left child.
+    // Nodes from the left subtree will only be added if their level
+    // was not already covered by a node in the right subtree (i.e., if the right subtree
+    // was shorter or non-existent for a particular level).
+    RightView(root->left, answer, lvl + 1);
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree using 'buildTree' function (assumed to be in "BinaryTree.h")
+    // It typically takes input in a pre-order fashion.
     root = buildTree(root);
-    vector<int> answer;
+
+    vector<int> answer; // Vector to store the Right View nodes
+    // Start the recursive RightView traversal from the root at level 0.
     RightView(root, answer, 0);
 
+    // Print the Right View result
     cout << endl << "Right View : ";
-    for(auto i : answer) {
-        cout << i << " ";
+    for(int data : answer) {
+        cout << data << " ";
     }
+    cout << endl;
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        1 2 -1 4 6 7 -1 -1 8 -1 -1 -1 3 -1 5 -1 -1
-        1 2 -1 4 5 -1 -1 -1 3 -1 -1
-        1 2 3 -1 -1 4 -1 7 -1 -1 5 -1 6 -1 8 -1 9 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 1 2 -1 4 6 7 -1 -1 8 -1 -1 -1 3 -1 5 -1 -1
+    Tree Structure:
+                1 (L0)
+               / \
+              2   3 (L1)
+             / \   \
+            4   -1  5 (L2)
+           / \
+          6   8 (L3)
+         / \
+        7   -1 (L4)
+
+    Level 0: 1 (first node at L0 from right)
+    Level 1: 3 (first node at L1 from right)
+    Level 2: 5 (first node at L2 from right)
+    Level 3: 8 (first node at L3 from right)
+    Level 4: 7 (first node at L4 from right)
+    Output: Right View : 1 3 5 8 7
+
+2.  Input: 1 2 -1 4 5 -1 -1 -1 3 -1 -1
+    Tree Structure:
+              1 (L0)
+             / \
+            2   3 (L1)
+             \
+              4 (L2)
+             /
+            5 (L3)
+
+    Level 0: 1
+    Level 1: 3
+    Level 2: 4
+    Level 3: 5
+    Output: Right View : 1 3 4 5
+
+3.  Input: 1 2 3 -1 -1 4 -1 7 -1 -1 5 -1 6 -1 8 -1 9 -1 -1
+    Tree Structure:
+                  1 (L0)
+                 / \
+                2   5 (L1)
+               / \   \
+              3   4   6 (L2)
+                 /     \
+                7       8 (L3)
+                         \
+                          9 (L4)
+
+    Level 0: 1
+    Level 1: 5
+    Level 2: 6
+    Level 3: 8
+    Level 4: 9
+    Output: Right View : 1 5 6 8 9
 */
 ```
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Right View of a Binary Tree Definition
+
+  * **Definition**: The Right View of a Binary Tree is the set of nodes visible when looking at the tree from the right side.
+  * **Key Property**: For each level of the tree, the **rightmost node** at that level is part of the Right View.
+
+### 3\. Algorithm: `RightView(Node* root, vector<int>& answer, int lvl)` (Recursive Approach)
+
+  * **Core Idea**: This is a modified traversal (similar to Pre-order, but prioritizing the right child first: Root -\> Right -\> Left). We maintain a `level` parameter and a result `vector`. For each new `level` encountered, the first node visited will be the rightmost node for that level.
+
+  * **Parameters**:
+
+      * `Node* root`: The current node being processed.
+      * `vector<int>& answer`: A reference to the vector where the Right View nodes will be stored. This vector dynamically grows as new levels are discovered.
+      * `int lvl`: The current level of the `root` node. The root of the entire tree is typically `lvl = 0`.
+
+  * **Steps**:
+
+    1.  **Base Case**: If `root` is `NULL`, simply return (nothing to add).
+    2.  **Check for New Level's First Node**:
+          * `if(lvl == answer.size())`: This is the crucial condition, identical to Left View.
+              * `answer.size()` indicates how many levels we've already found a rightmost node for.
+              * If the current `lvl` is equal to `answer.size()`, it means we are at a level for which we *haven't yet added any node* to our `answer` list.
+              * Because we prioritize the **right child first** in our recursive calls, the first node we encounter at any new level will guarantee it's the rightmost node for that level.
+              * If this condition is true, `answer.push_back(root->data);` adds this node's data to our result.
+    3.  **Recursive Calls**:
+          * `RightView(root->right, answer, lvl + 1);`: **Crucially, recursively call for the right child FIRST.** This ensures that the rightmost path is explored before the left, allowing us to find the rightmost node for each level.
+          * `RightView(root->left, answer, lvl + 1);`: Recursively call for the left child. Nodes from the left subtree will only be added if their level was not already covered by a node in the right subtree (i.e., if the right subtree ended before a certain level, or didn't exist).
+
+### 4\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * Each node in the tree is visited exactly once during the recursion.
+  * **Space Complexity**: `O(H)`
+      * Due to the recursion call stack, where `H` is the height of the tree.
+      * In the worst case (a skewed tree), `H` can be `N`, leading to `O(N)` space.
+      * In the best case (a balanced tree), `H` is `log N`, leading to `O(log N)` space.
+      * The `answer` vector also uses `O(H)` space as it stores one node per level.
+
+-----
+
+

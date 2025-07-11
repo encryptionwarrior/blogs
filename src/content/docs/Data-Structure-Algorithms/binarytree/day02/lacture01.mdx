@@ -3,39 +3,129 @@ title: Height Of Binary Tree
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (like iostream, algorithm for max)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Function to calculate the height of a Binary Tree recursively
+// Height is defined as the number of nodes on the longest path from the root to a leaf.
 int getHeight(Node* root) {
+    // Base Case: If the current node is NULL (empty subtree), its height is 0.
     if(root == NULL) {
         return 0;
     }
 
-    int left = getHeight(root->left);
-    int right = getHeight(root->right);
+    // Recursively get the height of the left subtree
+    int leftHeight = getHeight(root->left);
+    // Recursively get the height of the right subtree
+    int rightHeight = getHeight(root->right);
 
-    int answer = max(left, right) + 1;
+    // The height of the current node is 1 (for itself)
+    // plus the maximum of the heights of its left and right subtrees.
+    int answer = max(leftHeight, rightHeight) + 1;
     return answer;
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree. 'buildTree' function is assumed to be defined in "BinaryTree.h"
+    // It typically takes input in a pre-order fashion (e.g., 1 3 7 -1 -1 11 -1 -1 5 17 -1 -1 -1)
     root = buildTree(root);
 
+    // Calculate the height of the constructed tree
     int height = getHeight(root);
+
+    // Print the calculated height
     cout << endl << "Height / Depth of the tree is : " << height << endl;
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        3 4 -1 -1 6 -1 -1
-        5 4 2 -1 6 -1 -1 7 -1 8 -1 9 -1 -1 10 -1 -1
-        8 2 4 -1 -1 6 2 -1 -1 5 -1 -1 5 -1 9 -1 6 4 2 -1 -1 3 -1 -1 7 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 3 4 -1 -1 6 -1 -1
+    Tree Structure:
+            3
+           / \
+          4   6
+    Height Calculation:
+    - getHeight(4) = 1
+    - getHeight(6) = 1
+    - getHeight(3) = max(1, 1) + 1 = 2
+    Output: Height / Depth of the tree is : 2
+
+2.  Input: 5 4 2 -1 6 -1 -1 7 -1 8 -1 9 -1 -1 10 -1 -1
+    Tree Structure:
+              5
+             / \
+            4   10
+           / \
+          2   7
+         / \ / \
+        -  6 8  9
+    (Assuming -1 means no child)
+    Height for this tree is 4 (path 5-4-2-6 or 5-4-7-9, depends on actual structure.
+    For this specific input `5 4 2 -1 6 -1 -1 7 -1 8 -1 9 -1 -1 10 -1 -1`, it means:
+    Root 5
+      Left 4
+        Left 2
+          Left -1
+          Right 6
+            Left -1
+            Right -1
+        Right 7
+          Left -1
+          Right 8
+            Left -1
+            Right 9
+              Left -1
+              Right -1
+      Right 10
+          Left -1
+          Right -1
+    This tree is skewed left. The longest path is 5-4-7-8-9 (5 nodes). So height would be 5.
+    Output will vary based on exact input interpretation for `buildTree`.
+
+3.  Input: 8 2 4 -1 -1 6 2 -1 -1 5 -1 -1 5 -1 9 -1 6 4 2 -1 -1 3 -1 -1 7 -1 -1
+    This is a very long pre-order sequence. Its height would depend on the complex tree structure it forms.
 */
 ```
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Height of a Binary Tree
+
+  * **Definition**: The height of a binary tree is the **number of nodes** on the longest path from the root node to any leaf node.
+      * An empty tree has a height of 0.
+      * A tree with only a root node has a height of 1.
+
+### 3\. Algorithm: `getHeight(Node* root)` (Recursive Approach)
+
+  * **Core Idea**: The height of any node is `1` (for the node itself) plus the maximum height of its left or right subtrees.
+  * **Recursive Steps**:
+    1.  **Base Case**: If the `root` is `NULL` (meaning it's an empty subtree), its height is `0`.
+    2.  **Recursive Calls**:
+          * Recursively calculate the height of the `left` subtree.
+          * Recursively calculate the height of the `right` subtree.
+    3.  **Combine Results**: The height of the current `root` is `max(height_of_left_subtree, height_of_right_subtree) + 1`.
+
+### 4\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * The function visits each node in the tree exactly once to calculate its contribution to the height. `N` is the number of nodes in the tree.
+  * **Space Complexity**: `O(H)`
+      * This is due to the recursion call stack. `H` is the height of the tree.
+      * In the worst case (a skewed tree, resembling a linked list), `H` can be `N`, leading to `O(N)` space.
+      * In the best case (a perfectly balanced tree), `H` is `log N`, leading to `O(log N)` space.
+
+-----
+

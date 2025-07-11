@@ -3,61 +3,170 @@ title: Diagnol Traversal
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, queue, vector)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Function to perform Diagonal Traversal of a Binary Tree.
+// This approach processes nodes along diagonals from top-right to bottom-left.
+// Time Complexity: O(N)
+// Space Complexity: O(W) for queue, O(N) for result vector
 vector<int> Diagonal(Node* root) {
+    // Base Case: If the tree is empty, return an empty vector.
     if(root == NULL) {
         return {};
     }
 
-    vector<int> answer;
-    queue<Node*> Q;
-    Q.push(root);
+    vector<int> answer; // Final vector to store the diagonal traversal result
 
+    // Queue to hold "start nodes" of diagonal segments (typically left children)
+    queue<Node*> Q;
+    Q.push(root); // Start with the root as the first diagonal's head
+
+    // Main loop: Continue as long as there are diagonal segment heads in the queue
     while(!Q.empty()) {
-        Node* FrontNode = Q.front();
-        Q.pop();
-        
+        Node* FrontNode = Q.front(); // Get the current diagonal segment's head
+        Q.pop();                     // Remove it from the queue
+
+        // If the current node has a left child, enqueue it.
+        // This left child will be the start of a new diagonal sequence.
         if(FrontNode->left) {
             Q.push(FrontNode->left);
         }
-        
-        while(FrontNode->right) {
-            answer.push_back(FrontNode->data);
-            FrontNode = FrontNode->right;
 
+        // Now, traverse iteratively down to the right from FrontNode.
+        // All nodes along this rightward path belong to the SAME diagonal.
+        while(FrontNode->right) {
+            answer.push_back(FrontNode->data); // Add current node's data
+            FrontNode = FrontNode->right;      // Move to the right child (still on same diagonal)
+
+            // If this right child has a left child, enqueue it.
+            // This left child will also be the start of a new diagonal sequence.
             if(FrontNode->left) {
                 Q.push(FrontNode->left);
-            } 
+            }
         }
-        
-        answer.push_back(FrontNode->data);
+        // After the while loop, FrontNode is the last node in the current rightward chain
+        // (it has no right child). Its data hasn't been added yet by the inner loop.
+        answer.push_back(FrontNode->data); // Add the data of this last node
     }
-    
-    return answer;
+
+    return answer; // Return the complete diagonal traversal
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree using 'buildTree' function (assumed to be in "BinaryTree.h")
+    // It typically takes input in a pre-order fashion.
     root = buildTree(root);
-    vector<int> answer = Diagonal(root);
 
+    // Perform Diagonal Traversal
+    vector<int> result = Diagonal(root);
+
+    // Print the Diagonal Traversal result
     cout << endl << "Diagonal Traversal : ";
-    for(auto i : answer) {
-        cout << i << " ";
+    for(int data : result) {
+        cout << data << " ";
     }
+    cout << endl;
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        2 3 5 -1 -1 -1 4 6 -1 -1 7 -1 -1
-        2 3 8 -1 -1 7 -1 -1 4 -1 5 6 -1 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 2 3 5 -1 -1 -1 4 6 -1 -1 7 -1 -1
+    Tree Structure:
+          2
+         / \
+        3   4
+       /   / \
+      5   6   7
+
+    Diagonal 1 (starting with 2): 2 -> 4 -> 7
+    Diagonal 2 (starting with 3, left child of 2): 3
+    Diagonal 3 (starting with 6, left child of 4): 6
+    Diagonal 4 (starting with 5, left child of 3): 5
+    Output: Diagonal Traversal : 2 4 7 3 6 5
+
+2.  Input: 2 3 8 -1 -1 7 -1 -1 4 -1 5 6 -1 -1 -1
+    Tree Structure:
+              2
+             / \
+            3   4
+           / \   \
+          8   7   5
+                   /
+                  6
+
+    Diagonal 1 (from 2): 2 -> 4 -> 5 -> 6
+    Diagonal 2 (from 3): 3 -> 7
+    Diagonal 3 (from 8): 8
+    Output: Diagonal Traversal : 2 4 5 6 3 7 8
 */
 ```
+
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Diagonal Traversal Definition
+
+  * **Definition**: Diagonal Traversal involves visiting nodes along "diagonal lines." For the specific type of diagonal traversal implemented here, we consider diagonals that run from **top-right to bottom-left**.
+  * **Key Property**:
+      * If you move from a node to its **right child**, you remain on the **same diagonal**.
+      * If you move from a node to its **left child**, you move to a **new diagonal**.
+  * **Order**: Nodes are printed diagonal by diagonal. Within each diagonal, nodes are printed from top-right to bottom-left.
+
+### 3\. Algorithm: `Diagonal(Node* root)` (Iterative BFS-like Approach)
+
+  * **Core Idea**: This approach uses a queue to manage the "heads" of diagonal segments. When a node is dequeued, it signifies the start of a new diagonal sequence that extends downwards and to the right. All nodes found by continuously following right pointers from this dequeued node (and including the dequeued node itself) belong to the same diagonal. Any left children encountered along this rightward path are "start nodes" for subsequent diagonals and are therefore enqueued.
+
+  * **Data Structures Used**:
+
+      * `queue<Node*> Q`: This queue stores nodes that are the starting points of diagonal segments. These are typically the left children of previously processed nodes.
+      * `vector<int> answer`: The final list of node data in diagonal traversal order.
+
+  * **Steps**:
+
+    1.  **Handle Empty Tree**: If `root` is `NULL`, return an empty vector.
+
+    2.  **Initialization**:
+
+          * Push the `root` node into the queue `Q`. The root is the starting point of the first diagonal.
+
+    3.  **Main Loop (`while(!Q.empty())`)**: Continues as long as there are "starting nodes" for diagonals in the queue.
+
+          * `Node* FrontNode = Q.front(); Q.pop();`: Dequeue a node. This `FrontNode` is the current node being processed.
+          * **Enqueue Left Child**: If `FrontNode->left` exists, `Q.push(FrontNode->left);`. This left child will be the starting point of a *new* diagonal and will be processed later.
+          * **Traverse Current Diagonal Segment (Iteratively to the Right)**:
+              * `while(FrontNode->right)`: This loop continues as long as the current `FrontNode` has a right child.
+                  * `answer.push_back(FrontNode->data);`: Add the data of the current node to the `answer` list. This node is part of the current diagonal.
+                  * `FrontNode = FrontNode->right;`: Move to the right child. This new `FrontNode` is still on the same diagonal.
+                  * `if(FrontNode->left) { Q.push(FrontNode->left); }`: If this new node has a left child, enqueue it. This left child starts another new diagonal.
+          * **Add Last Node of Segment**: After the `while` loop finishes, the current `FrontNode` is the last node in that particular rightward diagonal segment (it has no right child). Its data needs to be added, as it wasn't added *inside* the loop (because the loop condition `FrontNode->right` became false). `answer.push_back(FrontNode->data);`
+
+    4.  **Return**: Return the `answer` vector containing all node data in diagonal order.
+
+### 4\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * Each node is enqueued and dequeued at most once.
+      * Each node's data is pushed to the `answer` vector exactly once.
+      * The `while` loop effectively processes each node (by following right pointers) and checks its left child, ensuring overall `O(N)` work.
+  * **Space Complexity**: `O(W)`
+      * `Q` (queue) stores nodes. In the worst case (e.g., a complete binary tree), it can hold up to the maximum width of the tree (`W`).
+      * `answer` vector stores all `N` nodes.
+      * So, the auxiliary space complexity is `O(W)`, while overall space is `O(N)` (for the result).
+
+-----
+
+

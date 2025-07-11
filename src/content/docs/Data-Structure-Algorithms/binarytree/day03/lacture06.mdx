@@ -3,44 +3,164 @@ title: Left View
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, vector)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Function to find the Left View of a Binary Tree using recursion.
+// This function performs a modified pre-order traversal (Root -> Left -> Right).
+// Parameters:
+//   root: The current node being processed.
+//   answer: A reference to the vector that will store the Left View nodes.
+//   lvl: The current level of the 'root' node (root of the whole tree is level 0).
 void LeftView(Node* root, vector<int>& answer, int lvl) {
+    // Base Case: If the current node is NULL, stop the recursion for this path.
     if(root == NULL) {
         return;
     }
 
+    // Check if this is the first time we are visiting a node at the current 'lvl'.
+    // 'answer.size()' effectively tells us how many levels have already had their
+    // leftmost node recorded. If 'lvl' matches 'answer.size()', it means we are
+    // at a NEW level for which we haven't added a leftmost node yet.
+    // Since we prioritize left traversal, this node MUST be the leftmost for this level.
     if(lvl == answer.size()) {
-        answer.push_back(root->data);
+        answer.push_back(root->data); // Add the node's data to the Left View list.
     }
 
-    LeftView(root->left, answer, lvl+1);
-    LeftView(root->right, answer, lvl+1);
+    // Recursively call for the left child.
+    // This ensures that the leftmost path is explored first at each level,
+    // which is essential for correctly identifying the leftmost node.
+    LeftView(root->left, answer, lvl + 1);
+
+    // Recursively call for the right child.
+    // Nodes in the right subtree will only be added if their level
+    // was not already covered by a node in the left subtree (i.e., if left subtree
+    // was shorter or non-existent for a particular level).
+    LeftView(root->right, answer, lvl + 1);
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree using 'buildTree' function (assumed to be in "BinaryTree.h")
+    // It typically takes input in a pre-order fashion.
     root = buildTree(root);
-    vector<int> answer;
+
+    vector<int> answer; // Vector to store the Left View nodes
+    // Start the recursive LeftView traversal from the root at level 0.
     LeftView(root, answer, 0);
 
+    // Print the Left View result
     cout << endl << "Left View : ";
-    for(auto i : answer) {
-        cout << i << " ";
+    for(int data : answer) {
+        cout << data << " ";
     }
+    cout << endl;
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        1 2 4 -1 -1 5 -1 -1 3 6 -1 -1 7 -1 -1
-        1 2 -1 4 5 -1 -1 -1 3 -1 -1
-        1 2 3 -1 -1 4 -1 7 -1 -1 5 -1 6 -1 8 -1 9 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 1 2 4 -1 -1 5 -1 -1 3 6 -1 -1 7 -1 -1
+    Tree Structure:
+                1 (L0)
+               / \
+              2   3 (L1)
+             / \ / \
+            4  5 6  7 (L2)
+
+    Level 0: 1 (first node at L0)
+    Level 1: 2 (first node at L1)
+    Level 2: 4 (first node at L2)
+    Output: Left View : 1 2 4
+
+2.  Input: 1 2 -1 4 5 -1 -1 -1 3 -1 -1
+    Tree Structure:
+              1 (L0)
+             / \
+            2   3 (L1)
+             \
+              4 (L2)
+             /
+            5 (L3)
+
+    Level 0: 1
+    Level 1: 2
+    Level 2: 4
+    Level 3: 5
+    Output: Left View : 1 2 4 5
+
+3.  Input: 1 2 3 -1 -1 4 -1 7 -1 -1 5 -1 6 -1 8 -1 9 -1 -1
+    Tree Structure:
+                  1 (L0)
+                 / \
+                2   5 (L1)
+               / \   \
+              3   4   6 (L2)
+                 /     \
+                7       8 (L3)
+                         \
+                          9 (L4)
+
+    Level 0: 1
+    Level 1: 2
+    Level 2: 3
+    Level 3: 7
+    Level 4: 9
+    Output: Left View : 1 2 3 7 9
 */
 ```
+-
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Left View of a Binary Tree Definition
+
+  * **Definition**: The Left View of a Binary Tree is the set of nodes visible when looking at the tree from the left side.
+  * **Key Property**: For each level of the tree, the **leftmost node** at that level is part of the Left View.
+
+### 3\. Algorithm: `LeftView(Node* root, vector<int>& answer, int lvl)` (Recursive Approach)
+
+  * **Core Idea**: Perform a modified Pre-order Traversal (Root -\> Left -\> Right). The key is to keep track of the current `level` during recursion. For each new `level` encountered, the first node visited will be the leftmost node for that level.
+
+  * **Parameters**:
+
+      * `Node* root`: The current node being processed.
+      * `vector<int>& answer`: A reference to the vector where the Left View nodes will be stored. This vector dynamically grows as new levels are discovered.
+      * `int lvl`: The current level of the `root` node. The root of the entire tree is typically `lvl = 0`.
+
+  * **Steps**:
+
+    1.  **Base Case**: If `root` is `NULL`, simply return (nothing to add).
+    2.  **Check for New Level's First Node**:
+          * `if(lvl == answer.size())`: This is the crucial condition.
+              * `answer.size()` tells us how many levels we've already found a leftmost node for.
+              * If the current `lvl` is equal to `answer.size()`, it means we are currently at a level for which we *haven't yet added any node* to our `answer` list.
+              * Since we are performing a "Root -\> Left -\> Right" traversal, the *first* node we encounter at any new level will always be the leftmost node for that level.
+              * If this condition is true, `answer.push_back(root->data);` adds this node's data to our result.
+    3.  **Recursive Calls**:
+          * `LeftView(root->left, answer, lvl + 1);`: Recursively call for the left child. This ensures that the leftmost path is explored first, allowing us to find the leftmost node for each level.
+          * `LeftView(root->right, answer, lvl + 1);`: Recursively call for the right child. This call will only add a node to `answer` if the corresponding level was not already filled by a left child (i.e., if there was no left child for a level, or if the left subtree ended before a certain level).
+
+### 4\. Complexity Analysis
+
+  * **Time Complexity**: `O(N)`
+      * Each node in the tree is visited exactly once during the recursion.
+  * **Space Complexity**: `O(H)`
+      * Due to the recursion call stack, where `H` is the height of the tree.
+      * In the worst case (a skewed tree), `H` can be `N`, leading to `O(N)` space.
+      * In the best case (a balanced tree), `H` is `log N`, leading to `O(log N)` space.
+      * The `answer` vector also uses `O(H)` space as it stores one node per level.
+
+-----
+

@@ -3,54 +3,196 @@ title: Sum Of Tree
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (like iostream, utility for pair)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Function to check if a Binary Tree is a Sum Tree
+// Returns a pair: {isSumTree_status, sum_of_subtree_nodes}.
+// Time Complexity: O(N)
+// Space Complexity: O(H) (recursion stack)
 pair<bool, int> isSumTree(Node* root) {
+    // Base Case 1: If the current node is NULL (empty tree/subtree),
+    // it's considered a Sum Tree, and its sum is 0.
     if(root == NULL) {
-        return {true, 0};
+        return {true, 0}; // {isSumTree, sum_of_nodes}
     }
-    
+
+    // Base Case 2: If the current node is a leaf (no children),
+    // it's considered a Sum Tree, and its sum for parent's calculation is its own data.
     if(root->left == NULL && root->right == NULL) {
         return {true, root->data};
     }
 
-    pair<bool, int> Left = isSumTree(root->left);
-    pair<bool, int> Right = isSumTree(root->right);
+    // Recursively check the left subtree
+    pair<bool, int> LeftResult = isSumTree(root->left);
+    // Recursively check the right subtree
+    pair<bool, int> RightResult = isSumTree(root->right);
 
-    bool sum = root->data == (Left.second + Right.second);
+    // Extract balance status and sums from children's results
+    bool isLeftSumTree = LeftResult.first;
+    bool isRightSumTree = RightResult.first;
 
-    pair<bool, int> ans;
-    ans.first = (Left.first && Right.first && sum);
-    ans.second = 2 * root->data;
+    // Check if the current node's data is equal to the sum of its children's total sums.
+    // LeftResult.second and RightResult.second are the total sums of the respective subtrees.
+    bool currentValueSatisfiesSum = (root->data == (LeftResult.second + RightResult.second));
 
-    return ans;
+    pair<bool, int> ans; // Pair to store result for the current node
+
+    // The current subtree is a Sum Tree if both its children's subtrees are Sum Trees
+    // AND the current node's value matches the sum property.
+    ans.first = (isLeftSumTree && isRightSumTree && currentValueSatisfiesSum);
+
+    // Calculate the total sum of this current subtree (for its parent's calculation).
+    // This is the current node's data + total sum of left subtree + total sum of right subtree.
+    // If 'ans.first' is true (it is a Sum Tree), then root->data == (LeftResult.second + RightResult.second),
+    // so this simplifies to: ans.second = (LeftResult.second + RightResult.second) + LeftResult.second + RightResult.second;
+    // which effectively is: ans.second = 2 * (LeftResult.second + RightResult.second) = 2 * root->data.
+    // The given code uses: ans.second = 2 * root->data; which is valid under this interpretation.
+    ans.second = root->data + LeftResult.second + RightResult.second; // More intuitive way to calculate total sum
+    // For the given specific code's logic, if `ans.first` is true, then `root->data == LeftResult.second + RightResult.second`.
+    // So the total sum *passed up* to the parent *if this is a sum tree* would be `root->data + (root->data) = 2 * root->data`.
+    // The provided original code had `ans.second = 2 * root->data;` which works correctly for its specific logic.
+    // I'll use the more general `root->data + ...` as it's less prone to misinterpretation if the definition changes.
+
+    return ans; // Return the calculated {isSumTree, sum_of_subtree_nodes} pair
 }
 
 int main() {
-    Node* root = NULL;
+    Node* root = NULL; // Initialize the root of the tree to NULL
 
+    // Build the tree. 'buildTree' function is assumed to be defined in "BinaryTree.h"
+    // It typically takes input in a pre-order fashion.
     root = buildTree(root);
 
+    // Call the isSumTree function and get the boolean result (first element of the pair).
     bool check = isSumTree(root).first;
 
+    // Print whether the tree is a Sum Tree or not.
     if(check) {
         cout << endl << "Sum Tree!" << endl;
     } else {
-        cout << endl << "Not a sum Tree!" << endl;
+        cout << endl << "Not a Sum Tree!" << endl;
     }
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        3 1 -1 -1 2 -1 -1
-        28 8 4 -1 4 -1 -1 -1 6 -1 3 2 -1 -1 1 -1 -1
-        14 18 4 -1 4 -1 -1 -1 6 -1 3 2 -1 -1 1 -1 -1
-        14 8 4 -1 4 -1 -1 -1 6 -1 3 2 -1 -1 -1
+Example INPUTs for buildTree function (for reference):
+
+1.  Input: 3 1 -1 -1 2 -1 -1
+    Tree Structure:
+            3
+           / \
+          1   2
+    - LeftResult for '1': {true, 1} (leaf)
+    - RightResult for '2': {true, 2} (leaf)
+    - For '3':
+        - isLeftSumTree = true, isRightSumTree = true
+        - currentValueSatisfiesSum = (3 == (1 + 2)) -> (3 == 3) -> true
+        - ans.first = true && true && true -> true
+    Output: Sum Tree!
+
+2.  Input: 28 8 4 -1 4 -1 -1 -1 6 -1 3 2 -1 -1 1 -1 -1
+    Tree Structure (complex, checking sum properties at each node is key):
+               28
+              /  \
+             8    6
+            / \  / \
+           4   4 3   1
+                / \
+               2   -
+    Let's trace a part:
+    - Node '2': {true, 2} (leaf)
+    - Node '1': {true, 1} (leaf)
+    - Node '3': Left is 2, Right is 1. `3 == (2+1)` -> true. {true, 3+2+1=6}
+    - Node '6': Left is 3 ({true,6}), Right is 1 ({true,1}). `6 == (6+1)` -> false.
+        This subtree (rooted at 6) is NOT a Sum Tree because 6 != 7.
+    Therefore, the whole tree is NOT a Sum Tree.
+    Output: Not a Sum Tree!
+
+3.  Input: 14 8 4 -1 4 -1 -1 -1 6 -1 3 2 -1 -1 -1
+    Tree Structure:
+               14
+              /  \
+             8    6
+            / \  /
+           4   4 3
+                /
+               2
+    Let's trace:
+    - Leaf '4' (left of 8): {true, 4}
+    - Leaf '4' (right of 8): {true, 4}
+    - Node '8': `8 == (4+4)` -> true. Left and Right are Sum Trees. {true, 8+4+4=16}
+    - Leaf '2': {true, 2}
+    - Node '3': Left is 2 ({true,2}), Right is NULL ({true,0}). `3 == (2+0)` -> false (3 != 2).
+        This subtree (rooted at 3) is NOT a Sum Tree.
+    Therefore, the whole tree is NOT a Sum Tree.
+    Output: Not a Sum Tree!
 */
 ```
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Sum Tree Definition
+
+  * A Binary Tree is a **Sum Tree** if for every node in the tree, the node's `data` value is equal to the sum of the `data` values of its left and right children.
+  * **Special Cases (as per common implementation, including this code):**
+      * An **empty tree** (`NULL`) is considered a Sum Tree. Its sum value is `0`.
+      * A **leaf node** (a node with no children) is considered a Sum Tree. Its sum value for its parent's calculation is its own `data`.
+
+### 3\. Algorithm: `isSumTree(Node* root)` (Optimized Recursive Approach)
+
+  * **Core Idea**: This function recursively checks the Sum Tree property for each subtree and, simultaneously, calculates and returns the **sum of all node values** within that subtree.
+
+  * **Return Type**: `pair<bool, int>` where:
+
+      * `pair.first`: `true` if the subtree rooted at the current node is a Sum Tree, `false` otherwise.
+      * `pair.second`: The total sum of all node values in the subtree rooted at the current node. This sum is passed up to the parent.
+
+  * **Recursive Steps**:
+
+    1.  **Base Case 1 (Empty Tree)**: If `root == NULL`, it's a Sum Tree (vacuously true), and its sum is `0`. Return `{true, 0}`.
+
+    2.  **Base Case 2 (Leaf Node)**: If `root` is a leaf node (both `left` and `right` children are `NULL`), it's a Sum Tree by definition (as it has no children to sum). Its contribution to its parent's sum is its own `data`. Return `{true, root->data}`.
+
+    3.  **Recursive Calls**:
+
+          * Recursively call `isSumTree` for the `left` child to get its `(isBalanced, sum)` result (`Left`).
+          * Recursively call `isSumTree` for the `right` child to get its `(isBalanced, sum)` result (`Right`).
+
+    4.  **Check Sum Tree Property for Current Node**:
+
+          * `leftSumTree = Left.first`: Check if the left subtree itself is a Sum Tree.
+          * `rightSumTree = Right.first`: Check if the right subtree itself is a Sum Tree.
+          * `currentValueIsSum = (root->data == (Left.second + Right.second))`: Check if the current node's data is equal to the sum of the total sums from its immediate left and right subtrees (where `Left.second` and `Right.second` are the total sums of those subtrees as passed up by recursive calls).
+
+    5.  **Determine Current Node's Balance Status**:
+
+          * `ans.first = (leftSumTree && rightSumTree && currentValueIsSum)`: The current subtree is a Sum Tree only if both its children's subtrees are Sum Trees AND the current node's value satisfies the sum property.
+
+    6.  **Calculate Current Subtree's Total Sum**:
+
+          * `ans.second = root->data + Left.second + Right.second;`
+          * **Note on given code's `ans.second = 2 * root->data;`**: This line is a clever optimization *if* `ans.first` (the sum tree property for current node) is true. If `root->data == (Left.second + Right.second)`, then the total sum of this subtree is `root->data + Left.second + Right.second = root->data + root->data = 2 * root->data`. This works correctly to pass the *total sum of this subtree* up to its parent, provided the `isSumTree` property holds at this node. If it doesn't hold, `ans.first` will be `false` anyway.
+
+  * **Time Complexity**: `O(N)`
+
+      * Each node is visited exactly once to perform constant-time operations and make recursive calls.
+
+  * **Space Complexity**: `O(H)`
+
+      * Due to the recursion call stack, where `H` is the height of the tree.
+      * Worst case (skewed tree) `O(N)`, best case (balanced tree) `O(log N)`.
+
+-----
+
+

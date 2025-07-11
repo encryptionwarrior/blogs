@@ -3,55 +3,132 @@ title: Check Identical Tree
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "BinaryTree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (like iostream)
+#include "BinaryTree.h"  // Assumed to contain Node class and buildTree function definitions
 
-using namespace std;
+using namespace std;     // Uses the standard namespace
 
+// Function to check if two Binary Trees are identical
+// Identical means same structure AND same data at corresponding nodes.
 bool isIdentical(Node* root1, Node* root2) {
+    // Base Case 1: If both nodes are NULL, they are identical at this point.
     if(root1 == NULL && root2 == NULL) {
         return true;
     }
 
-    if(root1==NULL || root2==NULL) {
+    // Base Case 2: If one node is NULL and the other is not, they are NOT identical.
+    if(root1 == NULL || root2 == NULL) { // Using || covers both root1!=NULL && root2==NULL AND root1==NULL && root2!=NULL
         return false;
     }
 
-    bool isLeft = isIdentical(root1->left, root2->left);
-    bool isRight = isIdentical(root1->right, root2->right);
-    bool value = (root1->data == root2->data);
-    
-    return isLeft && isRight & value;
+    // Recursive Step:
+    // 1. Check if left subtrees are identical.
+    bool isLeftIdentical = isIdentical(root1->left, root2->left);
+    // 2. Check if right subtrees are identical.
+    bool isRightIdentical = isIdentical(root1->right, root2->right);
+    // 3. Check if data at current nodes is the same.
+    bool areValuesSame = (root1->data == root2->data);
+
+    // For the trees to be identical from this 'root1'/'root2' point downwards,
+    // all three conditions must be true.
+    return isLeftIdentical && isRightIdentical && areValuesSame;
 }
 
 int main() {
-    Node* root1 = NULL;
-    Node* root2 = NULL;
+    Node* root1 = NULL; // Initialize root of Tree 1
+    Node* root2 = NULL; // Initialize root of Tree 2
 
+    cout << "--- Build Tree 1 ---" << endl;
+    // Build Tree 1 using 'buildTree' function (assumed to be in "BinaryTree.h")
     root1 = buildTree(root1);
+
+    cout << "\n--- Build Tree 2 ---" << endl;
+    // Build Tree 2 using 'buildTree' function
     root2 = buildTree(root2);
 
+    // Check if the two constructed trees are identical
     bool check = isIdentical(root1, root2);
 
+    // Print the result
     if(check) {
         cout << endl << "Identical Trees!" << endl;
     } else {
         cout << endl << "Non-Identical Trees!" << endl;
     }
 
-    return 0;
+    return 0; // End of the program
 }
 
 /*
-    INPUT:
-        1 2 -1 -1 3 -1 -1
-        1 2 -1 -1 3 -1 -1
+Example INPUTs for buildTree function (enter twice, once for root1, once for root2):
 
-        1 3 -1 -1 3 -1 -1
-        1 2 -1 -1 3 -1 -1
+1.  Input for Tree 1: 1 2 -1 -1 3 -1 -1
+    Input for Tree 2: 1 2 -1 -1 3 -1 -1
+    Tree Structure for both:
+            1
+           / \
+          2   3
+    Output: Identical Trees!
 
-        1 2 -1 7 -1 -1 3 -1 -1
-        1 2 -1 -1 3 -1 -1
+2.  Input for Tree 1: 1 3 -1 -1 3 -1 -1
+    Input for Tree 2: 1 2 -1 -1 3 -1 -1
+    Tree Structure 1:     Tree Structure 2:
+            1                     1
+           / \                   / \
+          3   3                 2   3
+    Output: Non-Identical Trees! (Data mismatch at left child)
+
+3.  Input for Tree 1: 1 2 -1 7 -1 -1 3 -1 -1
+    Input for Tree 2: 1 2 -1 -1 3 -1 -1
+    Tree Structure 1:     Tree Structure 2:
+            1                     1
+           / \                   / \
+          2   3                 2   3
+           \
+            7
+    Output: Non-Identical Trees! (Structural mismatch - Tree 1 has an extra node 7)
 */
 ```
+
+### 1\. Binary Tree Node Structure
+
+  * A `Node` in a Binary Tree typically consists of:
+      * `data`: The value stored in the node.
+      * `left`: A pointer to the left child node.
+      * `right`: A pointer to the right child node.
+
+### 2\. Identical Binary Trees
+
+  * **Definition**: Two binary trees are considered identical if they have the **exact same structure** AND the **exact same data values** at all corresponding nodes.
+  * This implies:
+    1.  Both trees are empty (`NULL`), OR
+    2.  Both trees are non-empty AND:
+          * Their root nodes have the same data value.
+          * Their left subtrees are identical.
+          * Their right subtrees are identical.
+
+### 3\. Algorithm: `isIdentical(Node* root1, Node* root2)` (Recursive Approach)
+
+  * **Core Idea**: This function implements the definition of identical trees recursively by comparing nodes at corresponding positions.
+  * **Recursive Steps**:
+    1.  **Base Case 1 (Both NULL)**: If both `root1` and `root2` are `NULL`, it means we've reached the end of a branch in both trees simultaneously, and so far they are identical. Return `true`.
+    2.  **Base Case 2 (One NULL, One Not)**: If one of `root1` or `root2` is `NULL` but the other is not, it means their structures don't match at this point. Return `false`.
+    3.  **Recursive Calls**:
+          * Recursively call `isIdentical` for the left children: `isLeft = isIdentical(root1->left, root2->left)`.
+          * Recursively call `isIdentical` for the right children: `isRight = isIdentical(root1->right, root2->right)`.
+          * Check if the data values at the current nodes are the same: `value = (root1->data == root2->data)`.
+    4.  **Combine Results**: For the current nodes (`root1`, `root2`) to be part of identical trees, all three conditions must be `true`: the left subtrees must be identical (`isLeft`), the right subtrees must be identical (`isRight`), and their own data values must be equal (`value`). Return `isLeft && isRight && value`.
+
+### 4\. Complexity Analysis
+
+  * **Time Complexity**: `O(min(N1, N2))`
+      * Where `N1` and `N2` are the number of nodes in `root1` and `root2` respectively.
+      * The function traverses both trees simultaneously. It stops traversing a branch as soon as a mismatch is found or a `NULL` is hit in either tree. In the worst case (trees are identical or very similar), it visits each node in the smaller of the two trees.
+  * **Space Complexity**: `O(min(H1, H2))`
+      * Due to the recursion call stack, where `H1` and `H2` are the heights of `root1` and `root2` respectively.
+      * In the worst case (skewed tree), this could be `O(min(N1, N2))`. In the best case (balanced tree), `O(min(log N1, log N2))`.
+
+-----
+
+
