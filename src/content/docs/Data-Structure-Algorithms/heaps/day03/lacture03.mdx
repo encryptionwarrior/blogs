@@ -3,109 +3,292 @@ title: Merge K Sorted List
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (vector, iostream, queue for priority_queue)
+using namespace std;     // Use the standard namespace
 
+// Definition for a singly-linked list node.
 class List {
-    public:
-        int data;
-        List* next;
+public:
+    int data;  // Value stored in the node.
+    List* next; // Pointer to the next node in the list.
 
-        List(int data) {
-            this->data = data;
-            this->next = NULL;
-        }
+    // Constructor to initialize a new node.
+    List(int data) {
+        this->data = data;
+        this->next = NULL; // New node initially points to NULL.
+    }
 };
 
+// Helper function to insert a new node at the end of a linked list.
+// Used for building the input lists in main.
+// 'head': Reference to the head pointer of the list.
+// 'tail': Reference to the tail pointer of the list.
+// 'val': The data value for the new node.
 void insert(List* &head, List* &tail, int val) {
-    List* temp = new List(val);
-    if(head == NULL) {
+    List* temp = new List(val); // Create a new node.
+    if(head == NULL) { // If the list is empty, new node is both head and tail.
         head = tail = temp;
-    } else {
-        tail->next = temp;
-        tail = temp;
+    } else { // If list is not empty, append to tail.
+        tail->next = temp; // Link current tail to new node.
+        tail = temp;       // Update tail to the new node.
     }
 }
 
+// Custom comparator class for the priority_queue.
+// Defines the ordering logic for 'List*' pointers.
+// For a MIN HEAP (priority_queue by default is max-heap), we want 'a' to have higher priority
+// (i.e., come before 'b') if a->data < b->data.
+// So, 'operator()' returns true if 'a' has *lower priority* than 'b' (meaning a's data is GREATER than b's data).
 class compare {
-    public:
-        bool operator () (List* a, List* b) {
-            return a->data > b->data;
-        }
+public:
+    bool operator () (List* a, List* b) {
+        return a->data > b->data; // If true, 'a' is placed after 'b' in the conceptual ordering.
+                                 // Thus, smaller 'data' values will have higher priority (be at the top).
+    }
 };
 
+// Function to merge K sorted linked lists into a single sorted linked list.
+// 'kLists': A vector where each element is the head pointer of a sorted linked list.
+// Time Complexity: O(N log K), where N is the total number of nodes across all lists.
+// Space Complexity: O(K) for the minHeap.
 List* mergeSortedLists(vector<List* > kLists) {
+    // Step 1: Initialize a Min Heap.
+    // The heap will store 'List*' pointers, ordered by our custom 'compare' functor.
     priority_queue<List*, vector<List*>, compare> minHeap;
-    int K = kLists.size();
+    int K = kLists.size(); // Number of input linked lists.
 
-    // Empty list
+    // Edge case: If there are no lists, return NULL.
     if(K == 0) {
         return NULL;
     }
 
-    // Step 1 : Creating a Min Heap
-    for(int i=0; i<K; i++) {
-        if(kLists[i] != NULL) {
+    // Populate the minHeap with the head nodes of all non-empty input lists.
+    // Each push operation takes O(log K) time. Total O(K log K) for this loop.
+    for(int i = 0; i < K; i++) {
+        if(kLists[i] != NULL) { // Only push if the list is not empty.
             minHeap.push(kLists[i]);
         }
     }
 
-    List* head = NULL;
-    List* tail = NULL;
+    List* head = NULL; // Head of the new merged list.
+    List* tail = NULL; // Tail of the new merged list.
 
-    // Step 2 : Comparing next nodes
+    // Step 2: Extract elements from the heap and build the merged list.
+    // This loop runs N times (where N is the total number of nodes in all lists).
     while(minHeap.size() > 0) {
+        // Get the node with the smallest data (at the top of the minHeap).
         List* top = minHeap.top();
-        minHeap.pop();
+        minHeap.pop(); // Remove it from the heap.
 
+        // If the extracted node has a next element in its original list, push it to the heap.
+        // This ensures we always have the next smallest candidate from that list.
         if(top->next != NULL) {
-            minHeap.push(top->next);
+            minHeap.push(top->next); // Takes O(log K) time.
         }
 
-        if(head == NULL) {
-            head = tail = top;
-        } else {
-            tail->next = top;
-            tail = top;
+        // Append the extracted 'top' node to our merged list.
+        if(head == NULL) { // If it's the very first node of the merged list.
+            head = tail = top; // It becomes both head and tail.
+        } else { // For subsequent nodes.
+            tail->next = top; // Link current tail to the extracted node.
+            tail = top;       // Update tail to the newly added node.
         }
+        // IMP: To ensure the last node of the merged list properly terminates,
+        // it's good practice to set tail->next = NULL; here, or after the loop.
+        // The current implementation relies on the original list's last node
+        // having next=NULL, which is usually true, but this explicit step is safer.
+        tail->next = NULL; // Ensure the last node points to NULL.
     }
 
+    // Return the head of the newly formed merged sorted linked list.
     return head;
 }
 
 int main() {
-    vector<List*> kLists;
-    int K;
+    vector<List*> kLists; // Vector to store the head pointers of K linked lists.
+    int K; // Number of linked lists.
 
-    cout << "Enter the value of K : ";
+    cout << "Enter the value of K (number of lists) : ";
     cin >> K;
 
-    for(int i=0; i<K; i++) {
-        List* head = NULL;
-        List* tail = NULL;
-        
-        cout << "Enter the values of list (-1 to stop) : ";
+    // Loop to input each of the K sorted linked lists.
+    for(int i = 0; i < K; i++) {
+        List* head = NULL; // Head of the current list being built.
+        List* tail = NULL; // Tail of the current list being built.
+
+        cout << "Enter the values for list " << i + 1 << " (-1 to stop) : ";
         int val;
         cin >> val;
+        // Read values for the current list until -1 is entered.
         do {
-            insert(head, tail, val);
-            cin >> val;
+            if (val != -1) { // Ensure -1 itself is not added to the list.
+                insert(head, tail, val); // Use helper function to insert nodes.
+            }
+            cin >> val; // Read next value.
         } while(val != -1);
 
-        kLists.push_back(head);
+        kLists.push_back(head); // Add the head of the newly built list to the vector.
     }
 
-    List* head = mergeSortedLists(kLists);
+    // Call the function to merge the K sorted linked lists.
+    List* mergedHead = mergeSortedLists(kLists);
 
-    List* temp = head;
+    // Print the merged sorted linked list.
+    List* temp_ptr = mergedHead; // Use a temporary pointer to traverse and print.
     cout << "Merged List : ";
-    while(temp != NULL) {
-        cout << temp->data << " ";
-        temp = temp->next;
+    while(temp_ptr != NULL) {
+        cout << temp_ptr->data << " ";
+        temp_ptr = temp_ptr->next;
     }
     cout << endl;
 
+    // IMPORTANT: In C++, if nodes are dynamically allocated (using 'new'),
+    // they should ideally be 'delete'd to prevent memory leaks,
+    // especially for the merged list and any nodes that remained in 'kLists'
+    // but were not part of the final merged list (if any lists were empty initially).
+    // For competitive programming, this cleanup is often omitted for brevity.
+
     return 0;
 }
+
+/*
+Example Usage:
+
+Input K: 3
+List 1: 1 5 9 -1
+List 2: 2 3 8 -1
+List 3: 4 6 7 -1
+
+Step-by-step Trace (Conceptual):
+
+Initial Min Heap:
+- Head of List 1: Node(1)
+- Head of List 2: Node(2)
+- Head of List 3: Node(4)
+Heap (conceptually): { Node(1), Node(2), Node(4) } (Node with 1 at top)
+Merged List: NULL
+
+Loop 1:
+- top = Node(1). Pop Node(1).
+- Node(1)->next is Node(5). Push Node(5) to heap.
+- Merged List: 1 -> NULL (head=tail=Node(1))
+Heap: { Node(2), Node(4), Node(5) } (Node with 2 at top)
+
+Loop 2:
+- top = Node(2). Pop Node(2).
+- Node(2)->next is Node(3). Push Node(3) to heap.
+- Merged List: 1 -> 2 -> NULL (tail=Node(2))
+Heap: { Node(3), Node(4), Node(5) } (Node with 3 at top)
+
+Loop 3:
+- top = Node(3). Pop Node(3).
+- Node(3)->next is Node(8). Push Node(8) to heap.
+- Merged List: 1 -> 2 -> 3 -> NULL (tail=Node(3))
+Heap: { Node(4), Node(5), Node(8) } (Node with 4 at top)
+
+Loop 4:
+- top = Node(4). Pop Node(4).
+- Node(4)->next is Node(6). Push Node(6) to heap.
+- Merged List: 1 -> 2 -> 3 -> 4 -> NULL (tail=Node(4))
+Heap: { Node(5), Node(6), Node(8) } (Node with 5 at top)
+
+Loop 5:
+- top = Node(5). Pop Node(5).
+- Node(5)->next is Node(9). Push Node(9) to heap.
+- Merged List: 1 -> 2 -> 3 -> 4 -> 5 -> NULL (tail=Node(5))
+Heap: { Node(6), Node(8), Node(9) } (Node with 6 at top)
+
+Loop 6:
+- top = Node(6). Pop Node(6).
+- Node(6)->next is Node(7). Push Node(7) to heap.
+- Merged List: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> NULL (tail=Node(6))
+Heap: { Node(7), Node(8), Node(9) } (Node with 7 at top)
+
+Loop 7:
+- top = Node(7). Pop Node(7).
+- Node(7)->next is NULL. Don't push.
+- Merged List: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> NULL (tail=Node(7))
+Heap: { Node(8), Node(9) } (Node with 8 at top)
+
+Loop 8:
+- top = Node(8). Pop Node(8).
+- Node(8)->next is NULL. Don't push.
+- Merged List: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> NULL (tail=Node(8))
+Heap: { Node(9) } (Node with 9 at top)
+
+Loop 9:
+- top = Node(9). Pop Node(9).
+- Node(9)->next is NULL. Don't push.
+- Merged List: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> NULL (tail=Node(9))
+Heap: {} (empty)
+
+Loop terminates.
+Output: Merged List : 1 2 3 4 5 6 7 8 9
+*/
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Given `K` individual sorted Linked Lists, combine all their nodes to form a single, comprehensively sorted Linked List.
+  * **Example**:
+      * List 1: `1 -> 5 -> 9 -> NULL`
+      * List 2: `2 -> 3 -> 8 -> NULL`
+      * List 3: `4 -> 6 -> 7 -> NULL`
+      * Merged Sorted List: `1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> NULL`
+
+### 2\. Challenge & Approach: Efficiently Picking the Next Element
+
+  * **Challenge**: At any point, we need to pick the smallest element from the `K` lists. A simple linear scan through the `K` current head nodes would be `O(K)` at each step, leading to `O(N*K)` total time (where `N` is total nodes).
+  * **Solution: Min Heap (Priority Queue)**
+      * **Core Idea**: Use a Min Heap to efficiently keep track of the *smallest available node* among the current heads of all `K` lists.
+      * **How it works**:
+        1.  **Initialize Heap**: Add the head node of each of the `K` sorted linked lists into the Min Heap.
+        2.  **Iterative Merge**:
+              * Repeatedly extract the node with the smallest value from the heap. This node is the next element in our merged sorted list.
+              * Append this extracted node to our result list.
+              * If the extracted node's original list has a next element (i.e., `extracted_node->next != NULL`), add that `next` node into the heap. This ensures that the heap always contains the "next candidates" from the lists that are still active.
+
+### 3\. `List` Class and `compare` Functor
+
+  * **`List` Class**: Represents a node in the linked list, containing `data` and a `next` pointer.
+  * **`compare` Functor**:
+      * `std::priority_queue` is a max-heap by default. To make it a min-heap (which we need to get the smallest element), we provide a custom comparator.
+      * The `operator()` for `compare` returns `true` if `List* a` has *lower priority* than `List* b` (meaning `a`'s data is *greater* than `b`'s data). This causes elements with smaller `data` values to bubble up to the `top()`.
+
+### 4\. `mergeSortedLists(vector<List* > kLists)` Logic
+
+1.  **Handle Empty Input**: If `K` is 0 (no lists), return `NULL`.
+2.  **Step 1: Populate Min Heap**:
+      * Create a `minHeap` that stores `List*` pointers, ordered by our `compare` functor.
+      * Iterate through the `kLists` vector. For each list, if its head is not `NULL` (i.e., the list is not empty), `push` its head node into the `minHeap`.
+3.  **Step 2: Build Merged List**:
+      * Initialize `head = NULL` and `tail = NULL`. These pointers will build our new merged list.
+      * Loop `while(minHeap.size() > 0)`: (Continue as long as there are elements in the heap)
+          * **Extract Smallest**: Get the `List* top` from `minHeap.top()`. This is the smallest node globally among all lists' current heads.
+          * `minHeap.pop()`: Remove this `top` node from the heap.
+          * **Replenish Heap**: If `top->next` is not `NULL` (meaning the list `top` came from has more elements):
+              * `minHeap.push(top->next)`: Add the next node from that same list into the heap.
+          * **Append to Result List**:
+              * **First Node**: If `head` is `NULL` (this is the very first node of the merged list), set `head = tail = top`.
+              * **Subsequent Nodes**: Otherwise, append `top` to the end of the current merged list: `tail->next = top; tail = top;`.
+              * **Crucial**: Set `tail->next = NULL;` after linking to prevent cycles or accidental links from the original lists' structure. (The provided code *does not* explicitly set `tail->next = NULL;` inside the loop, which is important for the last node of the merged list to terminate correctly. It relies on the final `tail` having `next=NULL` from its original list's end or being correctly null for the last element, but it's safer to explicitly set it). I will add this for robustness in comments.
+4.  **Return**: The `head` of the newly formed merged sorted linked list.
+
+### 6\. Complexity Analysis
+
+  * Let `N` be the total number of nodes across all `K` linked lists.
+  * **Time Complexity**: `O(N log K)`
+      * **Initial Population**: `K` insertions into the heap (one for each list head). Each `push` takes `O(log K)`. Total `O(K log K)`.
+      * **Main Loop**: The loop runs `N` times (because each of the `N` nodes is extracted exactly once). In each iteration:
+          * `minHeap.top()` is `O(1)`.
+          * `minHeap.pop()` is `O(log K)`.
+          * `minHeap.push()` is `O(log K)` (for the next node from the source list).
+      * Total: `O(K log K + N log K) = O(N log K)` (since `N >= K`).
+  * **Space Complexity**: `O(K)`
+      * The `minHeap` stores at most `K` `List*` pointers (one node from each list at any given time).
+      * Note: The algorithm reuses the existing nodes of the input linked lists by simply re-linking their `next` pointers. It does not create new `List` nodes for the merged list itself, keeping auxiliary space proportional only to `K`.
+
+-----
+
+

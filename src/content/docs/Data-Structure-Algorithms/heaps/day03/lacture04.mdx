@@ -3,96 +3,268 @@ title: Smallest Range In K List
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (vector, iostream, queue, limits).
+using namespace std;     // Use the standard namespace.
 
+// Custom Node class to store an element's value along with its source array and index.
+// This allows us to track which array to fetch the next element from.
 class Node {
-    public:
-        int data;
-        int row, col;
+public:
+    int data; // The value of the element.
+    int row;  // The index of the array (row) this element came from.
+    int col;  // The index of the element within its array (column).
 
-        Node(int data, int row, int col) {
-            this->data = data;
-            this->row = row;
-            this->col = col;
-        }
+    // Constructor for the Node.
+    Node(int data, int row, int col) {
+        this->data = data;
+        this->row = row;
+        this->col = col;
+    }
 };
 
+// Custom comparator for the priority_queue.
+// For a MIN HEAP, this operator should return 'true' if 'a' has LOWER priority than 'b'.
+// This means 'a's data is GREATER than 'b's data, so 'b' will be prioritized (smaller value).
 class compare {
-    public:
-        bool operator () (Node* a, Node* b) {
-            return a->data > b->data;
-        }
+public:
+    bool operator () (Node* a, Node* b) {
+        return a->data > b->data; // Returns true if 'a' should come AFTER 'b' (i.e., 'a' is larger).
+    }
 };
 
+// Function to find the smallest range that contains at least one element from each of K sorted arrays.
+// 'kArrays': A vector of vectors, where each inner vector is a sorted array.
+// 'K': The number of sorted arrays.
+// 'N': The size of each array (assuming uniform size as per main function's input logic).
+// Time Complexity: O(Total_Elements * log K)
+// Space Complexity: O(K)
 int smallestRange(vector<vector<int> > kArrays, int K, int N) {
-    priority_queue<Node*, vector<Node*>, compare> minHeap;
-    int mini = INT_MAX, maxi = INT_MIN;
+    // Step 1: Initialize Min Heap and track initial min/max values.
+    priority_queue<Node*, vector<Node*>, compare> minHeap; // Our Min Heap.
+    int mini = INT_MAX; // Tracks the minimum value among elements currently in the heap.
+    int maxi = INT_MIN; // Tracks the maximum value among elements currently in the heap.
 
-
-    // Step 1 : Creating a Min Heap for starting element of each list and tracking mini/maxi value of each list
-    for(int row=0; row<K; row++) {
-        int element = kArrays[row][0];
-        mini = min(mini, element);
-        maxi = max(maxi, element);
-        minHeap.push(new Node(element, row, 0));
+    // Insert the first element of each of the K arrays into the minHeap.
+    // While doing so, update 'mini' and 'maxi' to establish the initial range.
+    for(int row = 0; row < K; row++) {
+        int element = kArrays[row][0]; // Get the first element of the current array.
+        mini = min(mini, element);     // Update overall minimum seen among these K elements.
+        maxi = max(maxi, element);     // Update overall maximum seen among these K elements.
+        minHeap.push(new Node(element, row, 0)); // Push a new Node for this element. (O(log K))
     }
 
-    int start = mini, end = maxi;
+    // Initialize 'start' and 'end' with the range from the first K elements.
+    // This is our current best range.
+    int start = mini;
+    int end = maxi;
 
-    // Step 2 : process ranges
-    while(!minHeap.empty()) {
+    // Step 2: Process ranges by repeatedly extracting min, updating range, and adding next element.
+    // Loop continues as long as the heap is not empty (i.e., we haven't exhausted any list).
+    while(!minHeap.empty()) { // Loop runs up to N*K times in worst case.
 
-        // fetching minimum element
+        // Fetch the minimum element from the heap (this is the smallest in the current window).
         Node* temp = minHeap.top();
-        minHeap.pop();
+        minHeap.pop(); // Remove it. (O(log K))
 
+        // Update 'mini' to the value of the element just extracted.
         mini = temp->data;
 
-        // range or answer updation
+        // Check if the current range (maxi - mini) is smaller than our best range (end - start).
+        // If it is, update our best range.
         if(maxi - mini < end - start) {
             start = mini;
             end = maxi;
         }
 
-        // checking whether next element exists or not
-        if(temp->col < N) {
-            maxi = max(maxi, kArrays[temp->row][temp->col + 1]);
-            minHeap.push(new Node(kArrays[temp->row][temp->col + 1], temp->row, temp->col + 1));
+        // Check if the array from which 'temp' was extracted has more elements.
+        // 'temp->col < N' assumes all arrays are of size N. If sizes vary, use kArrays[temp->row].size().
+        if(temp->col + 1 < kArrays[temp->row].size()) { // Correct check for varying sizes.
+        // if(temp->col + 1 < N) { // Original code line, assuming uniform N.
+            // Get the next element from the same row/array.
+            int nextElement = kArrays[temp->row][temp->col + 1];
+            // Update 'maxi' with this new element, as it might be the new maximum in the window.
+            maxi = max(maxi, nextElement);
+            // Push the new Node for this element into the heap. (O(log K))
+            minHeap.push(new Node(nextElement, temp->row, temp->col + 1));
         } else {
+            // If any list is exhausted, we cannot form a range that includes elements from ALL lists anymore.
+            // So, we break the loop.
             break;
         }
+        // IMPORTANT Memory Management Note: Node* temp was dynamically allocated with 'new'.
+        // To prevent memory leaks, 'delete temp;' should be called here in production code
+        // after its data is used and before it goes out of scope/is replaced.
     }
 
+    // Return the size of the smallest range found (+1 because range is inclusive).
     return (end - start) + 1;
 }
 
 int main() {
-    vector< vector<int> > kArrays;
-    int K, N;
+    vector< vector<int> > kArrays; // Vector of vectors to store the K sorted arrays.
+    int K; // Number of sorted arrays.
+    int N; // Size of each array (assuming uniform size).
 
-    cout << "Enter the value of K : ";
+    cout << "Enter the value of K (number of arrays) : ";
     cin >> K;
 
-    cout << "Enter the size of each array : ";
+    cout << "Enter the size of each array (assuming all arrays have this size) : ";
     cin >> N;
 
-    for(int i=0; i<K; i++) {
-        vector<int> curr(N);
+    // Loop to input each of the K sorted arrays.
+    for(int i = 0; i < K; i++) {
+        vector<int> curr(N); // Create a vector of size N for the current array.
 
-        cout << "Enter the elements of array : ";
-        for(int j=0; j<N; j++) {
-            cin >> curr[j];
+        cout << "Enter the " << N << " elements of array " << i + 1 << " (must be sorted) : ";
+        for(int j = 0; j < N; j++) {
+            cin >> curr[j]; // Read elements for the current array.
         }
-
-        kArrays.push_back(curr);
+        kArrays.push_back(curr); // Add the filled array to kArrays.
     }
-    
-    int range = smallestRange(kArrays, K, N);
 
+    // Call the function to find the smallest range.
+    int range = smallestRange(kArrays, K, N); // Pass N for initial code's logic.
+
+    // Print the result.
     cout << "Smallest range in the given sorted lists : " << range << endl;
 
     return 0;
 }
+
+/*
+Example Usage:
+
+Input K: 3
+Input N: 4 (assuming uniform size)
+Array 1: 1 8 10 15
+Array 2: 5 12 18 22
+Array 3: 9 14 20 24
+
+Step-by-step Trace:
+
+Initial state:
+minHeap: {}
+mini = INT_MAX, maxi = INT_MIN
+start = 0, end = 0 (or some initial dummy value, then updated after first K elements)
+
+Step 1: Populate heap with first elements
+- Array 0, element 1: mini=1, maxi=1. Push Node(1,0,0).
+- Array 1, element 5: mini=1, maxi=5. Push Node(5,1,0).
+- Array 2, element 9: mini=1, maxi=9. Push Node(9,2,0).
+minHeap: { (1,0,0), (5,1,0), (9,2,0) } (top is 1)
+Current window: [1, 9]. Range length = 9 - 1 + 1 = 9.
+start = 1, end = 9.
+
+Step 2: Process ranges
+Loop 1:
+- temp = (1,0,0). Pop. mini=1.
+- Current range (maxi - mini) = (9 - 1) = 8.
+- (maxi - mini) < (end - start) => 8 < (9 - 1) => 8 < 8 (False, or True if strict <). Let's use <= for tie-breaking.
+  The condition is `maxi - mini < end - start`. So 8 < 8 is false. No update.
+- Check next element for Array 0: col=0+1=1 < N=4. Yes. Next element is kArrays[0][1] = 8.
+- maxi = max(9, 8) = 9.
+- Push Node(8,0,1).
+minHeap: { (5,1,0), (8,0,1), (9,2,0) } (top is 5)
+
+Loop 2:
+- temp = (5,1,0). Pop. mini=5.
+- Current range (maxi - mini) = (9 - 5) = 4.
+- 4 < (9 - 1) => 4 < 8 (True). Update start=5, end=9.
+- Check next element for Array 1: col=0+1=1 < N=4. Yes. Next element is kArrays[1][1] = 12.
+- maxi = max(9, 12) = 12.
+- Push Node(12,1,1).
+minHeap: { (8,0,1), (9,2,0), (12,1,1) } (top is 8)
+
+Loop 3:
+- temp = (8,0,1). Pop. mini=8.
+- Current range (maxi - mini) = (12 - 8) = 4.
+- 4 < (9 - 5) => 4 < 4 (False). No update.
+- Check next element for Array 0: col=1+1=2 < N=4. Yes. Next element is kArrays[0][2] = 10.
+- maxi = max(12, 10) = 12.
+- Push Node(10,0,2).
+minHeap: { (9,2,0), (10,0,2), (12,1,1) } (top is 9)
+
+Loop 4:
+- temp = (9,2,0). Pop. mini=9.
+- Current range (maxi - mini) = (12 - 9) = 3.
+- 3 < (9 - 5) => 3 < 4 (True). Update start=9, end=12.
+- Check next element for Array 2: col=0+1=1 < N=4. Yes. Next element is kArrays[2][1] = 14.
+- maxi = max(12, 14) = 14.
+- Push Node(14,2,1).
+minHeap: { (10,0,2), (12,1,1), (14,2,1) } (top is 10)
+
+... and so on. The process continues until one array is exhausted.
+
+If the range [9,12] is confirmed as the smallest, the result would be (12-9)+1 = 4.
+*/
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Given `K` sorted lists (or arrays), find the smallest range `[min_val, max_val]` such that this range contains at least one element from *each* of the `K` lists.
+  * **Smallest Range**: A range `[a, b]` is smaller than `[c, d]` if `b - a < d - c`. If `b - a == d - c`, then `a < c`.
+  * **Example**:
+      * List 1: `[1, 8, 10, 15]`
+      * List 2: `[5, 12, 18]`
+      * List 3: `[9, 14, 20]`
+      * One possible range: `[8, 9]` (contains 8 from L1, no element from L2, 9 from L3 - INVALID)
+      * One possible range containing all: `[8, 12]` (contains 8 from L1, 12 from L2, no element from L3 - INVALID)
+      * Correct range: `[9, 12]` (contains 10 from L1, 12 from L2, 9 from L3). Length = `12 - 9 + 1 = 4`.
+      * Smallest range: `[9, 12]` is not the smallest. Consider starting elements: `[1,5,9]`. max is 9, min is 1. Range = 8.
+      * After pulling 1 (from list 1), push 8 (from list 1). Elements in heap: `[5,8,9]`. max is 9, min is 5. Range = 4. Update best range.
+      * After pulling 5 (from list 2), push 12 (from list 2). Elements in heap: `[8,9,12]`. max is 12, min is 8. Range = 4. Update best range if needed.
+
+### 2\. Approach: Sliding Window with Min Heap
+
+  * **Key Idea**: We need to maintain a "window" of `K` elements, one from each list. The `min` value of this window will be the smallest element currently available from *any* of the `K` lists, and the `max` value will be the largest among these `K` elements.
+
+  * **Data Structure: Min Heap**: A Min Heap is ideal for efficiently getting the minimum element among the `K` candidates (one from each list).
+
+  * **`Node` Structure**: Similar to "Merge K Sorted Arrays," each node in the heap needs to store:
+
+      * `data`: The actual element value.
+      * `row`: The index of the array/list it came from.
+      * `col`: Its index within that array/list. This allows us to fetch the *next* element from the correct list.
+
+  * **Custom Comparator**: Necessary for the `priority_queue` to order `Node*` objects based on their `data` values in ascending order (for a Min Heap).
+
+  * **Algorithm Steps (Sliding Window Logic)**:
+
+    1.  **Initialization**:
+          * Create a `minHeap`.
+          * Initialize `mini = INT_MAX`, `maxi = INT_MIN`. These will track the *current* minimum and maximum values *among the `K` elements currently in the heap*.
+          * For each of the `K` lists, insert its **first element** into the `minHeap`. While inserting, update `mini` and `maxi` to reflect the range formed by these initial `K` elements.
+          * Store this initial range as our best `start` and `end` values. (`start = mini`, `end = maxi`).
+    2.  **Iterative Refinement (Sliding)**:
+          * Loop as long as the `minHeap` is not empty:
+              * **Extract Minimum**: Get the smallest element (`temp = minHeap.top()`) from the heap. This `temp->data` becomes the new `mini` of our current window.
+              * `minHeap.pop()`: Remove this element.
+              * **Update Best Range**: Compare the current range (`maxi - mini`) with the best range found so far (`end - start`). If the current range is smaller, update `start` and `end`.
+              * **Slide Window**:
+                  * Check if there's a *next* element in the list from which `temp` was just extracted (`temp->col + 1 < N`).
+                  * If yes:
+                      * Add this `next` element `kArrays[temp->row][temp->col + 1]` to the `minHeap`.
+                      * **Crucially**: Update `maxi = max(maxi, kArrays[temp->row][temp->col + 1])`. This is because the newly added element *could be the new maximum* in the window of `K` elements.
+                  * If no (one list is exhausted): Break the loop. We can no longer form a range that includes at least one element from all `K` lists.
+    3.  **Result**: Return `(end - start) + 1` (the size of the smallest range).
+
+### 3\. Complexity Analysis
+
+  * Let `K` be the number of arrays, and `N` be the (assumed uniform) size of each array. Total elements `M = K * N`.
+  * **Time Complexity**: `O(M log K)`
+      * **Initial Population**: `K` insertions into the heap. Each `push` takes `O(log K)`. Total `O(K log K)`.
+      * **Main Loop**: The loop runs `N*K - K + 1` times in the worst case (each element is processed once). In each iteration:
+          * `minHeap.top()` is `O(1)`.
+          * `minHeap.pop()` is `O(log K)`.
+          * `max` operation is `O(1)`.
+          * `minHeap.push()` is `O(log K)`.
+          * So, each iteration is `O(log K)`.
+      * Total: `O(K log K + (N*K - K) log K) = O(N*K log K) = O(M log K)`.
+  * **Space Complexity**: `O(K)`
+      * The `minHeap` stores at most `K` `Node*` objects (one from each array at any given time).
+      * **Memory Management Note**: The code uses `new Node(...)`. For robust code, these dynamically allocated `Node` objects should be `delete`d when they are no longer needed (e.g., after being popped from the heap and their next element, if any, is pushed). The current code does not explicitly manage this memory, which can lead to leaks in long-running applications.
+
+-----
+
+

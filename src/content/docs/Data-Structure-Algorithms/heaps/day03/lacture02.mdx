@@ -3,87 +3,270 @@ title: Merge K Sorted Arrays
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes standard libraries like vector, iostream, queue, algorithm.
+using namespace std;     // Use the standard namespace.
 
+// Custom Node class to store the element's value along with its source array and column index.
+// This is crucial for knowing which element to fetch next from which array.
 class Node {
-    public:
-        int data;
-        int row, col;
+public:
+    int data; // The value of the element.
+    int row;  // The index of the array (row) this element came from.
+    int col;  // The index of the element within its array (column).
 
-        Node(int data, int row, int col) {
-            this->data = data;
-            this->row = row;
-            this->col = col;
-        }
+    // Constructor to initialize a Node object.
+    Node(int data, int row, int col) {
+        this->data = data;
+        this->row = row;
+        this->col = col;
+    }
 };
 
+// Custom comparator class for the priority_queue.
+// This defines how Node pointers should be ordered in the heap.
+// For a MIN HEAP, we want the operator() to return true if 'a' has LOWER priority than 'b',
+// meaning 'a's data is GREATER than 'b's data. This ensures smallest elements bubble to the top.
 class compare {
-    public:
-        bool operator () (Node* a, Node* b) {
-            return a->data > b->data;
-        }
+public:
+    bool operator () (Node* a, Node* b) {
+        return a->data > b->data; // True if 'a' is "greater" (lower priority), so 'b' goes before 'a'.
+    }
 };
 
+// Function to merge K sorted arrays into a single sorted array.
+// 'kArrays': A vector of vectors, where each inner vector is a sorted array.
+// 'K': The number of sorted arrays.
+// Time Complexity: O(N log K), where N is the total number of elements across all arrays.
+// Space Complexity: O(N + K) (O(N) for result, O(K) for heap).
 vector<int> mergeSortedArrays(vector<vector<int> > kArrays, int K) {
+    // Step 1: Initialize a Min Heap.
+    // The heap will store Node pointers, using our custom 'compare' class for ordering.
     priority_queue<Node*, vector<Node*>, compare> minHeap;
 
-    // Step 1 : Insert all first elements in minHeap
-    for(int row=0; row<K; row++) {
-        Node* temp = new Node(kArrays[row][0], row, 0);
-        minHeap.push(temp);
+    // Insert the first element of each of the K arrays into the minHeap.
+    // Each insertion takes O(log K) time. Total O(K log K) for this loop.
+    for(int row = 0; row < K; row++) {
+        // Create a new Node for the first element of the current array.
+        Node* temp = new Node(kArrays[row][0], row, 0); // Element value, array index, column index.
+        minHeap.push(temp); // Push the node pointer into the heap.
     }
 
-    vector<int> ans;
+    vector<int> ans; // Vector to store the final merged sorted array.
 
-    // Step 2 : Comparing each node and moving further in the array
+    // Step 2: Extract elements from the heap and replenish with next elements.
+    // This loop runs N times (where N is the total number of elements).
     while(minHeap.size() > 0) {
+        // Get the node with the smallest element (which is at the top of the minHeap).
         Node* temp = minHeap.top();
 
+        // Add this smallest element to our result array.
         ans.push_back(temp->data);
-        minHeap.pop();
+        minHeap.pop(); // Remove the element from the heap.
 
+        // Get the row and column of the extracted element.
         int row = temp->row;
         int col = temp->col;
 
-        if(col+1 < kArrays[row].size()) {
+        // IMPORTANT: The Node 'temp' was dynamically allocated with 'new'.
+        // In a real-world scenario, you would typically 'delete temp;' here
+        // if not using smart pointers, to prevent memory leaks.
+        // For competitive programming, this is often overlooked as the program terminates.
+
+        // Check if there is a next element in the same array (row).
+        // If 'col+1' is within the bounds of that array's size.
+        if(col + 1 < kArrays[row].size()) {
+            // Create a new Node for the next element from the same array.
             Node* next = new Node(kArrays[row][col+1], row, col+1);
-            minHeap.push(next);
+            minHeap.push(next); // Push this new element into the heap. (O(log K) time)
         }
     }
 
+    // Return the final merged sorted array.
     return ans;
 }
 
 int main() {
-    vector< vector<int> > kArrays;
-    int K;
+    vector< vector<int> > kArrays; // Vector of vectors to store the K sorted arrays.
+    int K; // Number of sorted arrays.
 
-    cout << "Enter the value of K : ";
+    cout << "Enter the value of K (number of arrays) : ";
     cin >> K;
 
-    for(int i=0; i<K; i++) {
-        vector<int> curr;
+    // Loop to input each of the K sorted arrays.
+    for(int i = 0; i < K; i++) {
+        vector<int> curr; // Temporary vector to store elements of the current array.
 
-        cout << "Enter the elements of array (-1 to stop) : ";
-        int temp;
-        cin >> temp;
+        cout << "Enter the elements of array " << i + 1 << " (enter -1 to stop) : ";
+        int temp_input;
+        cin >> temp_input;
+        // Using a do-while loop to read elements until -1 is entered.
+        // This ensures at least one element is attempted to be read.
         do {
-            curr.push_back(temp);
-            cin >> temp;
-        } while(temp != -1);
+            if (temp_input != -1) { // Only push if it's not the sentinel -1
+                curr.push_back(temp_input);
+            }
+            cin >> temp_input; // Read the next element
+        } while(temp_input != -1); // Continue as long as -1 is not read
 
-        kArrays.push_back(curr);
+        kArrays.push_back(curr); // Add the current array to kArrays.
     }
-    
+
+    // Call the function to merge the K sorted arrays.
     vector<int> mergedArray = mergeSortedArrays(kArrays, K);
 
+    // Print the merged sorted array.
     cout << "Merged array : ";
     for(auto i : mergedArray) {
         cout << i << " ";
     }
+    cout << endl;
 
     return 0;
 }
+
+/*
+Example Usage:
+
+Input K: 3
+Array 1: 1 5 9 -1
+Array 2: 2 3 8 -1
+Array 3: 4 6 7 -1
+
+Step-by-step Trace:
+
+Initial Min Heap:
+- Node(1, row=0, col=0) from Array 0
+- Node(2, row=1, col=0) from Array 1
+- Node(4, row=2, col=0) from Array 2
+Heap: { (1,0,0), (2,1,0), (4,2,0) } (top is 1)
+ans: []
+
+Loop 1:
+- temp = (1,0,0). ans.push_back(1). ans: [1]
+- pop (1,0,0).
+- row=0, col=0. kArrays[0] has next element (5).
+- push Node(5,0,1).
+Heap: { (2,1,0), (4,2,0), (5,0,1) } (top is 2)
+
+Loop 2:
+- temp = (2,1,0). ans.push_back(2). ans: [1, 2]
+- pop (2,1,0).
+- row=1, col=0. kArrays[1] has next element (3).
+- push Node(3,1,1).
+Heap: { (3,1,1), (4,2,0), (5,0,1) } (top is 3)
+
+Loop 3:
+- temp = (3,1,1). ans.push_back(3). ans: [1, 2, 3]
+- pop (3,1,1).
+- row=1, col=1. kArrays[1] has next element (8).
+- push Node(8,1,2).
+Heap: { (4,2,0), (5,0,1), (8,1,2) } (top is 4)
+
+Loop 4:
+- temp = (4,2,0). ans.push_back(4). ans: [1, 2, 3, 4]
+- pop (4,2,0).
+- row=2, col=0. kArrays[2] has next element (6).
+- push Node(6,2,1).
+Heap: { (5,0,1), (6,2,1), (8,1,2) } (top is 5)
+
+Loop 5:
+- temp = (5,0,1). ans.push_back(5). ans: [1, 2, 3, 4, 5]
+- pop (5,0,1).
+- row=0, col=1. kArrays[0] has next element (9).
+- push Node(9,0,2).
+Heap: { (6,2,1), (8,1,2), (9,0,2) } (top is 6)
+
+Loop 6:
+- temp = (6,2,1). ans.push_back(6). ans: [1, 2, 3, 4, 5, 6]
+- pop (6,2,1).
+- row=2, col=1. kArrays[2] has next element (7).
+- push Node(7,2,2).
+Heap: { (7,2,2), (8,1,2), (9,0,2) } (top is 7)
+
+Loop 7:
+- temp = (7,2,2). ans.push_back(7). ans: [1, 2, 3, 4, 5, 6, 7]
+- pop (7,2,2).
+- row=2, col=2. kArrays[2] no more elements.
+Heap: { (8,1,2), (9,0,2) } (top is 8)
+
+Loop 8:
+- temp = (8,1,2). ans.push_back(8). ans: [1, 2, 3, 4, 5, 6, 7, 8]
+- pop (8,1,2).
+- row=1, col=2. kArrays[1] no more elements.
+Heap: { (9,0,2) } (top is 9)
+
+Loop 9:
+- temp = (9,0,2). ans.push_back(9). ans: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+- pop (9,0,2).
+- row=0, col=2. kArrays[0] no more elements.
+Heap: {} (empty)
+
+Loop terminates.
+Output: Merged array : 1 2 3 4 5 6 7 8 9
+*/
 ```
+
+
+### 1\. Problem Statement
+
+  * **Goal**: Given `K` sorted arrays, merge them into a single sorted array.
+  * **Example**: `arr1 = {1, 5, 9}`, `arr2 = {2, 3, 8}`, `arr3 = {4, 6, 7}`
+      * Merged sorted array: `{1, 2, 3, 4, 5, 6, 7, 8, 9}`
+
+### 2\. Challenge & Approach: Efficiently Picking the Next Element
+
+  * **Challenge**: How do we efficiently find the absolute smallest element among the `K` arrays at each step?
+  * **Solution: Min Heap (Priority Queue)**
+      * **Core Idea**: We use a Min Heap to keep track of the *smallest element currently available* from each of the `K` arrays.
+      * **How it works**:
+        1.  Initialize the Min Heap by adding the **first element** of each of the `K` arrays into it.
+        2.  Repeatedly extract the minimum element from the heap. This element is the next one in our merged sorted array.
+        3.  After extracting an element, if the array it came from still has more elements, add the *next* element from that same array into the heap. This ensures the heap always contains `K` (or fewer, if some arrays are exhausted) candidates for the next smallest element.
+
+### 3\. Custom `Node` Class and `compare` Functor
+
+  * **Why `Node`?**: When an element is extracted from the heap, we not only need its `data` (value) but also need to know *which array* it came from (`row`) and *its position* within that array (`col`). This information is crucial to fetch the next element from the correct array.
+  * **`Node` Structure**: `data` (the element value), `row` (index of the array), `col` (index within that array).
+  * **Why `compare`?**: The `priority_queue` by default uses `std::less` for basic types (making it a Max Heap). When storing custom objects or pointers (`Node*`), we need to provide a custom comparison logic.
+      * For a **Min Heap**, the `operator()` in the `compare` class should return `true` if `a` should have *lower priority* than `b` (i.e., `a`'s data is greater than `b`'s data). This ensures smaller values float to the top.
+
+### 4\. `mergeSortedArrays(vector<vector<int>> kArrays, int K)` Logic
+
+1.  **Initialization (`Step 1`)**:
+      * Create a `minHeap` of `Node*` using the `compare` functor.
+      * For each of the `K` input arrays:
+          * Create a `new Node` for its first element (`kArrays[row][0]`), storing its `row` and `0` for `col`.
+          * `push` this `Node*` into the `minHeap`.
+2.  **Extraction & Replenishment (`Step 2`)**:
+      * Create an empty `ans` vector to store the final sorted result.
+      * Loop `while(minHeap.size() > 0)`:
+          * **Extract Minimum**: Get the `Node* temp` from `minHeap.top()`. This `temp->data` is the smallest element available globally.
+          * Add `temp->data` to `ans`.
+          * `minHeap.pop()`: Remove `temp` from the heap.
+          * **Identify Source**: Get `row` and `col` from `temp`.
+          * **Fetch Next**: If there's a next element in the *same array* (`col + 1 < kArrays[row].size()`):
+              * Create a `new Node` for `kArrays[row][col+1]`, with the same `row` but `col+1`.
+              * `push` this `new Node*` into the `minHeap`.
+3.  **Return**: The `ans` vector.
+
+### 5\. Complexity Analysis
+
+  * Let `N` be the total number of elements across all `K` arrays. (`N = sum of lengths of all kArrays`).
+  * **Time Complexity**: `O(N log K)`
+      * **Initial Population**: `K` insertions into the heap. Each `push` takes `O(log K)`. Total `O(K log K)`.
+      * **Main Loop**: The loop runs `N` times (because each of the `N` elements is extracted exactly once). In each iteration:
+          * `minHeap.top()` is `O(1)`.
+          * `ans.push_back()` is `O(1)` amortized.
+          * `minHeap.pop()` is `O(log K)`.
+          * `minHeap.push()` is `O(log K)`.
+          * So, each iteration is `O(log K)`.
+      * Total: `O(K log K + N log K) = O(N log K)` (since `N >= K`).
+  * **Space Complexity**: `O(N + K)`
+      * `O(N)` for the `ans` vector (to store the final merged array).
+      * `O(K)` for the `minHeap` (it stores at most `K` elements/nodes simultaneously).
+      * **Memory Management Note**: The code uses `new Node(...)`. For each element pushed into the heap, a new `Node` object is dynamically allocated. These objects are *not* explicitly `delete`d in the provided code. In C++, this would lead to a memory leak. In competitive programming, `new` is often used without `delete` if the program terminates quickly and memory limits are not strict. For robust code, consider using `std::unique_ptr` with custom deleter, `std::shared_ptr`, or manual `delete` when a node is no longer needed (e.g., after `minHeap.pop()` and before returning from the function, though careful management is needed to ensure nodes added to `ans` are not deleted prematurely).
+
+-----
+
+

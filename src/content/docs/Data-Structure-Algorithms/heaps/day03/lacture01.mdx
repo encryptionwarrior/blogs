@@ -3,14 +3,17 @@ title: Kth Largest Sum Of Subarrays
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
 
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (vector, iostream, queue for priority_queue)
+using namespace std;     // Use the standard namespace
+
+// (Commented out Brute-Force approach for comparison)
 // int KthLargestSumOfSubarrays(vector<int> arr, int K) {
-//     vector<int> sumStore;
+//     vector<int> sumStore; // Stores all subarray sums
 //     int size = arr.size();
 
+//     // Generate all subarray sums - O(N^2)
 //     for(int i=0; i<size; i++) {
 //         int temp = 0;
 //         for(int j=i; j<size; j++) {
@@ -19,52 +22,195 @@ using namespace std;
 //         }
 //     }
 
+//     // Sort all sums - O(M log M) where M is N^2
 //     sort(sumStore.begin(), sumStore.end());
+//     // Return the Kth largest sum - O(1)
 //     return sumStore[sumStore.size() - K];
 // }
 
+
+// Function to find the Kth largest sum of contiguous subarrays using a Min Heap.
+// Time Complexity: O(N^2 log K)
+// Space Complexity: O(K)
 int KthLargestSumOfSubarrays(vector<int> arr, int K) {
+    // Step 1: Create a Min Heap.
+    // This heap will store the 'K' largest subarray sums found so far.
+    // std::priority_queue<Type, Container, Comparator>
+    // 'greater<int>' makes it a min-heap, so the smallest among the K largest sums will be at the top.
     priority_queue<int, vector<int>, greater<int> > sumStore;
     int size = arr.size();
 
-    for(int i=0; i<size; i++) {
-        int temp = 0;
-        for(int j=i; j<size; j++) {
-            temp += arr[j];
-            
+    // Step 2: Iterate through all possible subarrays to calculate their sums.
+    // Outer loop for starting index 'i'.
+    for(int i = 0; i < size; i++) {
+        int temp_sum = 0; // 'temp_sum' will accumulate sum for subarrays starting at 'i'.
+        // Inner loop for ending index 'j'.
+        for(int j = i; j < size; j++) {
+            temp_sum += arr[j]; // Add current element to get sum of arr[i...j].
+
+            // Step 3: Manage the Min Heap to keep track of the K largest sums.
+            // If the heap size is less than K, just push the current sum.
             if(sumStore.size() < K) {
-                sumStore.push(temp);
-            } else {
-                if(temp > sumStore.top()) {
-                    sumStore.pop();
-                    sumStore.push(temp);
+                sumStore.push(temp_sum);
+            }
+            // If the heap is already full (size equals K).
+            else {
+                // If the current subarray sum is greater than the smallest element in our heap (sumStore.top()),
+                // it means this new sum is one of the K largest.
+                if(temp_sum > sumStore.top()) {
+                    sumStore.pop();        // Remove the current smallest of the K largest sums.
+                    sumStore.push(temp_sum); // Add the new, larger sum.
                 }
+                // Else (current_sum <= sumStore.top()), it's not among the K largest, so do nothing.
             }
         }
     }
 
+    // Step 4: After checking all subarray sums, the top of the Min Heap
+    // will be the Kth largest sum (as it's the smallest among the K largest sums).
     return sumStore.top();
 }
 
 int main() {
     vector<int> arr;
 
-    cout << "Enter the elements of array (-1 to stop) : ";
-    int temp;
-    cin >> temp;
+    // Input elements for the array. Reads until -1 is entered.
+    cout << "Enter the elements of array (enter -1 to stop) : ";
+    int temp_input;
+    cin >> temp_input;
+    // Loop to read input: The do-while ensures at least one element is read before checking -1.
     do {
-        arr.push_back(temp);
-        cin >> temp;
-    } while(temp != -1);
+        arr.push_back(temp_input); // Add the current input
+        cin >> temp_input;         // Read the next input for the loop condition
+    } while(temp_input != -1);     // Continue as long as input is not -1.
 
     int K;
     cout << "Enter the value of K : ";
     cin >> K;
 
+    // Handle edge cases for K.
+    if (K <= 0 || K > (long long)arr.size() * (arr.size() + 1) / 2) {
+        // K cannot be less than or equal to 0, or greater than total possible subarray sums.
+        cout << "Invalid K value. Please enter a positive K within bounds of total subarray sums." << endl;
+        return 1;
+    }
+
+    // Call the function to find the Kth largest sum.
     int largestSum = KthLargestSumOfSubarrays(arr, K);
 
-    cout << "The kth largest sum of subarrays : " << largestSum;
+    // Print the result.
+    cout << "The kth largest sum of subarrays : " << largestSum << endl;
 
     return 0;
 }
+
+/*
+Example Usage:
+
+Input Array: 10 20 -5 -10 -1
+K: 3
+
+Expected result (as per example in notes): 20
+
+Trace with Min Heap (K=3):
+Initial array: [10, 20, -5, -10]
+
+Subarrays & sums generated:
+i=0:
+  j=0: sum=10. Heap.size()=0<3. Push 10. Heap: {10}
+  j=1: sum=10+20=30. Heap.size()=1<3. Push 30. Heap: {10, 30}
+  j=2: sum=30-5=25. Heap.size()=2<3. Push 25. Heap: {10, 25, 30} (now size 3)
+  j=3: sum=25-10=15. Heap.size()=3. 15 < Heap.top() (10)? No. 15 > 10. Pop 10. Push 15. Heap: {15, 25, 30}
+
+i=1:
+  j=1: sum=20. Heap.size()=3. 20 > Heap.top() (15)? Yes. Pop 15. Push 20. Heap: {20, 25, 30}
+  j=2: sum=20-5=15. Heap.size()=3. 15 < Heap.top() (20)? Yes. Ignore. Heap: {20, 25, 30}
+  j=3: sum=15-10=5. Heap.size()=3. 5 < Heap.top() (20)? Yes. Ignore. Heap: {20, 25, 30}
+
+i=2:
+  j=2: sum=-5. Heap.size()=3. -5 < Heap.top() (20)? Yes. Ignore. Heap: {20, 25, 30}
+  j=3: sum=-5-10=-15. Heap.size()=3. -15 < Heap.top() (20)? Yes. Ignore. Heap: {20, 25, 30}
+
+i=3:
+  j=3: sum=-10. Heap.size()=3. -10 < Heap.top() (20)? Yes. Ignore. Heap: {20, 25, 30}
+
+End of loops.
+Result: sumStore.top() = 20. Correct.
+*/
 ```
+
+
+Here are quick revision notes and the commented code for finding the Kth largest sum of subarrays using a Min Heap.
+
+-----
+
+## Kth Largest Sum of Subarrays Quick Revision Notes
+
+-----
+
+### 1\. Problem Statement
+
+  * Given an array `arr` and an integer `K`, find the Kth largest sum among all possible contiguous subarrays of `arr`.
+  * **Subarray**: A contiguous part of an array.
+  * **Example**: `arr = {10, 20, -5, -10}`, `K = 3`
+      * Subarrays and their sums:
+          * {10} -\> 10
+          * {20} -\> 20
+          * {-5} -\> -5
+          * {-10} -\> -10
+          * `{10, 20}` -\> 30
+          *` {20, -5}` -\> 15
+          * `{-5, -10}` -\> -15
+          * `{10, 20, -5}` -\> 25
+          * `{20, -5, -10}` -\> 5
+          * `{10, 20, -5, -10}` -\> 15
+      * All sums: `{-15, -10, -5, 5, 10, 15, 15, 20, 25, 30}`
+      * Sorted sums (descending): `30, 25, 20, 15, 15, 10, 5, -5, -10, -15`
+      * 3rd largest sum is `20`.
+
+### 2\. Brute-Force Approach (Commented in Code)
+
+  * **Steps**:
+    1.  Generate all possible contiguous subarray sums. There are `N*(N+1)/2` such sums for an array of size `N`.
+    2.  Store all these sums in a `vector`.
+    3.  Sort the `vector` in ascending order.
+    4.  The Kth largest sum will be at `vector[vector.size() - K]`.
+  * **Complexity**:
+      * **Time**: `O(N^2)` to generate all sums. `O(M log M)` to sort, where `M = N^2`. So, `O(N^2 log(N^2))`.
+      * **Space**: `O(N^2)` to store all sums.
+  * **Drawback**: This approach is inefficient for large `N` due to the `N^2` factor in both time and space.
+
+### 3\. Optimized Approach: Using a Min Heap
+
+  * **Core Idea**: We only need the `K` largest sums, not all of them. We can use a Min Heap of size `K` to maintain the `K` largest sums encountered so far.
+  * **Why Min Heap?**:
+      * To find the Kth *largest* element, a Min Heap is used.
+      * The `top()` of a Min Heap always gives the smallest element among those currently in the heap.
+      * If a new sum is greater than `minHeap.top()`, it means this new sum is potentially one of the `K` largest, so we replace the current smallest of the top `K` with this new, larger sum.
+  * **Algorithm Steps**:
+    1.  Initialize an empty `minHeap` (`std::priority_queue<int, vector<int>, greater<int>>`).
+    2.  Use nested loops to generate all possible subarray sums:
+          * Outer loop (`i`): Represents the starting index of the subarray.
+          * Inner loop (`j`): Represents the ending index of the subarray.
+          * Inside the inner loop, incrementally calculate `current_sum` for `arr[i...j]`.
+    3.  For each `current_sum`:
+          * **If `minHeap.size() < K`**: This means we haven't found `K` sums yet. Simply `push` `current_sum` into the heap.
+          * **Else (`minHeap.size() == K`)**:
+              * **Compare**: If `current_sum > minHeap.top()` (i.e., the current sum is larger than the smallest among our `K` largest candidates):
+                  * `minHeap.pop()`: Remove the smallest element from the heap.
+                  * `minHeap.push(current_sum)`: Add the new, larger sum to the heap.
+              * **Else (`current_sum <= minHeap.top()`)**: The `current_sum` is not among the `K` largest sums, so we ignore it.
+    4.  After iterating through all possible subarray sums, `minHeap.top()` will contain the Kth largest sum.
+
+### 4\. Complexity Analysis of Optimized Approach
+
+  * **Time Complexity**: `O(N^2 log K)`
+      * Generating all subarray sums takes `O(N^2)` time.
+      * For each generated sum, heap operations (`push`, `pop`, `top`) take `O(log K)` time because the heap's maximum size is `K`.
+      * Total: `O(N^2 * log K)`.
+  * **Space Complexity**: `O(K)`
+      * The `minHeap` stores at most `K` elements.
+
+-----
+
+### Code with Brief Comments
