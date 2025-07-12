@@ -3,30 +3,46 @@ title: Create Graph And Print It
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector.
+using namespace std;     // Use the standard namespace.
 
-vector< vector<int> > printAdjacency(int n, int m, vector< vector<int> > &edges) {
-    vector< vector<int> > solution(n);
+// Function to convert an edge list representation of an undirected graph
+// into an adjacency list representation.
+// 'n': The number of nodes (vertices). Nodes are assumed to be 0-indexed to n-1.
+// 'm': The number of edges.
+// 'edges': A vector of vectors, where each inner vector {u, v} represents an edge between u and v.
+// Returns a vector of vectors representing the adjacency list.
+vector<vector<int>> printAdjacency(int n, int m, vector<vector<int>> &edges) {
+    // Create an adjacency list structure: 'solution' is a vector of vectors.
+    // 'solution[i]' will store the list of neighbors for node 'i'.
+    // Initialized to size 'n', so solution[0]...solution[n-1] exist.
+    vector<vector<int>> solution(n);
 
-    for(int i=0; i<n; i++) {
-        solution[i].push_back(i);
+    // Initialize each node's list with its own ID (specific output format requirement).
+    // A typical adjacency list would not include the node's own ID initially.
+    for(int i = 0; i < n; i++) {
+        solution[i].push_back(i); // Add node 'i' itself as the first element in its list.
     }
 
-    for(int i=0; i<m; i++) {
-        int u = edges[i][0];
-        int v = edges[i][1];
-        
+    // Iterate through each edge in the input 'edges' list.
+    for(int i = 0; i < m; i++) {
+        int u = edges[i][0]; // Get the first node of the current edge.
+        int v = edges[i][1]; // Get the second node of the current edge.
+
+        // Since it's an UNDIRECTED graph:
+        // Add 'v' to the adjacency list of 'u'.
         solution[u].push_back(v);
+        // Add 'u' to the adjacency list of 'v'.
         solution[v].push_back(u);
     }
 
-    return solution;
+    return solution; // Return the constructed adjacency list.
 }
 
 int main() {
-    int n, m;
+    int n; // Number of nodes.
+    int m; // Number of edges.
 
     cout << "Enter the number of nodes : ";
     cin >> n;
@@ -34,22 +50,85 @@ int main() {
     cout << "Enter the number of edges : ";
     cin >> m;
 
-    vector< vector<int> > edges(m, {0,0});
+    // Create a vector to store the 'm' edges.
+    // Each edge is a pair {u, v}, so it's a vector of 2 integers.
+    vector<vector<int>> edges(m, {0, 0});
 
-    for(int i=0; i<m; i++) {
-        cin >> edges[i][0];
-        cin >> edges[i][1];
+    cout << "Enter the edges (u v):" << endl;
+    for(int i = 0; i < m; i++) {
+        cin >> edges[i][0]; // Read node u.
+        cin >> edges[i][1]; // Read node v.
     }
 
-    vector< vector<int> > solution = printAdjacency(n, m, edges);
+    // Call the function to convert edge list to adjacency list.
+    vector<vector<int>> solution = printAdjacency(n, m, edges);
 
-    for(auto i : solution) {
-        for(auto j : i) {
-            cout << j << " ";
+    // Print the resulting adjacency list.
+    cout << "\nAdjacency List:" << endl;
+    for(auto current_node_list : solution) { // Iterate through each node's adjacency list.
+        for(auto neighbor_or_self : current_node_list) { // Iterate through elements in that list.
+            cout << neighbor_or_self << " "; // Print node ID or neighbor ID.
         }
-        cout << endl;
+        cout << endl; // Newline for the next node's list.
     }
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
 ```
+
+
+### 1\. Problem Statement
+
+  * **Goal**: Given the number of nodes (`n`), the number of edges (`m`), and a list of `m` edges (each edge represented as a pair of connected nodes `(u, v)`), construct and return the Adjacency List representation of the graph.
+  * **Assumption**: The provided code specifically implements an **undirected graph**.
+  * **Output Format**: The adjacency list is returned as a `vector<vector<int>>`, where `solution[i]` is a vector containing `i` itself (as the first element) followed by all its neighbors.
+
+### 2\. Graph Representations Revisited
+
+  * **Adjacency List**: The most common and often efficient way to represent graphs, especially sparse ones (few edges).
+      * It's essentially an array (or vector) where each index `i` stores a list of all vertices adjacent to `i`.
+      * For `u -> v`, `v` is added to `u`'s list.
+      * For `u - v` (undirected), `v` is added to `u`'s list, and `u` is added to `v`'s list.
+  * **Edge List**: A simple list of all edges in the graph, e.g., `[(u1, v1), (u2, v2), ...]`. This is the input format for this problem.
+
+### 3\. Algorithm Steps
+
+1.  **Initialization**:
+
+      * Create a `vector<vector<int>> solution` of size `n`. This will store the adjacency lists. Each `solution[i]` will be a `vector<int>` representing the neighbors of node `i`.
+      * **Self-inclusion (Specific to this code's output format)**: The code initializes `solution[i]` by `solution[i].push_back(i);`. This means each node's own ID will be the first element in its corresponding adjacency list. This is a specific output requirement and not standard for *just* neighbors. A typical adjacency list would just store the neighbors.
+
+2.  **Processing Edges**:
+
+      * Iterate through each `edge` in the input `edges` list.
+      * For each edge `(u, v)`:
+          * Add `v` to the adjacency list of `u`: `solution[u].push_back(v);`
+          * Add `u` to the adjacency list of `v`: `solution[v].push_back(u);` (This handles the undirected nature of the graph).
+
+3.  **Return**: The `solution` vector, which now contains the adjacency list representation.
+
+### 4\. Time and Space Complexity
+
+  * Let `N` be the number of nodes and `M` be the number of edges.
+
+  * **Time Complexity**: `O(N + M)`
+
+      * **Initialization**: `O(N)` for creating the `N` empty vectors and `N` pushes for self-inclusion.
+      * **Processing Edges**: The loop runs `M` times. Inside the loop, `vector::push_back` is `O(1)` on average. Since each undirected edge adds two entries (one for `u`, one for `v`), this is `O(M)`.
+      * **Total**: `O(N + M)`. This is highly efficient.
+
+  * **Space Complexity**: `O(N + M)`
+
+      * The `solution` vector stores `N` outer vectors.
+      * In total, it stores `N` node IDs (for self-inclusion) plus `2*M` entries (for `M` undirected edges). This sum is proportional to `N + M`.
+
+### 5\. Key Concepts
+
+  * **Adjacency List**: An efficient way to store graph connections, especially for sparse graphs.
+  * **Edge List**: A straightforward way to provide graph input.
+  * **Undirected Graph**: Edges are bidirectional.
+  * **Graph Traversal**: Once an adjacency list is built, it's used as the primary structure for algorithms like BFS, DFS, etc.
+
+-----
+
+

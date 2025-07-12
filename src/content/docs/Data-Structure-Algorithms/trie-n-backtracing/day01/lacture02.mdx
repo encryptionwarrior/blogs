@@ -3,47 +3,119 @@ title: Longest Common Prefix By Comparisons
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, string.
+using namespace std;     // Use the standard namespace.
 
+// Function to find the longest common prefix among a vector of strings.
+// 'str': A vector of strings.
+// Time Complexity: O(N * M), where N is number of strings, M is length of shortest string.
+// Space Complexity: O(M) for the result string.
 string longestCommonPrefix(vector<string> str) {
+    // Initialize an empty string to build the longest common prefix.
     string ans = "";
-    for(int i=0; i<str[0].length(); i++) {
+
+    // Edge case: If the input vector of strings is empty, there's no prefix.
+    if (str.empty()) {
+        return ans; // Returns ""
+    }
+
+    // Iterate through the characters of the first string (str[0]).
+    // We assume the LCP cannot be longer than the first string.
+    for(int i = 0; i < str[0].length(); i++) {
+        // Get the current character from the first string.
         char curr = str[0].at(i);
 
-        // For comparison of current character with remaining string;
-        for(int j=1; j<str.size(); j++) {
-            if(str[j].at(i) != curr) {
+        // Compare 'curr' with the character at the same position in all other strings.
+        // Loop starts from the second string (index 1).
+        for(int j = 1; j < str.size(); j++) {
+            // Check two conditions for mismatch or end of a string:
+            // 1. If the current string 'str[j]' is shorter than 'i' (out of bounds for this char).
+            // 2. If the character at position 'i' in 'str[j]' does not match 'curr'.
+            if(i >= str[j].length() || str[j].at(i) != curr) {
+                // If any of these conditions are true, it means the common prefix ends here.
+                // Return the 'ans' accumulated so far.
                 return ans;
             }
         }
 
-        ans += curr;
+        // If the character 'curr' passed all comparisons, it's part of the common prefix.
+        ans += curr; // Append 'curr' to our result string.
     }
 
+    // If the loop completes, it means the entire first string is the common prefix.
     return ans;
 }
 
 int main() {
-    vector<string> str;
+    vector<string> str; // Declare a vector to store input strings.
 
-    cout << "Enter the strings (-1 to stop) : ";
-    while(1) {
+    cout << "Enter the strings (enter -1 to stop) : ";
+    // Loop to read strings until "-1" is entered.
+    while(true) {
         string temp;
-        cin >> temp;
-        
+        cin >> temp; // Read a string.
+
         if(temp == "-1") {
-            break;
+            break; // Stop reading if "-1" is entered.
         }
 
-        str.push_back(temp);
+        str.push_back(temp); // Add the string to the vector.
     }
 
+    // Call the function to find the longest common prefix.
     string ans = longestCommonPrefix(str);
 
+    // Print the result.
     cout << "Longest common prefix : " << ans << endl;
 
-    return 0; 
+    return 0; // Indicate successful execution.
 }
 ```
+
+-----
+
+### 1\. Problem Statement
+
+  * **Goal**: Given an array (or vector) of strings, find the longest common prefix string amongst them.
+  * **Example**:
+      * `["flower", "flow", "flight"]` -\> `fl`
+      * `["dog", "racecar", "car"]` -\> `""` (empty string)
+
+### 2\. Approach: Character by Character Comparison
+
+  * **Core Idea**: The longest common prefix (LCP) cannot be longer than the shortest string in the input array. We can iterate through the characters of the *first string* and for each character, check if it's present at the same position in *all other strings*.
+  * **Algorithm Steps**:
+    1.  Initialize an empty string `ans` to store the LCP.
+    2.  If the input string array is empty, return `""`. (The provided code handles this implicitly if `str[0]` is accessed; it's good to add an explicit check).
+    3.  Iterate through the characters of the *first string* (`str[0]`) from left to right (index `i`).
+          * Take the current character `curr` from `str[0].at(i)`.
+          * Now, iterate through the *remaining strings* in the array (from `str[1]` to `str[str.size()-1]`).
+              * For each string `str[j]`:
+                  * Check if `str[j]` is shorter than the current index `i`. If `i` is out of bounds for `str[j]`, it means `str[j]` is shorter than the prefix being built, so the LCP must end here.
+                  * Check if `str[j].at(i)` is equal to `curr`.
+                  * If either of these conditions fails (out of bounds or character mismatch), it means the common prefix ends at the character *before* `curr`. So, immediately return the `ans` built so far.
+          * If the character `curr` is present at the current position `i` in *all* other strings, append `curr` to `ans`.
+    4.  After the outer loop finishes (meaning all characters of `str[0]` have been checked and are common prefixes), return `ans`.
+
+### 3\. Complexity Analysis
+
+  * Let `N` be the number of strings in the input vector.
+  * Let `M` be the length of the shortest string in the input vector. (In the provided code, `str[0].length()` is used as the upper bound for the outer loop, which implicitly relies on `str[0]` being a candidate for the shortest, or `str[j].at(i)` checking handling shorter strings).
+  * **Time Complexity**: `O(N * M)`
+      * The outer loop runs up to `M` times (length of the shortest string, or `str[0].length()` in this code).
+      * The inner loop runs `N-1` times (for each of the other strings).
+      * Inside the inner loop, character comparison is `O(1)`.
+      * Total: `M * (N-1) * O(1) = O(N * M)`.
+  * **Space Complexity**: `O(M)` (for storing the `ans` string, which can be at most the length of the shortest string).
+
+### 4\. Edge Cases
+
+  * **Empty input array**: The code doesn't explicitly handle `str` being empty. If `str` is empty, `str[0]` would cause a runtime error. An initial check `if (str.empty()) return "";` is good practice.
+  * **Array with one string**: The loops handle this correctly; the outer loop runs, the inner loop for `j` from 1 to `str.size()` won't execute, and the `ans` will correctly become the first string itself.
+  * **Strings with no common prefix**: The loop will immediately return `""` (empty `ans`) on the first character mismatch.
+  * **All strings are empty**: The code will return `""`.
+
+-----
+
+

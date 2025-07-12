@@ -3,46 +3,58 @@ title: Adjacency Matrix
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector.
+using namespace std;     // Use the standard namespace.
 
+// Class to represent a Graph using an Adjacency Matrix.
 class Graph {
-    public:
-        vector< vector<int> > adjMat;
+public:
+    // Adjacency Matrix representation:
+    // A 2D vector where adjMat[i][j] == 1 means an edge exists from i to j, 0 otherwise.
+    vector<vector<int>> adjMat;
 
-        Graph(int nodeCount) {
-            adjMat = vector < vector<int> > (nodeCount, vector<int> (nodeCount, 0));
+    // Constructor for the Graph.
+    // 'nodeCount': The total number of nodes (vertices) in the graph.
+    Graph(int nodeCount) {
+        // Initialize the adjacency matrix as a 'nodeCount' x 'nodeCount' matrix.
+        // All elements are initially set to 0 (no edges).
+        adjMat = vector<vector<int>>(nodeCount, vector<int>(nodeCount, 0));
+    }
+
+    // Function to add an edge between two vertices.
+    // 'u', 'v': The two vertices forming the edge.
+    // 'direction': false for undirected graph (edge u-v), true for directed graph (edge u->v only).
+    void addEdge(int u, int v, bool direction) {
+        // Create an edge from u to v.
+        // Set the corresponding cell in the matrix to 1.
+        adjMat[u][v] = 1;
+
+        // If the graph is undirected, also add an edge from v to u.
+        // This makes the matrix symmetric for undirected graphs.
+        if(direction == false) {
+            adjMat[v][u] = 1;
         }
+    }
 
-        void addEdge(int u, int v, bool direction) {
-            // direction = false -> undirected graph
-            // direction = true -> directed graph
+    // Function to print the adjacency matrix.
+    void printAdjMatrix(){
+        // Iterate through each row of the matrix. 'i' represents the source node.
+        for(int i = 0; i < adjMat.size(); i++) {
+            cout << i << " -> "; // Print the current source node.
 
-            // create an edge from u to v
-            adjMat[u][v] = 1;
-
-            if(direction == false) {
-                adjMat[v][u] = 1;
+            // Iterate through each column of the current row. 'j' represents the destination node.
+            for(int j = 0; j < adjMat.size(); j++) {
+                cout << adjMat[i][j] << " "; // Print 1 if an edge exists, 0 otherwise.
             }
+            cout << endl; // Move to the next line for the next source node.
         }
-
-        void printAdjMatrix(){
-            for(int i=0; i<adjMat.size(); i++) {
-                cout << i << " -> ";
-
-                for(int j=0; j<adjMat.size(); j++) {
-                    cout << adjMat[i][j] << " ";
-                }
-
-                cout << endl;
-            }
-        }
+    }
 };
 
 int main() {
-
-    int n, m;
+    int n; // Number of nodes (vertices).
+    int m; // Number of edges.
 
     cout << "Enter the number of nodes : ";
     cin >> n;
@@ -50,17 +62,74 @@ int main() {
     cout << "Enter the number of edges : ";
     cin >> m;
 
+    // Create a Graph instance with 'n' nodes.
     Graph G(n);
 
-    for(int i=0; i<m; i++) {
+    // Loop to read 'm' edges from user input.
+    cout << "Enter edges (u v):" << endl;
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        G.addEdge(u, v, 0);
+        cin >> u >> v;       // Read the two vertices forming an edge.
+        G.addEdge(u, v, 0); // Add the edge to the graph. '0' indicates an undirected graph.
     }
 
-    // Printing graph
+    // Printing the constructed graph's adjacency matrix.
+    cout << "\nAdjacency Matrix:" << endl;
     G.printAdjMatrix();
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
 ```
+
+
+### 1\. What is a Graph?
+
+  * A **Graph** is a non-linear data structure used to represent connections between entities.
+  * **Vertices (Nodes)**: The individual entities (e.g., cities, people).
+  * **Edges**: The connections between pairs of vertices (e.g., roads, friendships).
+
+### 2\. Graph Representations Overview
+
+There are several ways to store a graph in computer memory:
+
+  * **Adjacency Matrix**: A 2D array (matrix) where `matrix[i][j]` indicates if an edge exists between vertex `i` and vertex `j`.
+  * **Adjacency List**: An array or hash map where each index/key represents a vertex, and its value is a list of its neighbors.
+  * **Edge List**: Simply a list of all edges, where each edge is a pair `(u, v)`.
+
+### 3\. Adjacency Matrix Specifics
+
+  * **Structure**: For a graph with `N` vertices, an `N x N` matrix is used.
+  * **Interpretation**:
+      * `adjMat[i][j] = 1` (or `true`) indicates an edge from vertex `i` to vertex `j`.
+      * `adjMat[i][j] = 0` (or `false`) indicates no direct edge from `i` to `j`.
+  * **For Undirected Graphs**: If `adjMat[i][j] = 1`, then `adjMat[j][i]` must also be `1` (symmetric matrix).
+  * **For Directed Graphs**: `adjMat[i][j] = 1` does not imply `adjMat[j][i] = 1`.
+  * **Weighted Graphs**: `adjMat[i][j]` could store the weight of the edge instead of just `1`. (This code implements an unweighted graph).
+
+### 4\. Adjacency Matrix Implementation (in provided code)
+
+  * **Data Structure**: `vector<vector<int>> adjMat;` is used. This dynamically sized 2D vector allows for `N x N` matrix creation.
+  * **Constructor `Graph(int nodeCount)`**:
+      * Initializes `adjMat` to an `nodeCount x nodeCount` matrix.
+      * All elements are initially set to `0`, indicating no edges.
+  * **`addEdge(int u, int v, bool direction)`**:
+      * Sets `adjMat[u][v] = 1` to mark an edge from `u` to `v`.
+      * If `direction == false` (undirected), it also sets `adjMat[v][u] = 1` to represent the edge in the reverse direction.
+  * **`printAdjMatrix()`**:
+      * Iterates through each row (`i`) and then each column (`j`) of the `adjMat`.
+      * Prints the contents of the matrix, showing `0` or `1` for each possible connection.
+
+### 5\. Time and Space Complexity of Adjacency Matrix
+
+  * **Space Complexity**: `O(V^2)` where `V` is the number of vertices. This is because an `N x N` matrix requires `N^2` memory cells.
+      * **Advantage**: Suitable for **dense graphs** (many edges).
+      * **Disadvantage**: Wastes memory for **sparse graphs** (few edges), as most cells would be `0`.
+  * **Time Complexity**:
+      * **`addEdge()`**: `O(1)` (direct array access).
+      * **Checking for edge `(u, v)`**: `O(1)` (direct `adjMat[u][v]` access).
+      * **Iterating all neighbors of `u`**: `O(V)` (you have to check all `V` columns in row `u`).
+      * **`printAdjMatrix()`**: `O(V^2)` (visits every cell in the matrix).
+
+-----
+
+

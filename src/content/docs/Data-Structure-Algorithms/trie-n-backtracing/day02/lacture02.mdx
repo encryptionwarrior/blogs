@@ -3,99 +3,210 @@ title: Rat In Maze
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, string.
+using namespace std;     // Use the standard namespace.
 
-bool isSafe(vector< vector<int> > maze, vector< vector<int> > visited, int n, int newX, int newY) {
-    return ((newX >= 0) && (newX < n) && (newY >= 0) && (newY < n) && (maze[newX][newY] == 1) && (visited[newX][newY] == 0));
+// Helper function to check if a move to (newX, newY) is safe and valid.
+// 'maze': The 2D grid representing the maze (1=open, 0=blocked).
+// 'visited': The 2D grid tracking visited cells in the current path (1=visited, 0=not visited).
+// 'n': Size of the maze (n x n).
+// 'newX', 'newY': Coordinates of the proposed new cell.
+bool isSafe(vector<vector<int>> maze, vector<vector<int>> visited, int n, int newX, int newY) {
+    // Conditions for a safe move:
+    // 1. newX and newY are within maze boundaries.
+    // 2. The cell in 'maze' is open (value is 1).
+    // 3. The cell has not been visited in the current path (value in 'visited' is 0).
+    return ((newX >= 0) && (newX < n) && (newY >= 0) && (newY < n) &&
+            (maze[newX][newY] == 1) && (visited[newX][newY] == 0));
 }
 
-void paths(vector<string> &answer, vector< vector<int> > &maze, vector< vector<int> > &visited, string path, int x, int y, int n) {
-    if(x == n-1 && y == n-1) {
-        answer.push_back(path);
-        return;
+// Recursive backtracking function to find all paths.
+// 'answer': Vector to store all found valid paths (passed by reference).
+// 'maze': The maze grid (passed by reference to avoid copying).
+// 'visited': The visited grid (passed by reference to allow updates for current path).
+// 'path': Current sequence of moves as a string.
+// 'x', 'y': Current coordinates of the rat.
+// 'n': Size of the maze.
+void paths(vector<string> &answer, vector<vector<int>> &maze,
+           vector<vector<int>> &visited, string path, int x, int y, int n) {
+    // Base Case: If the rat reaches the destination (bottom-right corner).
+    if(x == n - 1 && y == n - 1) {
+        answer.push_back(path); // Add the current path to the answer.
+        return;                 // Found a path, no need to explore further from here.
     }
 
-    int newX, newY;
+    // Mark the current cell as visited before exploring its neighbors.
+    // This is crucial to prevent cycles within a single path.
+    visited[x][y] = 1;
 
-    // Down Movement - 'D'
-    newX = x+1;
+    int newX, newY; // Variables for new coordinates after a move.
+
+    // --- Try moving in 4 directions: Down, Left, Right, Up ---
+    // The order (D, L, R, U) ensures paths are found in lexicographical order if preferred.
+
+    // 1. Down Movement ('D')
+    newX = x + 1;
     newY = y;
     if(isSafe(maze, visited, n, newX, newY)) {
-        visited[newX][newY] = 1;
-        path.push_back('D');
-        paths(answer, maze, visited, path, newX, newY, n);
-        visited[newX][newY] = 0;
-        path.pop_back();
+        path.push_back('D'); // Add 'D' to the current path string.
+        paths(answer, maze, visited, path, newX, newY, n); // Recursive call.
+        path.pop_back();     // Backtrack: Remove 'D' from path (undo move for other branches).
     }
 
-    // Left Movement - 'L'
+    // 2. Left Movement ('L')
     newX = x;
-    newY = y-1;
+    newY = y - 1;
     if(isSafe(maze, visited, n, newX, newY)) {
-        visited[newX][newY] = 1;
-        paths(answer, maze, visited, path+'L', newX, newY, n);
-        visited[newX][newY] = 0;
+        path.push_back('L'); // Add 'L' to the current path.
+        paths(answer, maze, visited, path, newX, newY, n); // Recursive call.
+        path.pop_back();     // Backtrack.
     }
 
-    // Right Movement - 'R'
+    // 3. Right Movement ('R')
     newX = x;
-    newY = y+1;
+    newY = y + 1;
     if(isSafe(maze, visited, n, newX, newY)) {
-        visited[newX][newY] = 1;
-        paths(answer, maze, visited, path+'R', newX, newY, n);
-        visited[newX][newY] = 0;
+        path.push_back('R'); // Add 'R' to the current path.
+        paths(answer, maze, visited, path, newX, newY, n); // Recursive call.
+        path.pop_back();     // Backtrack.
     }
 
-    // Up Movement - 'U'
-    newX = x-1;
+    // 4. Up Movement ('U')
+    newX = x - 1;
     newY = y;
     if(isSafe(maze, visited, n, newX, newY)) {
-        visited[newX][newY] = 1;
-        paths(answer, maze, visited, path+'U', newX, newY, n);
-        visited[newX][newY] = 0;
+        path.push_back('U'); // Add 'U' to the current path.
+        paths(answer, maze, visited, path, newX, newY, n); // Recursive call.
+        path.pop_back();     // Backtrack.
     }
+
+    // Backtrack: Unmark the current cell as visited before returning.
+    // This allows other paths to potentially use this cell.
+    visited[x][y] = 0;
 }
 
-vector<string> searchMaze(vector< vector<int> > &arr, int n) {
-    vector< vector<int> > visited(n, vector<int> (n,0));
-    vector<string> answer;
+// Main function to initiate the maze search.
+// 'arr': The input maze grid.
+// 'n': Size of the maze.
+// Returns a vector of strings, each representing a valid path.
+vector<string> searchMaze(vector<vector<int>> &arr, int n) {
+    // Create and initialize a 'visited' matrix to keep track of visited cells.
+    vector<vector<int>> visited(n, vector<int>(n, 0));
+    vector<string> answer; // Vector to store all found paths.
 
+    // Check if the starting cell (0,0) is blocked. If so, no path is possible.
     if(arr[0][0] != 0) {
+        // Start the recursive backtracking from (0,0) with an empty path string.
         paths(answer, arr, visited, "", 0, 0, n);
     }
 
+    // The paths are collected in 'answer' and might not be sorted.
+    // If lexicographical order is required, sort(answer.begin(), answer.end()); can be added.
     return answer;
 }
 
 int main() {
-    vector< vector<int> > maze;
-    int n = 4;
+    vector<vector<int>> maze;
+    int n = 4; // Size of the maze (e.g., 4x4).
 
-    cout << "Enter the maze : " << endl;
-    for(int i=0; i<n; i++) {
-        vector<int> temp(n);
-        for(int j=0; j<n; j++) {
-            cin >> temp[j];
+    cout << "Enter the maze (0 for blocked, 1 for open path): " << endl;
+    for(int i = 0; i < n; i++) {
+        vector<int> temp_row(n); // Create a temporary row.
+        for(int j = 0; j < n; j++) {
+            cin >> temp_row[j]; // Read cell value.
         }
-        maze.push_back(temp);
+        maze.push_back(temp_row); // Add the row to the maze.
     }
 
-    vector<string> path = searchMaze(maze, n);
+    // Find all possible paths.
+    vector<string> all_paths = searchMaze(maze, n);
 
     cout << "All possible paths : ";
-    for(string s : path) {
-        cout << s << " ";
+    if (all_paths.empty()) {
+        cout << "No path found." << endl;
+    } else {
+        for(string s : all_paths) {
+            cout << s << " "; // Print each path.
+        }
+        cout << endl;
     }
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
 
-/*
+/* Example Input for the 4x4 maze:
 1 0 0 0
 1 1 0 0
 1 1 0 0
 0 1 1 1
 */
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Given a square maze (represented as a 2D grid) where `1` represents an open path and `0` represents a blocked cell, find all possible paths for a rat to travel from the top-left corner (0,0) to the bottom-right corner (n-1, n-1).
+  * **Movement Rules**: The rat can move in four directions: Down (`D`), Left (`L`), Right (`R`), Up (`U`).
+  * **Constraints**:
+      * The rat cannot move into a blocked cell (`0`).
+      * The rat cannot move out of bounds of the maze.
+      * The rat cannot revisit a cell within the *same path*.
+
+### 2\. Approach: Backtracking (Depth-First Search - DFS)
+
+  * **Core Idea**: Backtracking is an algorithmic technique for solving problems recursively by trying to build a solution incrementally. If a partial solution cannot be completed into a valid solution, it "backtracks" (undoes its last step) and tries a different path.
+  * **Algorithm Steps**:
+    1.  **State Representation**:
+          * `maze`: The input 2D grid representing the maze.
+          * `visited`: A 2D grid of the same size as `maze`, initialized with `0`s. `visited[x][y] = 1` means cell `(x,y)` is part of the current path being explored. This prevents cycles.
+          * `path`: A string that stores the sequence of moves (`D`, `L`, `R`, `U`) for the current path being explored.
+          * `x, y`: Current coordinates of the rat.
+          * `n`: Size of the maze (n x n).
+          * `answer`: A `vector<string>` to store all valid paths found.
+    2.  **`isSafe(maze, visited, n, newX, newY)` Function**:
+          * Checks if a proposed next move `(newX, newY)` is valid:
+              * Within maze boundaries (`0 <= newX < n` and `0 <= newY < n`).
+              * The cell `maze[newX][newY]` is open (`1`).
+              * The cell `visited[newX][newY]` has not been visited in the current path (`0`).
+    3.  **`paths(answer, maze, visited, path, x, y, n)` (Recursive Backtracking Function)**:
+          * **Base Case**: If the rat reaches the destination `(x == n-1 && y == n-1)`, it means a valid path has been found. Add the current `path` string to `answer` and `return`.
+          * **Recursive Step**:
+              * Mark the current cell `(x, y)` as visited: `visited[x][y] = 1`. (Note: The code does this *before* moving into the new cell, which is typical for the entry point of a recursive call. The initial `(0,0)` needs to be marked before the first moves are attempted).
+              * **Try each of the four directions (D, L, R, U) in a specific order**:
+                  * For each direction:
+                      * Calculate `newX`, `newY`.
+                      * If `isSafe(maze, visited, n, newX, newY)`:
+                          * **Make a move**: Add the move character (`'D'`, `'L'`, `'R'`, `'U'`) to `path`.
+                          * **Recurse**: Call `paths` with the new coordinates and updated path.
+                          * **Backtrack**: After the recursive call returns (meaning that path segment has been fully explored), *undo* the move:
+                              * Set `visited[newX][newY] = 0` (unmark the cell as visited for *future* paths).
+                              * `path.pop_back()` (remove the last character from `path`).
+              * (The current code structure has the `visited[x][y] = 1` mark and `path.push_back()` inside the `if(isSafe)` block *after* calculating `newX`, `newY`. This means `(0,0)` is not marked as visited initially inside `paths` before its first moves are tried. It implicitly gets marked when the first valid move from (0,0) happens. A more standard way is to mark `x,y` as visited right at the start of `paths` and unmark at the end, before trying any directions, but this code's approach also works by marking *next* cell as visited.)
+    4.  **`searchMaze(arr, n)` Function**:
+          * Initializes a `visited` matrix with all `0`s.
+          * Initializes an empty `answer` vector.
+          * **Important Check**: If the starting cell `arr[0][0]` is blocked (`0`), no path is possible.
+          * Calls the recursive `paths` function starting from `(0,0)` with an empty path string.
+          * Returns the `answer` vector containing all found paths.
+
+### 3\. Complexity Analysis
+
+  * Let `N` be the size of the maze (N x N grid).
+  * **Time Complexity**:
+      * In the worst case, the rat might explore every possible path. Since each cell can be visited (or not) and each path can have up to `N*N` cells, and there are 4 choices at each step, the theoretical upper bound can be exponential `O(4^(N*N))`.
+      * However, because `visited` array prevents revisiting cells within a *single path*, the actual complexity is significantly less. It's closer to the number of valid paths multiplied by the length of the path.
+      * A tighter bound for similar problems can be `O(3^(N^2))` or `O(2^(N^2))`, but for typical mazes, it is much faster. It effectively explores a tree of paths.
+  * **Space Complexity**: `O(N*N)`
+      * `visited` matrix: `O(N*N)`.
+      * Recursion stack depth: `O(N*N)` (maximum path length).
+      * `answer` vector: `O(P * L)` where `P` is the number of valid paths and `L` is the maximum path length. This can also be exponential in the worst case (e.g., a completely open maze).
+
+### 4\. Key Concepts
+
+  * **Backtracking**: A general algorithm for finding all (or some) solutions to computational problems, especially constraint satisfaction problems. It incrementally builds candidates to the solutions, and abandons a candidate ("backtracks") as soon as it determines that the candidate cannot possibly be completed to a valid solution.
+  * **Depth-First Search (DFS)**: Backtracking is often implemented using DFS. We explore one path to its fullest extent before trying alternative branches.
+  * **State Space Tree**: The set of all possible paths that the rat can take can be visualized as a tree, where nodes are states (rat's position, current path, visited cells) and edges are moves. Backtracking explores this tree.
+
+-----
+
+

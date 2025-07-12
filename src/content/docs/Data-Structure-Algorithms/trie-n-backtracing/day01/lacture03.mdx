@@ -3,110 +3,224 @@ title: Longest Common Prefix By Tries
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, string.
+using namespace std;     // Use the standard namespace.
 
+// Class representing a single node in the Trie.
 class TrieNode {
-    public:
-        char data;
-        TrieNode* children[26];
-        bool isTerminal;
-        int childCount;
+public:
+    char data; // The character stored in this node.
+    // An array of pointers to child TrieNodes. Size 26 for 'a' through 'z'.
+    TrieNode* children[26];
+    bool isTerminal; // True if a word ends at this node.
+    int childCount;  // NEW: Stores the number of actual children this node has.
 
-        TrieNode(char data) {
-            this->data = data;
-            this->isTerminal = false;
-            this->childCount = 0;
+    // Constructor for TrieNode.
+    TrieNode(char data) {
+        this->data = data;
+        this->isTerminal = false; // Initially, no word ends here.
+        this->childCount = 0;     // Initially, no children.
 
-            for(int i=0; i<26; i++) {
-                this->children[i] = NULL;
-            }
+        // Initialize all child pointers to NULL.
+        for(int i = 0; i < 26; i++) {
+            this->children[i] = NULL;
         }
+    }
+    // Note: For a complete Trie implementation, a destructor would be needed
+    // to recursively delete child nodes to prevent memory leaks.
 };
 
+// Class representing the Trie data structure.
 class Trie {
-    public:
-        TrieNode* root;
+public:
+    TrieNode* root; // The root node of the Trie.
 
-        Trie() {
-            root = new TrieNode('\0');
-        }
-
-        void insertUtil(TrieNode* root, string word) {
-            if(word.length() == 0) {
-                root->isTerminal = true;
-                return;
-            }
-
-            // Assuming the string is in lowercase
-            int index = word[0] - 'a';
-            TrieNode* child;
-
-            if(root->children[index] == NULL) { 
-                child = new TrieNode(word[0]);
-                root->childCount++;
-                root->children[index] = child;
-            } else {
-                child = root->children[index];
-            }
-
-            insertUtil(child, word.substr(1));
-        }
-
-        void insertNode(string word) {
-            insertUtil(root, word);
-        }
-};
-
-string longestCommonPrefix(vector<string> str) {
-    string ans = "";
-    Trie* t = new Trie();
-
-    // insert all strings in trie;
-    for(int i=0; i<str.size(); i++) {
-        t->insertNode(str[i]);
+    // Constructor for Trie. Initializes the root node with a null character.
+    Trie() {
+        root = new TrieNode('\0');
     }
 
-    TrieNode* temp = t->root;
+    // --- Insertion Logic ---
+    // Private recursive helper function for inserting a word.
+    // 'root': Current node being processed.
+    // 'word': The remaining part of the word to insert.
+    void insertUtil(TrieNode* root, string word) {
+        // Base case: If the word is empty, we've inserted all its characters.
+        if(word.length() == 0) {
+            root->isTerminal = true; // Mark this node as the end of a word.
+            return;
+        }
 
-    for(int i=0; i<str[0].length(); i++) {
+        // Assumption: Word contains only lowercase English letters ('a' through 'z').
+        int index = word[0] - 'a'; // Calculate the index for the current character.
+        TrieNode* child;
+
+        // Check if the child node for the current character already exists.
+        if(root->children[index] == NULL) {
+            // Character is absent. Create a new TrieNode for it.
+            child = new TrieNode(word[0]);
+            root->childCount++;          // Increment childCount as a new child is added.
+            root->children[index] = child; // Link the new child node.
+        } else {
+            // Character is already present in the Trie path.
+            child = root->children[index];
+        }
+
+        // Recursive call: Process the rest of the word from the child node.
+        insertUtil(child, word.substr(1));
+    }
+
+    // Public method to insert a word.
+    void insertNode(string word) {
+        insertUtil(root, word);
+    }
+
+    // Other Trie operations (search, delete) are typically part of a full Trie class,
+    // but not strictly needed for this specific LCP problem.
+};
+
+// Function to find the longest common prefix among a vector of strings using a Trie.
+// 'str': A vector of strings.
+// Time Complexity: O(N * L_avg + L_min), where N is number of strings, L_avg is average length, L_min is LCP length.
+// Space Complexity: O(Sum of lengths of all strings) in worst case (for Trie storage).
+string longestCommonPrefix(vector<string> str) {
+    string ans = ""; // String to store the longest common prefix.
+
+    // Edge case: If the input vector is empty, there's no common prefix.
+    if (str.empty()) {
+        return ans; // Returns ""
+    }
+
+    // Create a Trie and insert all strings into it.
+    Trie* t = new Trie();
+    for(int i = 0; i < str.size(); i++) {
+        t->insertNode(str[i]); // Inserting each string.
+    }
+
+    // Traverse the Trie to find the LCP.
+    TrieNode* temp = t->root; // Start from the root.
+
+    // Iterate through the characters of the first string.
+    // The LCP must be a prefix of the first string.
+    for(int i = 0; i < str[0].length(); i++) {
+        // Condition 1: Check if the current node has exactly one child.
+        // If it does, it means all strings that passed through this path share this next character.
         if(temp->childCount == 1) {
-            ans.push_back(str[0][i]);
+            ans.push_back(str[0][i]); // Append the current character to LCP.
 
+            // Move to the next node in the Trie based on the current character.
             int index = str[0][i] - 'a';
             temp = temp->children[index];
         } else {
+            // If childCount is not 1 (either 0 or >1), it means:
+            // 1. No more common characters (childCount = 0).
+            // 2. Strings diverge (childCount > 1).
+            // In either case, the common prefix ends here.
             break;
         }
 
+        // Condition 2: Check if the current node is a terminal node.
+        // If it is, it means a complete word ends at this point.
+        // The LCP cannot extend beyond a word boundary that is a part of the common prefix.
         if(temp->isTerminal) {
             break;
         }
     }
 
-    return ans;
+    // Deallocate the Trie to prevent memory leaks.
+    // A proper destructor in Trie class would handle this recursively.
+    // For simplicity in competitive programming, sometimes omitted if program terminates.
+    // delete t;
+
+    return ans; // Return the longest common prefix found.
 }
 
 int main() {
-    vector<string> str;
+    vector<string> str; // Declare a vector to store input strings.
 
-    cout << "Enter the strings (-1 to stop) : ";
-    while(1) {
+    cout << "Enter the strings (enter -1 to stop) : ";
+    // Loop to read strings until "-1" is entered.
+    while(true) {
         string temp;
-        cin >> temp;
-        
+        cin >> temp; // Read a string.
+
         if(temp == "-1") {
-            break;
+            break; // Stop reading if "-1" is entered.
         }
 
-        str.push_back(temp);
+        str.push_back(temp); // Add the string to the vector.
     }
 
+    // Call the function to find the longest common prefix using Trie.
     string ans = longestCommonPrefix(str);
 
+    // Print the result.
     cout << "Longest common prefix : " << ans << endl;
 
-    return 0; 
+    return 0; // Indicate successful execution.
 }
 ```
+
+
+### 1\. Problem Statement
+
+  * **Goal**: Given a vector of strings, find the longest string that is a prefix of all strings in the vector.
+
+### 2\. Approach: Trie Data Structure
+
+  * **Core Idea**: Insert all the given strings into a Trie. The longest common prefix will correspond to the longest path from the Trie's root where every node on that path has:
+      * Exactly one child.
+      * Is not marked as a terminal node (meaning a complete word ends there), unless it's the actual LCP itself. (The code handles this by breaking if it *is* a terminal node, as the LCP can't extend past a full word that forms the common prefix).
+  * **TrieNode Enhancement**: To efficiently check the "exactly one child" condition, each `TrieNode` needs an additional field:
+      * `int childCount`: Stores the number of active children (non-NULL pointers) for that node. This is incremented when a new child is created and linked.
+
+### 3\. Algorithm Steps
+
+1.  **Build Trie**:
+      * Create an empty `Trie`.
+      * Iterate through each string in the input `vector<string>`.
+      * For each string, insert it into the Trie using the `insertNode` method.
+      * Ensure that during insertion, the `childCount` of a node is incremented *only* when a `new TrieNode` is created for a character.
+2.  **Find LCP**:
+      * Initialize an empty string `ans`.
+      * Start traversing from the `root` of the Trie (`TrieNode* temp = t->root;`).
+      * Iterate through the characters of the *first string* (`str[0]`). This string serves as a reference path, as the LCP must be a prefix of it.
+      * For each character `str[0][i]` at index `i`:
+          * **Check `childCount`**: If `temp->childCount == 1`:
+              * This means all strings currently sharing this path continue with the same character.
+              * Append `str[0][i]` to `ans`.
+              * Move `temp` to its *only* child node corresponding to `str[0][i]`.
+          * **Else (`childCount != 1`)**:
+              * This means either there are multiple branches (strings diverge) or no further children (end of common path). Break the loop.
+          * **Check `isTerminal`**: After updating `ans` and moving `temp` to the child node, check `if (temp->isTerminal)`.
+              * If `temp->isTerminal` is `true`, it means a complete word ends at this point. The LCP cannot extend beyond a word boundary that is a part of the common prefix. Break the loop. (e.g., if "apple", "app", "apricot" are inserted, the LCP is "ap". When 'p' of "app" is reached, `isTerminal` is true. We break).
+      * Return the accumulated `ans` string.
+
+### 4\. Complexity Analysis
+
+  * Let `N` be the number of strings.
+
+  * Let `L_avg` be the average length of the strings.
+
+  * Let `L_min` be the length of the shortest string.
+
+  * **Time Complexity**: `O(N * L_avg)`
+
+      * **Building the Trie**: Inserting `N` strings, each of average length `L_avg`, takes `O(N * L_avg)` time because each character insertion is `O(1)`.
+      * **Finding LCP**: Traversing the Trie to find the LCP takes `O(L_min)` time, as we only traverse down the common path.
+      * **Total**: The dominant factor is building the Trie, so overall `O(N * L_avg)`.
+
+  * **Space Complexity**: `O(Total_Characters_in_All_Words)` or `O(Sum_of_Lengths_of_All_Strings)` in the worst case (if strings have no common prefixes, e.g., "a", "b", "c").
+
+      * In the best case (all strings are identical), it's `O(L_max)`.
+
+### 5\. Edge Cases
+
+  * **Empty input array**: The code should handle `str.empty()` at the start of `longestCommonPrefix` to avoid accessing `str[0]`.
+  * **Strings with no common prefix**: The `childCount == 1` condition will likely fail immediately at the root's first child, returning `""`.
+  * **All strings are empty**: The LCP will correctly be `""`.
+
+-----
+
+

@@ -3,42 +3,50 @@ title: Adjacency List
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list.
+using namespace std;     // Use the standard namespace.
 
+// Class to represent a Graph.
 class Graph {
-    public:
-        unordered_map<int, list<int> > adj;
+public:
+    // Adjacency list representation:
+    // An unordered_map where the key is a vertex (int) and the value is a list of its neighbors (list<int>).
+    unordered_map<int, list<int>> adj;
 
-        void addEdge(int u, int v, bool direction) {
-            // direction = false -> undirected graph
-            // direction = true -> directed graph
+    // Function to add an edge between two vertices.
+    // 'u', 'v': The two vertices forming the edge.
+    // 'direction': false for undirected graph (edge u-v and v-u), true for directed graph (edge u->v only).
+    void addEdge(int u, int v, bool direction) {
+        // Create an edge from u to v.
+        // This adds 'v' to the adjacency list of 'u'.
+        adj[u].push_back(v);
 
-            // create an edge from u to v
-            adj[u].push_back(v);
-
-            if(direction == false) {
-                adj[v].push_back(u);
-            }
+        // If the graph is undirected, also add an edge from v to u.
+        if(direction == false) {
+            adj[v].push_back(u);
         }
+    }
 
-        void printAdjList(){
-            for(auto i : adj) {
-                cout << i.first << " -> ";
+    // Function to print the adjacency list of the graph.
+    void printAdjList(){
+        // Iterate through each key-value pair in the adjacency map.
+        // 'i.first' is the vertex, 'i.second' is its list of neighbors.
+        for(auto i : adj) {
+            cout << i.first << " -> "; // Print the current vertex.
 
-                for(auto j : i.second) {
-                    cout << j << " ";
-                }
-
-                cout << endl;
+            // Iterate through the list of neighbors for the current vertex.
+            for(auto j : i.second) {
+                cout << j << " "; // Print each neighbor.
             }
+            cout << endl; // Move to the next line for the next vertex.
         }
+    }
 };
 
 int main() {
-
-    int n, m;
+    int n; // Number of nodes (vertices).
+    int m; // Number of edges.
 
     cout << "Enter the number of nodes : ";
     cin >> n;
@@ -46,18 +54,79 @@ int main() {
     cout << "Enter the number of edges : ";
     cin >> m;
 
+    Graph G; // Create an instance of the Graph class.
 
-    Graph G;
-
-    for(int i=0; i<m; i++) {
+    // Loop to read 'm' edges from user input.
+    cout << "Enter edges (u v):" << endl;
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        G.addEdge(u, v, 0);
+        cin >> u >> v;       // Read the two vertices forming an edge.
+        G.addEdge(u, v, 0); // Add the edge to the graph. '0' indicates an undirected graph.
     }
 
-    // Printing graph
+    // Printing the constructed graph's adjacency list.
+    cout << "\nAdjacency List:" << endl;
     G.printAdjList();
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
 ```
+
+### 1\. What is a Graph?
+
+  * A **Graph** is a non-linear data structure consisting of a set of **vertices** (or nodes) and a set of **edges** (connections between vertices).
+  * **Vertices (Nodes)**: The individual entities in the graph.
+  * **Edges**: The links or connections between pairs of vertices.
+
+### 2\. Types of Graphs
+
+  * **Undirected Graph**: Edges have no direction (if `u` is connected to `v`, `v` is also connected to `u`).
+  * **Directed Graph (Di-graph)**: Edges have a direction (if there's an edge from `u` to `v`, it doesn't necessarily mean there's an edge from `v` to `u`).
+  * **Weighted Graph**: Edges have associated values (weights), representing costs, distances, etc. (Not implemented in this code).
+  * **Unweighted Graph**: Edges have no associated values. (Implemented in this code).
+
+### 3\. Graph Representations
+
+There are several ways to represent a graph:
+
+  * **Adjacency Matrix**: A 2D array `matrix[N][N]` where `matrix[i][j] = 1` if an edge exists between `i` and `j`, else `0`.
+      * **Pros**: Fast `O(1)` check for edge existence.
+      * **Cons**: Space `O(N^2)`, even for sparse graphs (many vertices, few edges).
+  * **Adjacency List**: An array or hash map where each index/key represents a vertex, and its value is a list of its neighbors.
+      * **Pros**: Space `O(V + E)` (Vertices + Edges), efficient for sparse graphs.
+      * **Cons**: `O(degree(V))` to check if an edge exists (need to iterate neighbors).
+  * **Edge List**: Simply a list of all edges, where each edge is a pair `(u, v)`.
+
+### 4\. Adjacency List Implementation (in provided code)
+
+  * **Data Structure**: An `unordered_map<int, list<int>> adj` is used.
+      * `int`: Represents a vertex (node ID).
+      * `list<int>`: Represents the list of adjacent vertices (neighbors) for that key vertex. `std::list` is a doubly-linked list, `std::vector` or `std::set` could also be used depending on specific needs (e.g., `vector` for better cache locality, `set` for sorted unique neighbors). `unordered_map` is good because node IDs don't have to be contiguous.
+  * **`addEdge(int u, int v, bool direction)`**:
+      * Adds an edge between `u` and `v`.
+      * If `direction == false` (undirected), it adds `v` to `u`'s list and `u` to `v`'s list.
+      * If `direction == true` (directed), it only adds `v` to `u`'s list.
+  * **`printAdjList()`**: Iterates through the `adj` map and prints each vertex along with its list of neighbors.
+
+### 5\. Time and Space Complexity of Adjacency List
+
+  * **Space Complexity**: `O(V + E)` where `V` is the number of vertices and `E` is the number of edges. This is because each vertex is stored once in the map, and each edge is stored once (for directed) or twice (for undirected) across all lists.
+  * **Time Complexity**:
+      * `addEdge()`: `O(1)` on average (for `unordered_map::operator[]` and `list::push_back`).
+      * `printAdjList()`: `O(V + E)` because it visits each vertex and each edge once.
+
+### 6\. Common Graph Algorithms (Building Blocks)
+
+Once a graph is represented, common algorithms can be applied:
+
+  * **Traversal**:
+      * **Breadth-First Search (BFS)**: Explores layer by layer. Uses a queue.
+      * **Depth-First Search (DFS)**: Explores as far as possible along each branch before backtracking. Uses recursion or a stack.
+  * **Pathfinding**: Dijkstra's, A\*, Bellman-Ford.
+  * **Connectivity**: Connected components, strongly connected components.
+  * **Minimum Spanning Tree**: Prim's, Kruskal's.
+  * **Topological Sort**: For DAGs (Directed Acyclic Graphs).
+
+-----
+
+

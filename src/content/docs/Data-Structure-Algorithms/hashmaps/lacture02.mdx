@@ -3,41 +3,95 @@ title: Maximum Frequency Number
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, unordered_map, limits.
+using namespace std;     // Use the standard namespace.
 
+// Function to find the element with the maximum frequency in an array.
+// 'arr': The input vector of integers.
+// 'n': The size of the array.
+// Time Complexity: O(N) on average.
+// Space Complexity: O(D) where D is the number of distinct elements.
 int maximumFrequency(vector<int> arr, int n) {
+    // Declare an unordered_map to store frequencies of elements.
+    // Key: element value, Value: its frequency (count).
     unordered_map<int, int> M;
 
-    int maxi = INT_MIN;
+    // Initialize 'maxi' to track the maximum frequency encountered so far.
+    int maxi = INT_MIN; // Use minimum possible integer value as starting point.
 
-    for(int i=0; i<n; i++) {
-        M[arr[i]]++;
-        maxi = max(maxi, M[arr[i]]);
+    // Step 1: Count frequencies of all elements and find the maximum frequency.
+    // This loop iterates through the array once.
+    for(int i = 0; i < n; i++) {
+        M[arr[i]]++; // Increment the count for the current element in the map.
+                     // If arr[i] is not in map, it's inserted with value 0, then incremented to 1.
+        maxi = max(maxi, M[arr[i]]); // Update 'maxi' if the current element's frequency is higher.
     }
 
-    for(int i=0; i<n; i++) {
+    // Step 2: Find the first element that has the maximum frequency.
+    // Iterate through the array again to maintain the original order for tie-breaking.
+    for(int i = 0; i < n; i++) {
+        // If the frequency of the current element matches the maximum frequency found,
+        // this element is our answer (as we are iterating from the beginning).
         if(M[arr[i]] == maxi) {
-            return arr[i];
+            return arr[i]; // Return the element and exit the function.
         }
     }
+    // This line should theoretically not be reached if n > 0, as there will always be a max frequency element.
+    // Added for completeness or if array could be empty.
+    return -1; // Should not happen for non-empty array as per problem logic.
 }
 
 int main() {
-    vector<int> arr;
+    vector<int> arr; // Declare a vector to store input elements.
 
-    cout << "Enter the elements of arr (-1 to stop) : ";
+    cout << "Enter the elements of array (enter -1 to stop) : ";
     int data;
     cin >> data;
+    // Read elements until -1 is entered.
     while(data != -1) {
-        arr.push_back(data);
-        cin >> data;
+        arr.push_back(data); // Add element to the vector.
+        cin >> data;         // Read next element.
     }
 
+    // Call the function to find the element with maximum frequency.
     int ans = maximumFrequency(arr, arr.size());
 
-    cout << "Elemnet with maximum frequency : " << ans << endl;
-    return 0;
+    // Print the result.
+    cout << "Element with maximum frequency : " << ans << endl;
+    
+    return 0; // Indicate successful execution.
 }
 ```
+
+
+### 1\. Problem Statement
+
+  * **Goal**: Given an array of integers, find the element that appears most frequently (has the highest count).
+  * **Tie-breaking**: If multiple elements have the same maximum frequency, the code returns the *first one encountered* in the original array order.
+
+### 2\. Approach: Hashing (using `std::unordered_map`)
+
+  * **Core Idea**: An `unordered_map` (hash map) is perfect for efficiently storing and retrieving counts (frequencies) of elements.
+  * **How it works**:
+    1.  **Frequency Counting Pass**: Iterate through the input array. For each element, use it as a key in the `unordered_map` and increment its corresponding value (which represents its frequency/count). During this pass, also keep track of the highest frequency encountered so far (`maxi`).
+    2.  **Result Retrieval Pass**: After counting all frequencies, iterate through the input array *again*. The first element you encounter whose frequency (looked up in the `unordered_map`) matches the `maxi` (highest frequency) is your answer. This second pass handles the tie-breaking rule (returns the element that appeared earliest in the array).
+
+### 3\. Why `std::unordered_map`?
+
+  * **Efficiency**: `unordered_map` provides average `O(1)` time complexity for insertion, deletion, and lookup operations. This makes it extremely fast for counting frequencies.
+  * **No Ordering Needed**: For frequency counting, the order of elements doesn't matter, so an `unordered_map` (which doesn't guarantee order) is suitable and typically faster than `std::map` (which maintains sorted order, `O(log N)` operations).
+
+### 4\. Complexity Analysis
+
+  * Let `N` be the total number of elements in the input array.
+  * Let `D` be the number of distinct elements in the array (`D <= N`).
+  * **Time Complexity**: `O(N)` on average.
+      * **First loop (Counting Frequencies)**: Iterates `N` times. Each operation (`arr[i]++` or `max`) on `unordered_map` is `O(1)` on average. Total: `O(N)`.
+      * **Second loop (Finding Max Element)**: Iterates `N` times. Each lookup (`M[arr[i]]`) is `O(1)` on average. Total: `O(N)`.
+      * **Overall**: `O(N)` average case. (Worst case for `unordered_map` operations due to hash collisions can degrade to `O(N)`, leading to `O(N^2)` overall, but this is rare in practice with good hash functions).
+  * **Space Complexity**: `O(D)`
+      * The `unordered_map` stores an entry for each *distinct* element in the array. In the worst case (all elements are distinct), `D = N`, so space is `O(N)`.
+
+-----
+

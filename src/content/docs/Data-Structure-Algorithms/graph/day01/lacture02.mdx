@@ -3,44 +3,51 @@ title: Adjacency List General
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list.
+using namespace std;     // Use the standard namespace.
 
+// Declare a template for the Graph class.
+// 'T' is a placeholder for any data type that will represent the vertices (nodes).
 template <typename T>
-
 class Graph {
-    public:
-        unordered_map<T, list<T> > adj;
+public:
+    // Adjacency list representation using an unordered_map.
+    // Keys are vertices of type T, values are lists of adjacent vertices (also of type T).
+    unordered_map<T, list<T>> adj;
 
-        void addEdge(T u, T v, bool direction) {
-            // direction = false -> undirected graph
-            // direction = true -> directed graph
+    // Function to add an edge between two vertices (u, v).
+    // 'u', 'v': The vertices of type T.
+    // 'direction': false for undirected graph, true for directed graph.
+    void addEdge(T u, T v, bool direction) {
+        // Create an edge from u to v: add v to u's adjacency list.
+        adj[u].push_back(v);
 
-            // create an edge from u to v
-            adj[u].push_back(v);
-
-            if(direction == false) {
-                adj[v].push_back(u);
-            }
+        // If the graph is undirected, also add an edge from v to u.
+        if(direction == false) {
+            adj[v].push_back(u);
         }
+    }
 
-        void printAdjList(){
-            for(auto i : adj) {
-                cout << i.first << " -> ";
+    // Function to print the adjacency list of the graph.
+    void printAdjList(){
+        // Iterate through each key-value pair in the adjacency map.
+        // 'i.first' is the vertex, 'i.second' is its list of neighbors.
+        for(auto i : adj) {
+            cout << i.first << " -> "; // Print the current vertex.
 
-                for(auto j : i.second) {
-                    cout << j << " ";
-                }
-
-                cout << endl;
+            // Iterate through the list of neighbors for the current vertex.
+            for(auto j : i.second) {
+                cout << j << " "; // Print each neighbor.
             }
+            cout << endl; // Move to the next line for the next vertex.
         }
+    }
 };
 
 int main() {
-
-    int n, m;
+    int n; // Number of nodes (vertices).
+    int m; // Number of edges.
 
     cout << "Enter the number of nodes : ";
     cin >> n;
@@ -48,18 +55,65 @@ int main() {
     cout << "Enter the number of edges : ";
     cin >> m;
 
-
+    // Create an instance of the Graph class, specifying 'int' as the type for vertices.
     Graph<int> G;
 
-    for(int i=0; i<m; i++) {
+    // Loop to read 'm' edges from user input.
+    cout << "Enter edges (u v):" << endl;
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        G.addEdge(u, v, 0);
+        cin >> u >> v;       // Read the two vertices (as integers).
+        G.addEdge(u, v, 0); // Add the edge to the graph. '0' indicates an undirected graph.
     }
 
-    // Printing graph
+    // Printing the constructed graph's adjacency list.
+    cout << "\nAdjacency List:" << endl;
     G.printAdjList();
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
 ```
+
+
+### 1\. What is a Generic Graph?
+
+  * A **generic graph** allows vertices (nodes) to be represented by data types other than just integers (e.g., characters, strings, custom objects).
+  * This is achieved using C++ **templates**, making the `Graph` class reusable for various node types.
+
+### 2\. Adjacency List Representation (Templated)
+
+  * **Data Structure**: `unordered_map<T, list<T>> adj`
+      * `T`: This is a template type parameter, meaning `T` can be any data type (e.g., `int`, `char`, `string`, etc.) that supports hashing (for `unordered_map`) and comparison.
+      * `unordered_map`: Maps a vertex of type `T` to a list of its neighbors (also of type `T`).
+      * `list<T>`: Represents the list of adjacent vertices for a given key vertex. `std::vector<T>` or `std::set<T>` could also be used, depending on requirements (e.g., `vector` for better cache locality, `set` for sorted unique neighbors, `list` for efficient insertions/deletions anywhere).
+
+### 3\. Key Functions & Enhancements
+
+  * **`template <typename T>`**: This syntax declares that the `Graph` class (and its methods) will operate on a generic type `T`.
+  * **`addEdge(T u, T v, bool direction)`**:
+      * Adds an edge between vertices `u` and `v`.
+      * `u`, `v` are now of type `T`, allowing for flexible node naming.
+      * `direction`: `false` for undirected (adds `u-v` and `v-u`), `true` for directed (adds `u->v` only).
+  * **`printAdjList()`**: Iterates through the `adj` map and prints each vertex (`i.first`) and its list of neighbors (`i.second`). The `cout` statements will automatically adapt to the type `T` if `operator<<` is defined for `T`.
+
+### 4\. Time and Space Complexity (Same as non-templated)
+
+  * **Space Complexity**: `O(V + E)` where `V` is the number of vertices and `E` is the number of edges. This holds true as the underlying structure (`unordered_map` and `list`) scales with the number of vertices and edges, regardless of their data type (assuming `T` has constant-time copy/move).
+  * **Time Complexity**:
+      * `addEdge()`: `O(1)` on average (for `unordered_map::operator[]` and `list::push_back`).
+      * `printAdjList()`: `O(V + E)` because it visits each vertex and each edge once.
+
+### 5\. Benefits of Using Templates
+
+  * **Reusability**: The same `Graph` class can be used for graphs where nodes are `int`, `char`, `string`, or even complex custom objects, without writing separate code for each type.
+  * **Type Safety**: The compiler ensures type correctness at compile time.
+  * **Flexibility**: Adapts to different problem requirements that might use non-integer node identifiers.
+
+### 6\. Usage in `main()`
+
+  * **`Graph<int> G;`**: When using the templated `Graph` class, you must specify the actual type for `T` inside angle brackets (e.g., `<int>`). You could create `Graph<char> G_char;` or `Graph<string> G_string;` if needed.
+  * The rest of the `main` function remains similar to the non-templated version, as the input is still read as integers. If `T` were `char` or `string`, `cin >> u >> v;` would need to read `char` or `string` values.
+
+-----
+
+

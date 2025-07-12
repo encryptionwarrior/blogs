@@ -3,62 +3,138 @@ title: unordered Map
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;    
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, map, string, utility.
+using namespace std;     // Use the standard namespace.
 
 int main() {
-    // Creation
+    // --- Creation of a map ---
+    // Declares a map named 'M' where keys are of type 'string' and values are of type 'int'.
     map<string, int> M;
 
-    // Insertion
+    // --- Insertion of elements ---
 
-    // 1
+    // Method 1: Using std::pair and insert()
+    // Creates a pair and inserts it into the map.
     pair<string, int> pair1 = make_pair("white", 2);
-    M.insert(pair1);
+    M.insert(pair1); // M now: {"white": 2}
 
-    // 2
+    // Method 2: Creating a pair directly in insert()
+    // Another way to create and insert a pair.
     pair<string, int> pair2("black", 3);
-    M.insert(pair2);
+    M.insert(pair2); // M now: {"black": 3, "white": 2} (Keys are sorted, so "black" comes before "white")
 
-    // 3
-    M["red"] = 4;
+    // Method 3: Using array-like subscript operator []
+    // This is often the most concise way. If "red" doesn't exist, it's inserted.
+    // If it exists, its value would be updated.
+    M["red"] = 4; // M now: {"black": 3, "red": 4, "white": 2}
 
-    // Printing
-    cout << "Before updation : white = " << M["white"] << endl;
+    // --- Accessing and Updating Elements ---
 
-    // Updation
-    M["white"] = 10;    
-    cout << "After updation : white = " << M.at("white") << endl;
+    // Accessing an existing element using []
+    cout << "Before updation : white = " << M["white"] << endl; // Output: 2
 
+    // Updation: Using [] to change the value associated with an existing key.
+    M["white"] = 10;
+    cout << "After updation : white = " << M.at("white") << endl; // Output: 10
+    // Using .at() is safer for lookup as it throws std::out_of_range if key not found.
+
+    // Behavior of [] vs .at() for non-existent keys:
+    // The commented line below would throw an std::out_of_range exception because "orange" does not exist.
     // cout << M.at("orange") << endl;
-    cout << M["orange"] << endl;
 
-    // Size
-    cout << "Size : " << M.size() << endl;
+    // Using [] for a non-existent key will *insert* the key with a default-constructed value (0 for int).
+    // This can be a side effect to be aware of.
+    cout << "Value of non-existent key 'orange' using []: " << M["orange"] << endl; // Output: 0 (and inserts {"orange": 0})
+    // M now: {"black": 3, "orange": 0, "red": 4, "white": 10}
 
-    // Check presence
-    cout << M.count("yellow") << endl;
-    cout << M.count("white") << endl;
+    // --- Size of the map ---
+    cout << "Size : " << M.size() << endl; // Output: 4
 
-    // Removal
-    M.erase("white");
-    cout << "Size : " << M.size() << endl;
+    // --- Checking presence of a key ---
+    // .count(key) returns 1 if key exists, 0 otherwise (since keys are unique).
+    cout << "Is 'yellow' present? (0=No, 1=Yes) : " << M.count("yellow") << endl; // Output: 0
+    cout << "Is 'white' present? (0=No, 1=Yes) : " << M.count("white") << endl;   // Output: 1
 
-    // Traversal
+    // --- Removal of elements ---
+    M.erase("white"); // Removes the element with key "white".
+    cout << "Size after erasing 'white' : " << M.size() << endl; // Output: 3
+    // M now: {"black": 3, "orange": 0, "red": 4}
+
+    // --- Traversal (Iterating through the map) ---
+    // Using a range-based for loop (C++11 and later) - very convenient.
+    // Elements are iterated in sorted order of keys.
+    cout << "Elements in map after removal (sorted by key):" << endl;
     for(auto i : M) {
         cout << i.first << " & " << i.second << endl;
     }
-
-    // Iterator
-    /*
-    unordered_map<string, int> :: iterator it = M.begin();
-    while(it != M.end()) {
-        cout << it.first << " , " << it.second << endl;
-        it++;
-    }
+    /* Expected output:
+       black & 3
+       orange & 0
+       red & 4
     */
-    
-    return 0;
+
+    // --- Iterator-based Traversal (Alternative, more traditional way) ---
+    /*
+    // Uncomment this block to see iterator-based traversal.
+    // map<string, int> :: iterator it = M.begin(); // Get an iterator to the first element.
+    // while(it != M.end()) { // Loop until the iterator reaches the end of the map.
+    //     cout << it->first << " , " << it->second << endl; // Access key (first) and value (second) using ->
+    //     it++; // Move to the next element.
+    // }
+    */
+    // Note: The commented code block uses 'unordered_map' iterator type, but 'map' iterators work the same way.
+    // If you uncommented, change `unordered_map<string, int> :: iterator it = M.begin();`
+    // to `map<string, int> :: iterator it = M.begin();`
+
+    return 0; // Indicate successful execution.
 }
 ```
+
+### 1\. What is `std::map`?
+
+  * `std::map` is an **associative container** that stores elements formed by a combination of a `key` value and a `mapped` value (value associated with the key).
+  * **Sorted**: Elements are always stored in a sorted order based on their keys. By default, it uses `std::less` (ascending order).
+  * **Unique Keys**: Each key in a `map` is unique; no two elements can have the same key.
+  * **Implementation**: Typically implemented as a **Self-Balancing Binary Search Tree** (most commonly a Red-Black Tree). This guarantees logarithmic time complexity for most operations.
+
+### 2\. Key Characteristics
+
+  * **Ordered**: Iterating through a `std::map` gives elements in sorted order of keys.
+  * **Logarithmic Complexity**: Insertion, deletion, and lookup operations take `O(log N)` time, where `N` is the number of elements in the map.
+  * **Dynamic Size**: Can grow or shrink as elements are added or removed.
+  * **Memory Overhead**: Due to its tree structure, `map` might have slightly higher memory overhead per element compared to hash-based containers.
+
+### 3\. Common Operations & Their Complexity
+
+  * **Creation**: `map<KeyType, ValueType> myMap;`
+  * **Insertion**:
+      * `myMap.insert({key, value});` or `myMap.insert(std::make_pair(key, value));`
+      * `myMap[key] = value;` (If `key` doesn't exist, it's inserted; if it exists, its value is updated).
+      * **Complexity**: `O(log N)`
+  * **Accessing Elements**:
+      * `myMap[key]`: Returns a reference to the value. **Caution**: If `key` does not exist, it inserts the `key` with a default-constructed value for `ValueType` (e.g., 0 for `int`, empty string for `string`).
+      * `myMap.at(key)`: Returns a reference to the value. **Safer for lookup**: If `key` does not exist, it throws an `std::out_of_range` exception.
+      * **Complexity**: `O(log N)`
+  * **Updating Elements**: `myMap[existing_key] = new_value;` (Same as `[]` insertion, but key already exists).
+      * **Complexity**: `O(log N)`
+  * **Size**: `myMap.size();`
+      * **Complexity**: `O(1)`
+  * **Checking Presence**: `myMap.count(key);`
+      * Returns `1` if the key exists, `0` otherwise (since keys are unique).
+      * Alternatively, `myMap.find(key) != myMap.end();`
+      * **Complexity**: `O(log N)`
+  * **Removal**: `myMap.erase(key);`
+      * **Complexity**: `O(log N)`
+  * **Traversal**:
+      * **Range-based for loop**: `for (auto const& [key, val] : myMap)` (C++17 structured binding) or `for (auto element : myMap)`
+      * **Iterators**: `map<KeyType, ValueType>::iterator it = myMap.begin();` then `while (it != myMap.end()) { /* use it->first and it->second */ it++; }`
+      * **Complexity**: `O(N)` for full traversal.
+
+### 4\. Comparison with `std::unordered_map`
+
+  * `std::map`: Sorted by key, `O(log N)` complexity, uses trees.
+  * `std::unordered_map`: Unsorted (elements stored in arbitrary order), average `O(1)` complexity (worst-case `O(N)` for hash collisions), uses hash tables. Choose based on whether ordering is required and performance needs.
+
+-----
+

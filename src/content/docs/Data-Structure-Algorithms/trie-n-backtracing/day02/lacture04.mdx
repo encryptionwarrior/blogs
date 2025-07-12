@@ -3,63 +3,102 @@ title: N Queens Hashmaps
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, map.
+using namespace std;     // Use the standard namespace.
 
-map<int, bool> rowCheck;
-map<int, bool> upperCheck;
-map<int, bool> lowerCheck;
+// Global maps to keep track of occupied rows and diagonals for O(1) safety checks.
+// Using 'map' for dynamic indexing, though 'vector<bool>' would be slightly faster for fixed N.
+map<int, bool> rowCheck;    // True if a queen is in this row index.
+map<int, bool> upperCheck;  // True if a queen is in the diagonal (row + col) index. (Top-left to Bottom-right)
+map<int, bool> lowerCheck;  // True if a queen is in the diagonal (N + row - col) index. (Top-right to Bottom-left)
+                             // N + row - col shifts the diagonal index to be non-negative and unique.
 
-void addSolution(vector< vector<int> > board, vector< vector<int> > &sol) {
-    vector<int> temp;
-    for(vector<int> x : board) {
-        for(int y : x) {
-            temp.push_back(y);
+// Helper function to add a found solution board configuration to the overall solutions.
+// 'board': The current N x N board with queen placements (1 for queen, 0 for empty).
+// 'sol': The vector of vectors, where each inner vector is a flattened solution board.
+void addSolution(vector<vector<int>> board, vector<vector<int>> &sol) {
+    vector<int> temp; // Temporary 1D vector to store the flattened board.
+    // Iterate through each row of the 2D board.
+    for(vector<int> row_vec : board) {
+        // Iterate through each element (cell) in the current row.
+        for(int cell_val : row_vec) {
+            temp.push_back(cell_val); // Add cell value (0 or 1) to the 1D vector.
         }
     }
-    sol.push_back(temp);
+    sol.push_back(temp); // Add the flattened board configuration to the list of solutions.
 }
 
+// Optimized function to check if placing a queen at (row, col) is safe.
+// It directly queries the global boolean maps/arrays.
+// 'row', 'col': Coordinates where we want to place a queen.
+// 'n': The size of the board (needed for lowerCheck index calculation).
+// Time Complexity: O(1) on average (due to map lookups).
 bool isSafe(int row, int col, int n) {
-    return !(rowCheck[row] == true || lowerCheck[row+col] == true || upperCheck[n+row-col] == true);
+    // Check if the row is already occupied OR
+    // if the upper diagonal (row + col) is occupied OR
+    // if the lower diagonal (N + row - col) is occupied.
+    // If any of these are true, it's NOT safe.
+    return !(rowCheck[row] == true || upperCheck[row + col] == true || lowerCheck[n + row - col] == true);
 }
 
-void solve(int col, vector< vector<int> > &solution, vector< vector<int> > &board, int n) {
-    // Base Case
+// Recursive function to solve the N-Queens problem using backtracking.
+// 'col': The current column where we are trying to place a queen.
+// 'solution': Stores all valid board configurations found (passed by reference).
+// 'board': The current state of the board (passed by reference to allow modification).
+// 'n': The size of the board.
+void solve(int col, vector<vector<int>> &solution, vector<vector<int>> &board, int n) {
+    // Base Case: If all queens are placed (we have successfully placed a queen in column n-1).
     if(col == n) {
-        addSolution(board, solution);
-        return;
+        addSolution(board, solution); // Add the current board configuration to solutions.
+        return;                       // Backtrack to the previous column.
     }
 
+    // Try placing a queen in each row of the current 'col'.
     for(int row = 0; row < n; row++) {
+        // Check if placing a queen at (row, col) is safe using the O(1) check.
         if(isSafe(row, col, n)) {
-            // Setting Queen
+            // If safe, make the move:
+            // 1. Place the queen on the board.
             board[row][col] = 1;
 
-            // Mapping Queen
+            // 2. Update the global checks (mark row and diagonals as occupied).
             rowCheck[row] = true;
-            lowerCheck[row+col] = true;
-            upperCheck[n+row-col] = true;
+            upperCheck[row + col] = true;
+            lowerCheck[n + row - col] = true;
 
-            // Recursive Call
-            solve(col+1, solution, board, n);
+            // Recursive Call: Try to place the next queen in the next column.
+            solve(col + 1, solution, board, n);
 
-            // Backtracking
+            // Backtracking Step: After the recursive call returns (either found solution
+            // or hit a dead end), undo the move:
+            // 1. Unplace the queen from the board.
             board[row][col] = 0;
+            // 2. Reset the global checks (mark row and diagonals as free).
             rowCheck[row] = false;
-            lowerCheck[row+col] = false;
-            upperCheck[n+row-col] = false;
+            upperCheck[row + col] = false;
+            lowerCheck[n + row - col] = false;
         }
     }
 }
 
-vector< vector<int> > nQueens(int n) {
-    vector< vector<int> > solution;
-    vector< vector<int> > board(n, vector<int> (n,0));
+// Main function to initiate the N-Queens problem solution.
+// 'n': The size of the N x N chessboard.
+// Returns a vector of vectors representing all possible N-Queens configurations.
+vector<vector<int>> nQueens(int n) {
+    vector<vector<int>> solution; // Stores all valid N-Queens solutions.
+    // Initialize an N x N board with all 0s (empty cells).
+    vector<vector<int>> board(n, vector<int>(n, 0));
 
+    // Clear global maps at the start to ensure a fresh state for each 'nQueens' call.
+    // (Important if 'nQueens' is called multiple times with different 'n' values)
+    rowCheck.clear();
+    upperCheck.clear();
+    lowerCheck.clear();
+
+    // Start the backtracking process from the first column (col = 0).
     solve(0, solution, board, n);
-    return solution;
+    return solution; // Return all found solutions.
 }
 
 int main() {
@@ -67,16 +106,107 @@ int main() {
     cout << "Enter the value of n : ";
     cin >> n;
 
-    vector< vector<int> > solution = nQueens(n);
-    int i = 0;
+    // Get all N-Queens solutions.
+    vector<vector<int>> solutions = nQueens(n);
+    int i = 0; // Counter for displaying configurations.
 
-    for(vector<int> x : solution) {
-        cout << endl << "Possible Configuration [" << ++i << "] : ";
-        for(int y : x) {
-            cout << y << " ";
+    // Print all found solutions.
+    if (solutions.empty()) {
+        cout << "\nNo possible configurations for n = " << n << endl;
+    } else {
+        for(vector<int> config : solutions) {
+            cout << endl << "Possible Configuration [" << ++i << "] : ";
+            for(int val : config) {
+                cout << val << " "; // Print 0 or 1 for each cell.
+            }
         }
+        cout << endl; // Final newline for clean output.
     }
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
 ```
+
+
+### 1\. Problem Statement
+
+  * **Goal**: Place `N` non-attacking queens on an `N x N` chessboard. A queen can attack horizontally, vertically, and diagonally.
+  * **Output**: Find all distinct configurations of queens. Each configuration is represented as an `N x N` board where `1` indicates a queen and `0` indicates an empty cell.
+  * **Key Constraint**: No two queens can share the same row, column, or diagonal.
+
+### 2\. Approach: Backtracking with `O(1)` Safety Checks
+
+  * **Core Idea**: This is an optimized version of the standard backtracking solution. Instead of iterating through parts of the board to check for conflicts (which is `O(N)` per check), we use auxiliary data structures (hash maps or boolean arrays) to keep track of occupied rows and diagonals. This allows `isSafe` checks to be performed in `O(1)` time.
+  * **Conflict Conditions**:
+      * **Same Row**: A queen at `(r, c)` conflicts with any other queen in `row r`.
+      * **Same Column**: A queen at `(r, c)` conflicts with any other queen in `column c`. (We avoid this by placing only one queen per column).
+      * **Upper-Left to Lower-Right Diagonal**: Cells `(r, c)` on this diagonal have a constant sum of `r + c`.
+      * **Upper-Right to Lower-Left Diagonal**: Cells `(r, c)` on this diagonal have a constant difference of `r - c`. To handle negative differences, we can use `n - 1 + r - c` (or just `r - c` and adjust map/array indexing).
+
+### 3\. Algorithm Steps
+
+1.  **Global/Auxiliary Data Structures**:
+
+      * `map<int, bool> rowCheck`: Maps row index `r` to `true` if `row r` has a queen.
+      * `map<int, bool> upperCheck`: Maps diagonal sum `r + c` to `true` if that upper-left to lower-right diagonal has a queen.
+      * `map<int, bool> lowerCheck`: Maps transformed diagonal difference `n + r - c` (or `r - c` appropriately handled) to `true` if that upper-right to lower-left diagonal has a queen. The code uses `n+row-col` as the key for `lowerCheck` which corresponds to `upper-right to lower-left` diagonals. *Self-correction: The code's `lowerCheck` variable name for `row+col` and `upperCheck` for `n+row-col` might be confusing, but the logic for checking these two distinct diagonal types is correct.*
+          * `row + col`: For diagonals that run from top-left to bottom-right (constant sum).
+          * `row - col`: For diagonals that run from top-right to bottom-left (constant difference). Adding `n-1` to `row - col` can shift indices to be non-negative: `(n - 1) + row - col`. The provided code uses `n + row - col` for this.
+
+2.  **`isSafe(row, col, n)` Function**:
+
+      * Checks if placing a queen at `(row, col)` is safe.
+      * It directly queries the `rowCheck`, `upperCheck`, and `lowerCheck` maps/arrays.
+      * Returns `true` if none of these maps indicate a conflict (`false` if `true` in any).
+      * Complexity: `O(1)` (average for map, strict `O(1)` for array).
+
+3.  **`solve(col, solution, board, n)` (Recursive Backtracking Function)**:
+
+      * **Base Case**: If `col == n`, all `N` queens are placed. Add `board` to `solution` and `return`.
+      * **Recursive Step**:
+          * Iterate through each `row` from `0` to `n-1` in the current `col`.
+          * **Check Safety**: Call `isSafe(row, col, n)`. (Note: `isSafe` no longer needs `board` as a parameter due to global checks).
+          * **If Safe**:
+              * **Make a Move**: Place queen on `board[row][col] = 1`.
+              * **Update Auxiliary Arrays**: Mark `rowCheck[row]`, `upperCheck[row+col]`, and `lowerCheck[n+row-col]` as `true`.
+              * **Recurse**: Call `solve(col + 1, solution, board, n)`.
+              * **Backtrack**:
+                  * Unplace queen on board: `board[row][col] = 0`.
+                  * Reset auxiliary arrays: Mark `rowCheck[row]`, `upperCheck[row+col]`, and `lowerCheck[n+row-col]` as `false`.
+
+4.  **`addSolution(board, sol)` Function**:
+
+      * Same as before: Converts 2D `board` to a flattened 1D `vector<int>` and adds to `sol`.
+
+5.  **`nQueens(int n)` Function**:
+
+      * Initializes `solution` and `board`.
+      * Crucially, **clears the global maps (`rowCheck`, `upperCheck`, `lowerCheck`)** before starting `solve(0, ...)`. This ensures a fresh state for each call to `nQueens`. (The provided code doesn't explicitly clear them; if `nQueens` is called multiple times, this could be an issue. For a single call from `main`, it's fine).
+      * Calls `solve(0, solution, board, n)`.
+      * Returns `solution`.
+
+### 4\. Complexity Analysis
+
+  * Let `N` be the size of the chessboard.
+
+  * **Time Complexity**: `O(N!)` (Theoretically, as it explores valid permutations).
+
+      * The `O(1)` `isSafe` check significantly speeds up the process compared to the `O(N)` version.
+      * The `addSolution` still takes `O(N^2)` time per solution. If `S` is the number of solutions, this adds `O(S * N^2)` to the total.
+      * Overall complexity is dominated by the nature of the problem, which is to find all permutations, hence `O(N!)` with constant factor from checks and board updates.
+
+  * **Space Complexity**: `O(N^2)`
+
+      * `board`: `O(N^2)`.
+      * Recursion stack depth: `O(N)`.
+      * `solution`: `O(S * N^2)` where `S` is the number of solutions.
+      * Auxiliary maps/arrays (`rowCheck`, `upperCheck`, `lowerCheck`): `O(N)` for `rowCheck`, and `O(2*N - 1)` for each diagonal check, totaling `O(N)` auxiliary space.
+
+### 5\. Benefits of Optimization
+
+  * **Significant Speedup**: For larger `N`, the difference between `O(N!)` and `O(N * N!)` is immense.
+  * **Cleaner `isSafe`**: The logic in `isSafe` becomes much simpler and more direct.
+
+-----
+
+

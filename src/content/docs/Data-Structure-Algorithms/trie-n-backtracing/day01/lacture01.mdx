@@ -3,183 +3,311 @@ title: Trie Intro
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, string, vector (for char array), etc.
+using namespace std;     // Use the standard namespace.
 
+// Class representing a single node in the Trie.
 class TrieNode {
-    public:
-        char data;
-        TrieNode* children[26];
-        bool isTerminal;
+public:
+    char data; // The character stored in this node.
+    // An array of pointers to child TrieNodes. Size 26 for 'A' through 'Z'.
+    TrieNode* children[26];
+    bool isTerminal; // True if a word ends at this node.
 
-        TrieNode(char ch) {
-            this->data = ch;
-            this->isTerminal = false;
+    // Constructor for TrieNode.
+    TrieNode(char ch) {
+        this->data = ch;
+        this->isTerminal = false; // Initially, no word ends here.
 
-            for(int i=0; i<26; i++) {
-                this->children[i] = NULL;
-            }
+        // Initialize all child pointers to NULL.
+        for(int i = 0; i < 26; i++) {
+            this->children[i] = NULL;
         }
+    }
+    // Note: For production code, a destructor would be needed to recursively delete children
+    // to prevent memory leaks when the Trie itself is destroyed.
 };
 
+// Class representing the Trie data structure.
 class Trie {
-    public :
-        TrieNode* root;
+public:
+    TrieNode* root; // The root node of the Trie.
 
-        Trie() {
-            root = new TrieNode('\0');
+    // Constructor for Trie. Initializes the root node with a null character.
+    Trie() {
+        root = new TrieNode('\0');
+    }
+
+    // --- Insertion Logic ---
+    // Private helper function for inserting a word into the Trie.
+    // 'root': Current node being processed (starts from the main Trie root).
+    // 'word': The remaining part of the word to insert.
+    void insertUtil(TrieNode* root, string word) {
+        // Base case: If the word becomes empty, we've inserted all its characters.
+        if(word.length() == 0) {
+            root->isTerminal = true; // Mark this node as the end of a word.
+            return;
         }
 
-        void insertUtil(TrieNode* &root, string word) {
-            if(word.length() == 0) {
-                root->isTerminal = true;
-                return;
-            }
+        // Assumption: Word contains only uppercase English letters ('A' through 'Z').
+        int index = word[0] - 'A'; // Calculate the index for the current character.
+        TrieNode* child;
 
-            // Assumption : Word will be in CAPS
-            int index = word[0] - 'A';
-            TrieNode* child;
+        // Check if the child node for the current character already exists.
+        if(root->children[index] != NULL) {
+            // Character is already present in the Trie path.
+            child = root->children[index];
+        } else {
+            // Character is absent. Create a new TrieNode for it.
+            child = new TrieNode(word[0]);
+            root->children[index] = child; // Link the new child node.
+        }
 
-            if(root->children[index] != NULL) {
-                // Character Present
-                child = root->children[index];
+        // Recursive call: Process the rest of the word from the child node.
+        insertUtil(child, word.substr(1));
+    }
+
+    // Public method to insert a word.
+    void insertNode(string word) {
+        insertUtil(root, word);
+    }
+
+    // --- Search Logic ---
+    // Private helper function for searching a word in the Trie.
+    // 'root': Current node being processed.
+    // 'word': The remaining part of the word to search for.
+    bool searchUtil(TrieNode* root, string word) {
+        // Base case: If the word is empty, we've traversed all its characters.
+        // Return true only if this node marks the end of a word.
+        if(word.length() == 0) {
+            return root->isTerminal;
+        }
+
+        // Calculate index for the current character.
+        int index = word[0] - 'A';
+        TrieNode* child;
+
+        // Check if the child node for the current character exists.
+        if(root->children[index] != NULL) {
+            // Character is present, move to the child.
+            child = root->children[index];
+        } else {
+            // Character is absent, meaning the word is not in the Trie.
+            return false;
+        }
+
+        // Recursive call: Continue searching from the child node with the rest of the word.
+        return searchUtil(child, word.substr(1));
+    }
+
+    // Public method to search for a word.
+    bool search(string word) {
+        return searchUtil(root, word);
+    }
+
+    // --- Removal (Logical Deletion) Logic ---
+    // Private helper function to logically remove a word (just marks isTerminal false).
+    // This function doesn't free memory or remove nodes, only unmarks a word.
+    bool removeUtil(TrieNode* root, string word) {
+        // Base case: If the word is empty, we've reached the node for the word.
+        if(word.length() == 0) {
+            if(root->isTerminal) {
+                root->isTerminal = false; // Unmark as terminal. Word is logically removed.
+                return true; // Successfully removed.
             } else {
-                // Character Absent
-                child = new TrieNode(word[0]);
-                root->children[index] = child;
+                return false; // Word path exists, but it was not a terminal word.
             }
-
-            // Recursion
-            insertUtil(child, word.substr(1));
         }
 
-        void insertNode(string word) {
-            insertUtil(root, word);
+        // Calculate index for the current character.
+        int index = word[0] - 'A';
+        TrieNode* child;
+
+        // Check if the child node exists.
+        if(root->children[index] != NULL) {
+            child = root->children[index];
+        } else {
+            // Character path doesn't exist, so the word is not in the Trie.
+            return false;
         }
 
-        bool searchUtil(TrieNode* root, string word) {
-            // Base case
-            if(word.length() == 0) {
-                return root->isTerminal;
-            }
+        // Recursively call removeUtil on the child.
+        return removeUtil(child, word.substr(1));
+    }
 
-            // Finding index through mapping
-            int index = word[0] - 'A';
-            TrieNode* child;
+    // Public method to logically remove a word.
+    bool remove(string word) {
+        return removeUtil(root, word);
+    }
 
-            if(root->children[index] != NULL) {
-                // Present
-                child = root->children[index];
+    // --- Erasure (Physical Deletion) Logic ---
+    // This implementation has a CRITICAL FLAW for actual physical deletion.
+    // It will cause memory corruption and crashes if nodes are shared prefixes of other words.
+    bool eraseUtil(TrieNode* root, string word) {
+        // Base case: Reached the end of the word.
+        if(word.length() == 0) {
+            if(root->isTerminal) {
+                root->isTerminal = false; // Unmark as terminal.
+                // CRITICAL FLAW: Deleting 'root' here is premature.
+                // 'root' could be a prefix for other words or have other children.
+                // A node can only be deleted if it is NOT terminal AND has no other children.
+                // delete root; // This line should be managed carefully by parent.
+                return true; // Word was found and un-marked.
             } else {
-                // Absent
-                return false;
+                return false; // Word path exists, but it was not a terminal word.
             }
-
-            return searchUtil(child, word.substr(1));
         }
 
-        bool search(string word) {
-            return searchUtil(root, word);
+        // Calculate index for the current character.
+        int index = word[0] - 'A';
+        TrieNode* child;
+
+        // Check if the child node exists.
+        if(root->children[index] != NULL) {
+            child = root->children[index];
+        } else {
+            return false; // Word not found.
         }
 
-        bool removeUtil(TrieNode* root, string word) {
-            // Base case
-            if(word.length() == 0) {
-                if(root->isTerminal) {
-                    root->isTerminal = false;
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+        // Recursive call to erase the rest of the word.
+        bool word_deleted = eraseUtil(child, word.substr(1));
 
-            // Finding index through mapping
-            int index = word[0] - 'A';
-            TrieNode* child;
+        // CRITICAL FLAW: 'delete child;' here unconditionally deletes the child
+        // even if it's part of another word's path or has other branches.
+        // Proper deletion requires checking if 'child' has no other children AND is not terminal.
+        // If it's safe to delete, then root->children[index] should be set to NULL.
+        // delete child; // This will cause issues for common prefixes.
 
-            if(root->children[index] != NULL) {
-                // Present
-                child = root->children[index];
-            } else {
-                // Absent
-                return false;
-            }
+        return word_deleted;
+    }
 
-            return removeUtil(child, word.substr(1));
-        }
-
-        bool remove(string word) {
-            return removeUtil(root, word);
-        }
-
-        bool eraseUtil(TrieNode* root, string word) {
-            // Base case
-            if(word.length() == 0) {
-                if(root->isTerminal) {
-                    root->isTerminal = false;
-                    delete root;
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-            // Finding index through mapping
-            int index = word[0] - 'A';
-            TrieNode* child;
-
-            if(root->children[index] != NULL) {
-                // Present
-                child = root->children[index];
-            } else {
-                // Absent
-                return false;
-            }
-
-            bool ans = eraseUtil(child, word.substr(1));
-            delete child;
-            return ans;
-        }
-
-        bool erase(string word) {
-            return eraseUtil(root, word);
-        }
+    // Public method for attempting to physically erase a word.
+    // WARNING: The implementation of eraseUtil has a flaw that can lead to memory errors.
+    bool erase(string word) {
+        return eraseUtil(root, word);
+    }
 };
 
 int main() {
 
-    Trie* T = new Trie();
+    Trie* T = new Trie(); // Create a new Trie object.
 
+    // Insert the word "AKASH".
     T->insertNode("AKASH");
 
+    // Search for "AKASH".
     bool present = T->search("AKASH");
-
     if(present) {
-        cout << "Word is Present!" << endl;
+        cout << "Word is Present!" << endl; // Expected: Word is Present!
     } else {
         cout << "Word is Absent!" << endl;
     }
 
-    T->erase("AKASH");
+    // Logical removal of "AKASH" (sets isTerminal to false).
+    T->remove("AKASH"); // This is the 'logical' removal function.
     present = T->search("AKASH");
-
     if(present) {
         cout << "Word is Present!" << endl;
     } else {
-        cout << "Word is Absent!" << endl;
+        cout << "Word is Absent!" << endl; // Expected: Word is Absent!
     }
 
-    cout << T->root->children[0]->data << endl;
+    // Attempting to access a child after logical removal.
+    // The node for 'A' should still exist if 'AKASH' was the only word.
+    // This line might crash if 'delete child' was used from a faulty physical delete.
+    // With 'remove', it's just logically removed, so nodes still exist.
+    // This line accesses root->children[0] (for 'A') and then its data.
+    cout << "Data of first child of root: " << T->root->children[0]->data << endl; // Expected: A
+
+    // Re-insert "AKASH".
     T->insertNode("AKASH");
     present = T->search("AKASH");
-
     if(present) {
-        cout << "Word is Present!" << endl;
+        cout << "Word is Present!" << endl; // Expected: Word is Present!
     } else {
         cout << "Word is Absent!" << endl;
     }
+
+    // Test the flawed 'erase' function.
+    // If you uncomment and run this with other words, it might crash.
+    // T->insertNode("APPLE");
+    // T->insertNode("APP");
+    // T->erase("APP"); // This will likely delete the node for the second 'P', corrupting "APPLE".
 
     return 0;
 }
 ```
+
+### 1\. What is a Trie?
+
+  * A **Trie** (pronounced "try" or "tree", from *retrieval tree*) is a tree-like data structure used to store a dynamic set of strings or associative array where keys are strings.
+  * **Purpose**: Enables efficient retrieval of strings based on prefixes. Common uses include autocomplete, spell checkers, dictionary implementations, and IP routing.
+  * **Structure**:
+      * Each node in the Trie represents a character.
+      * Edges from a node lead to its children, which represent the next characters in a sequence.
+      * A word is formed by traversing a path from the root.
+      * A special boolean flag (`isTerminal`) at each node indicates if a complete word ends at that node.
+  * **Advantages**:
+      * Faster lookups than hash tables in worst case (no collisions).
+      * Efficient for prefix matching.
+      * Alphabetical ordering of keys is implicit.
+  * **Disadvantages**:
+      * Can consume more memory than hash tables for storing a large number of short strings, especially if the alphabet size is large.
+
+### 2\. `TrieNode` Class
+
+  * **`char data`**: The character this node represents. (Often, the root node stores a null character `'\0'`).
+  * **`TrieNode* children[26]`**: An array of pointers to child nodes. The size `26` is for the English alphabet (A-Z or a-z, depending on conversion logic). `children[i]` points to the node for the `i`-th character. `NULL` means no child exists for that character.
+  * **`bool isTerminal`**: `true` if a word ends at this node; `false` otherwise. This is crucial to distinguish a prefix from a complete word (e.g., "APP" vs "APPLE").
+  * **Constructor**: Initializes `data`, sets `isTerminal` to `false`, and all `children` pointers to `NULL`.
+
+### 3\. `Trie` Class Methods
+
+  * **`Trie()` Constructor**: Initializes the Trie with a `root` node (typically `'\0'`).
+  * **`insertUtil(TrieNode* &root, string word)` (Recursive Helper)**:
+      * **Base Case**: If `word` is empty, it means we've processed all characters. Set `root->isTerminal = true` to mark the end of a valid word.
+      * **Recursive Step**:
+        1.  Determine `index` for `word[0]` (e.g., `word[0] - 'A'` for uppercase).
+        2.  If `root->children[index]` is `NULL`, create a new `TrieNode` for `word[0]` and link it.
+        3.  Recursively call `insertUtil` on this `child` node with the `word.substr(1)` (remaining part).
+  * **`insertNode(string word)`**: Public wrapper for `insertUtil`.
+  * **`searchUtil(TrieNode* root, string word)` (Recursive Helper)**:
+      * **Base Case**: If `word` is empty, return `root->isTerminal`. (If we reached here and this node is terminal, the word exists; otherwise, it's just a prefix).
+      * **Recursive Step**:
+        1.  Determine `index` for `word[0]`.
+        2.  If `root->children[index]` is `NULL`, the character path does not exist. Return `false`.
+        3.  Else, recursively call `searchUtil` on the `child` node with `word.substr(1)`.
+  * **`search(string word)`**: Public wrapper for `searchUtil`.
+  * **`removeUtil(TrieNode* root, string word)` (Logical Deletion)**:
+      * **Base Case**: If `word` is empty, and `root->isTerminal` is true, set `root->isTerminal = false`. This *logically* removes the word without deleting nodes.
+      * **Recursive Step**: Traverse path. If character path doesn't exist, word isn't there.
+  * **`remove(string word)`**: Public wrapper for `removeUtil`.
+  * **`eraseUtil(TrieNode* root, string word)` (Physical Deletion - CRITICAL FLAW IN PROVIDED IMPLEMENTATION)**:
+      * **Intention**: To physically remove nodes that are no longer part of any word.
+      * **Base Case**: If `word` is empty, if `root->isTerminal` is true, set `root->isTerminal = false`. *The provided `delete root;` here is problematic.* You should only delete a node if it's no longer part of any *other* word AND has no other children.
+      * **Recursive Step**:
+          * Traverse to the child.
+          * `bool ans = eraseUtil(child, word.substr(1));` - The return value `ans` here indicates if the word was found and marked non-terminal.
+          * **`delete child;`**: This line is the major flaw. If `child` has other children (meaning it's a prefix for another word like "APP" is for "APPLE"), or if `child` is itself a terminal node for another word, deleting it will corrupt the Trie.
+      * **Correct Physical Deletion Logic (Conceptual)**:
+        1.  Perform a logical removal (`isTerminal = false`).
+        2.  After the recursive call returns, check the `child` node:
+              * Is `child->isTerminal` `false`? (No other word ends here).
+              * Does `child` have *no other children* (i.e., all `children[i]` are `NULL`)?
+              * If both conditions are true, then it's safe to `delete child`.
+              * Also, if a node is deleted, its parent's pointer to it must be set to `NULL`.
+  * **`erase(string word)`**: Public wrapper for `eraseUtil`. **Be cautious using the provided `erase` due to the mentioned flaw.**
+
+### 4\. Complexity Analysis
+
+  * Let `L` be the length of the word being inserted/searched/removed.
+  * Let `A` be the size of the alphabet (e.g., 26 for English letters).
+  * **Insertion**: `O(L)` - We traverse `L` nodes, and each step is `O(1)` (array access).
+  * **Search**: `O(L)` - Similar traversal.
+  * **Removal (`remove` - logical deletion)**: `O(L)` - Similar traversal to find and update `isTerminal`.
+  * **Erasure (`erase` - physical deletion with flawed implementation)**: `O(L)` for traversal, but leads to incorrect behavior and potential crashes. A correctly implemented physical deletion would also be `O(L)`.
+  * **Space Complexity**: `O(Total_Characters_Stored * A)` or `O(Total_Nodes_in_Trie * A)`. In the worst case (no common prefixes), it's `O(Sum_of_Lengths_of_All_Words * A)`.
+
+-----
+
