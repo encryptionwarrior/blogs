@@ -3,67 +3,93 @@ title: Cycle Detection In Undirected Graph Using BFS
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, queue, vector.
+using namespace std;     // Use the standard namespace.
 
-bool isCyclicBFS(unordered_map<int, list<int> > &adjList, unordered_map<int, bool> &visited, int Node) {
+// Function to detect a cycle in an UNDIRECTED graph using BFS.
+// 'adjList': The adjacency list of the graph.
+// 'visited': A map to keep track of globally visited nodes.
+// 'Node': The starting node for the current BFS traversal (component).
+bool isCyclicBFS(unordered_map<int, list<int>> &adjList, unordered_map<int, bool> &visited, int Node) {
+    // 'parent' map stores the parent of each node in the BFS tree.
     unordered_map<int, int> parent;
-    parent[Node] = -1;
-    visited[Node] = true;
+    parent[Node] = -1; // The starting node has no parent.
 
-    queue<int> Q;
-    Q.push(Node);
+    visited[Node] = true; // Mark the starting node as visited.
 
+    queue<int> Q; // Create a queue for BFS.
+    Q.push(Node); // Enqueue the starting node.
+
+    // BFS traversal loop.
     while(!Q.empty()) {
-        int FrontVal = Q.front();
-        Q.pop();
+        int FrontVal = Q.front(); // Get the current node from the front of the queue.
+        Q.pop();                   // Remove it from the queue.
 
-        for(int i : adjList[FrontVal]) {
-            if(visited[i] == true && parent[FrontVal] != i) {
-                return true;
+        // Iterate through all neighbors of the current node.
+        for(int neighbor : adjList[FrontVal]) {
+            // Case 1: Neighbor is already visited.
+            // If the visited neighbor is NOT the parent of the current node, then a cycle is found.
+            // This means we found a path to 'neighbor' that doesn't go through 'FrontVal's parent.
+            if(visited[neighbor] == true && parent[FrontVal] != neighbor) {
+                return true; // Cycle detected!
             }
 
-            if(visited[i] == false) {
-                visited[i] = true;
-                parent[i] = FrontVal;
-                Q.push(i);
+            // Case 2: Neighbor is not visited.
+            // Explore this unvisited neighbor.
+            if(visited[neighbor] == false) {
+                visited[neighbor] = true;     // Mark neighbor as visited.
+                parent[neighbor] = FrontVal; // Set current node as neighbor's parent.
+                Q.push(neighbor);             // Enqueue the neighbor for further exploration.
             }
         }
     }
 
-    return false;
+    return false; // No cycle found in this connected component.
 }
 
-string cycleDetection(vector<vector<int> > &edges, int n, int m) {
-    unordered_map<int, list<int> > adjList;
+// Main function to check for cycles in an undirected graph.
+// 'edges': A vector of vectors representing the graph edges (e.g., {{u,v}, {x,y}}).
+// 'n': Total number of nodes.
+// 'm': Total number of edges.
+// Returns "YES" if a cycle is detected, "NO" otherwise.
+string cycleDetection(vector<vector<int>> &edges, int n, int m) {
+    // Adjacency list to represent the graph.
+    unordered_map<int, list<int>> adjList;
+    // Map to keep track of visited nodes across all components.
     unordered_map<int, bool> visited;
 
-    // Creating Adjacency List
-    for(int i=0; i<m; i++) {
+    // Create Adjacency List from the input edges (for undirected graph).
+    for(int i = 0; i < m; i++) {
         int u = edges[i][0];
         int v = edges[i][1];
 
         adjList[u].push_back(v);
-        adjList[v].push_back(u);
+        adjList[v].push_back(u); // Add edge in both directions for undirected graph.
     }
 
-    for(int i=1; i<=n; i++) {
+    // Iterate through all nodes to handle disconnected graph components.
+    // Assuming nodes are 1-indexed here, based on loop 'i=1; i<=n'.
+    for(int i = 1; i <= n; i++) {
+        // If the current node 'i' has not been visited yet, start a BFS from it.
         if(visited[i] == false) {
+            // Call isCyclicBFS to check for a cycle in the component starting at 'i'.
             bool ans = isCyclicBFS(adjList, visited, i);
-            
+
+            // If a cycle is found in any component, the graph contains a cycle.
             if(ans) {
                 return "YES";
             }
         }
     }
 
+    // If no cycle was found after checking all components, the graph is acyclic.
     return "NO";
 }
 
 int main() {
     int n, m;
-    vector<vector<int> > edges;
+    vector<vector<int>> edges; // Vector to store the input edges.
 
     cout << "Enter the total number of nodes : ";
     cin >> n;
@@ -71,17 +97,84 @@ int main() {
     cout << "Enter total number of edges : ";
     cin >> m;
 
-    cout << "Enter edges : " << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter edges (u v): " << endl;
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        edges.push_back({u,v});
+        cin >> u >> v;         // Read the two nodes for an edge.
+        edges.push_back({u, v}); // Add the edge to the 'edges' vector.
     }
 
+    // Call cycleDetection to check for cycles.
     string ans = cycleDetection(edges, n, m);
 
     cout << "Cycle Detection Result : " << ans << endl;
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Determine if an undirected graph contains any cycles.
+  * **Input**: Number of nodes `n`, number of edges `m`, and a list of edges `(u, v)`.
+  * **Output**: "YES" if a cycle is present, "NO" otherwise.
+
+### 2\. What is a Cycle?
+
+  * A **cycle** in a graph is a path that starts and ends at the same vertex, and where no vertex (other than the start/end vertex) is visited more than once.
+
+### 3\. Core Idea for Undirected Graphs with BFS
+
+  * When performing a BFS traversal, we keep track of the `parent` of each visited node.
+  * If, during the BFS, we encounter a `visited` node that is *not* the current node's immediate `parent`, it means we've found a back-edge, which indicates a cycle.
+      * **Why?** If a neighbor `V` of current node `U` is already `visited` and `V` is *not* the `parent` from which `U` was reached, it implies there's another path from the source to `V` that doesn't go through `U`'s parent. This forms a closed loop.
+
+### 4\. Algorithm Steps (`isCyclicBFS` function)
+
+1.  **Initialization**:
+
+      * **`adjList`**: Adjacency list of the graph.
+      * **`visited`**: `unordered_map<int, bool>` to mark visited nodes.
+      * **`parent`**: `unordered_map<int, int>` to store the parent of each node in the BFS tree.
+      * **Queue (`Q`)**: For BFS traversal.
+      * **Start Node**: Push the `Node` (the current component's starting point) into `Q`.
+      * **Mark Visited & Parent**: `visited[Node] = true; parent[Node] = -1;` (Parent of source is typically -1 or some sentinel).
+
+2.  **BFS Loop**: While `Q` is not empty:
+
+      * **Dequeue**: Get `FrontVal` from `Q` and `pop` it.
+      * **Explore Neighbors**: For each `neighbor` (`i`) in `adjList[FrontVal]`:
+          * **Cycle Condition**: If `neighbor` is `visited` **AND** `neighbor` is *not* the `parent` of `FrontVal`:
+              * A cycle is detected. Return `true`.
+          * **Unvisited Neighbor**: If `neighbor` is `not visited`:
+              * Mark `visited[neighbor] = true`.
+              * Set `parent[neighbor] = FrontVal`.
+              * Enqueue `neighbor`.
+
+3.  **No Cycle in Component**: If the BFS loop finishes without returning `true`, it means no cycle was found in the current connected component. Return `false`.
+
+### 5\. Overall Cycle Detection (`cycleDetection` function)
+
+  * **Adjacency List Creation**: First, build the `adjList` from the input `edges`. For undirected graphs, add edges `u->v` and `v->u`.
+  * **Handling Disconnected Graphs**: Iterate through all possible nodes (`for i = 1 to n`).
+      * If a node `i` has not been `visited` yet (meaning it's part of a new connected component):
+          * Call `isCyclicBFS(adjList, visited, i)`.
+          * If `isCyclicBFS` returns `true`, then a cycle exists in the graph. Immediately return "YES".
+  * **No Cycle Found**: If the loop completes and no cycle was detected in any component, return "NO".
+
+### 6\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)`
+      * Building `adjList`: `O(M)` (where `M` is number of edges).
+      * `isCyclicBFS`: Each vertex and edge is visited at most once. `O(V + E)`.
+      * Outer loop in `cycleDetection`: Iterates `V` times, but `isCyclicBFS` only runs on unvisited components. So, total sum of `isCyclicBFS` calls across all components is `O(V + E)`.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList`: `O(V + E)`.
+      * `visited` map: `O(V)`.
+      * `parent` map: `O(V)`.
+      * `Queue`: `O(V)` in worst case.
+
+-----
+
+
+

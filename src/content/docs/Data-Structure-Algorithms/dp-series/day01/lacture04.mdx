@@ -3,98 +3,223 @@ title: Minimum Elements
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, limits (for INT_MAX), algorithm (for min).
+using namespace std;     // Use the standard namespace.
 
-/*
-    Recursion
-*/
+// 1. Recursive Approach (Brute Force)
+// Finds the minimum number of elements (coins) to make up the target sum.
+// Time Complexity: Exponential, O(num_coins ^ target) in worst case.
+// Space Complexity: O(target) due to recursion stack depth.
+// 'coins': Vector of available coin denominations.
+// 'target': The target sum to achieve.
 int minElementsRec(vector<int> &coins, int target) {
+    // Base Case 1: If target is 0, no coins are needed.
     if(target == 0) return 0;
+    // Base Case 2: If target is negative, it's impossible to form this amount.
+    // Return INT_MAX to signify impossibility, which will be handled in min() calls.
     if(target < 0) return INT_MAX;
 
-    int mini = INT_MAX;
+    int mini = INT_MAX; // Initialize minimum coins found so far to a very large value.
 
-    for(int i=0; i<coins.size(); i++) {
-        int ans = minElementsRec(coins, target-coins[i]);
+    // Iterate through each coin denomination.
+    for(int i = 0; i < coins.size(); i++) {
+        // Recursively find the minimum coins for the remaining target amount (target - coins[i]).
+        int ans = minElementsRec(coins, target - coins[i]);
 
+        // If 'ans' is not INT_MAX (meaning a solution was found for the subproblem),
+        // then we can potentially form the current 'target'.
         if(ans != INT_MAX) {
-            mini = min(mini, ans+1);
+            // Update 'mini' with the minimum of its current value and (ans + 1).
+            // 'ans + 1' means 'ans' coins for (target - coins[i]) plus the current coin (coins[i]).
+            mini = min(mini, ans + 1);
         }
     }
 
-    return mini;
-}  
+    return mini; // Return the minimum coins found.
+}
 
-/*
-    Recursion + Memoisation
-*/
+// 2. Dynamic Programming - Top-Down Approach (Recursion + Memoization)
+// Optimizes the recursive solution by storing computed results in 'dp' table.
+// Time Complexity: O(target * num_coins) - Each subproblem 'target' is computed once, iterating through 'num_coins'.
+// Space Complexity: O(target) for 'dp' vector + O(target) for recursion stack = O(target) total.
+// 'dp': Memoization table, initialized with -1 (or some other sentinel like 0 if 0 is not a valid count).
+// 'coins': Vector of available coin denominations.
+// 'target': The target sum.
 int minElementsDP(vector<int> &dp, vector<int> &coins, int target) {
+    // Base Case 1: If target is 0, no coins are needed.
     if(target == 0) return 0;
+    // Base Case 2: If target is negative, it's impossible.
     if(target < 0) return INT_MAX;
 
+    // If the result for 'target' is already computed and stored, return it.
     if(dp[target] != -1) return dp[target];
 
-    int mini = INT_MAX;
-    for(int i=0; i<coins.size(); i++) {
-        int ans = minElementsDP(dp, coins, target-coins[i]);
+    int mini = INT_MAX; // Initialize minimum coins.
+    for(int i = 0; i < coins.size(); i++) {
+        // Recursively call for subproblem.
+        int ans = minElementsDP(dp, coins, target - coins[i]);
 
         if(ans != INT_MAX) {
-            mini = min(mini, ans+1);
+            mini = min(mini, ans + 1);
         }
     }
-    
+
+    // Store the computed minimum coins for 'target' in the dp table before returning.
     dp[target] = mini;
     return mini;
 }
 
-/*
-    Tabulation
-*/
+// 3. Dynamic Programming - Bottom-Up Approach (Tabulation)
+// Builds the solution iteratively from base cases up to the 'target' amount.
+// Time Complexity: O(target * num_coins) - Two nested loops.
+// Space Complexity: O(target) - For the 'dp' vector.
+// 'coins': Vector of available coin denominations.
+// 'target': The target sum.
 int minElementsTab(vector<int> &coins, int target) {
-    vector<int> dp(target+1, INT_MAX);
+    // Create a dp table of size (target + 1).
+    // dp[i] will store the minimum coins needed to make amount 'i'.
+    // Initialize all entries to INT_MAX, indicating they are not yet reachable.
+    vector<int> dp(target + 1, INT_MAX);
+    // Base Case: 0 coins are needed to make amount 0.
     dp[0] = 0;
 
-    for(int i=1; i<=target; i++) {
-
-        for(int c=0; c<coins.size(); c++) {
-
-            if(i-coins[c] >= 0 && dp[i-coins[c]] != INT_MAX) {
-                dp[i] = min(dp[i], dp[i-coins[c]] + 1);
+    // Iterate through all amounts from 1 up to the target.
+    for(int i = 1; i <= target; i++) {
+        // For each amount 'i', iterate through all available coin denominations.
+        for(int c = 0; c < coins.size(); c++) {
+            // Check if the current coin 'coins[c]' can be used without going below 0,
+            // AND if the previous subproblem (i - coins[c]) was reachable (not INT_MAX).
+            if(i - coins[c] >= 0 && dp[i - coins[c]] != INT_MAX) {
+                // Update dp[i] with the minimum of its current value and (coins needed for previous subproblem + 1).
+                dp[i] = min(dp[i], dp[i - coins[c]] + 1);
             }
-
         }
     }
 
+    // After filling the dp table, dp[target] will contain the minimum coins.
+    // If dp[target] is still INT_MAX, it means the target cannot be formed.
     return dp[target];
 }
 
+// Main function for input/output and testing.
 int main() {
     vector<int> coins;
     int target;
 
-    cout << "Enter the coins array (-1 to stop) : ";
+    cout << "Enter the coins array (enter -1 to stop): ";
     int temp;
     cin >> temp;
-    while(temp != -1) {
+    while(temp != -1) { // Read coins until -1 is entered.
         coins.push_back(temp);
         cin >> temp;
     }
 
-    cout << "Enter the target : ";
+    cout << "Enter the target amount : ";
     cin >> target;
-    
-    vector<int> dp(target+1, -1);
-    
+
+    // --- Uncomment one of the following lines to test different approaches ---
+
+    // 1. Recursive (Brute Force) - Caution: Very slow for large target values.
+    // int minCoin = minElementsRec(coins, target);
+
+    // 2. DP - Top-Down (Memoization)
+    // Create a dp table and initialize with -1.
+    // vector<int> dp(target + 1, -1);
+    // int minCoin = minElementsDP(dp, coins, target);
+
+    // 3. DP - Bottom-Up (Tabulation) - Generally preferred for this problem.
     int minCoin = minElementsTab(coins, target);
-    if(minCoin != INT_MAX) {
+
+
+    // Output the result.
+    if(minCoin != INT_MAX) { // Check if a solution was found.
         cout << "Required minimum coins : " << minCoin << endl;
     } else {
-        cout << "Required minimum coins : " << -1 << endl;
+        cout << "Required minimum coins : " << -1 << endl; // Target cannot be formed.
     }
-    
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
 ```
+### 1\. Problem Statement
+
+  * **Goal**: Given a set of `coins` of various denominations and a `target` amount, find the minimum number of coins required to make up that `target` amount.
+  * **Constraint**: You can use each coin type an unlimited number of times (unbounded knapsack type problem).
+  * **Output**: The minimum number of coins. If the `target` amount cannot be made using the given `coins`, return -1 (or some indicator like `INT_MAX`).
+
+### 2\. Problem Insight (Dynamic Programming)
+
+This is a classic Dynamic Programming problem. The core idea is that the minimum number of coins to make `target` amount `X` can be found by considering each coin `C` in the `coins` array:
+If we use coin `C`, then the remaining amount to make is `X - C`. The minimum coins for `X` would then be `1` (for coin `C`) plus the minimum coins needed for `X - C`. We need to find the minimum of these possibilities over all available coins.
+
+**Recurrence Relation**:
+`dp[amount]` = minimum number of coins to make `amount`
+`dp[amount] = 1 + min(dp[amount - coin_1], dp[amount - coin_2], ..., dp[amount - coin_k])`
+where `coin_1, ..., coin_k` are the available coin denominations.
+
+**Base Cases**:
+
+  * `dp[0] = 0` (0 coins needed to make amount 0).
+  * `dp[amount] = INT_MAX` (or -1) if `amount < 0` or cannot be formed.
+
+### 3\. Approaches to Solving
+
+{/* #### A. Recursive Approach (Brute Force)
+
+  * **Idea**: Directly implement the recurrence relation using recursion.
+  * **`minElementsRec(coins, target)`**:
+      * If `target == 0`, return `0`.
+      * If `target < 0`, return `INT_MAX` (cannot make negative amount).
+      * Initialize `mini = INT_MAX`.
+      * Loop through each `coin` in `coins`:
+          * Recursively call `ans = minElementsRec(coins, target - coin)`.
+          * If `ans` is not `INT_MAX` (meaning a solution exists for `target - coin`), update `mini = min(mini, ans + 1)`.
+      * Return `mini`.
+  * **Pros**: Simple and direct translation.
+  * **Cons**: Highly inefficient due to **redundant calculations** (overlapping subproblems).
+  * **Time Complexity**: Exponential, roughly  in worst case, forming a large recursion tree.
+  * **Space Complexity**: $O(\\text{target})$ (Due to recursion stack depth).
+
+#### B. Dynamic Programming - Top-Down (Memoization)
+
+  * **Idea**: Optimize the recursive approach by storing the results of already computed subproblems in a `dp` table. Before computing `dp[target]`, check if it's already computed.
+  * **`minElementsDP(dp, coins, target)`**:
+      * Same base cases as recursion.
+      * If `dp[target]` is not -1 (or initial sentinel value), return `dp[target]`.
+      * Follow the recursive logic, but store `mini` in `dp[target]` before returning.
+  * **Pros**: Overcomes redundant calculations.
+  * **Cons**: Still uses a recursion stack.
+  * **Time Complexity**: $O(\\text{target} \\times (Each state `dp[i]` is computed once, and for each state, we iterate through 
+     `num_coins`).
+  * **Space Complexity**: $O(\\text{target})$ (For `dp` array) + $O(\\text{target})$ (For recursion stack) = $O(\\text{target})$.
+
+#### C. Dynamic Programming - Bottom-Up (Tabulation)
+
+  * **Idea**: Build the solution iteratively from the base cases upwards.
+  * **`minElementsTab(coins, target)`**:
+      * Create `vector<int> dp(target + 1, INT_MAX)`. Initialize all entries to `INT_MAX`.
+      * Set `dp[0] = 0` (0 coins for amount 0).
+      * Outer loop `for (int i = 1; i <= target; i++)`: Iterate through all amounts from 1 to `target`.
+      * Inner loop `for (int c = 0; c < coins.size(); c++)`: Iterate through each coin denomination.
+          * If `i - coins[c] >= 0` (valid previous amount) AND `dp[i - coins[c]] != INT_MAX` (previous amount is reachable):
+              * `dp[i] = min(dp[i], dp[i - coins[c]] + 1);` (Update `dp[i]` with the minimum count).
+      * Return `dp[target]`. If `dp[target]` is still `INT_MAX`, it means the `target` cannot be formed.
+  * **Pros**: No recursion stack overhead. Often preferred for its iterative nature.
+  * **Cons**: Requires an array of size `target + 1`.
+  * **Time Complexity**: $O(\\text{target} \\times (Two nested loops).
+  * **Space Complexity**: $O(\\text{target})$ (For `dp` array). */}
+
+#### D. Space Optimization (Not directly applicable here for `dp` array, as `dp[i]` depends on arbitrary `dp[i-coin_c]`, not just `dp[i-1], dp[i-2]`)
+
+  * For this specific problem, unlike Fibonacci or Climbing Stairs, the `dp[i]` value depends on `dp[i - coin_c]` where `coin_c` can be any value from the `coins` array. This means we might need values far back in the `dp` array. Therefore, a direct `O(1)` space optimization like in Fibonacci is generally **not feasible** for this type of problem. The `O(target)` space is usually required for tabulation.
+
+### 4\. Important Considerations
+
+  * **`INT_MAX` Handling**: It's crucial to check `ans != INT_MAX` or `dp[i-coins[c]] != INT_MAX` before adding 1, to prevent integer overflow (e.g., `INT_MAX + 1` can become a negative number).
+  * **Return Value**: The problem often asks for -1 if the target cannot be made. If `dp[target]` remains `INT_MAX` after computation, that indicates it's impossible.
+
+-----
+
+
+

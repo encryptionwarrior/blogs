@@ -3,78 +3,166 @@ title: Bellmon Ford Algorithm
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, limits.
+using namespace std;     // Use the standard namespace.
 
+// Function to find the shortest path from a source node to all other nodes
+// in a weighted graph that can contain negative edge weights, using Bellman-Ford Algorithm.
+// It also detects negative cycles.
+// 'edges': A vector of vectors, where each inner vector {u, v, w} represents a directed edge u -> v with weight w.
+// 'n': Total number of nodes (vertices). Assumed to be 0-indexed (0 to n-1).
+// 'm': Total number of edges.
+// 'src': The source node from which to find shortest paths.
+// Returns a vector containing the shortest distances from 'src' to all nodes.
+// If a negative cycle is detected, it returns a vector with all INT_MAX.
 vector<int> shortestPath(vector<vector<int>> &edges, int n, int m, int src) {
+    // Initialize 'distance' vector: Stores the shortest distance found so far from 'src' to each node.
+    // All distances are initialized to INT_MAX (representing infinity).
     vector<int> distance(n, INT_MAX);
+
+    // The distance from the source node to itself is 0.
     distance[src] = 0;
 
-    for(int i=0; i<n-1; i++) {
-        
-        for(int j=0; j<m; j++) {
-            int u = edges[j][0];
-            int v = edges[j][1];
-            int w = edges[j][2];
+    // Phase 1: Relax all edges N-1 times.
+    // After N-1 iterations, all shortest paths (if no negative cycles) will be found,
+    // because a simple path in a graph with N vertices has at most N-1 edges.
+    for(int i = 0; i < n - 1; i++) {
+        // In each iteration, iterate through all edges.
+        for(int j = 0; j < m; j++) {
+            int u = edges[j][0]; // Source node of the current edge.
+            int v = edges[j][1]; // Destination node of the current edge.
+            int w = edges[j][2]; // Weight of the current edge.
 
-            if(distance[u] + w < distance[v]) {
-                distance[v] = distance[u] + w;
+            // Relaxation step:
+            // If the current distance to 'u' is not infinity (meaning 'u' is reachable)
+            // AND a shorter path to 'v' is found through 'u' (distance[u] + w < distance[v]).
+            // The `distance[u] != INT_MAX` check is vital to prevent integer overflow
+            // if `INT_MAX + a_negative_weight` wraps around to a small positive number.
+            if(distance[u] != INT_MAX && distance[u] + w < distance[v]) {
+                distance[v] = distance[u] + w; // Update distance to 'v'.
             }
         }
-
     }
 
-    for(int j=0; j<m; j++) {
+    // Phase 2: Check for negative cycles.
+    // After N-1 iterations, if any edge can still be relaxed, it indicates the presence
+    // of a negative cycle reachable from the source.
+    for(int j = 0; j < m; j++) {
         int u = edges[j][0];
         int v = edges[j][1];
         int w = edges[j][2];
 
-        if(distance[u] + w < distance[v]) {
-            return vector<int> (n, INT_MAX);
+        // If a relaxation is still possible, a negative cycle exists.
+        if(distance[u] != INT_MAX && distance[u] + w < distance[v]) {
+            // Return a vector indicating that shortest paths are undefined due to a negative cycle.
+            // All nodes are set to INT_MAX to signify this.
+            return vector<int>(n, INT_MAX);
         }
     }
 
-    return distance;
+    return distance; // Return the calculated shortest path distances.
 }
 
+// Main function for input/output.
 int main() {
-    vector<vector<int>> edges;
-    int n, m, src;
+    vector<vector<int>> edges; // Stores input edges as {u, v, w}.
+    int n, m;                 // 'n' for nodes, 'm' for edges.
+    int src;                  // Source node.
 
-    cout << "Enter the value of n : ";
+    cout << "Enter the value of n (number of nodes): ";
     cin >> n;
 
-    cout << "Enter the value of m : ";
+    cout << "Enter the value of m (number of edges): ";
     cin >> m;
 
-    cout << "Enter the edges :" << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter the edges (u v w, representing u -> v with weight w):" << endl;
+    for(int i = 0; i < m; i++) {
         int u, v, w;
-        cin >> u >> v >> w;
-        edges.push_back({u,v,w});
+        cin >> u >> v >> w;         // Read u, v, and weight w.
+        edges.push_back({u, v, w}); // Add directed edge to vector.
     }
 
     cout << "Enter the source node : ";
     cin >> src;
 
+    // Call shortestPath function (Bellman-Ford).
     vector<int> answer = shortestPath(edges, n, m, src);
 
     cout << "Shortest path from " << src << " : ";
     for(int x : answer) {
         if(x == INT_MAX) {
-            cout << "INF ";
+            cout << "INF "; // Print "INF" if unreachable or part of negative cycle.
         } else {
-            cout << x << " ";
+            cout << x << " "; // Print the shortest distance.
         }
     }
     cout << endl;
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
-
-
-/*
-    3 3 0 1 2 1 2 -1 0 2 2
-*/
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Find the shortest path (minimum total weight) from a given `source` node to all other reachable nodes in a **weighted graph**.
+  * **Key Feature**: Unlike Dijkstra's, Bellman-Ford **can handle negative edge weights**.
+  * **Negative Cycle Detection**: It can also detect if the graph contains a **negative cycle** reachable from the source node. If a negative cycle is present, shortest paths are undefined (can go infinitely negative).
+  * **Input**: List of weighted `edges (u, v, w)` (directed edges `u -> v` with weight `w`), total `n` nodes, total `m` edges, `src` (source node).
+  * **Output**: A vector `distance` where `distance[i]` is the shortest path distance from `src` to node `i`. If a negative cycle is detected, it typically returns a special value (e.g., a vector filled with `INT_MAX` as in this code, or a boolean flag). `INT_MAX` indicates unreachable or part of a negative cycle.
+
+### 2\. Core Idea
+
+The Bellman-Ford algorithm works on the principle of **relaxation**. It iteratively relaxes all edges in the graph `N-1` times.
+
+  * **Relaxation**: For an edge `(u, v)` with weight `w`, if `distance[u] + w < distance[v]`, it means a shorter path to `v` has been found through `u`. In this case, `distance[v]` is updated.
+  * **Why `N-1` iterations?**: In a graph with `N` nodes and no negative cycles, the longest simple path (a path that does not repeat any vertex) can have at most `N-1` edges. Therefore, after `N-1` iterations, all shortest paths (if they exist) will have been found. Each iteration guarantees that at least one more node's shortest path distance is finalized, if a shorter path exists through one more edge.
+  * **Negative Cycle Detection**: After `N-1` iterations, if we can still relax any edge (i.e., `distance[u] + w < distance[v]` holds for any edge), it implies the presence of a negative cycle reachable from the source. This is because if there were no negative cycles, all shortest paths would have been finalized by then. Any further relaxation indicates a path that can be made infinitely shorter by traversing a negative cycle.
+
+### 3\. Algorithm Steps (`shortestPath` function)
+
+1.  **Initialize Distance Array**:
+
+      * `vector<int> distance(n, INT_MAX);` All distances are initialized to `INT_MAX` (representing infinity).
+      * `distance[src] = 0;` The distance from the source to itself is 0.
+
+2.  **Relax Edges `N-1` Times**:
+
+      * Outer loop `for (int i = 0; i < n - 1; i++)`: This loop runs `n-1` times.
+      * Inner loop `for (int j = 0; j < m; j++)`: Iterates through all `m` edges in the graph.
+          * Get `u = edges[j][0]`, `v = edges[j][1]`, `w = edges[j][2]`.
+          * **Relaxation Step**: `if (distance[u] != INT_MAX && distance[u] + w < distance[v])` (The `distance[u] != INT_MAX` check is crucial to prevent overflow if `distance[u]` is infinity and `w` is negative).
+              * `distance[v] = distance[u] + w;` (Update `distance[v]` if a shorter path is found).
+
+3.  **Detect Negative Cycles (Nth Iteration)**:
+
+      * After `N-1` iterations, perform one more pass over all edges.
+      * Outer loop `for (int j = 0; j < m; j++)`: Iterates through all `m` edges.
+          * Get `u = edges[j][0]`, `v = edges[j][1]`, `w = edges[j][2]`.
+          * **Check for further relaxation**: `if (distance[u] != INT_MAX && distance[u] + w < distance[v])`
+              * If this condition is true for *any* edge, it means a negative cycle is reachable from the source.
+              * `return vector<int>(n, INT_MAX);` (Return a vector indicating infinite paths, or throw an exception, or set a flag). The current code returns `INT_MAX` for all nodes, implying paths are undefined.
+
+4.  **Return**: The `distance` vector containing the shortest path distances from `src` to all reachable nodes.
+
+### 4\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V * E)`
+      * The outer loop runs `V-1` times.
+      * The inner loop iterates through all `E` edges in each iteration.
+      * Total: `(V-1) * E`, which is **`O(V * E)`**.
+  * **Space Complexity**: `O(V + E)`
+      * `distance` vector: `O(V)`.
+      * Storing `edges`: `O(E)`.
+      * Total: **`O(V + E)`**.
+
+### 5\. Important Notes
+
+  * **Directed Graphs**: Bellman-Ford is typically applied to directed graphs. For undirected graphs with negative weights, an undirected edge `(u, v, w)` is usually represented as two directed edges `(u -> v, w)` and `(v -> u, w)`. However, this can introduce negative cycles where none existed in an undirected context, so care is needed.
+  * **Negative Cycles**: The ability to detect negative cycles is a key advantage over Dijkstra's. If a negative cycle is detected, shortest paths involving that cycle are undefined (can be arbitrarily small).
+  * **Reachability**: Nodes that are unreachable from the source will retain their `INT_MAX` distance.
+  * **All-Pairs Shortest Path**: For all-pairs shortest paths in graphs with negative weights, the Floyd-Warshall algorithm can be used.
+
+-----
+
+

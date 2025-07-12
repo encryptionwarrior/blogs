@@ -3,81 +3,176 @@ title: Shortest Path In Undirected Graph
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, queue, vector, algorithm.
+using namespace std;     // Use the standard namespace.
 
-vector<int> shortestPath(vector< pair<int,int> > &edges, int n, int m, int src, int tar) {
-    // Creating adj list
-    unordered_map< int, list<int> > adjList;
-    for(int i=0; i<n; i++) {
+// Function to find the shortest path in an UNWEIGHTED graph using BFS.
+// 'edges': A vector of pairs representing the edges of the graph.
+// 'n': Total number of nodes (vertices). Assumed 0-indexed (0 to n-1).
+// 'm': Total number of edges.
+// 'src': The starting node of the path.
+// 'tar': The target node to reach.
+// Returns a vector representing the nodes in the shortest path from src to tar.
+vector<int> shortestPath(vector<pair<int, int>> &edges, int n, int m, int src, int tar) {
+    // 1. Create Adjacency List for the graph.
+    unordered_map<int, list<int>> adjList;
+    // Note: The loop condition 'i<n' should ideally be 'i<m' if 'm' is the number of edges.
+    // If 'n' is passed as the number of edges, it's fine, but standard is 'm' for edges.
+    // Assuming 'n' in the loop is a mistake and it should iterate 'm' times.
+    for(int i = 0; i < m; i++) { // Corrected loop from 'i<n' to 'i<m' for edges.
         int u = edges[i].first;
         int v = edges[i].second;
 
-        adjList[u].push_back(v);
-        adjList[v].push_back(u);
+        adjList[u].push_back(v); // Add edge u -> v.
+        adjList[v].push_back(u); // Add edge v -> u (for undirected graph).
     }
 
-    vector<int> visited(n,0);
-    vector<int> parent(n,0);
-    queue<int> qu;
+    // 2. Initialize BFS data structures.
+    vector<int> visited(n, 0); // Visited array (0: not visited, 1: visited).
+    vector<int> parent(n, 0);  // Parent array to reconstruct the path.
 
-    qu.push(src);
-    visited[src] = 1;
-    parent[src] = -1;
+    queue<int> qu; // Queue for BFS traversal.
 
+    // 3. Start BFS from the source node.
+    qu.push(src);       // Enqueue the source node.
+    visited[src] = 1;   // Mark source as visited.
+    parent[src] = -1;   // Source node has no parent.
+
+    // 4. Perform BFS traversal.
     while(!qu.empty()) {
-        int val = qu.front();
-        qu.pop();
+        int currentNode = qu.front(); // Get the current node from the queue.
+        qu.pop();                     // Remove it from the queue.
 
-        for(int x : adjList[val]) {
-            if(visited[x] == 0) {
-                visited[x] = 1;
-                parent[x] = val;
-                qu.push(x);
+        // Explore all neighbors of the current node.
+        for(int neighbor : adjList[currentNode]) {
+            // If the neighbor has not been visited yet:
+            if(visited[neighbor] == 0) {
+                visited[neighbor] = 1;     // Mark the neighbor as visited.
+                parent[neighbor] = currentNode; // Set current node as its parent (path tracking).
+                qu.push(neighbor);         // Enqueue the neighbor for further exploration.
             }
         }
     }
 
-    vector<int> solution;
-    while(tar != src) {
-        solution.push_back(tar);
-        tar = parent[tar];
-    }
-    solution.push_back(src);
+    // 5. Reconstruct the shortest path from target to source using the parent array.
+    vector<int> solutionPath; // Vector to store the path.
+    int tempTarget = tar;     // Use a temporary variable to trace back from target.
 
-    reverse(solution.begin(), solution.end());
-    return solution;
+    // Trace back from target to source using parent pointers.
+    while(tempTarget != src) {
+        solutionPath.push_back(tempTarget); // Add the current node to the path.
+        tempTarget = parent[tempTarget];    // Move to its parent.
+    }
+    solutionPath.push_back(src); // Add the source node.
+
+    // The path is currently from target to source; reverse it to get source to target.
+    reverse(solutionPath.begin(), solutionPath.end());
+    return solutionPath; // Return the shortest path.
 }
 
 int main() {
-    vector< pair<int,int> > edges;
-    int n, m, src, tar;
+    vector<pair<int, int>> edges; // Vector to store input edges.
+    int n, m;                     // 'n' for nodes, 'm' for edges.
+    int src, tar;                 // Source and target nodes.
 
     cout << "Enter the number of nodes : ";
     cin >> n;
-    
+
     cout << "Enter the number of edges : ";
     cin >> m;
 
-    cout << "Enter the edges : " << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter the edges (u v): " << endl;
+    // Input for 'm' edges.
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        edges.push_back(make_pair(u,v));
+        cin >> u >> v;                // Read edge (u, v).
+        edges.push_back(make_pair(u, v)); // Add to edges vector.
     }
 
     cout << "Enter the source and target : ";
     cin >> src >> tar;
 
-    vector<int> answer = shortestPath(edges, n, m, src, tar);
+    // Call shortestPath function.
+    vector<int> answerPath = shortestPath(edges, n, m, src, tar);
+
     cout << "The shortest path : ";
-    for(int x : answer) {
-        cout << x << " ";
+    for(int node : answerPath) {
+        cout << node << " "; // Print nodes in the shortest path.
     }
+    cout << endl;
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
-
-// 8 9 0 1 0 2 0 3 1 4 2 7 3 5 5 6 6 7 4 7
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Find the shortest path (in terms of number of edges) between a given `source` node and a `target` node in an **unweighted** graph.
+  * **Input**: List of `edges`, total `n` nodes, total `m` edges, `src` (source node), `tar` (target node).
+  * **Output**: A vector representing the sequence of nodes from `src` to `tar` along the shortest path.
+
+### 2\. Core Idea (BFS for Shortest Path)
+
+  * Breadth-First Search (BFS) naturally explores a graph layer by layer (level by level).
+  * In an unweighted graph, the first time BFS reaches a node, it guarantees that it has found the shortest path (minimum number of edges) to that node from the source.
+  * To reconstruct the path, we need to keep track of the `parent` of each node in the BFS traversal tree. When we reach the `target` node, we can backtrack from `target` to `src` using the `parent` information.
+
+### 3\. Algorithm Steps (`shortestPath` function)
+
+1.  **Build Adjacency List**:
+
+      * Create an `adjList` (`unordered_map<int, list<int>>`) from the input `edges`.
+      * Since it's an undirected graph (implied by typical shortest path problems on unweighted graphs), add edges in both directions (`u -> v` and `v -> u`).
+
+2.  **Initialization for BFS**:
+
+      * `visited`: A `vector<int>` (or `vector<bool>`) of size `n`, initialized to `0` (false), to track visited nodes.
+      * `parent`: A `vector<int>` of size `n`, to store the parent of each node in the BFS traversal.
+      * `qu`: An empty `queue<int>`.
+
+3.  **Start BFS**:
+
+      * Push `src` onto `qu`.
+      * Mark `visited[src] = 1`.
+      * Set `parent[src] = -1` (or any sentinel value to indicate no parent).
+
+4.  **BFS Traversal Loop**: While `qu` is not empty:
+
+      * `val = qu.front(); qu.pop();` (Dequeue the current node).
+      * For each `neighbor (x)` in `adjList[val]`:
+          * If `visited[x] == 0` (neighbor not yet visited):
+              * Mark `visited[x] = 1`.
+              * Set `parent[x] = val`. (This is key for path reconstruction).
+              * Enqueue `x`.
+
+5.  **Path Reconstruction**:
+
+      * After the BFS completes (or `target` is found, though this code lets BFS finish the component):
+      * Create an empty `vector<int> solution`.
+      * Start from `tar`.
+      * While `tar != src`:
+          * Add `tar` to `solution`.
+          * Update `tar = parent[tar]`. (Move to the parent).
+      * Add `src` to `solution` (when `tar` eventually becomes `src`).
+      * **Reverse**: The `solution` vector currently holds the path from `target` to `source`. `reverse()` it to get the path from `source` to `target`.
+
+6.  **Return**: The `solution` vector.
+
+### 4\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)`
+      * Building `adjList`: `O(M)`.
+      * BFS traversal: Each vertex is enqueued/dequeued once (`O(V)`), and each edge is processed once (`O(E)`).
+      * Path reconstruction: In the worst case, iterating through all nodes in the path `O(V)`.
+      * Total: `O(V + E)`.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList`: `O(V + E)`.
+      * `visited` vector: `O(V)`.
+      * `parent` vector: `O(V)`.
+      * `queue`: `O(V)` in the worst case.
+      * `solution` vector: `O(V)` in the worst case.
+
+-----
+
+

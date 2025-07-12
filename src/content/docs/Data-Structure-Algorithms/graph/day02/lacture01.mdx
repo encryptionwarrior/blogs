@@ -3,55 +3,80 @@ title: BFS Traversal
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, queue, vector.
+using namespace std;     // Use the standard namespace.
 
-void traversal(unordered_map<int, list<int> > &adjList, unordered_map<int, bool> &visited, vector<int> &answer, int node) {
-    queue<int> Q;
-    Q.push(node);
-    visited[node] = 1;
+// Helper function for BFS traversal of a single connected component.
+// 'adjList': The adjacency list representation of the graph.
+// 'visited': An unordered_map to keep track of visited nodes (true if visited, false otherwise).
+// 'answer': A vector to store the nodes in BFS traversal order.
+// 'node': The starting node for the current traversal.
+void traversal(unordered_map<int, list<int>> &adjList, unordered_map<int, bool> &visited,
+               vector<int> &answer, int node) {
+    queue<int> Q; // Create a queue for BFS.
 
+    Q.push(node);          // Push the starting node into the queue.
+    visited[node] = 1;     // Mark the starting node as visited. (Important: mark when enqueued!)
+
+    // Loop continues as long as there are nodes in the queue to process.
     while(!Q.empty()) {
-        int frontVal = Q.front();
-        Q.pop();
-        visited[frontVal] = true;
-        answer.push_back(frontVal);
+        int frontVal = Q.front(); // Get the node at the front of the queue.
+        Q.pop();                   // Remove the front node from the queue.
 
-        for(auto i : adjList[frontVal]) {
-            if(!visited[i]) {
-                Q.push(i);
+        // The line below 'visited[frontVal] = true;' is redundant if marked when pushed.
+        // It's generally better to mark visited when pushing to the queue to avoid adding duplicates.
+        // For correctness, the check 'if(!visited[i])' inside the loop is key.
+        // visited[frontVal] = true; // Mark the node as visited (already marked when pushed).
+
+        answer.push_back(frontVal); // Add the processed node to the answer list.
+
+        // Explore all neighbors of the current node (frontVal).
+        for(auto neighbor : adjList[frontVal]) {
+            // If the neighbor has not been visited yet.
+            if(!visited[neighbor]) {
+                Q.push(neighbor);          // Push the neighbor into the queue.
+                visited[neighbor] = true;  // Mark the neighbor as visited immediately upon enqueuing.
             }
         }
     }
 }
 
-vector<int> BFS(int vertex, vector< pair<int, int> > edges) {
-    unordered_map<int, list<int> > adjList;
+// Main BFS function to perform Breadth-First Search on a graph.
+// 'vertex': The total number of nodes in the graph (0 to vertex-1).
+// 'edges': A vector of pairs, representing the edges of the graph. (e.g., {{0,1}, {1,2}} for 0-1, 1-2 edges).
+// Returns a vector containing the BFS traversal order.
+vector<int> BFS(int vertex, vector<pair<int, int>> edges) {
+    // 1. Create Adjacency List from the given edges.
+    unordered_map<int, list<int>> adjList;
+    // 'answer' stores the BFS traversal result.
     vector<int> answer;
+    // 'visited' keeps track of globally visited nodes across all components.
     unordered_map<int, bool> visited;
-    
-    // Creating Adjacency List
-    for(int i=0; i<edges.size( ); i++) {
+
+    // Populate the adjacency list for an undirected graph.
+    for(int i = 0; i < edges.size(); i++) {
         int u = edges[i].first;
         int v = edges[i].second;
 
         adjList[u].push_back(v);
-        adjList[v].push_back(u);
+        adjList[v].push_back(u); // For undirected graph.
     }
 
-    // Traversing all components of a graph
-    for(int i=0; i<vertex; i++) {
+    // 2. Traverse all components of the graph.
+    // This loop ensures that even if the graph is disconnected, all nodes are visited.
+    for(int i = 0; i < vertex; i++) { // Assuming nodes are 0 to vertex-1.
+        // If node 'i' has not been visited yet, start a BFS from it.
         if(!visited[i]) {
             traversal(adjList, visited, answer, i);
         }
     }
 
-    return answer;
+    return answer; // Return the complete BFS traversal order.
 }
 
 int main() {
-    int n, m;
+    int n, m; // 'n' for number of nodes, 'm' for number of edges.
 
     cout << "Enter the number of nodes : ";
     cin >> n;
@@ -59,21 +84,89 @@ int main() {
     cout << "Enter the number of edges : ";
     cin >> m;
 
-    vector< pair<int,int> > edges(m, {0,0});
+    // Create a vector to store 'm' edges.
+    vector<pair<int, int>> edges(m);
 
-    for(int i=0; i<m; i++) {
-        cin >> edges[0].first;
-        cin >> edges[0].second;
+    cout << "Enter the edges (u v):" << endl;
+    for(int i = 0; i < m; i++) {
+        // IMPORTANT FIX: Original code had 'edges[0].first/second' inside the loop.
+        // It should be 'edges[i].first/second' to read all edges correctly.
+        cin >> edges[i].first;
+        cin >> edges[i].second;
     }
 
+    // Perform BFS traversal.
     vector<int> solution = BFS(n, edges);
 
+    // Print the BFS traversal result.
     cout << "BFS Traversal : ";
-    for(auto i : solution) {
-        cout << i << " ";
+    for(auto node : solution) {
+        cout << node << " ";
     }
     cout << endl;
 
     return 0;
 }
 ```
+
+### 1\. What is BFS?
+
+  * **Breadth-First Search (BFS)** is a graph traversal algorithm that explores all the nodes at the present depth level before moving on to the nodes at the next depth level.
+  * It systematically explores a graph to discover its structure.
+  * **Analogy**: Imagine ripples expanding from a stone dropped in water. BFS explores nodes level by level, like these expanding ripples.
+
+### 2\. Key Characteristics & Use Cases
+
+  * **Level-by-Level Exploration**: Visits all neighbors of a node before moving to their neighbors.
+  * **Shortest Path on Unweighted Graphs**: BFS finds the shortest path (in terms of number of edges) from a source node to all other reachable nodes in an **unweighted graph**.
+  * **Finding Connected Components**: Can be used to identify all nodes reachable from a given source, thus finding a connected component.
+  * **Cycle Detection**: Can detect cycles in undirected graphs.
+  * **Minimum Spanning Tree (MST)**: Not directly for MST, but building blocks for other algorithms.
+
+### 3\. Algorithm Steps
+
+1.  **Initialization**:
+
+      * **Adjacency List (`adjList`)**: Represents the graph. `unordered_map<int, list<int>>` is common.
+      * **Visited Array (`visited`)**: A boolean array or hash map (e.g., `unordered_map<int, bool>`) to keep track of visited nodes to prevent cycles and redundant processing. Initialize all to `false` (or `0`).
+      * **Queue (`Q`)**: A standard queue data structure, essential for level-by-level traversal.
+      * **Result (`answer`)**: A vector to store the nodes in the order they are visited.
+
+2.  **Starting Traversal (`traversal` function)**:
+
+      * Pick a starting `node`.
+      * **Enqueue**: Push the `node` into the `Q`.
+      * **Mark Visited**: Mark `node` as `visited[node] = true`.
+      * **Loop**: While the `Q` is not empty:
+          * **Dequeue**: Get the `frontVal` from the `Q` and remove it (`pop`).
+          * **Process Node**: Add `frontVal` to the `answer` list (or perform other operations).
+          * **Explore Neighbors**: For each `neighbor` of `frontVal` (iterating through `adjList[frontVal]`):
+              * If `neighbor` has not been `visited` yet:
+                  * **Enqueue**: Push `neighbor` into the `Q`.
+                  * **Mark Visited**: Mark `neighbor` as `visited[neighbor] = true`. (Crucial to mark *when enqueued* to avoid duplicates in queue).
+
+3.  **Handling Disconnected Graphs (`BFS` function)**:
+
+      * A single call to `traversal` explores only one connected component.
+      * To ensure all nodes in a potentially disconnected graph are visited, iterate through all possible nodes (`for i = 0 to vertex-1`).
+      * If `visited[i]` is `false` (meaning node `i` hasn't been part of any previously explored component), start a new `traversal` from `i`.
+
+### 4\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)` where `V` is the number of vertices and `E` is the number of edges.
+      * Each vertex is enqueued and dequeued at most once (`O(V)`).
+      * Each edge is examined at most twice (once for each direction in an undirected graph) when iterating through adjacency lists (`O(E)`).
+  * **Space Complexity**: `O(V)`
+      * `adjList`: `O(V + E)` for graph storage, but this is input structure.
+      * `visited` map/array: `O(V)`.
+      * `Queue`: In the worst case (e.g., a star graph), the queue can hold up to `O(V)` nodes.
+
+### 5\. Implementation Details / Common Pitfalls
+
+  * **Visited Array/Map**: Essential to prevent infinite loops in graphs with cycles and to correctly mark processed nodes. Mark a node as visited *when you add it to the queue*, not when you process it. The provided code marks when added to queue and also inside while loop, but marking when enqueued is sufficient and standard.
+  * **Adjacency List Creation**: The `BFS` function takes an `edges` list and builds the `adjList` internally.
+  * **Node IDs**: Assumes node IDs are integers, typically 0-indexed or arbitrary integers handled by `unordered_map`.
+
+-----
+
+

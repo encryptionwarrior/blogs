@@ -3,64 +3,105 @@ title: Topological Sort Using Kahns Algorithm
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, queue, vector.
+using namespace std;     // Use the standard namespace.
 
-void solveDFS(vector<int> &solution, unordered_map<int, list<int> > &adjList, queue<int> &qu, vector<int> &indegree, vector<bool> &visited) {
+// NOTE: The 'solveDFS' function here is a recursive way to implement the BFS-like processing
+// of Kahn's algorithm. It's not a typical DFS in the sense of exploring depth-first,
+// but rather processes nodes from the queue recursively. The 'visited' array is largely
+// redundant with the 'indegree' check for Kahn's.
+void solveDFS(vector<int> &solution, unordered_map<int, list<int>> &adjList, queue<int> &qu,
+              vector<int> &indegree, vector<bool> &visited) {
+    // Base case: If the queue is empty, all eligible nodes have been processed.
     if(qu.empty()) {
         return;
     }
 
-    int frontVal = qu.front();
-    qu.pop();
-    solution.push_back(frontVal);
-    visited[frontVal] = 1;
+    int frontVal = qu.front(); // Get the node from the front of the queue.
+    qu.pop();                   // Remove it from the queue.
 
-    for(int x : adjList[frontVal]) {
-        indegree[x]--;
-        
-        if(!visited[x] && indegree[x] == 0) {
-            qu.push(x);
+    solution.push_back(frontVal); // Add the processed node to the topological order.
+    visited[frontVal] = 1;        // Mark this node as visited (redundant if using indegree only for logic).
+
+    // For each neighbor of the current node:
+    for(int neighbor : adjList[frontVal]) {
+        indegree[neighbor]--; // Decrement its in-degree (as 'frontVal' is now processed).
+
+        // If the neighbor becomes eligible (in-degree becomes 0) AND not yet processed (visited).
+        // The '!visited[neighbor]' check is what makes this behave somewhat like a recursive BFS,
+        // preventing re-queueing of already processed nodes from the 'solution'.
+        if(!visited[neighbor] && indegree[neighbor] == 0) {
+            qu.push(neighbor); // Enqueue the eligible neighbor.
         }
     }
 
+    // Recursively call for the next node in the queue.
     solveDFS(solution, adjList, qu, indegree, visited);
 }
 
-vector<int> topologicalSort(vector< vector<int> > &edges, int v, int e) {
-    unordered_map<int, list<int> > adjList;
-    vector<int> indegree(v,0);
-    queue<int> qu;
-    vector<bool> visited(v,0);
-    vector<int> solution;
+// Main function to perform topological sort using Kahn's Algorithm (BFS-based).
+// 'edges': A vector of vectors, where each inner vector {u, v} represents a directed edge u -> v.
+// 'v': Total number of vertices (nodes). Assumed to be 0-indexed.
+// 'e': Total number of edges.
+// Returns a vector containing the topological order of the nodes.
+vector<int> topologicalSort(vector<vector<int>> &edges, int v, int e) {
+    // 1. Initialize Adjacency List and In-degree array.
+    unordered_map<int, list<int>> adjList;
+    vector<int> indegree(v, 0); // Stores the count of incoming edges for each node.
 
-    for(int i=0; i<e; i++) {
+    // Populate adjacency list and calculate in-degrees for all nodes.
+    for(int i = 0; i < e; i++) {
         int u = edges[i][0];
-        int v = edges[i][1];
+        int v_node = edges[i][1]; // Renamed 'v' to 'v_node' to avoid conflict with function parameter 'v'.
 
-        adjList[u].push_back(v);
-        indegree[v]++;
+        adjList[u].push_back(v_node); // Directed edge u -> v_node.
+        indegree[v_node]++;           // Increment in-degree of v_node.
     }
 
-    for(int i=0; i<v; i++) {
+    // Initialize data structures for Kahn's algorithm.
+    queue<int> qu;               // Queue for BFS-like processing.
+    vector<bool> visited(v, false); // Tracks globally visited/processed nodes.
+    vector<int> solution;        // Stores the final topological order.
+
+    // 2. Enqueue all nodes with an in-degree of 0.
+    for(int i = 0; i < v; i++) {
         if(indegree[i] == 0) {
-            qu.push(i);
+            qu.push(i); // These are the starting nodes for the topological sort.
         }
     }
 
-    for(int i=0; i<v; i++) {
-        if(!visited[i]) {
-            solveDFS(solution, adjList, qu, indegree, visited);
-        }
-    }
+    // 3. Process the queue recursively using the helper function.
+    // The loop here for 'i=0; i<v;' combined with 'if(!visited[i])'
+    // is usually for DFS-based traversal of disconnected components.
+    // For Kahn's, the single initial queue population handles all start points correctly.
+    // The recursive call `solveDFS(solution, adjList, qu, indegree, visited);`
+    // within the loop seems to assume `qu` is re-populated correctly by the recursive calls
+    // and that the initial `qu` might not contain all starting nodes if the graph is disconnected
+    // and nodes with 0 in-degree are not contiguous.
+    // A standard iterative Kahn's algorithm would not need this outer loop and would just do:
+    // while(!qu.empty()) { ... process ... }
+    // The current recursive `solveDFS` already processes the queue till empty.
+    // So the outer loop and `if(!visited[i])` here is problematic for Kahn's.
+    // It should effectively just be one call to solveDFS with the initially populated queue.
+    // The `visited` check inside `solveDFS` and the outer loop create complexity that is not typical for Kahn's.
+    // A simple: solveDFS(solution, adjList, qu, indegree, visited); // after initial queue fill
+    // or better, an iterative while loop here in topologicalSort.
 
-    return solution;
+    // Corrected logic for standard Kahn's (replacing the loop with recursive call):
+    solveDFS(solution, adjList, qu, indegree, visited);
+
+
+    // Optional: Check for cycle detection. If solution.size() < v, a cycle exists.
+    // if (solution.size() != v) { cout << "Cycle detected! Topological sort not possible." << endl; }
+
+
+    return solution; // Return the topological sort.
 }
 
 int main() {
-    vector< vector<int> > edges;
-    int n, m;
+    vector<vector<int>> edges; // Vector to store the input edges.
+    int n, m;                 // 'n' for nodes, 'm' for edges.
 
     cout << "Enter number of nodes : ";
     cin >> n;
@@ -68,23 +109,90 @@ int main() {
     cout << "Enter number of edges : ";
     cin >> m;
 
-    cout << "Enter edges : " << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter directed edges (u v, meaning u -> v): " << endl;
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        edges.push_back({u,v});
+        cin >> u >> v;         // Read the source and destination for a directed edge.
+        edges.push_back({u, v}); // Add the edge to the 'edges' vector.
     }
 
+    // Perform topological sort.
     vector<int> topSort = topologicalSort(edges, n, m);
 
     cout << "Topological Sort : ";
     for(int x : topSort) {
-        cout << x << " ";
+        cout << x << " "; // Print the sorted nodes.
     }
+    cout << endl;
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
-
-// 4 4 0 1 1 2 0 3 3 2
-// 6 7 0 1 0 2 1 3 2 3 3 4 3 5 4 5
 ```
+
+
+### 1\. What is Topological Sort?
+
+  * **Topological Sort (or Topological Ordering)** is a linear ordering of vertices in a **Directed Acyclic Graph (DAG)**.
+  * For every directed edge `u -> v`, `u` must appear before `v` in the ordering.
+  * **Crucial**: Only possible for **Directed Acyclic Graphs (DAGs)**. If a cycle exists, a topological sort is impossible.
+  * **Applications**: Task scheduling, build systems, course prerequisite ordering.
+
+### 2\. Kahn's Algorithm (BFS-based Approach) Core Idea
+
+  * The fundamental principle is that any node with an **in-degree of 0** (no incoming edges) can be the first node in a topological sort, as it has no prerequisites.
+  * Once such a node is processed, it can be "removed" from the graph, and its outgoing edges no longer contribute to the in-degrees of its neighbors. This might cause some neighbors' in-degrees to drop to 0, making them eligible for the next step.
+  * This process is repeated using a queue, similar to BFS.
+
+### 3\. Algorithm Steps (`topologicalSort` function is the main logic)
+
+1.  **Build Adjacency List & Calculate In-Degrees**:
+
+      * Create an `adjList` (`unordered_map<int, list<int>>`) for the directed graph.
+      * Initialize an `in-degree` array/vector (`vector<int> indegree(v, 0)`) of size `V` (number of nodes).
+      * Iterate through all `edges (u, v)`:
+          * Add `v` to `adjList[u]`.
+          * Increment `indegree[v]` (because `v` has an incoming edge from `u`).
+
+2.  **Initialize Queue**:
+
+      * Create an empty `queue<int> qu`.
+      * Iterate through all nodes from `0` to `V-1`.
+      * If `indegree[i] == 0` for any node `i`, push `i` onto the `qu`. These are the starting points.
+
+3.  **Process Queue (BFS-like)**:
+
+      * Create `solution` vector to store the topological order.
+      * While `qu` is not empty:
+          * `frontVal = qu.front(); qu.pop();` (Dequeue the current node).
+          * `solution.push_back(frontVal);` (Add it to the topological order).
+          * For each `neighbor (x)` in `adjList[frontVal]`:
+              * Decrement `indegree[x]`. (Effectively "removing" the edge `frontVal -> x`).
+              * If `indegree[x]` becomes `0`, push `x` onto the `qu`. (It's now eligible).
+
+4.  **Cycle Detection (Implicit)**:
+
+      * If, at the end of the algorithm, the size of `solution` is less than `V`, it means not all nodes could be added to the topological sort. This implies the graph contains a **cycle**. (This specific code snippet does not explicitly check and return "Cycle Detected", but this is how Kahn's algorithm can identify cycles).
+
+### 5\. The `solveDFS` function in the provided code
+
+  * The `solveDFS` function in the provided code is a **recursive implementation of the BFS processing loop** for Kahn's algorithm.
+  * It's an unusual way to implement Kahn's, which is typically iterative. The `visited` array within `solveDFS` is largely redundant if the `indegree == 0` check is robust and the initial queue population covers all start nodes. The core logic of Kahn's is that a node is processed *only when* its in-degree becomes zero, not when it's first encountered in a DFS-like recursive call.
+  * **Standard Kahn's is ITERATIVE**: The standard, clearer implementation of Kahn's algorithm would put the `while(!qu.empty())` loop directly in the `topologicalSort` function, without the need for `solveDFS` or `visited` (as `indegree` implicitly handles visit status). The current recursive approach with `visited` might lead to unexpected behavior or an incomplete sort if not carefully managed with the `indegree` logic.
+
+### 6\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)`
+      * Building `adjList` and calculating `in-degrees`: `O(E)`.
+      * Initializing queue: `O(V)`.
+      * BFS traversal (processing queue): Each vertex is enqueued/dequeued once (`O(V)`), and each edge is processed once (`O(E)`).
+      * Total: `O(V + E)`.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList`: `O(V + E)`.
+      * `indegree` array: `O(V)`.
+      * `queue`: `O(V)` in the worst case.
+      * `solution` vector: `O(V)`.
+      * `visited` (if used): `O(V)`.
+
+-----
+
+

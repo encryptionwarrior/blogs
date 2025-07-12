@@ -3,90 +3,250 @@ title: Climbing Stairs
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector.
+using namespace std;     // Use the standard namespace.
 
+// 1. Recursive Approach (Brute Force) - "Climbing from N down to 0" perspective
+// Calculates total ways to reach 'n'th stair by taking 1 or 2 steps.
+// Time Complexity: O(2^N) - Exponential, due to repeated calculations of subproblems.
+// Space Complexity: O(N) - Due to recursion stack depth.
 int totalWaysRec(int n) {
-    if(n<=0) return 0;
-    if(n<=2) return n;
+    // Base cases:
+    // If n is 0 or less, it means we have overshot or are at a non-existent stair.
+    // In this specific formulation, 0 ways to reach <= 0.
+    if(n <= 0) return 0;
+    // To reach stair 1: 1 way (take 1 step).
+    // To reach stair 2: 2 ways (1+1, or 2).
+    if(n <= 2) return n;
+    // For n > 2, total ways to reach 'n' is sum of ways to reach (n-1) and (n-2).
+    // You could have reached 'n' by taking 1 step from (n-1) or 2 steps from (n-2).
     return totalWaysRec(n-1) + totalWaysRec(n-2);
 }
 
+// 1b. Alternative Recursive Approach - "Climbing from 0 up to N" perspective
+// Calculates total ways to reach 'n'th stair starting from 'i'th stair.
+// 'n': Target stair.
+// 'i': Current stair.
+// Time Complexity: O(2^N) - Exponential.
+// Space Complexity: O(N) - Recursion stack.
 int totalWaysRec2(int n, int i) {
-    if(i==n) return 1;
-    if(i>n) return 0;
+    if(i == n) return 1; // Base case: If we are exactly at 'n', this is one valid way.
+    if(i > n) return 0;  // Base case: If we have overshot 'n', this path is invalid.
+    // Sum ways by taking 1 step (i+1) and 2 steps (i+2).
     return totalWaysRec2(n, i+1) + totalWaysRec2(n, i+2);
 }
 
-/*
-    Recursion + Memoization
-*/
-int totalWaysDP(int n, vector<int> &dp) {
-    if(n<=0) return 0;
-    if(n<=2) return n;
-    
-    if(dp[n] != 0) return dp[n];
+// 2. Dynamic Programming - Top-Down Approach (Recursion + Memoization)
+// Optimizes the recursive solution by storing computed results to avoid redundant calculations.
+// 'n': Target stair.
+// 'dp': Memoization table (vector), initialized with 0 (or -1) indicating not computed.
+// Time Complexity: O(N) - Each subproblem is computed once.
+// Space Complexity: O(N) for 'dp' vector + O(N) for recursion stack = O(N) total.
+int totalWaysDP(int n, vector<int> &dp) { // Renamed to avoid overload conflict in main if both fibDP were active
+    // Base cases for n:
+    // Consistent with totalWaysRec:
+    if(n <= 0) return 0;
+    if(n <= 2) return n;
 
+    // Check if the result for 'n' is already computed.
+    if(dp[n] != 0) return dp[n]; // If dp[n] is not 0 (our sentinel), return stored value.
+
+    // Compute and store the result.
     dp[n] = totalWaysDP(n-1, dp) + totalWaysDP(n-2, dp);
     return dp[n];
 }
 
-/*
-    Tabulation
-*/
-int totalWaysDP(int n) {
-    vector<int> dp(n+1, 0);
-    dp[0] = dp[1] = 1;
-    
-    for(int i=2; i<=n; i++) {
+// 3. Dynamic Programming - Bottom-Up Approach (Tabulation)
+// Builds the solution iteratively from base cases up to 'n'.
+// 'n': Target stair.
+// Time Complexity: O(N) - Single loop from 2 to N.
+// Space Complexity: O(N) - For the 'dp' vector.
+int totalWaysDP(int n) { // Original name from problem statement
+    // Handle small 'n' values separately for dp table indexing.
+    // If n=0, 1 way (do nothing).
+    // If n=1, 1 way (take 1 step).
+    if (n == 0) return 1;
+    if (n == 1) return 1;
+
+    // Create a dp table of size n+1.
+    vector<int> dp(n + 1, 0);
+    // Initialize base cases for tabulation.
+    // dp[0] represents 1 way to be at the start (0th step).
+    // dp[1] represents 1 way to reach the 1st step (from 0th).
+    dp[0] = 1;
+    dp[1] = 1;
+
+    // Iterate from stair 2 up to stair 'n'.
+    // For each stair 'i', ways to reach it is sum of ways to reach (i-1) and (i-2).
+    for(int i = 2; i <= n; i++) {
         dp[i] = dp[i-1] + dp[i-2];
     }
 
-    return dp[n];
+    return dp[n]; // The answer is stored at dp[n].
 }
 
-/*
-    Space optimisation
-*/
+// 4. Dynamic Programming - Space Optimization Approach
+// Optimizes the bottom-up approach to use only constant space.
+// 'n': Target stair.
+// Time Complexity: O(N) - Single loop.
+// Space Complexity: O(1) - Uses only a few variables.
 int totalWaysDP2(int n) {
-    int prev1 = 1;
-    int prev2 = 1;
+    // Handle small 'n' values.
+    if(n == 0) return 1; // 1 way to reach 0th stair (do nothing).
+    if(n == 1) return 1; // 1 way to reach 1st stair.
 
-    for(int i=2; i<=n; i++) {
+    // prev1 will store ways to reach (i-1)th stair.
+    // prev2 will store ways to reach (i-2)th stair.
+    // Initialize for i=2: prev1 is ways for 1, prev2 is ways for 0.
+    int prev1 = 1; // Corresponds to dp[1]
+    int prev2 = 1; // Corresponds to dp[0]
+
+    // Iterate from stair 2 up to stair 'n'.
+    for(int i = 2; i <= n; i++) {
+        // 'curr' calculates ways to reach current stair 'i'.
         int curr = prev1 + prev2;
 
+        // Update for the next iteration:
+        // 'prev2' becomes the old 'prev1'.
+        // 'prev1' becomes the current 'curr'.
         prev2 = prev1;
         prev1 = curr;
     }
 
-    return prev1;
+    return prev1; // After the loop, 'prev1' holds the total ways to reach 'n'th stair.
 }
 
+// Main function for testing different approaches.
 int main() {
-    // int n;
-    // cout << "Enter n : ";
-    // cin >> n;
+    // Example usage of commented out single input code:
+    /*
+    int n;
+    cout << "Enter n : ";
+    cin >> n;
 
-    // int ans = totalWaysRec(n);
+    // int ans = totalWaysRec(n); // Recursive (Brute Force) - might be slow for large N
 
-    // vector<int> dp(n+1, 0);
-    // int ans = totalWaysDP(n, dp);
+    vector<int> dp_memo(n + 1, 0); // Initialize dp table for memoization
+    int ans = totalWaysDP(n, dp_memo); // DP Top-Down (Memoization)
 
-    // cout << "Total ways to climb " << n << " stairs : " << ans << endl;
+    // int ans = totalWaysDP(n); // DP Bottom-Up (Tabulation)
+    // int ans = totalWaysDP2(n); // DP Space Optimized
 
+    cout << "Total ways to climb " << n << " stairs : " << ans << endl;
+    */
+
+    // Test with multiple inputs to show results from all methods.
     vector<int> input = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 37};
-    for(int i=0; i<input.size(); i++) {
-        vector<int> dp(input[i]+1, 0);
+    cout << "n | Rec1 | Rec2 | Memo | Tab | SpaceOpt" << endl;
+    cout << "---------------------------------------" << endl;
+    for(int i = 0; i < input.size(); i++) {
+        int n_val = input[i];
+        // Create a new dp table for each test case for memoization function.
+        vector<int> dp_for_memo(n_val + 1, 0);
 
-        cout << "For " << input[i] << " : ";
-        cout << totalWaysRec(input[i]) << " ";
-        cout << totalWaysRec2(input[i], 0) << " ";
-        cout << totalWaysDP(input[i], dp) << " ";
-        cout << totalWaysDP(input[i]) << " ";
-        cout << totalWaysDP2(input[i]) << endl;
+        cout << setw(2) << n_val << " | "; // Use setw for alignment
+        // Call each function and print results.
+        // totalWaysRec(n_val) uses base cases (0->0, 1->1, 2->2)
+        cout << setw(4) << totalWaysRec(n_val) << " | ";
+        // totalWaysRec2(n_val, 0) uses base cases (0->1 for n=0, 1->1 for n=1)
+        cout << setw(4) << totalWaysRec2(n_val, 0) << " | ";
+        // totalWaysDP(n_val, dp_memo) uses base cases (0->0, 1->1, 2->2)
+        cout << setw(4) << totalWaysDP(n_val, dp_for_memo) << " | ";
+        // totalWaysDP(n_val) (tabulation) uses base cases (0->1, 1->1)
+        cout << setw(3) << totalWaysDP(n_val) << " | ";
+        // totalWaysDP2(n_val) (space optimized) uses base cases (0->1, 1->1)
+        cout << setw(8) << totalWaysDP2(n_val) << endl;
     }
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Find the total number of distinct ways to climb to the `N`-th stair.
+  * **Constraint**: You can climb either 1 or 2 steps at a time.
+  * **Example**:
+      * To reach stair 1: (1 step) -\> 1 way
+      * To reach stair 2: (1+1 step), (2 steps) -\> 2 ways
+      * To reach stair 3: (1+1+1), (1+2), (2+1) -\> 3 ways
+      * To reach stair 4: (1+1+1+1), (1+1+2), (1+2+1), (2+1+1), (2+2) -\> 5 ways
+
+### 2\. Relationship to Fibonacci
+
+  * Notice the pattern: $F(1)=1$, $F(2)=2$, $F(3)=3$, $F(4)=5$.
+  * This sequence is directly related to the Fibonacci numbers, but with a slight shift in indices.
+  * If we define $F(0)=1$ (representing 1 way to be at the "start" or "0th" stair, which is usually how this mapping is handled for base cases), then the number of ways to reach stair $N$ is $F(N+1)$ using the standard Fibonacci definition where $F(0)=0, F(1)=1$.
+  * Alternatively, if you define `ways(0)=1`, `ways(1)=1`, then `ways(n) = ways(n-1) + ways(n-2)`. This aligns perfectly with Fibonacci sequence if $F(0)=1, F(1)=1, F(2)=2, \\dots$. (Your `totalWaysDP(int n)` and `totalWaysDP2(int n)` align with this where `dp[0]=1, dp[1]=1`).
+
+### 3\. Approaches to Solving
+
+#### A. Recursive Approach (Brute Force)
+
+  * **Idea**: To reach stair `N`, you could have come from stair `N-1` (by taking 1 step) or from stair `N-2` (by taking 2 steps). Sum the ways to reach `N-1` and `N-2`.
+  * **Recurrence**: `ways(N) = ways(N-1) + ways(N-2)`
+  * **Base Cases**:
+      * `ways(0) = 0` (your `totalWaysRec`) or `ways(0) = 1` (your `totalWaysRec2`)
+      * `ways(1) = 1`
+      * `ways(2) = 2` (if using `ways(N) = ways(N-1) + ways(N-2)` directly from `N=2`)
+  * **Pros**: Simple and direct translation.
+  * **Cons**: Highly inefficient due to **redundant calculations** (overlapping subproblems).
+  * **Time Complexity**: $O(2^N)$ (Exponential, similar to pure Fibonacci recursion).
+  * **Space Complexity**: $O(N)$ (Due to recursion stack depth).
+
+#### B. Dynamic Programming - Top-Down (Memoization)
+
+  * **Idea**: Optimize the recursive approach by storing the results of already computed subproblems in a `dp` table. Before computing `ways(N)`, check if it's already stored.
+  * **Pros**: Overcomes redundant calculations.
+  * **Cons**: Still uses a recursion stack.
+  * **Time Complexity**: $O(N)$ (Each subproblem is computed only once).
+  * **Space Complexity**: $O(N)$ (For `dp` array) + $O(N)$ (For recursion stack) = $O(N)$.
+
+#### C. Dynamic Programming - Bottom-Up (Tabulation)
+
+  * **Idea**: Build the solution iteratively from the base cases upwards.
+  * **Steps**:
+    1.  Initialize `dp[0]` and `dp[1]` based on the problem's base cases.
+    2.  Iterate from `i = 2` to `N`, calculating `dp[i] = dp[i-1] + dp[i-2]`.
+  * **Pros**: No recursion stack overhead. Efficient and often clearer iterative logic.
+  * **Cons**: Requires an array of size `N+1`.
+  * **Time Complexity**: $O(N)$ (Single loop).
+  * **Space Complexity**: $O(N)$ (For `dp` array).
+
+#### D. Dynamic Programming - Space Optimization
+
+  * **Idea**: Notice that to calculate `ways(N)`, we only need `ways(N-1)` and `ways(N-2)`. We can use just two variables to store these values, updating them in each iteration.
+  * **Pros**: Extremely efficient in terms of space.
+  * **Cons**: Applicable only when the current state depends on a constant number of previous states.
+  * **Time Complexity**: $O(N)$ (Single loop).
+  * **Space Complexity**: $O(1)$ (Constant space).
+
+### 4\. Important Base Case Considerations
+
+The "Climbing Stairs" problem's base cases can sometimes be tricky depending on how you define `N` and what `ways(0)` represents:
+
+  * **If `ways(0)` means "0 steps to take, 1 way (do nothing)"**:
+
+      * `dp[0] = 1` (ways to reach 0th stair - 1 way: do nothing)
+      * `dp[1] = 1` (ways to reach 1st stair - 1 way: take 1 step from 0)
+      * `dp[i] = dp[i-1] + dp[i-2]` for `i >= 2`.
+      * This is the most common and intuitive mapping to Fibonacci when considering `dp[0]=1, dp[1]=1`.
+
+  * **If `ways(0)` means "0 steps to take, 0 ways" (like your `totalWaysRec`)**:
+
+      * `ways(0) = 0`
+      * `ways(1) = 1`
+      * `ways(2) = 2`
+      * Then `ways(N)` for $N\>2$ follows Fibonacci-like sequence where $F(0)=0, F(1)=1, F(2)=2, F(3)=3, F(4)=5 \\dots$
+
+Your code's `totalWaysDP(int n)` (tabulation) and `totalWaysDP2(int n)` (space optimized) correctly use `dp[0]=1, dp[1]=1` which is the standard interpretation for counting ways to reach stair `N` from `0`. Your `totalWaysRec(int n)` has slightly different base cases (`n<=0 return 0`, `n<=2 return n`) which effectively means:
+$F'(0)=0$
+$F'(1)=1$
+$F'(2)=2$
+$F'(N) = F'(N-1)+F'(N-2)$ for $N\>2$.
+This leads to the sequence: 0, 1, 2, 3, 5, 8, ... which is $F(N+1)$ for $N \\ge 1$ from the standard sequence $F(0)=0, F(1)=1, F(2)=1, F(3)=2, F(4)=3, \\dots$. So for `n=3`, `totalWaysRec(3)` gives 3, while `totalWaysDP(3)` gives 3. For `n=2`, `totalWaysRec(2)` gives 2, while `totalWaysDP(2)` gives 2. The mapping works for the "number of ways" interpretation. `totalWaysRec2(n, 0)` gives the same result as `totalWaysDP(n)` where `dp[0]=1, dp[1]=1`.
+
+-----
+
+

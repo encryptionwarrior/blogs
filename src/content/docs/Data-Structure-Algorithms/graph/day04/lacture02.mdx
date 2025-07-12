@@ -3,102 +3,229 @@ title: Shortest Path In Directed Acyclic Graph
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, stack, vector, limits.
+using namespace std;     // Use the standard namespace.
 
-void solveDFS(unordered_map< int, list<pair<int,int>> > &adjList, stack<int> &st, vector<int> & visited, int node) {
-    visited[node] = 1;
+// Recursive DFS helper function for Topological Sort.
+// This generates a topological ordering of nodes, pushed onto a stack.
+// 'adjList': The adjacency list of the graph (nodes point to {neighbor, weight}).
+// 'st': A stack where nodes are pushed after all their descendants are visited.
+// 'visited': A vector to keep track of visited nodes globally.
+// 'node': The current node being visited.
+void solveDFS(unordered_map<int, list<pair<int, int>>> &adjList, stack<int> &st, vector<int> &visited, int node) {
+    visited[node] = 1; // Mark the current node as visited.
 
-    for(pair<int,int> neigh : adjList[node]) {
+    // Iterate through all neighbors of the current node.
+    // 'neigh.first' is the neighbor node, 'neigh.second' is the weight to that neighbor.
+    for(pair<int, int> neigh : adjList[node]) {
+        // If the neighbor has not been visited, recursively call DFS on it.
         if(visited[neigh.first] == 0) {
             solveDFS(adjList, st, visited, neigh.first);
         }
     }
 
+    // After all descendants of 'node' have been visited and pushed to the stack,
+    // push 'node' itself onto the stack. This ensures topological order when popped.
     st.push(node);
 }
 
-stack<int> topoSort(unordered_map< int, list<pair<int,int>> > adjList, int n) {
-    stack<int> st;
-    vector<int> visited(n,0);
+// Function to perform Topological Sort using DFS.
+// 'adjList': The adjacency list of the graph.
+// 'n': Total number of nodes.
+// Returns a stack containing nodes in topological order.
+stack<int> topoSort(unordered_map<int, list<pair<int, int>>> adjList, int n) {
+    stack<int> st;               // Stack to store the topological order.
+    vector<int> visited(n, 0);   // Visited array, initialized to 0 (not visited).
 
-    for(auto x : adjList) {
-        if(visited[x.first] == 0) {
-            solveDFS(adjList, st, visited, x.first);
+    // Iterate through all nodes to handle disconnected components.
+    // Assuming nodes are 0-indexed.
+    for(int i = 0; i < n; i++) { // Iterate through node IDs (0 to n-1).
+        // Check if the node is present in adjList and is unvisited.
+        // The condition `adjList.count(i)` ensures we only try to process nodes that actually exist in the graph.
+        // If node IDs are guaranteed 0 to n-1 without gaps, `adjList.count(i)` isn't strictly necessary.
+        if (adjList.count(i) || !adjList[i].empty() || i < n) { // Simplified check for graph nodes.
+            if(visited[i] == 0) {
+                solveDFS(adjList, st, visited, i); // Start DFS from unvisited node.
+            }
         }
     }
+    // Note: If nodes can have gaps or start from 1, the iteration should be more robust.
+    // The current `adjList` uses `unordered_map`, which handles arbitrary integer keys.
+    // The `visited` vector of size `n` implies 0 to n-1 indexing.
+    // If node IDs can be sparse, `visited` should also be `unordered_map<int, bool>`.
 
-    return st;
+    return st; // Return the stack with topological order.
 }
 
-vector<int> shortestPath(vector< vector<int> > &edges, int n, int m, int src) {
-    // Creating adj list
-    unordered_map< int, list<pair<int,int>> > adjList;
-    for(int i=0; i<m; i++) {
-        int u = edges[i][0];
-        int v = edges[i][1];
-        int w = edges[i][2];
-
-        adjList[u].push_back({v,w});
+// Main function to find shortest paths from a source in a DAG.
+// 'edges': A vector of vectors, where each inner vector {u, v, w} represents a directed edge u -> v with weight w.
+// 'n': Total number of nodes.
+// 'm': Total number of edges.
+// 'src': The source node.
+// Returns a vector containing the shortest distances from 'src' to all other nodes.
+vector<int> shortestPath(vector<vector<int>> &edges, int n, int m, int src) {
+    // 1. Create Adjacency List from the weighted directed edges.
+    unordered_map<int, list<pair<int, int>>> adjList;
+    for(int i = 0; i < m; i++) {
+        int u = edges[i][0]; // Source node.
+        int v = edges[i][1]; // Destination node.
+        int w = edges[i][2]; // Weight of the edge.
+        adjList[u].push_back({v, w}); // Directed edge u -> v with weight w.
     }
 
+    // 2. Perform Topological Sort to get the processing order.
+    // The topoSort function iterates all nodes from 0 to n-1.
     stack<int> st = topoSort(adjList, n);
-    stack<int> temp = st;
+
+    // Optional: Print topological sort (for debugging/understanding).
+    stack<int> temp = st; // Create a copy to print without modifying original stack.
+    cout << "Topological Sort Order: ";
+    vector<int> topo_order_vec;
     while(!temp.empty()) {
-        cout << temp.top() << " ";
+        topo_order_vec.push_back(temp.top());
         temp.pop();
     }
+    reverse(topo_order_vec.begin(), topo_order_vec.end()); // Reverse to print in correct topo order
+    for(int node_val : topo_order_vec) {
+        cout << node_val << " ";
+    }
     cout << endl;
+    // Original code printed from stack directly, which is reverse of topological order.
+    // `while(!temp.empty()) { cout << temp.top() << " "; temp.pop(); } cout << endl;`
 
-    // Initialising distance vector
-    vector<int> distance(n,INT_MAX);
-    distance[src] = 0;
 
+    // 3. Initialize distance vector.
+    // `INT_MAX` is used to represent infinity (unreachable nodes).
+    vector<int> distance(n, INT_MAX);
+    distance[src] = 0; // Distance from source to itself is 0.
+
+    // 4. Process nodes in topological order and relax edges.
     while(!st.empty()) {
-        int node = st.top();
-        st.pop();
+        int node = st.top(); // Get the next node from the topological sort.
+        st.pop();            // Pop it from the stack.
 
+        // Only process if the current node is reachable from the source.
         if(distance[node] != INT_MAX) {
-            for(auto x : adjList[node]) {
-                if(distance[node] + x.second < distance[x.first]) {
-                    distance[x.first] = distance[node] + x.second;
+            // Iterate through all neighbors of the current node.
+            for(auto neighbor_pair : adjList[node]) {
+                int neighbor = neighbor_pair.first;
+                int weight = neighbor_pair.second;
+
+                // Relaxation step: If a shorter path to 'neighbor' is found.
+                // distance[node] + weight: Distance from source to 'node' + weight of edge 'node -> neighbor'.
+                // distance[neighbor]: Current shortest distance from source to 'neighbor'.
+                if(distance[node] + weight < distance[neighbor]) {
+                    distance[neighbor] = distance[node] + weight; // Update shortest distance.
                 }
             }
         }
     }
 
-    return distance;
+    return distance; // Return the vector of shortest distances.
 }
 
 int main() {
-    vector<vector<int>> edges;
-    int n, m, src;
+    vector<vector<int>> edges; // Vector to store input edges {u, v, w}.
+    int n, m, src;             // 'n' for nodes, 'm' for edges, 'src' for source node.
 
     cout << "Enter the number of nodes : ";
     cin >> n;
-    
+
     cout << "Enter the number of edges : ";
     cin >> m;
 
-    cout << "Enter the edges : " << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter the edges (u v w, meaning u -> v with weight w): " << endl;
+    for(int i = 0; i < m; i++) {
         int u, v, w;
-        cin >> u >> v >> w;
-        edges.push_back({u,v,w});
+        cin >> u >> v >> w;         // Read source, destination, and weight.
+        edges.push_back({u, v, w}); // Add edge to vector.
     }
 
     cout << "Enter the source : ";
     cin >> src;
 
-    vector<int> answer = shortestPath(edges, n, m, src);
-    cout << "The shortest path : ";
-    for(int x : answer) {
-        cout << x << " ";
+    // Call shortestPath function.
+    vector<int> answer_distances = shortestPath(edges, n, m, src);
+
+    cout << "Shortest distances from source " << src << ":" << endl;
+    for(int i = 0; i < n; i++) {
+        cout << "Node " << i << ": ";
+        if(answer_distances[i] == INT_MAX) {
+            cout << "Unreachable" << endl;
+        } else {
+            cout << answer_distances[i] << endl;
+        }
     }
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
-
-// 6 9 0 1 5 1 2 2 1 3 6 0 2 3 2 3 7 3 4 -1 2 4 4 4 5 -2 2 5 2
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Find the shortest path (minimum total weight) from a given `source` node to all other reachable nodes in a **Weighted Directed Acyclic Graph (DAG)**.
+  * **Key Constraint**: This algorithm works *only* for DAGs. It does not work for graphs with cycles, especially those with negative weight cycles.
+  * **Input**: List of weighted directed `edges (u, v, w)`, total `n` nodes, total `m` edges, `src` (source node).
+  * **Output**: A vector `distance` where `distance[i]` is the shortest path distance from `src` to node `i`. `INT_MAX` indicates unreachable.
+
+### 2\. Core Idea
+
+The shortest path in a DAG can be found efficiently by combining:
+
+1.  **Topological Sort**: First, compute a topological ordering of the graph's nodes. This ensures that when we process a node, all its prerequisites (nodes that must come before it in any path) have already been processed.
+2.  **Single Pass Relaxation**: Iterate through the nodes in topological order. For each node, relax all its outgoing edges. "Relaxing an edge" `u -> v` with weight `w` means updating `distance[v]` if `distance[u] + w` is less than the current `distance[v]`.
+
+### 3\. Algorithm Steps
+
+#### A. Topological Sort (DFS-based)
+
+  * **`solveDFS` function**:
+      * Parameters: `adjList`, `st` (a stack), `visited` array, `node`.
+      * Mark `visited[node] = true`.
+      * Recursively call `solveDFS` for all unvisited neighbors.
+      * **Crucial**: After all neighbors and their descendants are processed, push `node` onto `st`.
+  * **`topoSort` function**:
+      * Builds the `adjList` from input (if not already built).
+      * Initializes `visited` array and an empty `stack st`.
+      * Iterates through all nodes (`0` to `n-1`). If `!visited[node]`, calls `solveDFS` to start DFS for that component.
+      * Returns the populated `stack st`.
+
+#### B. Shortest Path Calculation (`shortestPath` function)
+
+1.  **Build Adjacency List**: Create `adjList` from the input `edges`. For weighted directed edges `u -> v` with weight `w`, store `v` and `w` (e.g., `adjList[u].push_back({v, w})`).
+2.  **Perform Topological Sort**: Call `topoSort(adjList, n)` to get the topological order in a stack.
+3.  **Initialize Distance Array**:
+      * Create `vector<int> distance(n, INT_MAX)`.
+      * Set `distance[src] = 0`. All other nodes are initially unreachable (`INT_MAX`).
+4.  **Process Nodes in Topological Order**:
+      * While the topological sort stack `st` is not empty:
+          * `node = st.top(); st.pop();` (Get the next node in topological order).
+          * **Important Check**: If `distance[node] != INT_MAX` (meaning `node` is reachable from `src`):
+              * For each `neighbor (x.first)` and its `weight (x.second)` from `adjList[node]`:
+                  * **Relaxation Step**: If `distance[node] + x.second < distance[x.first]`:
+                      * `distance[x.first] = distance[node] + x.second;` (Update the shortest distance to `x.first`).
+5.  **Return**: The `distance` vector.
+
+### 4\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)`
+      * Building `adjList`: `O(E)`.
+      * Topological Sort (DFS): Each vertex and edge visited once. `O(V + E)`.
+      * Distance initialization: `O(V)`.
+      * Relaxation step: Each vertex is popped once. For each vertex, its outgoing edges are iterated. Each edge is relaxed exactly once. `O(V + E)`.
+      * Total: `O(V + E)`.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList`: `O(V + E)`.
+      * `visited` vector: `O(V)`.
+      * `stack` for topological sort: `O(V)`.
+      * `distance` vector: `O(V)`.
+
+### 5\. Why it works for DAGs and not general graphs
+
+  * In a DAG, the topological sort guarantees that all predecessors of a node are processed *before* the node itself. This means by the time we process `node`, `distance[node]` already holds the correct shortest path from `src` (assuming `src` itself is processed before or is the first node).
+  * In graphs with cycles (especially negative cycles), this single-pass relaxation won't work, as distances might continuously decrease, and there's no fixed order to guarantee correct processing. For general graphs, Dijkstra's (non-negative weights) or Bellman-Ford (can handle negative weights, detects negative cycles) are used.
+
+-----
+
+

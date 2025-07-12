@@ -3,83 +3,180 @@ title: Fibonacci Series
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector.
+using namespace std;     // Use the standard namespace.
 
+// 1. Recursive Approach (Brute Force)
+// Directly implements the Fibonacci recurrence relation.
+// Time Complexity: O(2^N) - Exponential due to redundant calculations.
+// Space Complexity: O(N) - Due to recursion stack depth.
 int fibRec(int n) {
-    if(n <= 1) return n;
+    if(n <= 1) { // Base cases: F(0) = 0, F(1) = 1
+        return n;
+    }
+    // Recursive calls: F(N) = F(N-1) + F(N-2)
     return fibRec(n-1) + fibRec(n-2);
 }
 
-/*
-    Top-down approach (Recursion + Memoisation)
-    TC : O(N)
-    SC : O(N) + O(N) : O(N)
-*/
-int fibDP(int n, vector<int> &dp) {
-    if(n <= 1) {
+// 2. Dynamic Programming - Top-Down Approach (Recursion + Memoization)
+// Optimizes recursion by storing results of subproblems in a DP table to avoid re-calculation.
+// 'n': The number for which Fibonacci is calculated.
+// 'dp': A vector used as a memoization table, initialized with -1 (or some sentinel value).
+// Time Complexity: O(N) - Each subproblem is computed only once.
+// Space Complexity: O(N) for 'dp' vector + O(N) for recursion stack = O(N) total.
+int fibDP_Memo(int n, vector<int> &dp) { // Renamed to avoid overload conflict in main if both fibDP were active
+    if(n <= 1) { // Base cases: F(0) = 0, F(1) = 1
         return n;
     }
 
+    // If the result for 'n' is already computed and stored in dp table, return it.
     if(dp[n] != -1) {
         return dp[n];
     }
 
-    dp[n] = fibDP(n-1, dp) + fibDP(n-2, dp);
+    // Compute the result and store it in dp table before returning.
+    dp[n] = fibDP_Memo(n-1, dp) + fibDP_Memo(n-2, dp);
     return dp[n];
 }
 
-/*
-    Bottom-up approach (Tabulation)
-    TC : O(N)
-    SC : O(N)
-*/
-int fibDP(int n) {
-    vector<int> dp(n+1, -1);
+// 3. Dynamic Programming - Bottom-Up Approach (Tabulation)
+// Builds the solution iteratively from base cases up to 'n'.
+// 'n': The number for which Fibonacci is calculated.
+// Time Complexity: O(N) - Single loop from 2 to N.
+// Space Complexity: O(N) - For the 'dp' vector.
+int fibDP_Tab(int n) { // Renamed to avoid overload conflict
+    // Handle small 'n' values directly to prevent issues with dp table size (e.g., n=0, n=1).
+    if (n <= 1) return n;
+
+    // Create a dp table of size n+1 to store Fibonacci numbers up to F(n).
+    vector<int> dp(n + 1);
+
+    // Initialize base cases in the dp table.
     dp[0] = 0;
     dp[1] = 1;
 
-    for(int i=2; i<=n; i++) {
+    // Iterate from 2 up to 'n' to fill the dp table.
+    // Each F(i) is the sum of the two preceding Fibonacci numbers.
+    for(int i = 2; i <= n; i++) {
         dp[i] = dp[i-1] + dp[i-2];
     }
 
+    // The result is stored at dp[n].
     return dp[n];
 }
 
-/*
-    Space optimisation approach
-    TC : O(N)
-    SC : O(1)
-*/
-int fibDP2(int n) {
-    if(n <= 1) return n;
+// 4. Dynamic Programming - Space Optimization Approach
+// Further optimizes the bottom-up approach by using only a constant amount of space.
+// It only needs the two previous Fibonacci numbers to calculate the current one.
+// 'n': The number for which Fibonacci is calculated.
+// Time Complexity: O(N) - Single loop from 2 to N.
+// Space Complexity: O(1) - Uses only a few constant variables.
+int fibDP_SpaceOpt(int n) { // Renamed for clarity
+    if(n <= 1) { // Base cases: F(0) = 0, F(1) = 1
+        return n;
+    }
 
-    int prev1 = 1;
-    int prev2 = 0;
+    // Initialize variables to store the two previous Fibonacci numbers.
+    // For i=2, prev1 holds F(1) and prev2 holds F(0).
+    int prev1 = 1; // Corresponds to F(i-1)
+    int prev2 = 0; // Corresponds to F(i-2)
 
-    for(int i=2; i<=n; i++) {
+    // Iterate from 2 up to 'n'.
+    for(int i = 2; i <= n; i++) {
+        // Calculate the current Fibonacci number.
         int curr = prev1 + prev2;
-        
+
+        // Update prev2 to hold the value that was prev1 (F(i-2) becomes F(i-1) for next iteration).
         prev2 = prev1;
+        // Update prev1 to hold the value that was curr (F(i-1) becomes F(i) for next iteration).
         prev1 = curr;
     }
 
+    // After the loop, prev1 will hold F(n).
     return prev1;
 }
 
+// Main function to demonstrate the usage of Fibonacci calculation methods.
 int main() {
     int n;
-    cout << "Enter n : ";
+    cout << "Enter n (to calculate Nth Fibonacci number): ";
     cin >> n;
 
-    // int ans = fibRec(n);
-    
-    vector<int> dp(n+1, -1);
-    int ans = fibDP(n, dp);
-    
-    cout << "Nth fibonacci number : " << ans << endl;
+    // --- Uncomment one of the following lines to test different approaches ---
 
-    return 0;
+    // 1. Recursive (Brute Force) - Caution: Very slow for large N (e.g., N > 40)
+    // int ans = fibRec(n);
+
+    // 2. DP - Top-Down (Memoization)
+    vector<int> dp(n + 1, -1); // Initialize dp table with -1
+    int ans = fibDP_Memo(n, dp);
+
+    // 3. DP - Bottom-Up (Tabulation)
+    // int ans = fibDP_Tab(n);
+
+    // 4. DP - Space Optimization
+    // int ans = fibDP_SpaceOpt(n);
+
+
+    cout << "The " << n << "th Fibonacci number is: " << ans << endl;
+
+    return 0; // Indicate successful execution.
 }
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Calculate the Nth Fibonacci number, typically denoted as $F(N)$.
+  * **Fibonacci Sequence Definition**: A sequence where each number is the sum of the two preceding ones, usually starting with 0 and 1.
+      * $F(0) = 0$
+      * $F(1) = 1$
+      * $F(N) = F(N-1) + F(N-2)$ for $N \> 1$
+  * **Example**: 0, 1, 1, 2, 3, 5, 8, 13, 21, ...
+
+### 2\. Approaches to Solving Fibonacci
+
+#### A. Recursive Approach (Brute Force)
+
+  * **Idea**: Directly implement the recursive definition $F(N) = F(N-1) + F(N-2)$.
+  * **Pros**: Simple and direct translation of the mathematical definition.
+  * **Cons**: Highly inefficient due to **redundant calculations**. Many subproblems are re-calculated multiple times (e.g., $F(3)$ is calculated multiple times when finding $F(5)$).
+  * **Time Complexity**: $O(2^N)$ (Exponential, as it forms a recursion tree).
+  * **Space Complexity**: $O(N)$ (Due to recursion stack depth).
+
+#### B. Dynamic Programming - Top-Down (Memoization)
+
+  * **Idea**: Optimize the recursive approach by storing the results of already computed subproblems. Before computing $F(N)$, check if it's already in a `dp` table. If yes, return the stored value; otherwise, compute and store it.
+  * **Pros**: Overcomes redundant calculations of pure recursion.
+  * **Cons**: Still uses a recursion stack.
+  * **Time Complexity**: $O(N)$ (Each $F(i)$ is computed only once).
+  * **Space Complexity**: $O(N)$ (For `dp` array) + $O(N)$ (For recursion stack) = $O(N)$.
+
+#### C. Dynamic Programming - Bottom-Up (Tabulation)
+
+  * **Idea**: Build the solution iteratively from the base cases upwards. Start with $F(0)$ and $F(1)$, then calculate $F(2), F(3), \\dots, F(N)$ by directly using previously computed values.
+  * **Pros**: No recursion stack overhead. Often preferred for its iterative nature and clearer flow.
+  * **Cons**: Requires an array of size $N+1$.
+  * **Time Complexity**: $O(N)$ (Single loop from 2 to N).
+  * **Space Complexity**: $O(N)$ (For `dp` array).
+
+#### D. Dynamic Programming - Space Optimization
+
+  * **Idea**: Observe that to calculate $F(N)$, we only need $F(N-1)$ and $F(N-2)$. We don't need the entire `dp` array. We can use just two variables to store the previous two Fibonacci numbers.
+  * **Pros**: Extremely efficient in terms of space.
+  * **Cons**: Only applicable when current state depends only on a few previous states (not all previous states).
+  * **Time Complexity**: $O(N)$ (Single loop from 2 to N).
+  * **Space Complexity**: $O(1)$ (Constant space, regardless of N).
+
+### 3\. Comparison of Approaches
+
+| Approach               | Time Complexity | Space Complexity | Notes                                       |
+| :--------------------- | :-------------- | :--------------- | :------------------------------------------ |
+| Recursive (Brute Force)| $O(2^N)$        | $O(N)$           | Highly inefficient, many re-calculations.   |
+| DP - Top-Down (Memo)   | $O(N)$          | $O(N)$           | Efficient, uses recursion + memoization.    |
+| DP - Bottom-Up (Tab)   | $O(N)$          | $O(N)$           | Efficient, iterative, no recursion overhead.|
+| DP - Space Optimized   | $O(N)$          | $O(1)$           | Most efficient for large N, no recursion.   |
+
+-----
+
+

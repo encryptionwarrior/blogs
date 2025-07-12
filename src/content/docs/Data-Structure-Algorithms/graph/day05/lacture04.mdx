@@ -3,95 +3,220 @@ title: Bridges In Graph
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, unordered_map, list, algorithm, etc.
+using namespace std;     // Use the standard namespace.
 
+// Recursive DFS function to find bridges.
+// 'node': Current node being visited.
+// 'parent': Parent of the current node in the DFS tree (used to avoid going back immediately).
+// 'timer': Global time counter for discovery and low links. Passed by reference to increment globally.
+// 'disc': Discovery time array (disc[i] = time when node i was first visited).
+// 'low': Low-link value array (low[i] = lowest discovery time reachable from node i or its subtree,
+//        including back-edges to ancestors).
+// 'result': Vector to store the identified bridge edges.
+// 'adjList': Adjacency list of the graph.
+// 'visited': Boolean array to keep track of visited nodes.
 void dfs(int node, int parent, int &timer, vector<int> &disc,
-    vector<int> &low, vector<vector<int>> &result,
-    unordered_map<int, list<int>> &adjList, vector<bool> &visited) {
+         vector<int> &low, vector<vector<int>> &result,
+         unordered_map<int, list<int>> &adjList, vector<bool> &visited) {
 
-    visited[node] = true;
-    disc[node] = low[node] = timer++;
+    visited[node] = true;             // Mark current node as visited.
+    disc[node] = low[node] = timer++; // Set discovery time and initial low-link value, then increment timer.
 
+    // Iterate over all neighbors of the current node.
     for(auto neigh : adjList[node]) {
-        if(neigh == parent) continue;
+        // If the neighbor is the immediate parent, skip it. This prevents considering the edge
+        // from child back to parent as a back-edge that forms a cycle in the DFS tree.
+        if(neigh == parent) {
+            continue;
+        }
 
+        // Case 1: Neighbor is not visited. It's a forward edge to a child in the DFS tree.
         if(visited[neigh] == false) {
+            // Recursively call DFS on the neighbor. 'node' becomes the parent for 'neigh'.
             dfs(neigh, node, timer, disc, low, result, adjList, visited);
+
+            // After the recursive call returns (meaning 'neigh' and its subtree are processed):
+            // Update the low-link value of the current node.
+            // 'low[node]' is the minimum of its current 'low' value and 'low[neigh]'.
+            // This means 'node' can reach whatever 'neigh' (and its subtree) can reach.
             low[node] = min(low[node], low[neigh]);
 
-            // Check bridge edge
+            // Bridge Condition Check:
+            // If the lowest discovery time reachable from 'neigh' (or its subtree) is greater
+            // than the discovery time of the current node 'node', it means there is no back-edge
+            // from 'neigh's subtree to 'node' or any of 'node's ancestors.
+            // Therefore, the edge (node, neigh) is a bridge.
             if(low[neigh] > disc[node]) {
-                result.push_back({node, neigh});
+                result.push_back({node, neigh}); // Add this edge to the list of bridges.
             }
         } else {
-            // Back edge found
+            // Case 2: Neighbor is visited and is NOT the parent. It's a back-edge (or cross-edge).
+            // This means a cycle is detected. Update the low-link value of the current node.
+            // 'low[node]' should be the minimum of its current 'low' value and the discovery time
+            // of the visited neighbor (which is an ancestor or part of a cycle).
             low[node] = min(low[node], disc[neigh]);
         }
     }
 }
 
+// Main function to find all bridges in an undirected graph.
+// 'edges': List of edges in the graph. Each inner vector {u, v} represents an edge.
+// 'n': Total number of nodes.
+// 'm': Total number of edges.
+// Returns a vector of vectors, where each inner vector {u, v} is a bridge edge.
 vector<vector<int>> findBridges(vector<vector<int>> &edges, int n, int m) {
-    // Create adjList
+    // 1. Create Adjacency List for the graph.
     unordered_map<int, list<int>> adjList;
-    for(int i=0; i<m; i++) {
+    for(int i = 0; i < m; i++) {
         int u = edges[i][0];
         int v = edges[i][1];
-
-        adjList[u].push_back(v);
-        adjList[v].push_back(u); 
+        adjList[u].push_back(v); // Add edge u -- v.
+        adjList[v].push_back(u); // Add edge v -- u (for undirected graph).
     }
 
-    int timer = 0;
-    vector<int> disc(n, -1);
-    vector<int> low(n, -1);
-    int parent = -1;
-    vector<bool> visited(n, false);
-    vector<vector<int>> result;
+    // 2. Initialize data structures for DFS and bridge finding.
+    int timer = 0;             // Global timer to assign discovery times.
+    vector<int> disc(n, -1);   // Discovery time array, initialized to -1.
+    vector<int> low(n, -1);    // Low-link value array, initialized to -1.
+    int parent = -1;           // Initial parent for the DFS root is -1.
+    vector<bool> visited(n, false); // Visited array, initialized to false.
+    vector<vector<int>> result;    // Vector to store the identified bridge edges.
 
-    // DFS
-    for(int i=0; i<n; i++) {
+    // 3. Iterate through all nodes to ensure all connected components are visited.
+    for(int i = 0; i < n; i++) {
+        // If a node is not visited, it's the root of a new DFS tree in a component.
         if(!visited[i]) {
             dfs(i, parent, timer, disc, low, result, adjList, visited);
         }
     }
 
-    return result;
+    return result; // Return the list of all bridge edges.
 }
 
+// Main function for input/output.
 int main() {
-    vector<vector<int>> edges;
-    int n, m;
+    vector<vector<int>> edges; // Stores input edges as {u, v}.
+    int n, m;                 // 'n' for nodes, 'm' for edges.
 
-    cout << "Enter the value of n : ";
+    cout << "Enter the number of nodes : ";
     cin >> n;
 
-    cout << "Enter the value of m : ";
+    cout << "Enter the number of edges : ";
     cin >> m;
 
-    cout << "Enter the edges :" << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter the edges (u v):" << endl;
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        edges.push_back({u,v});
+        cin >> u >> v;         // Read u and v.
+        edges.push_back({u, v}); // Add edge to vector.
     }
 
-    vector<vector<int>> answer = findBridges(edges, n, m);
+    // Call findBridges function.
+    vector<vector<int>> answer_bridges = findBridges(edges, n, m);
 
     cout << "Bridge Edges : ";
-    for(int i=0; i<answer.size(); i++) {
-        cout << "[" << answer[i][0] << "," << answer[i][1] << "] ";
+    if (answer_bridges.empty()) {
+        cout << "None"; // If no bridges found.
+    } else {
+        for(const auto& bridge_edge : answer_bridges) { // Use const auto& for efficient iteration.
+            cout << "[" << bridge_edge[0] << "," << bridge_edge[1] << "] ";
+        }
     }
     cout << endl;
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
-
-
-/*
-    5 6 0 1 0 3 1 3 1 2 2 3 3 4
-    5 5 0 1 0 3 0 2 1 2 3 4
-    6 7 0 1 0 2 1 2 2 3 3 4 3 5 4 5
-*/
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Identify all "bridges" (also known as "cut edges") in a given undirected graph.
+  * **Bridge Definition**: An edge in a connected graph whose removal increases the number of connected components. In other words, an edge is a bridge if its removal disconnects the graph (or its component).
+  * **Input**: List of `edges (u, v)`, total `n` nodes, total `m` edges.
+  * **Output**: A list of pairs, where each pair `[u, v]` represents a bridge edge.
+
+### 2\. Core Idea (Tarjan's Algorithm / DFS-based)
+
+The algorithm uses a Depth-First Search (DFS) traversal and maintains two important arrays for each node:
+
+  * **`disc[node]` (Discovery Time)**: The time (or order) at which a node `node` was first visited during the DFS traversal.
+  * **`low[node]` (Lowest Ancestor Time)**: The lowest discovery time reachable from `node` (including `node` itself) through any path, including back-edges (edges to already visited ancestors).
+
+**The Bridge Condition**: An edge `(u, v)` (where `v` is a child of `u` in the DFS tree) is a bridge if and only if `low[v] > disc[u]`.
+This condition means that the subtree rooted at `v` has no back-edge to `u` or any ancestor of `u`. Therefore, removing the edge `(u, v)` would disconnect `v` and its subtree from `u` and the rest of the graph.
+
+### 3\. Algorithm Steps (`findBridges` and `dfs` functions)
+
+#### A. `findBridges` Function (Main Wrapper)
+
+1.  **Build Adjacency List**:
+
+      * Create an `adjList` (`unordered_map<int, list<int>>`) from the input `edges`.
+      * For each edge `(u, v)`, add `v` to `adjList[u]` and `u` to `adjList[v]` (undirected graph).
+
+2.  **Initialize Data Structures**:
+
+      * `timer = 0`: A global counter to assign discovery times.
+      * `disc[n]`: `vector<int>` initialized to `-1`. Stores discovery times.
+      * `low[n]`: `vector<int>` initialized to `-1`. Stores lowest reachable ancestor times.
+      * `parent = -1`: Special value for the parent of the initial DFS call's root.
+      * `visited[n]`: `vector<bool>` initialized to `false`. To track visited nodes.
+      * `result`: `vector<vector<int>>` to store the identified bridge edges.
+
+3.  **Initiate DFS for all components**:
+
+      * Loop through all nodes `i` from `0` to `n-1`.
+      * If `!visited[i]`, it means `i` is part of an unvisited component. Start DFS from `i`:
+          * `dfs(i, parent, timer, disc, low, result, adjList, visited);`
+
+4.  **Return**: The `result` vector containing all bridge edges.
+
+#### B. `dfs` Function (Recursive Traversal)
+
+  * **Parameters**: `node` (current node), `parent` (parent of `node` in DFS tree), `timer`, `disc`, `low`, `result`, `adjList`, `visited`.
+
+  * **Base Actions (on entering node)**:
+
+    1.  `visited[node] = true;` (Mark current node as visited).
+    2.  `disc[node] = low[node] = timer++;` (Set discovery and low times, then increment timer).
+
+  * **Explore Neighbors**: For each `neigh` in `adjList[node]`:
+
+    1.  **Skip Parent**: `if (neigh == parent) continue;` (Don't process the edge back to the immediate parent, as it's not a true back-edge for cycle detection from `neigh`'s perspective).
+
+    2.  **If `neigh` is NOT visited (`visited[neigh] == false`)**: (Forward edge to an unvisited child)
+
+          * Recursively call `dfs(neigh, node, timer, disc, low, result, adjList, visited);`
+          * **After recursive call returns (from child `neigh`)**:
+              * `low[node] = min(low[node], low[neigh]);` (Update `low[node]` with `low[neigh]`. This means `node` can reach whatever `neigh` can reach).
+              * **Bridge Check**: `if (low[neigh] > disc[node])`:
+                  * This is the critical condition. If `low[neigh]` (lowest reachable discovery time from `neigh`'s subtree) is greater than `disc[node]` (discovery time of its parent `node`), it means there's no back-edge from `neigh`'s subtree to `node` or any ancestor of `node`. Thus, `(node, neigh)` is a bridge.
+                  * `result.push_back({node, neigh});` (Add this bridge to the result).
+
+    3.  **If `neigh` IS visited (`visited[neigh] == true`)**: (Back edge to an already visited ancestor, or cross edge)
+
+          * `low[node] = min(low[node], disc[neigh]);` (Update `low[node]` with `disc[neigh]`. This indicates that `node` can reach an already visited node (`neigh`) directly, which might be an ancestor and thus part of a cycle. `disc[neigh]` is used because `neigh` is an ancestor, and its `disc` value is its earliest time).
+
+### 4\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)`
+      * Building `adjList`: `O(M)`.
+      * DFS traversal: Each vertex and edge is visited exactly once. `O(V + E)`.
+      * Total: `O(V + E)`.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList`: `O(V + E)`.
+      * `disc`, `low`, `visited` arrays: `O(V)`.
+      * Recursion stack for DFS: `O(V)` in worst case (skewed graph).
+      * `result` vector: `O(E)` in worst case (a tree has `V-1` bridges).
+
+### 5\. Key Points / Intuition
+
+  * `disc[u]` tells us "when `u` was first discovered".
+  * `low[u]` tells us "the highest point (lowest discovery time) that `u` or any node in `u`'s DFS subtree can reach using at most one back-edge".
+  * If `low[v] > disc[u]` for an edge `(u, v)` where `v` is a child of `u` in the DFS tree, it means `v` and its entire subtree have no way to reach `u` or any of `u`'s ancestors except through the edge `(u, v)` itself. Hence, `(u, v)` is a bridge.
+
+-----
+
+

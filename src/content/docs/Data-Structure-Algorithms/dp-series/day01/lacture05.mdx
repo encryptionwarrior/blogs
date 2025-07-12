@@ -3,82 +3,290 @@ title: Max Non Adjacent Sum
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, algorithm (for max).
+using namespace std;     // Use the standard namespace.
 
+// 1. Recursive Approach (Brute Force)
+// Finds the maximum sum of non-adjacent elements using pure recursion.
+// This specific recursion signature calculates the max sum starting from 'index' by either including/excluding.
+// Time Complexity: O(2^N) - Exponential, due to overlapping subproblems.
+// Space Complexity: O(N) - Due to recursion stack depth.
+// 'nums': The input array.
+// 'index': Current index being considered.
+// 'sum': Accumulate sum for the current path (less common in DP, but valid here).
 int maxSumRec(vector<int> &nums, int index, int sum) {
-    if(index >= nums.size()) return sum;
+    // Base Case: If we have processed all elements (index is out of bounds), return the accumulated sum.
+    if(index >= nums.size()) {
+        return sum;
+    }
 
-    int inc = maxSumRec(nums, index+2, sum+nums[index]);
-    int exc = maxSumRec(nums, index+1, sum);
+    // Option 1: Include the current element nums[index].
+    // If included, we cannot take the next element (index+1), so skip to index+2.
+    int inc = maxSumRec(nums, index + 2, sum + nums[index]);
 
+    // Option 2: Exclude the current element nums[index].
+    // If excluded, we can consider the next element (index+1).
+    int exc = maxSumRec(nums, index + 1, sum);
+
+    // Return the maximum of the two options.
     return max(inc, exc);
 }
 
-int maxSumMem(vector<int> &dp, vector<int> &nums, int index, int sum) {
-    if(index >= nums.size()) return sum;
-    if(dp[index] != -1) return max(sum, dp[index]);
+// 2. Dynamic Programming - Top-Down Approach (Recursion + Memoization)
+// Optimizes the recursive solution by storing computed results in 'dp' table.
+// 'dp[index]' will store the maximum sum achievable starting from 'index' if 'sum' was 0 initially.
+// This particular memoization logic `max(sum, dp[index])` is a bit unusual.
+// A more standard memoization would be `dp[index]` storing the optimal subproblem result.
+// Let's adjust it slightly for standard memoization (max sum from current index to end).
+// Time Complexity: O(N) - Each subproblem is computed once.
+// Space Complexity: O(N) for 'dp' vector + O(N) for recursion stack = O(N) total.
+// 'nums': The input array.
+// 'index': Current index being considered.
+// 'dp': Memoization table, initialized with -1.
+int maxSumMem(vector<int> &nums, int index, vector<int> &dp) { // Adjusted parameters, removed 'sum' from signature
+    // Base Case: If index is out of bounds, no more elements to consider, sum is 0 from here.
+    if(index >= nums.size()) {
+        return 0; // Returning 0 because we're calculating 'max sum FROM this index onwards'
+    }
 
-    int inc = maxSumMem(dp, nums, index+2, sum+nums[index]);
-    int exc = maxSumMem(dp, nums, index+1, sum);
+    // If the result for 'index' is already computed, return it from dp table.
+    if(dp[index] != -1) {
+        return dp[index];
+    }
 
+    // Option 1: Include the current element nums[index].
+    // Cost: nums[index] + (max sum from index+2 onwards).
+    int inc = nums[index] + maxSumMem(nums, index + 2, dp);
+
+    // Option 2: Exclude the current element nums[index].
+    // Cost: (max sum from index+1 onwards).
+    int exc = maxSumMem(nums, index + 1, dp);
+
+    // Store the computed result for 'index' and return it.
     dp[index] = max(inc, exc);
     return dp[index];
 }
 
-int maxSumTab(vector<int> &nums) {
-    vector<int> dp(nums.size(), -1);
-    dp[0] = nums[0];
-    dp[1] = nums[1];
 
-    for(int i=2; i<nums.size(); i++) {
-        int inc = dp[i-2] + nums[i];
+// 3. Dynamic Programming - Bottom-Up Approach (Tabulation)
+// Builds the solution iteratively from base cases up to the last element.
+// 'dp[i]' stores the maximum non-adjacent sum considering elements up to index 'i'.
+// Time Complexity: O(N) - Single loop.
+// Space Complexity: O(N) - For the 'dp' vector.
+// 'nums': The input array.
+int maxSumTab(vector<int> &nums) {
+    int n = nums.size();
+
+    // Handle edge cases for small array sizes.
+    if (n == 0) return 0;
+    if (n == 1) return nums[0];
+
+    // Create a dp table of size 'n'.
+    vector<int> dp(n);
+
+    // Initialize base cases for dp table.
+    // dp[0]: Max sum up to index 0 (just take nums[0]).
+    dp[0] = nums[0];
+    // dp[1]: Max sum up to index 1 (either take nums[0] or nums[1], whichever is greater).
+    dp[1] = max(nums[0], nums[1]);
+
+    // Iterate from index 2 up to the last element (n-1).
+    for(int i = 2; i < n; i++) {
+        // Option 1: Include nums[i].
+        // Sum is nums[i] + max sum up to index (i-2).
+        int inc = nums[i] + dp[i-2];
+        // Option 2: Exclude nums[i].
+        // Sum is max sum up to index (i-1).
         int exc = dp[i-1];
 
+        // dp[i] is the maximum of including or excluding nums[i].
         dp[i] = max(inc, exc);
     }
 
-    return dp[nums.size() - 1];
+    // The result is the maximum sum considering all elements up to the last index (n-1).
+    return dp[n - 1];
 }
 
+// 4. Dynamic Programming - Space Optimization Approach
+// Optimizes the bottom-up approach to use only constant space.
+// Time Complexity: O(N) - Single loop.
+// Space Complexity: O(1) - Uses only a few variables.
+// 'nums': The input array.
 int maxSumSpc(vector<int> &nums) {
-    int prev0 = 0;
-    int prev1 = nums[0];
+    int n = nums.size();
 
-    for(int i=1; i<nums.size(); i++) {
-        int inc = prev0 + nums[i];
+    // Handle edge cases for small array sizes.
+    if (n == 0) return 0;
+    if (n == 1) return nums[0];
+
+    // 'prev2' stores the max sum up to (i-2)th element (equivalent to dp[i-2]).
+    // 'prev1' stores the max sum up to (i-1)th element (equivalent to dp[i-1]).
+    // Initialize for the loop starting at i=1 or i=2, depending on base case setup.
+    // For our iteration from i=1 (representing nums[1]):
+    // prev2 should be max sum before nums[0] (0).
+    // prev1 should be max sum up to nums[0] (nums[0]).
+    int prev2 = 0;      // Corresponds to dp[-2] or empty prefix.
+    int prev1 = nums[0]; // Corresponds to dp[0]
+
+    // Iterate from the second element (index 1) up to the last element.
+    // This loop calculates curr (which is dp[i]).
+    for(int i = 1; i < n; i++) {
+        // Option 1: Include nums[i].
+        // Sum is nums[i] + max sum up to (i-2) (which is prev2).
+        int inc = nums[i] + prev2;
+        // Option 2: Exclude nums[i].
+        // Sum is max sum up to (i-1) (which is prev1).
         int exc = prev1;
 
+        // 'curr' holds the maximum sum up to the current index 'i'.
         int curr = max(inc, exc);
 
-        prev0 = prev1;
+        // Update for the next iteration:
+        // The old 'prev1' becomes the new 'prev2'.
+        // The current 'curr' becomes the new 'prev1'.
+        prev2 = prev1;
         prev1 = curr;
     }
 
+    // After the loop, 'prev1' holds the maximum sum up to the last element (n-1).
     return prev1;
 }
 
+// Main function for input/output and testing different approaches.
 int main() {
     vector<int> nums;
-    cout << "Enter the array (-1 to stop) : ";
-    int i;
-    cin >> i;
-    while(i != -1) {
-        nums.push_back(i);
-        cin >> i;
+    cout << "Enter the array elements (enter -1 to stop): ";
+    int val;
+    cin >> val;
+    while(val != -1) { // Read elements until -1 is entered.
+        nums.push_back(val);
+        cin >> val;
     }
 
+    // Handle empty array case
+    if (nums.empty()) {
+        cout << "Maximum sum of non-adjacent elements : 0" << endl;
+        return 0;
+    }
+
+    // --- Uncomment one of the following lines to test different approaches ---
+
+    // 1. Recursive (Brute Force) - Only for very small inputs due to exponential complexity.
     // int ans = maxSumRec(nums, 0, 0);
 
-    // vector<int> dp(nums.size(), -1);
-    // int ans = maxSumMem(dp, nums, 0, 0);
+    // 2. DP - Top-Down (Memoization)
+    vector<int> dp_memo(nums.size(), -1); // Initialize dp table for memoization
+    // int ans = maxSumMem(nums, 0, dp_memo); // Call with initial index 0 and dp table.
 
+    // 3. DP - Bottom-Up (Tabulation)
     // int ans = maxSumTab(nums);
 
+    // 4. DP - Space Optimization (Most efficient for this problem)
     int ans = maxSumSpc(nums);
 
     cout << "Maximum sum of non-adjacent elements : " << ans << endl;
-    return 0;
+    return 0; // Indicate successful execution.
 }
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Given an array of positive integers, find the maximum sum of elements such that no two elements are adjacent in the original array.
+  * **Input**: A `vector<int> nums` representing the array of elements.
+  * **Output**: The maximum possible sum.
+
+### 2\. Problem Insight (Dynamic Programming)
+
+This problem exhibits optimal substructure and overlapping subproblems, making it suitable for Dynamic Programming. At each element `nums[i]`, we have two choices:
+
+1.  **Include `nums[i]`**: If we include `nums[i]`, we cannot include `nums[i-1]` (the previous element). So, the sum would be `nums[i]` plus the maximum sum we could get up to `nums[i-2]`.
+2.  **Exclude `nums[i]`**: If we exclude `nums[i]`, the sum would be the maximum sum we could get up to `nums[i-1]`.
+
+We want to find the maximum of these two choices.
+
+**Recurrence Relation**:
+Let `dp[i]` be the maximum sum of non-adjacent elements considering elements up to index `i`.
+
+`dp[i] = max(nums[i] + dp[i-2], dp[i-1])`
+
+**Base Cases**:
+
+  * `dp[0] = nums[0]` (If only one element, take it)
+  * `dp[1] = max(nums[0], nums[1])` (If two elements, take the larger one)
+
+### 3\. Approaches to Solving
+
+#### A. Recursive Approach (Brute Force)
+
+  * **Idea**: Directly implement the recurrence relation using recursion.
+  * **`maxSumRec(nums, index, sum)`**: This specific implementation calculates the sum on the fly. It's a slightly different perspective from the typical `dp[i]` definition.
+      * `index`: Current index being considered.
+      * `sum`: Sum accumulated so far.
+      * Base case: `if (index >= nums.size()) return sum;` (reached end, return current sum).
+      * Choices:
+          * `inc = maxSumRec(nums, index + 2, sum + nums[index])`: Include current element, jump two steps.
+          * `exc = maxSumRec(nums, index + 1, sum)`: Exclude current element, jump one step.
+      * Return `max(inc, exc)`.
+  * **Pros**: Conceptually simple for the "choice" model.
+  * **Cons**: Highly inefficient due to **redundant calculations** (overlapping subproblems).
+  * **Time Complexity**: $O(2^N)$ (Exponential).
+  * **Space Complexity**: $O(N)$ (Due to recursion stack depth).
+
+#### B. Dynamic Programming - Top-Down (Memoization)
+
+  * **Idea**: Optimize the recursive approach by storing the results of already computed subproblems.
+  * **`maxSumMem(dp, nums, index, sum)`**: Similar to `maxSumRec`, but `dp[index]` stores the *maximum sum achievable from `index` onwards*.
+      * Base case: `if (index >= nums.size()) return sum;`
+      * Memoization check: `if (dp[index] != -1) return max(sum, dp[index]);` (This specific memoization setup `max(sum, dp[index])` is slightly unconventional and depends on how `sum` is used. A more common memoization for `dp[index]` would be just `if (dp[index] != -1) return dp[index];` where `dp[index]` stores the max sum from index `0` up to `index`.)
+      * Follow recursive logic, store result in `dp[index]` before returning.
+  * **Pros**: Overcomes redundant calculations.
+  * **Cons**: Still uses a recursion stack.
+  * **Time Complexity**: $O(N)$ (Each state `index` is computed once).
+  * **Space Complexity**: $O(N)$ (For `dp` array) + $O(N)$ (For recursion stack) = $O(N)$.
+
+#### C. Dynamic Programming - Bottom-Up (Tabulation)
+
+  * **Idea**: Build the solution iteratively from the base cases upwards. This aligns best with the `dp[i] = max(nums[i] + dp[i-2], dp[i-1])` recurrence.
+  * **`maxSumTab(nums)`**:
+      * Handle small array sizes (`n=0, n=1`).
+      * Create `vector<int> dp(n)`.
+      * `dp[0] = nums[0];`
+      * `dp[1] = max(nums[0], nums[1]);`
+      * Loop `for (int i = 2; i < n; i++)`:
+          * `inc = nums[i] + dp[i-2];` (Include `nums[i]`, add max sum up to `i-2`).
+          * `exc = dp[i-1];` (Exclude `nums[i]`, take max sum up to `i-1`).
+          * `dp[i] = max(inc, exc);`
+      * Return `dp[n-1]`.
+  * **Pros**: No recursion stack overhead. Clear iterative logic.
+  * **Cons**: Requires `O(N)` space.
+  * **Time Complexity**: $O(N)$ (Single loop).
+  * **Space Complexity**: $O(N)$ (For `dp` array).
+
+#### D. Space Optimization
+
+  * **Idea**: Observe that `dp[i]` only depends on `dp[i-1]` and `dp[i-2]`. We can reduce space complexity to $O(1)$ by using just two variables.
+  * **`maxSumSpc(nums)`**:
+      * Handle small array sizes (`n=0, n=1`).
+      * Initialize `prev2` (stores `dp[i-2]` equivalent) and `prev1` (stores `dp[i-1]` equivalent).
+          * `prev2 = 0;` (Represents `dp[-2]` or sum before any elements)
+          * `prev1 = nums[0];` (Represents `dp[0]`)
+      * Loop `for (int i = 1; i < n; i++)`:
+          * `inc = nums[i] + prev2;` (Include current, add `prev2`)
+          * `exc = prev1;` (Exclude current, take `prev1`)
+          * `curr = max(inc, exc);` (Current max sum up to `i`)
+          * Update: `prev2 = prev1; prev1 = curr;`
+      * Return `prev1` (which holds the max sum up to the last element).
+  * **Pros**: Most efficient in terms of space.
+  * **Cons**: Only applicable when current state depends on a few previous states.
+  * **Time Complexity**: $O(N)$ (Single loop).
+  * **Space Complexity**: $O(1)$ (Constant space).
+
+### 4\. Important Considerations
+
+  * **Array Indexing**: Be careful with 0-based vs. 1-based indexing, especially with base cases.
+  * **Empty or Single Element Array**: Handle cases where `nums` is empty (`n=0`) or has only one element (`n=1`).
+  * **Positive Numbers**: This specific problem typically assumes positive numbers. If negative numbers are allowed, the interpretation of "maximum sum" needs care (e.g., should you take no elements if all are negative?). The current solutions will work for positive and negative numbers, finding the maximum possible sum. If all numbers are negative, it might return 0 if that's the desired interpretation of "not taking any" which is possible through the `exc` path. If the minimum should be at least one element, special handling is needed.
+
+-----
+

@@ -3,78 +3,274 @@ title: House Robber Problem
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, algorithm (for max).
+using namespace std;     // Use the standard namespace.
 
-int maxMoneyRec(vector<int> &houses, int index, int n, int sum) {
-    if(index >= n) return sum;
+// Helper function: Solves the linear "Maximum Sum of Non-Adjacent Elements" problem.
+// 'nums': The input array for the linear problem.
+// 'index': Current starting index for recursion.
+// 'dp': Memoization table.
+//
+// Note: The 'sum' parameter in your original recursive/memoized functions is often
+// replaced by having the function return the max sum *from* a given index onwards.
+// This is more standard for DP states.
+//
+// --- Linear Subproblem Solutions (adapted from your previous problem) ---
 
-    int inc = maxMoneyRec(houses, index+2, n, sum+houses[index]);
-    int exc = maxMoneyRec(houses, index+1, n, sum);
-
-    return max(inc, exc);
-}
-
-int maxMoneyMem(vector<int> &dp, vector<int> &houses, int index, int n, int sum) {
-    if(index >= n) return sum;
-    if(dp[index] != -1) return max(sum, dp[index]);
-
-    int inc = maxMoneyMem(dp, houses, index+2, n, sum+houses[index]);
-    int exc = maxMoneyMem(dp, houses, index+1, n, sum);
-
-    dp[index] = max(inc, exc);
-    return dp[index];
-}
-
-int maxMoneyTab(vector<int> &houses, int index, int n, int sum) {
-    vector<int> dp(houses.size(), -1);
-
-    dp[0] = 0;
-    dp[1] = houses[index];
-
-    for(int i=index+1; i<n; i++) {
-        int inc = dp[i-2] + houses[i];
-        int exc = dp[i-1];
-
-        dp[i] = max(inc, exc);
+// 1. Linear: Recursive Approach (Brute Force)
+// Finds the maximum non-adjacent sum in a linear array.
+// 'arr': The sub-array (or original array segment) for which to find the max sum.
+// 'index': The current starting index to consider.
+// Time Complexity: O(2^N) - Exponential.
+// Space Complexity: O(N) - Recursion stack.
+int rob_linear_rec(const vector<int> &arr, int index) {
+    // Base Case: If index is out of bounds, no more elements to consider, sum is 0 from here.
+    if (index >= arr.size()) {
+        return 0;
     }
 
-    return max(dp[n-1], dp[n-2]);
+    // Option 1: Include the current element arr[index].
+    // Then we must skip arr[index+1], so jump to index+2.
+    int include_current = arr[index] + rob_linear_rec(arr, index + 2);
+
+    // Option 2: Exclude the current element arr[index].
+    // Then we can consider arr[index+1], so jump to index+1.
+    int exclude_current = rob_linear_rec(arr, index + 1);
+
+    // Return the maximum of the two choices.
+    return max(include_current, exclude_current);
 }
 
-int maxMoneySpc(vector<int> &houses, int index, int n) {
-    int prev0 = 0;
-    int prev1 = houses[index];
+// 2. Linear: Dynamic Programming - Top-Down Approach (Memoization)
+// Optimizes the linear recursive solution by storing computed results.
+// 'arr': The sub-array (or original array segment).
+// 'index': Current starting index.
+// 'dp': Memoization table, initialized with -1. dp[i] stores max sum from index i onwards.
+// Time Complexity: O(N) - Each state computed once.
+// Space Complexity: O(N) for 'dp' vector + O(N) for recursion stack.
+int rob_linear_memo(const vector<int> &arr, int index, vector<int> &dp) {
+    // Base Case: If index is out of bounds, no more elements, sum is 0.
+    if (index >= arr.size()) {
+        return 0;
+    }
 
-    for(int i=index+1; i<n; i++) {
-        int inc = prev0 + houses[i];
-        int exc = prev1;
+    // If result for 'index' is already computed, return it.
+    if (dp[index] != -1) {
+        return dp[index];
+    }
 
-        int curr = max(inc, exc);
+    // Option 1: Include current element.
+    int include_current = arr[index] + rob_linear_memo(arr, index + 2, dp);
 
-        prev0 = prev1;
+    // Option 2: Exclude current element.
+    int exclude_current = rob_linear_memo(arr, index + 1, dp);
+
+    // Store and return the maximum.
+    return dp[index] = max(include_current, exclude_current);
+}
+
+// 3. Linear: Dynamic Programming - Bottom-Up Approach (Tabulation)
+// Iteratively calculates max non-adjacent sum for a linear array.
+// 'arr': The linear array.
+// Time Complexity: O(N) - Single loop.
+// Space Complexity: O(N) - For 'dp' vector.
+int rob_linear_tab(const vector<int> &arr) {
+    int n = arr.size();
+
+    // Edge cases for empty or single element array.
+    if (n == 0) return 0;
+    if (n == 1) return arr[0];
+
+    // dp[i] stores the maximum sum of non-adjacent elements up to index 'i'.
+    vector<int> dp(n);
+    dp[0] = arr[0]; // Max sum up to index 0 is just arr[0].
+    dp[1] = max(arr[0], arr[1]); // Max sum up to index 1 is max of arr[0] or arr[1].
+
+    // Iterate from index 2 to n-1.
+    for (int i = 2; i < n; i++) {
+        // Option 1: Include arr[i]. Sum = arr[i] + max sum up to arr[i-2].
+        int include_curr = arr[i] + dp[i - 2];
+        // Option 2: Exclude arr[i]. Sum = max sum up to arr[i-1].
+        int exclude_curr = dp[i - 1];
+        // Take the maximum of including or excluding.
+        dp[i] = max(include_curr, exclude_curr);
+    }
+    return dp[n - 1]; // The result is the max sum up to the last element.
+}
+
+// 4. Linear: Dynamic Programming - Space Optimization
+// Optimizes the linear tabulation approach to O(1) space.
+// 'arr': The linear array.
+// Time Complexity: O(N) - Single loop.
+// Space Complexity: O(1) - Constant space.
+int rob_linear_space_opt(const vector<int> &arr) {
+    int n = arr.size();
+
+    // Edge cases for small array sizes.
+    if (n == 0) return 0;
+    if (n == 1) return arr[0];
+
+    // prev2: Represents max sum up to (i-2)th element (like dp[i-2]).
+    // prev1: Represents max sum up to (i-1)th element (like dp[i-1]).
+    // Initialize for the first actual iteration (i=1 for the loop below, considering arr[1]):
+    // prev2 will act as dp[-1] or dp[-2] which is 0 for initial sum.
+    // prev1 will act as dp[0].
+    int prev2 = 0;      // Max sum before arr[0].
+    int prev1 = arr[0]; // Max sum up to arr[0].
+
+    // Iterate from the second element (index 1) up to the last element.
+    for (int i = 1; i < n; i++) {
+        // Option 1: Include arr[i].
+        // Current element's value + max sum from 2 steps back (prev2).
+        int include_curr = arr[i] + prev2;
+        // Option 2: Exclude arr[i].
+        // Max sum from 1 step back (prev1).
+        int exclude_curr = prev1;
+
+        // 'curr' holds the maximum sum up to the current index 'i'.
+        int curr = max(include_curr, exclude_curr);
+
+        // Update for the next iteration:
+        // The old 'prev1' becomes the new 'prev2'.
+        // The current 'curr' becomes the new 'prev1'.
+        prev2 = prev1;
         prev1 = curr;
     }
-
-    return max(prev0, prev1);
+    return prev1; // 'prev1' holds the final maximum sum up to the last element.
 }
+
+
+// --- Main Function for Circular House Robber Problem ---
 
 int main() {
     vector<int> houses;
-    cout << "Enter the money of houses (-1 to stop) : ";
-    int i;
-    cin >> i;
-    while(i != -1) {
-        houses.push_back(i);
-        cin >> i;
+    cout << "Enter the money in each house (enter -1 to stop) : ";
+    int val;
+    while (cin >> val && val != -1) {
+        houses.push_back(val);
     }
 
-    int money1 = maxMoneyRec(houses, 0, houses.size()-1, 0);
-    int money2 = maxMoneyRec(houses, 1, houses.size(), 0);
+    int n = houses.size();
 
-    cout << "Maximum money that can be robbed : " << max(money1, money2) << endl;
+    // Handle edge cases for the circular problem.
+    if (n == 0) { // No houses to rob.
+        cout << "Maximum money that can be robbed : 0" << endl;
+        return 0;
+    }
+    if (n == 1) { // Only one house, rob it.
+        cout << "Maximum money that can be robbed : " << houses[0] << endl;
+        return 0;
+    }
+
+    // Case 1: Rob without including the last house (houses[0] to houses[n-2]).
+    // Create a new vector for this subproblem.
+    vector<int> houses_exclude_last(houses.begin(), houses.end() - 1);
+    // Apply the chosen linear DP solution (e.g., space optimized)
+    int money_case1 = rob_linear_space_opt(houses_exclude_last);
+
+    // Case 2: Rob without including the first house (houses[1] to houses[n-1]).
+    // Create a new vector for this subproblem.
+    vector<int> houses_exclude_first(houses.begin() + 1, houses.end());
+    // Apply the chosen linear DP solution
+    int money_case2 = rob_linear_space_opt(houses_exclude_first);
+
+    // The maximum money is the greater of the two cases.
+    int ans = max(money_case1, money_case2);
+
+    cout << "Maximum money that can be robbed : " << ans << endl;
 
     return 0;
 }
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
+  * **Constraint**: If two adjacent houses are robbed, the security system will be triggered.
+  * **Key Twist (Circular)**: All houses are arranged in a circle, meaning the first house (`houses[0]`) and the last house (`houses[n-1]`) are considered adjacent.
+  * **Output**: The maximum amount of money you can rob.
+
+### 2\. Problem Insight (Circular Constraint Handling)
+
+The core idea remains the same as "Maximum Sum of Non-Adjacent Elements": at each house, you either include it or exclude it.
+
+The circular arrangement introduces a special condition:
+
+  * If you rob `houses[0]`, you **cannot** rob `houses[n-1]`.
+  * If you rob `houses[n-1]`, you **cannot** rob `houses[0]`.
+
+This means you can't simultaneously rob both the first and the last house. This breaks the simple linear non-adjacent sum logic.
+
+The solution to the circular problem is to reduce it to two subproblems of the linear "Maximum Sum of Non-Adjacent Elements" problem:
+
+1.  **Case 1: Exclude the last house (`houses[n-1]`)**: In this case, you find the maximum non-adjacent sum from `houses[0]` to `houses[n-2]`.
+2.  **Case 2: Exclude the first house (`houses[0]`)**: In this case, you find the maximum non-adjacent sum from `houses[1]` to `houses[n-1]`.
+
+The maximum money you can rob in the circular arrangement is the **maximum of the results from these two cases**.
+
+### 3\. Core Linear Subproblem (Maximum Sum of Non-Adjacent Elements)
+
+Let's define a helper function `rob_linear(vector<int>& nums)` that solves the standard "Maximum Sum of Non-Adjacent Elements" problem for a given linear array. This is the same problem you solved previously.
+
+**Recurrence Relation for `rob_linear` (using Tabulation):**
+Let `dp[i]` be the maximum sum of non-adjacent elements considering elements up to index `i`.
+`dp[i] = max(nums[i] + dp[i-2], dp[i-1])`
+
+**Base Cases for `rob_linear`:**
+
+  * `dp[0] = nums[0]`
+  * `dp[1] = max(nums[0], nums[1])`
+
+**Space Optimized `rob_linear`:**
+
+  * `prev2`: Max sum up to `i-2`.
+  * `prev1`: Max sum up to `i-1`.
+  * `curr`: Max sum up to `i`.
+  * `curr = max(nums[i] + prev2, prev1)`
+  * Update `prev2 = prev1`, `prev1 = curr`.
+
+### 4\. Approaches for Circular Problem
+
+The actual solutions for the circular problem (`maxMoneyRec`, `maxMoneyMem`, `maxMoneyTab`, `maxMoneySpc`) would primarily focus on implementing the `rob_linear` function and then applying it to the two sub-arrays.
+
+#### A. Recursive Approach (with correct linear problem implementation)
+
+  * You'd need a `rob_linear_rec(vector<int>& arr, int index)` helper.
+  * `rob_linear_rec` would be similar to your `maxSumRec` but with correct base cases for a linear subproblem:
+      * `if (index >= arr.size()) return 0;`
+      * `return max(arr[index] + rob_linear_rec(arr, index + 2), rob_linear_rec(arr, index + 1));`
+  * Then, in `main`:
+      * `money_case1 = rob_linear_rec(vector excluding last house)`
+      * `money_case2 = rob_linear_rec(vector excluding first house)`
+      * `ans = max(money_case1, money_case2)`
+
+#### B. Dynamic Programming - Top-Down (Memoization)
+
+  * You'd need a `rob_linear_memo(vector<int>& arr, int index, vector<int>& dp)` helper.
+  * Base cases similar to recursive.
+  * Memoization check: `if (dp[index] != -1) return dp[index];`
+  * `dp[index] = max(arr[index] + rob_linear_memo(arr, index + 2, dp), rob_linear_memo(arr, index + 1, dp));`
+  * Then, in `main`, apply to two sub-arrays using `max`.
+
+#### C. Dynamic Programming - Bottom-Up (Tabulation)
+
+  * Implement a `rob_linear_tab(vector<int>& arr)` helper.
+  * This would be exactly your `maxSumTab` function from the previous problem.
+  * Then, in `main`:
+      * Create two new vectors: `nums1` (from `houses[0]` to `houses[n-2]`) and `nums2` (from `houses[1]` to `houses[n-1]`).
+      * `ans = max(rob_linear_tab(nums1), rob_linear_tab(nums2))`
+
+#### D. Dynamic Programming - Space Optimization
+
+  * Implement a `rob_linear_space_opt(vector<int>& arr)` helper.
+  * This would be exactly your `maxSumSpc` function from the previous problem.
+  * Then, in `main`, apply to two sub-arrays using `max`.
+
+**Edge Cases for Circular Problem**:
+
+  * **`n=0` (empty array)**: Return 0.
+  * **`n=1` (single house)**: Return `houses[0]`. In this case, `n-1` would be 0, `n-2` would be -1. The sub-arrays handling needs to be robust for this. `max(rob_linear_opt({houses[0]}), rob_linear_opt({}))` would work if `rob_linear_opt({})` returns 0.
+
+-----
+

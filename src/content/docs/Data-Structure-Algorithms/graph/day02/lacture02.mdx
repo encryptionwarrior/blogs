@@ -3,50 +3,69 @@ title: DFS Traversal
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, vector.
+using namespace std;     // Use the standard namespace.
 
-void traversal(unordered_map<int, list<int> > &adjList, unordered_map<int, bool> &visited, vector<int> &component, int node) {
+// Recursive helper function for Depth-First Search traversal.
+// 'adjList': The adjacency list representation of the graph.
+// 'visited': An unordered_map to keep track of visited nodes (true if visited, false otherwise).
+// 'component': A vector to store the nodes belonging to the current connected component being traversed.
+// 'node': The current node being visited in the DFS.
+void traversal(unordered_map<int, list<int>> &adjList, unordered_map<int, bool> &visited,
+               vector<int> &component, int node) {
+    // 1. Mark the current node as visited and add it to the current component.
     component.push_back(node);
     visited[node] = 1;
 
-    for(auto i : adjList[node]) {
-        if(!visited[i]) {
-            traversal(adjList, visited, component, i);
+    // 2. Explore all neighbors of the current node.
+    for(auto neighbor : adjList[node]) {
+        // If the neighbor has not been visited yet, recursively call traversal on it.
+        if(!visited[neighbor]) {
+            traversal(adjList, visited, component, neighbor);
         }
     }
-
 }
 
-vector< vector<int> > DFS(int V, int E, vector< vector<int> > &edges) {
-    unordered_map<int, list<int> > adjList;
-    vector< vector<int> > answer;
+// Main DFS function to perform Depth-First Search on a graph and find connected components.
+// 'V': The total number of nodes in the graph (0 to V-1).
+// 'E': The total number of edges.
+// 'edges': A vector of vectors, where each inner vector {u, v} represents an edge between u and v.
+// Returns a vector of vectors, where each inner vector is a connected component.
+vector<vector<int>> DFS(int V, int E, vector<vector<int>> &edges) {
+    // 1. Create Adjacency List from the given edges.
+    unordered_map<int, list<int>> adjList;
+    // 'answer' will store all connected components found.
+    vector<vector<int>> answer;
+    // 'visited' keeps track of nodes visited across all components.
     unordered_map<int, bool> visited;
-    
-    // Creating Adjacency List
-    for(int i=0; i<edges.size( ); i++) {
+
+    // Populate the adjacency list for an undirected graph.
+    for(int i = 0; i < edges.size(); i++) {
         int u = edges[i][0];
         int v = edges[i][1];
 
         adjList[u].push_back(v);
-        adjList[v].push_back(u);
+        adjList[v].push_back(u); // For undirected graph.
     }
 
-    // Traversing all components of a graph
-    for(int i=0; i<V; i++) {
+    // 2. Traverse all components of the graph.
+    // This loop ensures that even if the graph is disconnected, all nodes are visited.
+    for(int i = 0; i < V; i++) { // Assuming nodes are 0 to V-1.
+        // If node 'i' has not been visited yet, it means it's part of a new, unexplored component.
         if(!visited[i]) {
-            vector<int> component;
-            traversal(adjList, visited, component, i);
-            answer.push_back(component);
+            vector<int> component; // Create a new vector for this component.
+            traversal(adjList, visited, component, i); // Start DFS from 'i'.
+            answer.push_back(component);               // Add the completed component to the answer.
         }
     }
 
-    return answer;
+    return answer; // Return the list of all connected components.
 }
 
 int main() {
-    int n, m;
+    int n; // Number of nodes.
+    int m; // Number of edges.
 
     cout << "Enter the number of nodes : ";
     cin >> n;
@@ -54,32 +73,103 @@ int main() {
     cout << "Enter the number of edges : ";
     cin >> m;
 
-    vector< vector<int> > edges(m, {0,0});
+    // Create a vector to store 'm' edges.
+    vector<vector<int>> edges(m, {0, 0});
 
-    for(int i=0; i<m; i++) {
-        cin >> edges[i][0];
-        cin >> edges[i][1];
+    cout << "Enter the edges (u v):" << endl;
+    for(int i = 0; i < m; i++) {
+        cin >> edges[i][0]; // Read node u.
+        cin >> edges[i][1]; // Read node v.
     }
 
-    vector< vector<int> > solution = DFS(n, m, edges);
+    // Perform DFS traversal and get connected components.
+    vector<vector<int>> solution = DFS(n, m, edges);
 
-    cout << "DFS Traversal : ";
-    for(auto i : solution) {
-        for(auto j : i) {
-            cout << j << " ";
+    // Print the DFS traversal, grouped by connected components.
+    cout << "DFS Traversal (by component): " << endl;
+    int component_idx = 0;
+    for(auto component : solution) {
+        cout << "Component " << ++component_idx << ": ";
+        for(auto node_val : component) {
+            cout << node_val << " ";
         }
         cout << endl;
     }
 
-    /*
+    /* The commented-out code below would cause an out-of-bounds error
+       if 'solution' contains components of different sizes or if it's empty,
+       as 'solution.size()' is the number of components, not the max size of a component.
+       It's safer to use range-based for loops as above.
     for(int i=0; i<solution.size(); i++) {
-        for(int j=0; j<solution.size(); j++) {
+        for(int j=0; j<solution[i].size(); j++) { // Corrected: should use solution[i].size()
             cout << solution[i][j] << " ";
         }
         cout << endl;
     }
     */
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
 ```
+
+### 1\. What is DFS?
+
+  * **Depth-First Search (DFS)** is a graph traversal algorithm that explores as far as possible along each branch before *backtracking*.
+  * It's like exploring a maze: you pick a path and keep going until you hit a dead end, then you go back to the last branching point and try another path.
+
+### 2\. Key Characteristics & Use Cases
+
+  * **Stack-based/Recursive Exploration**: DFS naturally uses a stack (or recursion, which uses the call stack) to keep track of the path to backtrack.
+  * **Finding Connected Components**: A single DFS run from an unvisited node will visit all nodes in its connected component. The provided code leverages this to find all components.
+  * **Cycle Detection**: Can detect cycles in both directed and undirected graphs.
+  * **Topological Sorting**: Essential for ordering tasks in Directed Acyclic Graphs (DAGs).
+  * **Path Finding**: Can find a path between two nodes (though not necessarily the shortest).
+
+### 3\. Algorithm Steps
+
+1.  **Initialization**:
+
+      * **Adjacency List (`adjList`)**: Represents the graph (`unordered_map<int, list<int>>`).
+      * **Visited Array (`visited`)**: A boolean map (`unordered_map<int, bool>`) to keep track of visited nodes. Initialize all to `false` (or `0`).
+      * **Result (`answer`)**: A `vector<vector<int>>` to store separate connected components found. Each inner `vector<int>` will be a component.
+
+2.  **Recursive Traversal (`traversal` function)**:
+
+      * **Parameters**: `adjList`, `visited`, `component` (vector to build the current connected component), `node` (current node being visited).
+      * **Mark Visited & Add to Component**:
+          * Add `node` to the current `component` list.
+          * Mark `node` as `visited[node] = true`.
+      * **Explore Neighbors**: For each `neighbor` (`i`) in `adjList[node]`:
+          * **If Not Visited**: If `!visited[i]`, recursively call `traversal(adjList, visited, component, i)`. This moves deeper into the graph.
+
+3.  **Handling Disconnected Graphs (`DFS` function)**:
+
+      * The main `DFS` function iterates through all possible nodes (`for i = 0 to V-1`).
+      * If `visited[i]` is `false` (meaning node `i` hasn't been part of any previously explored component):
+          * Create a new empty `component` vector.
+          * Start a DFS `traversal` from `i`.
+          * After the `traversal` call returns, `component` will contain all nodes of that connected component. Add this `component` to the `answer` list.
+
+### 4\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)` where `V` is the number of vertices and `E` is the number of edges.
+      * Each vertex is visited once.
+      * Each edge is traversed at most twice (once for each direction in an undirected graph) when exploring neighbors.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList`: `O(V + E)` for graph storage (input).
+      * `visited` map: `O(V)`.
+      * Recursion stack depth: `O(V)` in the worst case (e.g., a long linear graph), as it could go `V` levels deep.
+      * `answer` vector of vectors: `O(V + E)` in total, as it stores all nodes and implicitly edges (via their connections).
+
+### 5\. Comparison with BFS
+
+| Feature      | DFS                                     | BFS                                   |
+| :----------- | :-------------------------------------- | :------------------------------------ |
+| **Data Structure** | Stack (Implicit via recursion)          | Queue                                 |
+| **Traversal Order** | Deepest nodes first, then backtrack     | Level by level                        |
+| **Shortest Path (Unweighted)** | No guarantee (finds *a* path)   | Guaranteed shortest path (in edges)   |
+| **Applications** | Topological sort, cycle detection, strongly connected components | Shortest path (unweighted), network broadcasting, finding connected components |
+
+-----
+
+

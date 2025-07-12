@@ -3,51 +3,71 @@ title: Topological Sort Using DFS
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, stack, vector.
+using namespace std;     // Use the standard namespace.
 
-void solveDFS(unordered_map<int, list<int> > &adjList, stack<int> &st, vector<bool> &visited, int node) {
-    visited[node] = true;
+// Recursive helper function for DFS-based topological sort.
+// 'adjList': The adjacency list of the directed graph.
+// 'st': A stack to store nodes in topological order. Nodes are pushed after all their descendants are visited.
+// 'visited': A boolean vector to keep track of globally visited nodes.
+// 'node': The current node being visited in the DFS.
+void solveDFS(unordered_map<int, list<int>> &adjList, stack<int> &st, vector<bool> &visited, int node) {
+    visited[node] = true; // Mark the current node as visited.
 
-    for(auto x : adjList[node]) {
-        if(!visited[x]) {
-            solveDFS(adjList, st, visited, x);
+    // Recursively visit all unvisited neighbors (children) of the current node.
+    for(auto neighbor : adjList[node]) {
+        if(!visited[neighbor]) {
+            solveDFS(adjList, st, visited, neighbor);
         }
     }
 
+    // After all descendants of 'node' have been visited and pushed to the stack,
+    // push 'node' itself onto the stack. This is the core logic for topological sort.
     st.push(node);
 }
 
-vector<int> topologicalSort(vector< vector<int> > &edges, int v, int e) {
-    unordered_map<int, list<int> > adjList;
-    for(int i=0; i<e; i++) {
+// Main function to perform topological sort on a Directed Acyclic Graph (DAG).
+// 'edges': A vector of vectors, where each inner vector {u, v} represents a directed edge u -> v.
+// 'v': Total number of vertices (nodes).
+// 'e': Total number of edges.
+// Returns a vector containing the topological order of the nodes.
+vector<int> topologicalSort(vector<vector<int>> &edges, int v, int e) {
+    // 1. Create Adjacency List from the given directed edges.
+    unordered_map<int, list<int>> adjList;
+    for(int i = 0; i < e; i++) {
         int u = edges[i][0];
         int v = edges[i][1];
-        adjList[u].push_back(v);
+        adjList[u].push_back(v); // Directed edge from u to v.
     }
 
-    vector<int> solution;
-    stack<int> st;
-    vector<bool> visited(v,0);
+    // Initialize data structures for DFS.
+    vector<int> solution;        // Stores the final topological order.
+    stack<int> st;               // Temporary stack for DFS-based ordering.
+    vector<bool> visited(v, false); // Tracks visited nodes (initialized to false).
 
-    for(int i=0; i<v; i++) {
+    // 2. Iterate through all nodes to ensure all connected components are covered.
+    // (A topological sort can exist for disconnected DAGs too).
+    // Assuming nodes are 0-indexed.
+    for(int i = 0; i < v; i++) {
         if(!visited[i]) {
-            solveDFS(adjList, st, visited, i);
+            solveDFS(adjList, st, visited, i); // Start DFS from unvisited node.
         }
     }
 
+    // 3. Pop elements from the stack to get the topological order.
+    // The elements popped from the stack will be in topological order.
     while(!st.empty()) {
-        solution.push_back(st.top());
-        st.pop();
+        solution.push_back(st.top()); // Add top element to solution.
+        st.pop();                     // Remove it from the stack.
     }
 
-    return solution;
+    return solution; // Return the topological sort.
 }
 
 int main() {
-    vector< vector<int> > edges;
-    int n, m;
+    vector<vector<int>> edges; // Vector to store the input edges.
+    int n, m;                 // 'n' for nodes, 'm' for edges.
 
     cout << "Enter number of nodes : ";
     cin >> n;
@@ -55,23 +75,75 @@ int main() {
     cout << "Enter number of edges : ";
     cin >> m;
 
-    cout << "Enter edges : " << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter directed edges (u v, meaning u -> v): " << endl;
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        edges.push_back({u,v});
+        cin >> u >> v;         // Read the source and destination for a directed edge.
+        edges.push_back({u, v}); // Add the edge to the 'edges' vector.
     }
 
+    // Perform topological sort.
     vector<int> topSort = topologicalSort(edges, n, m);
 
     cout << "Topological Sort : ";
     for(int x : topSort) {
-        cout << x << " ";
+        cout << x << " "; // Print the sorted nodes.
     }
+    cout << endl;
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
-
-// 4 4 0 1 1 2 0 3 3 2
-// 6 7 0 1 0 2 1 3 2 3 3 4 3 5 4 5
 ```
+
+### 1\. What is Topological Sort?
+
+  * **Topological Sort (or Topological Ordering)** is a linear ordering of vertices in a **Directed Acyclic Graph (DAG)** such that for every directed edge `u -> v`, vertex `u` comes before vertex `v` in the ordering.
+  * **Key Constraint**: It is *only* possible for **Directed Acyclic Graphs (DAGs)**. If a graph contains a cycle, a topological sort is not possible.
+  * **Analogy**: Imagine a sequence of tasks where some tasks must be completed before others (dependencies). A topological sort gives a valid order to complete all tasks.
+
+### 2\. Core Idea (DFS-based approach)
+
+  * When performing a DFS, we explore a path as deep as possible.
+  * If we push a node onto a stack *only after* all its adjacent nodes (and their sub-paths) have been completely explored, then when we pop elements from the stack, we will get the topological order.
+  * **Why this works**: By pushing a node onto the stack *after* all its descendants are processed, we ensure that a node appears before any of its children in the final reversed order (which is the stack's pop order).
+
+### 3\. Algorithm Steps (`solveDFS` function)
+
+1.  **Parameters**: `adjList`, `st` (a `stack<int>` to store the topological order), `visited` (a `vector<bool>` to track visited nodes), `node` (current node).
+2.  **Mark Visited**: Set `visited[node] = true`.
+3.  **Explore Neighbors**: For each `neighbor` (`x`) in `adjList[node]`:
+      * If `!visited[x]`, recursively call `solveDFS(adjList, st, visited, x)`. This ensures we visit all descendants first.
+4.  **Push to Stack**: After all neighbors (and their subtrees) of `node` have been visited and processed, push `node` onto the `st`. This is the crucial step that creates the correct ordering when popped later.
+
+### 4\. Overall Topological Sort (`topologicalSort` function)
+
+1.  **Build Adjacency List**: Create `adjList` from the input `edges`. Remember, it's a directed graph, so only `adjList[u].push_back(v)` for `u -> v`.
+2.  **Initialization**:
+      * `solution`: A `vector<int>` to store the final topological order.
+      * `st`: An empty `stack<int>`.
+      * `visited`: A `vector<bool>` of size `v` (number of nodes), initialized to `false` (or `0`).
+3.  **Iterate Through All Nodes**: Use a loop `for i = 0 to v-1`.
+      * If `!visited[i]` (meaning node `i` hasn't been part of a previously explored component), start a DFS:
+          * Call `solveDFS(adjList, st, visited, i)`.
+4.  **Pop from Stack to Get Result**: After all DFS calls are complete and `st` is populated, pop elements from `st` one by one and add them to `solution`. The order of elements popped from the stack will be the topological order.
+
+### 5\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)`
+      * Building `adjList`: `O(E)`.
+      * `solveDFS`: Each vertex and edge is visited at most once. `O(V + E)`.
+      * Populating `solution` from `st`: `O(V)`.
+      * Total: `O(V + E)`.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList`: `O(V + E)`.
+      * `visited` vector: `O(V)`.
+      * `stack`: `O(V)` in the worst case (e.g., a long linear graph).
+
+### 6\. Alternatives / Important Notes
+
+  * **Kahn's Algorithm (BFS-based)**: Another common algorithm for topological sort, which uses in-degrees and a queue. Often preferred when detecting cycles is also a requirement, as it naturally identifies cycles (if the final sorted list doesn't contain all `V` nodes).
+  * **Cycle Detection**: If the graph contains a cycle, topological sort is not possible. This DFS-based approach will still return an ordering, but it won't be a valid topological sort. You'd typically run a cycle detection algorithm first.
+  * **Multiple Topological Orders**: A DAG can have multiple valid topological sorts. This algorithm provides one of them.
+
+-----
+

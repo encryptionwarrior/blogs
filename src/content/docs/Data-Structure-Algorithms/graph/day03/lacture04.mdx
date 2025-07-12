@@ -3,50 +3,70 @@ title: Detect Cycle In A Directed Graph
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, queue, vector.
+using namespace std;     // Use the standard namespace.
 
-bool detectCyclicInDirectedGraph(int n, vector< pair<int,int> > &edges) {
-    unordered_map<int, list<int> > adjList;
-    vector<int> indegree(n,0);
-    queue<int> qu;
-    int count = 0;
+// Function to detect a cycle in a DIRECTED graph using Kahn's Algorithm (BFS-based topological sort).
+// 'n': Total number of nodes (vertices). Assumed to be 0-indexed (0 to n-1).
+// 'edges': A vector of pairs, where each pair {u, v} represents a directed edge u -> v.
+// Returns true if a cycle is detected, false otherwise.
+bool detectCyclicInDirectedGraph(int n, vector<pair<int, int>> &edges) {
+    // 1. Build Adjacency List and compute In-degrees.
+    unordered_map<int, list<int>> adjList; // Adjacency list for the directed graph.
+    vector<int> indegree(n, 0);            // Vector to store in-degree for each node, initialized to 0.
 
-    for(int i=0; i<edges.size(); i++) {
-        int u = edges[i].first;
-        int v = edges[i].second;
-        adjList[u].push_back(v);
-        indegree[v]++;
+    // Populate the adjacency list and calculate in-degrees from the given edges.
+    for(int i = 0; i < edges.size(); i++) {
+        int u = edges[i].first;  // Source node.
+        int v = edges[i].second; // Destination node.
+
+        adjList[u].push_back(v); // Add directed edge u -> v.
+        indegree[v]++;           // Increment in-degree of the destination node 'v'.
     }
 
-    for(int i=0; i<n; i++) {
+    // 2. Initialize Queue with nodes having 0 in-degree.
+    queue<int> qu; // Queue for BFS traversal.
+    int count = 0; // Counter for nodes processed in topological order.
+
+    // Enqueue all nodes that have an initial in-degree of 0.
+    for(int i = 0; i < n; i++) {
         if(indegree[i] == 0) {
             qu.push(i);
         }
     }
 
+    // 3. Perform BFS-like traversal (Kahn's algorithm).
     while(!qu.empty()) {
-        count++;
+        count++; // Increment the count of processed nodes.
 
-        int frontVal = qu.front();
-        qu.pop();
+        int frontVal = qu.front(); // Get the node from the front of the queue.
+        qu.pop();                   // Remove it from the queue.
 
-        for(int x : adjList[frontVal]) {
-            indegree[x]--;
+        // For each neighbor (x) of the current node (frontVal):
+        // (i.e., for all nodes 'x' that 'frontVal' points to)
+        for(int neighbor : adjList[frontVal]) {
+            indegree[neighbor]--; // Decrement the in-degree of the neighbor.
+                                  // This simulates removing the edge from 'frontVal' to 'neighbor'.
 
-            if(indegree[x] == 0) {
-                qu.push(x);
+            // If the neighbor's in-degree becomes 0, it means all its prerequisites are met.
+            if(indegree[neighbor] == 0) {
+                qu.push(neighbor); // Enqueue the neighbor for processing.
             }
         }
     }
 
-    return (count == n) ? false: true;
+    // 4. Check for cycle.
+    // If 'count' is equal to 'n', it means all nodes were successfully included in the topological sort.
+    // This is only possible if the graph is a Directed Acyclic Graph (DAG).
+    // If 'count' is less than 'n', it implies that some nodes could not be processed (their in-degrees
+    // never dropped to 0), indicating the presence of a cycle.
+    return (count == n) ? false : true;
 }
 
 int main() {
-    vector< pair<int,int> > edges;
-    int n, m;
+    vector<pair<int, int>> edges; // Vector to store the input edges.
+    int n, m;                     // 'n' for number of nodes, 'm' for number of edges.
 
     cout << "Enter number of nodes : ";
     cin >> n;
@@ -54,13 +74,14 @@ int main() {
     cout << "Enter number of edges : ";
     cin >> m;
 
-    cout << "Enter edges : " << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter directed edges (u v, meaning u -> v): " << endl;
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        edges.push_back({u,v});
+        cin >> u >> v;         // Read the source and destination for a directed edge.
+        edges.push_back({u, v}); // Add the edge to the 'edges' vector.
     }
 
+    // Call the function to detect cycles.
     bool answer = detectCyclicInDirectedGraph(n, edges);
 
     if(answer) {
@@ -69,9 +90,67 @@ int main() {
         cout << "Cycle is Not Present" << endl;
     }
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
-
-// 8 9 0 1 1 2 2 6 2 7 7 6 1 3 3 4 4 5 5 3 - YES
-// 8 9 0 1 1 2 2 6 2 7 7 6 1 3 3 4 4 5 3 5 - NO
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Determine if a **directed** graph contains any cycles.
+  * **Input**: Number of nodes `n` and a list of directed edges `(u, v)` (meaning `u -> v`).
+  * **Output**: `true` if a cycle is present, `false` otherwise.
+
+### 2\. Core Idea (Kahn's Algorithm for Cycle Detection)
+
+  * Kahn's algorithm is primarily used for Topological Sorting.
+  * A topological sort is *only possible* for Directed Acyclic Graphs (DAGs).
+  * **Key Insight for Cycle Detection**: If a directed graph contains a cycle, it's impossible to perform a complete topological sort that includes *all* `N` vertices. This is because nodes within a cycle will always have an incoming edge (from within the cycle), meaning their in-degree will never drop to zero until other nodes in the cycle are processed, leading to a deadlock.
+  * Therefore, if the number of nodes in the topological order generated by Kahn's algorithm is less than the total number of nodes `N` in the graph, it implies the presence of a cycle.
+
+### 3\. Algorithm Steps (`detectCyclicInDirectedGraph` function)
+
+1.  **Build Adjacency List & Calculate In-Degrees**:
+
+      * Initialize an `adjList` (`unordered_map<int, list<int>>`) to represent the directed graph.
+      * Initialize an `indegree` vector (`vector<int> indegree(n, 0)`) of size `n`, with all values set to `0`.
+      * Iterate through each `edge (u, v)` in the input `edges`:
+          * Add `v` to `adjList[u]` (representing `u -> v`).
+          * Increment `indegree[v]` (because `v` has an incoming edge from `u`).
+
+2.  **Initialize Queue**:
+
+      * Create an empty `queue<int> qu`.
+      * Iterate through all nodes from `0` to `n-1`.
+      * If `indegree[i] == 0` for any node `i`, push `i` onto the `qu`. These are the initial nodes with no prerequisites.
+
+3.  **Process Queue (BFS-like)**:
+
+      * Initialize a `count` variable to `0`. This `count` will track the number of nodes successfully added to the topological order.
+      * While `qu` is not empty:
+          * Increment `count`.
+          * `frontVal = qu.front(); qu.pop();` (Dequeue the current node).
+          * For each `neighbor (x)` in `adjList[frontVal]` (i.e., for all nodes `x` that `frontVal` points to):
+              * Decrement `indegree[x]`. (This simulates removing the edge `frontVal -> x`).
+              * If `indegree[x]` becomes `0`, push `x` onto the `qu`. (It's now eligible for processing).
+
+4.  **Check for Cycle**:
+
+      * After the BFS-like process completes:
+          * If `count == n` (meaning all `n` nodes were successfully processed and added to the topological order), then the graph is a DAG (no cycle). Return `false`.
+          * If `count < n` (meaning some nodes were left behind because their in-degrees never reached zero), then a cycle exists. Return `true`.
+
+### 4\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)`
+      * Building `adjList` and calculating `in-degrees`: `O(E)`.
+      * Initial queue population: `O(V)`.
+      * BFS traversal (processing queue): Each vertex is enqueued/dequeued once (`O(V)`), and each edge is processed once (`O(E)`).
+      * Total: `O(V + E)`.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList`: `O(V + E)`.
+      * `indegree` vector: `O(V)`.
+      * `queue`: `O(V)` in the worst case.
+
+-----
+
+

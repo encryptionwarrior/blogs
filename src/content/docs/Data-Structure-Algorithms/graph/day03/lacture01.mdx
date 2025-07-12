@@ -3,77 +3,104 @@ title: Cycle Detection In Directed Graph
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, vector.
+using namespace std;     // Use the standard namespace.
 
-/*
+/* The commented-out 'isCyclicDFS' function was an alternative that aimed to return the node that formed the cycle,
+   but the boolean version is more common for simply detecting presence of a cycle.
 int isCyclicDFS(unordered_map<int, list<int> > &adjList, vector<int> &visited, vector<int> &dfsVisited, int Node) {
-    if(visited[Node] == 1 && dfsVisited[Node] == 1) {
+    if(visited[Node] == 1 && dfsVisited[Node] == 1) { // If currently in recursion stack and already visited, it's a cycle.
         return Node;
     }
 
-    visited[Node] = dfsVisited[Node] = 1;
+    visited[Node] = dfsVisited[Node] = 1; // Mark current node as visited and in current DFS path.
 
     for(int x : adjList[Node]) {
-        int ans = isCyclicDFS(adjList, visited, dfsVisited, x);
+        int ans = isCyclicDFS(adjList, visited, dfsVisited, x); // Recursive call.
 
-        if(ans != -1) {
+        if(ans != -1) { // If cycle found deeper, propagate it.
             return ans;
         }
     }
 
-    dfsVisited[Node] = 0;
-    return -1;
+    dfsVisited[Node] = 0; // Backtrack: Remove node from current DFS path.
+    return -1; // No cycle found through this node.
 }
 */
 
-bool isCyclicDFS(unordered_map<int, list<int> > &adjList, vector<int> &visited, vector<int> &dfsVisited, int Node) {
-    visited[Node] = dfsVisited[Node] = 1;
+// Recursive helper function for cycle detection in a DIRECTED graph using DFS.
+// 'adjList': The adjacency list representation of the graph.
+// 'visited': A vector (or map) to keep track of ALL nodes visited during the entire DFS process.
+// 'dfsVisited': A vector (or map) to keep track of nodes currently in the RECURSION STACK of the current DFS path.
+// 'Node': The current node being visited.
+// Returns true if a cycle is detected, false otherwise.
+bool isCyclicDFS(unordered_map<int, list<int>> &adjList, vector<int> &visited, vector<int> &dfsVisited, int Node) {
+    visited[Node] = 1;     // Mark the current node as globally visited.
+    dfsVisited[Node] = 1;  // Mark the current node as part of the current DFS path.
 
-    for(int x : adjList[Node]) {
-        if(visited[x] == 0) {
-        bool ans = isCyclicDFS(adjList, visited, dfsVisited, x);
-
+    // Iterate through all neighbors of the current node.
+    for(int neighbor : adjList[Node]) {
+        // Case 1: Neighbor has not been globally visited.
+        // Recursively call DFS on this unvisited neighbor.
+        if(visited[neighbor] == 0) {
+            bool ans = isCyclicDFS(adjList, visited, dfsVisited, neighbor);
             if(ans) {
-                return true;
+                return true; // If a cycle is found in the subtree, propagate true.
             }
-        } else if(dfsVisited[x] == 1) {
-            return true;
+        }
+        // Case 2: Neighbor has been globally visited AND is currently in the DFS path.
+        // This indicates a back-edge to an ancestor in the current recursion stack, meaning a cycle.
+        else if(dfsVisited[neighbor] == 1) {
+            return true; // Cycle detected!
         }
     }
 
+    // Backtracking step: Remove the current node from the current DFS path.
+    // This is crucial because if we return from 'Node', it's no longer part of the active path.
     dfsVisited[Node] = 0;
-    return false;
+    return false; // No cycle found through this node in the current path.
 }
 
-bool detectCyclicInDirectedGraph(int n, vector< pair<int,int> > &edges) {
-    unordered_map<int, list<int> > adjList;
-    for(int i=0; i<edges.size(); i++) {
+// Main function to detect a cycle in a directed graph.
+// 'n': Total number of nodes (assuming 0 to n-1 indexing for vectors).
+// 'edges': A vector of pairs representing the directed edges (u -> v).
+// Returns true if a cycle is detected, false otherwise.
+bool detectCyclicInDirectedGraph(int n, vector<pair<int, int>> &edges) {
+    // Adjacency list to represent the directed graph.
+    unordered_map<int, list<int>> adjList;
+    for(int i = 0; i < edges.size(); i++) {
         int u = edges[i].first;
         int v = edges[i].second;
-        adjList[u].push_back(v);
+        adjList[u].push_back(v); // Directed edge: u to v only.
     }
 
+    // 'visited' array: Stores 0 (not visited), 1 (visited).
     vector<int> visited(n, 0);
+    // 'dfsVisited' array: Stores 0 (not in current DFS path), 1 (in current DFS path).
     vector<int> dfsVisited(n, 0);
 
-    for(int i=0; i<n; i++) {
+    // Iterate through all nodes to handle disconnected graph components.
+    // Assuming nodes are 0-indexed based on vector sizes.
+    for(int i = 0; i < n; i++) {
+        // If the current node 'i' has not been globally visited yet.
         if(visited[i] == 0) {
-            int ans = isCyclicDFS(adjList, visited, dfsVisited, i);
+            // Start a DFS from 'i' to check for cycles in its component.
+            bool ans = isCyclicDFS(adjList, visited, dfsVisited, i);
 
+            // If a cycle is found in any component, return true immediately.
             if(ans) {
                 return true;
             }
         }
     }
 
-    return false;
+    return false; // If no cycle found after checking all components, return false.
 }
 
 int main() {
-    vector< pair<int,int> > edges;
-    int n, m;
+    vector<pair<int, int>> edges; // Vector to store the input edges.
+    int n, m; // 'n' for nodes, 'm' for edges.
 
     cout << "Enter number of nodes : ";
     cin >> n;
@@ -81,13 +108,14 @@ int main() {
     cout << "Enter number of edges : ";
     cin >> m;
 
-    cout << "Enter edges : " << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter edges (u v) for directed graph (u -> v): " << endl;
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        edges.push_back({u,v});
+        cin >> u >> v;         // Read the two nodes for a directed edge.
+        edges.push_back({u, v}); // Add the directed edge to the 'edges' vector.
     }
 
+    // Call the function to detect cycles.
     bool answer = detectCyclicInDirectedGraph(n, edges);
 
     if(answer) {
@@ -96,9 +124,64 @@ int main() {
         cout << "Cycle is Not Present" << endl;
     }
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
-
-// 8 9 0 1 1 2 2 6 2 7 7 6 1 3 3 4 4 5 5 3 - YES
-// 8 9 0 1 1 2 2 6 2 7 7 6 1 3 3 4 4 5 3 5 - NO
 ```
+
+
+### 1\. Problem Statement
+
+  * **Goal**: Determine if a **directed** graph contains any cycles.
+  * **Input**: Number of nodes `n`, a list of directed edges `(u, v)` (meaning `u -> v`).
+  * **Output**: `true` if a cycle is present, `false` otherwise.
+
+### 2\. Core Idea for Directed Graphs with DFS
+
+  * In a directed graph, simply encountering a `visited` node is not enough to declare a cycle (it might just be a forward edge to an already explored part of the graph).
+  * We need two `visited` arrays (or sets):
+      * `visited` array: Marks nodes that have been visited at least once during the entire DFS process (across all components).
+      * `dfsVisited` array: Marks nodes that are currently in the **current DFS recursion stack** (i.e., part of the current path being explored).
+  * **Cycle Condition**: A cycle is detected if, during a DFS traversal, we encounter a neighbor `x` of the current `Node` such that `x` is already marked as `dfsVisited`. This means we've found a back-edge to a node that is an ancestor in the current DFS path, thus forming a cycle.
+
+### 3\. Algorithm Steps (`isCyclicDFS` function)
+
+1.  **Parameters**: `adjList`, `visited` (global `vector<int>` or `bool` array), `dfsVisited` (current path `vector<int>` or `bool` array), `Node` (current node).
+2.  **Mark Current Node**:
+      * Set `visited[Node] = 1`.
+      * Set `dfsVisited[Node] = 1`. (Marks this node as being in the current recursion stack).
+3.  **Explore Neighbors**: For each `neighbor` (`x`) in `adjList[Node]`:
+      * **Case 1: Unvisited Neighbor**: If `visited[x] == 0`:
+          * Recursively call `isCyclicDFS(adjList, visited, dfsVisited, x)`.
+          * If this recursive call returns `true` (a cycle was found deeper in that path), immediately `return true`.
+      * **Case 2: Visited Neighbor AND in Current DFS Path**: If `visited[x] == 1` **AND** `dfsVisited[x] == 1`:
+          * This is the critical condition for a cycle in a directed graph. We've found a back-edge to an ancestor.
+          * `return true`.
+4.  **Backtracking**: After exploring all neighbors of `Node` (and no cycle was found through them), remove `Node` from the current DFS path.
+      * Set `dfsVisited[Node] = 0`. (Crucial\! This means `Node` is no longer in the *current* recursion stack, though it might still be `visited` overall).
+5.  **No Cycle in Path**: If the loop finishes without returning `true`, it means no cycle was found through `Node` or its descendants in the current path. `return false`.
+
+### 4\. Overall Cycle Detection (`detectCyclicInDirectedGraph` function)
+
+  * **Adjacency List Creation**: First, build the `adjList` from the input `edges`. For directed graphs, only add `v` to `u`'s list (`u -> v`).
+  * **Initialization of Visited Arrays**: Create `visited` and `dfsVisited` vectors of size `n`, initialized to `0` (false).
+  * **Handling Disconnected Graphs**: Iterate through all possible nodes (`for i = 0 to n-1`, assuming 0-indexed nodes based on `visited` and `dfsVisited` vector sizes).
+      * If a node `i` has not been `visited` yet:
+          * Call `isCyclicDFS(adjList, visited, dfsVisited, i)`.
+          * If `isCyclicDFS` returns `true`, then a cycle exists in the graph. Immediately `return true`.
+  * **No Cycle Found**: If the loop completes and no cycle was detected in any component, return `false`.
+
+### 5\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)`
+      * Building `adjList`: `O(M)` (where `M` is number of edges).
+      * `isCyclicDFS`: Each vertex and edge is visited at most once. `O(V + E)`.
+      * Outer loop in `detectCyclicInDirectedGraph`: Iterates `V` times, but `isCyclicDFS` only runs on unvisited components. So, the total work for all `isCyclicDFS` calls is `O(V + E)`.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList`: `O(V + E)`.
+      * `visited` vector: `O(V)`.
+      * `dfsVisited` vector: `O(V)`.
+      * Recursion stack depth: `O(V)` in the worst case (e.g., a long linear graph).
+
+-----
+
+

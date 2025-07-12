@@ -3,87 +3,222 @@ title: Disjoint Set
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, etc.
+using namespace std;     // Use the standard namespace.
 
-vector< pair<pair<int,int>, int> > calculatePrimsMST(vector< vector<int> > &edges, int n, int m) {}
+// This function is empty in the provided code. It is typically where Prim's algorithm
+// would be implemented. Given the DSU functions, it suggests Kruskal's algorithm,
+// which uses DSU for cycle detection in MST construction.
+vector<pair<pair<int, int>, int>> calculatePrimsMST(vector<vector<int>> &edges, int n, int m) {
+    // This function is not implemented in the provided snippet.
+    // It would contain the logic for Prim's MST algorithm.
+    // However, the DSU functions below are typically used for Kruskal's MST algorithm
+    // or other graph problems involving connected components/cycle detection.
 
+    // For Kruskal's, this function would:
+    // 1. Sort 'edges' by weight.
+    // 2. Initialize DSU.
+    // 3. Iterate through sorted edges:
+    //    a. If parent[u] != parent[v] (no cycle formed):
+    //       i. Add edge to MST result.
+    //       ii. Union u and v.
+    // 4. Return MST edges.
+
+    // Returning an empty vector as a placeholder.
+    return {};
+}
+
+// ----------------------------------------------------------------------------------
+// Disjoint Set Union (DSU) / Union-Find Operations
+// ----------------------------------------------------------------------------------
+
+// findParent: Finds the representative (root) of the set to which 'node' belongs.
+// It also applies Path Compression for optimization.
+// 'parent': The parent array where parent[i] stores the parent of node i.
+// 'node': The current node whose representative needs to be found.
 int findParent(vector<int> &parent, int node) {
-    // Reached topmost point of hierarchy
+    // Base Case: If the node is its own parent, it's the root of its set.
     if(parent[node] == node) {
         return node;
     }
 
-    // Going upwards in hierarchy
-    /*
-        PATH COMPRESSION LOGIC :
-
-        Assigning result to parent[node] to moving it up in
-        the hierarchy to make it accessible easily from the top
-    */
+    // Recursive Step (Going upwards in hierarchy):
+    // Path Compression Logic:
+    // Assigning the result of `findParent(parent, parent[node])` directly to `parent[node]`.
+    // This flattens the tree by making all nodes in the path point directly to the root,
+    // making future lookups for these nodes much faster.
     return parent[node] = findParent(parent, parent[node]);
 }
 
+// unionSet: Merges the sets containing 'u' and 'v' using Union by Rank optimization.
+// 'u', 'v': The two nodes whose sets are to be merged.
+// 'parent': The parent array.
+// 'rank': The rank array (stores approximate height of trees).
 void unionSet(int u, int v, vector<int> &parent, vector<int> &rank) {
+    // Find the representatives (roots) of the sets containing 'u' and 'v'.
     u = findParent(parent, u);
     v = findParent(parent, v);
 
+    // If 'u' and 'v' are already in the same set (have the same root), do nothing.
+    if(u == v) {
+        return;
+    }
+
+    // Union by Rank: Attach the smaller rank tree under the root of the larger rank tree.
     if(rank[u] < rank[v]) {
-        parent[u] = v;
+        parent[u] = v; // Make 'v' the parent of 'u'.
     } else if(rank[v] < rank[u]) {
-        parent[v] = u;
-        rank[u]++;
+        parent[v] = u; // Make 'u' the parent of 'v'.
     } else {
+        // If ranks are equal, either can be parent. Choose 'u' to be parent of 'v'.
         parent[v] = u;
-        rank[u]++;
+        rank[u]++; // Increment the rank of the new root 'u' because its height increased.
     }
 }
 
-void disjoint(vector< vector<int> > &edges, int n, int m) {
-    vector<int> parent(n);
-    vector<int> rank(n);
-
-    // Initialising parent & rank
-    for(int i=0; i<n; i++) {
+// disjoint: Initializes the parent and rank arrays for 'n' nodes.
+// This function would typically be called once at the beginning to set up the DSU structure.
+// 'n': Total number of nodes.
+// 'parent': The parent array to be initialized.
+// 'rank': The rank array to be initialized.
+void initializeDSU(int n, vector<int> &parent, vector<int> &rank) {
+    // Initialize each node to be its own parent (each node is initially in its own set).
+    // Initialize rank of each set to 0.
+    for(int i = 0; i < n; i++) {
         parent[i] = i;
         rank[i] = 0;
     }
 }
 
+// ----------------------------------------------------------------------------------
+// Main function and graph input/output (unrelated to DSU logic in its current form)
+// ----------------------------------------------------------------------------------
+
 int main() {
-    vector<vector<int>> edges;
-    int n, m, src;
+    vector<vector<int>> edges; // Stores edges in format {u, v, w}.
+    int n, m;                 // 'n' for nodes, 'm' for edges.
 
     cout << "Enter the number of nodes : ";
     cin >> n;
-    
+
     cout << "Enter the number of edges : ";
     cin >> m;
 
-    cout << "Enter the edges : " << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter the edges (u v w): " << endl;
+    for(int i = 0; i < m; i++) {
         int u, v, w;
         cin >> u >> v >> w;
-        edges.push_back({u,v,w});
+        edges.push_back({u, v, w});
     }
 
-    vector< pair<pair<int,int>, int> >  answer = calculatePrimsMST(edges, n, m);
+    // NOTE: The `calculatePrimsMST` function is empty.
+    // If you intend to use DSU for Kruskal's, you'd implement Kruskal's here or in a separate function.
+    // Example of DSU usage for a simple connectivity check:
+    vector<int> parent(n);
+    vector<int> rank(n);
+    initializeDSU(n, parent, rank); // Initialize DSU for 'n' nodes.
 
-    for(pair<pair<int,int>, int> x : answer) {
+    cout << "\nDSU Operations (Example):" << endl;
+    // Let's process some edges to see DSU in action (e.g., from the input 'edges')
+    for(const auto& edge : edges) {
+        int u = edge[0];
+        int v = edge[1];
+        int weight = edge[2]; // Weight is ignored for connectivity, but part of edge struct.
+
+        int rootU = findParent(parent, u);
+        int rootV = findParent(parent, v);
+
+        if (rootU != rootV) {
+            cout << "Nodes " << u << " and " << v << " are in different components. Unioning them." << endl;
+            unionSet(u, v, parent, rank);
+        } else {
+            cout << "Nodes " << u << " and " << v << " are already in the same component (edge " << u << "-" << v << " forms a cycle)." << endl;
+        }
+    }
+    cout << "\nFinal parent array (after example DSU operations):" << endl;
+    for (int i = 0; i < n; ++i) {
+        cout << "parent[" << i << "] = " << parent[i] << " (root: " << findParent(parent, i) << ")" << endl;
+    }
+
+
+    // The original `calculatePrimsMST` call, which currently returns an empty vector.
+    // To complete this, you'd implement Kruskal's algorithm using the DSU functions.
+    vector<pair<pair<int, int>, int>> answer = calculatePrimsMST(edges, n, m);
+
+    // This loop will print nothing if `calculatePrimsMST` is empty.
+    // It's meant to print MST edges.
+    cout << "\nMST Edges (if Kruskal's was implemented):" << endl;
+    for(pair<pair<int, int>, int> x : answer) {
         pair<int,int> a = x.first;
         int b = x.second;
-
-        /*
-            a.first -> u
-            a.second -> v
-            b -> weight
-        */
         cout << a.first << "-" << a.second << " : " << b << endl;
     }
 
     return 0;
 }
-
-// 5 6 0 3 6 0 1 2 1 3 8 1 4 5 1 2 3 2 4 7
 ```
+
+### 1\. What is Disjoint Set Union (DSU)?
+
+  * **Purpose**: A data structure that manages a collection of disjoint (non-overlapping) sets. It efficiently performs two main operations:
+      * **`find`**: Determines which set an element belongs to (finds the representative/root of that set).
+      * **`union`**: Merges two sets into a single set.
+  * **Applications**:
+      * Kruskal's Algorithm for Minimum Spanning Tree (MST).
+      * Detecting cycles in undirected graphs.
+      * Connected components in a graph.
+      * Network connectivity problems.
+
+### 2\. Core Idea
+
+Each set is represented as a tree structure. The root of each tree is the "representative" of its set.
+
+  * **`parent` array**: `parent[i]` stores the parent of element `i`. If `parent[i] == i`, then `i` is the root of its set.
+  * **`rank` (or `size`) array**: Used for optimization during union.
+      * `rank[i]` (by rank/height): Stores the approximate height of the tree rooted at `i`.
+      * `size[i]` (by size): Stores the number of elements in the set rooted at `i`.
+
+### 3\. Key Operations
+
+#### A. `findParent(vector<int> &parent, int node)`
+
+  * **Purpose**: Finds the representative (root) of the set containing `node`.
+  * **Recursive Approach**:
+      * **Base Case**: If `parent[node] == node`, then `node` is the root, so return `node`.
+      * **Recursive Step**: Otherwise, recursively call `findParent` on `parent[node]` to go up the tree.
+  * **Path Compression Optimization**: During the recursive calls, assign the returned root directly to `parent[node]`. This flattens the tree, making future `find` operations for nodes in that path much faster.
+      * `return parent[node] = findParent(parent, parent[node]);`
+
+#### B. `unionSet(int u, int v, vector<int> &parent, vector<int> &rank)`
+
+  * **Purpose**: Merges the sets containing `u` and `v`.
+  * **Steps**:
+    1.  Find the representatives (roots) of `u` and `v`: `rootU = findParent(parent, u)` and `rootV = findParent(parent, v)`.
+    2.  If `rootU == rootV`, they are already in the same set; do nothing.
+    3.  Otherwise, merge the two sets using **Union by Rank (or Size)** optimization:
+          * **Union by Rank**: Attach the root of the shorter tree to the root of the taller tree. This keeps the overall tree height small.
+              * If `rank[rootU] < rank[rootV]`, make `rootV` the parent of `rootU` (`parent[rootU] = rootV`).
+              * If `rank[rootV] < rank[rootU]`, make `rootU` the parent of `rootV` (`parent[rootV] = rootU`).
+              * If `rank[rootU] == rank[rootV]`, make one the parent of the other (e.g., `parent[rootV] = rootU`) AND increment the rank of the new root (`rank[rootU]++`).
+
+#### C. `disjoint(vector< vector<int> > &edges, int n, int m)` (Initialization)
+
+  * **Purpose**: To initialize the `parent` and `rank` arrays.
+  * **Steps**:
+      * For each element `i` from `0` to `n-1`:
+          * Set `parent[i] = i` (each element is initially its own parent/root, forming `n` singleton sets).
+          * Set `rank[i] = 0` (initial rank of each set/tree is 0).
+
+### 4\. Time Complexity
+
+  * With both **Path Compression** and **Union by Rank (or Size)** optimizations, the amortized time complexity for a sequence of `M` operations (`find` and `union`) on `N` elements is almost constant: `O(M * α(N))`, where `α` (alpha) is the inverse Ackermann function, which grows extremely slowly (for practical `N`, `α(N)` is less than 5).
+  * Effectively, operations are considered **nearly constant time**.
+
+### 5\. Space Complexity
+
+  * `O(N)` for the `parent` and `rank` (or `size`) arrays.
+
+-----
+
+

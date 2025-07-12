@@ -3,27 +3,44 @@ title: Kosaraju Algorithm
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, unordered_map, list, stack.
+using namespace std;     // Use the standard namespace.
 
+// Pass 1: DFS to get nodes in topological sort order (by finishing times).
+// 'node': Current node being visited.
+// 'visited': Boolean array to keep track of visited nodes.
+// 'st': Stack to push nodes onto after their DFS subtree is fully explored.
+// 'adjList': Adjacency list of the ORIGINAL graph.
 void topoSort(int node, vector<bool> &visited, stack<int> &st,
-    unordered_map<int, list<int>> &adjList) {
+              unordered_map<int, list<int>> &adjList) {
 
-    visited[node] = true;
+    visited[node] = true; // Mark current node as visited.
 
+    // Recursively visit all unvisited neighbors.
     for(int neigh : adjList[node]) {
         if(visited[neigh] == false) {
             topoSort(neigh, visited, st, adjList);
         }
     }
 
+    // After all reachable nodes from 'node' (and their subtrees) are visited,
+    // push 'node' onto the stack. This ensures nodes are pushed in decreasing
+    // order of their finishing times.
     st.push(node);
 }
 
+// Pass 2: DFS on the Transposed Graph.
+// This DFS is called based on the order from the stack (topological sort).
+// All nodes visited in one call to revDFS form one Strongly Connected Component (SCC).
+// 'node': Current node being visited in the transposed graph.
+// 'visited': Boolean array (reset for Pass 2) to track nodes visited within an SCC.
+// 'transpose': Adjacency list of the TRANSPOSED graph.
 void revDFS(int node, vector<bool> &visited, unordered_map<int, list<int>> &transpose) {
-    visited[node] = true;
-    
+    visited[node] = true; // Mark current node as visited within this SCC.
+
+    // Recursively visit all unvisited neighbors in the transpose graph.
+    // These neighbors are the nodes that can reach 'node' in the original graph.
     for(int neigh : transpose[node]) {
         if(visited[neigh] == false) {
             revDFS(neigh, visited, transpose);
@@ -31,77 +48,187 @@ void revDFS(int node, vector<bool> &visited, unordered_map<int, list<int>> &tran
     }
 }
 
+// Main function to find the number of Strongly Connected Components (SCCs)
+// using Kosaraju's Algorithm.
+// 'edges': A vector of vectors, where each inner vector {u, v} represents a directed edge u -> v.
+// 'n': Total number of nodes.
+// 'm': Total number of edges.
+// Returns the total count of SCCs.
 int stronglyConnectedComponents(vector<vector<int>> &edges, int n, int m) {
-    // Create adjList
+    // 1. Create Adjacency List for the ORIGINAL graph.
     unordered_map<int, list<int>> adjList;
-    for(int i=0; i<m; i++) {
+    for(int i = 0; i < m; i++) {
         int u = edges[i][0];
         int v = edges[i][1];
-
-        adjList[u].push_back(v);
+        adjList[u].push_back(v); // Directed edge u -> v.
     }
 
-    // Topoplogical Sort
-    stack<int> st;
-    vector<bool> visited(n, false);
-    
-    for(int i=0; i<n; i++) {
+    // 2. Pass 1: Perform DFS on the original graph to get topological sort order.
+    stack<int> st;               // Stack to store nodes by finishing times.
+    vector<bool> visited(n, false); // Visited array for Pass 1.
+
+    // Iterate through all nodes to ensure all components are covered.
+    for(int i = 0; i < n; i++) {
         if(visited[i] == false) {
             topoSort(i, visited, st, adjList);
         }
     }
 
-    // Transpose Graph
+    // 3. Create Transpose Graph.
+    // Reset visited array for Pass 2.
     unordered_map<int, list<int>> transpose;
-    for(int i=0; i<n; i++) {
-        visited[i] = false;
+    for(int i = 0; i < n; i++) {
+        visited[i] = false; // Reset visited status for all nodes.
+        // Iterate through neighbors in the original graph to build transpose.
         for(int neigh : adjList[i]) {
-            transpose[neigh].push_back(i);
+            transpose[neigh].push_back(i); // Reverse the edge: neigh <- i becomes neigh -> i in transpose.
         }
     }
 
-    // DFS call on topological sort
-    int count = 0;
+    // 4. Pass 2: Perform DFS on the Transpose Graph using the order from the stack.
+    int count = 0; // Counter for Strongly Connected Components.
     while(!st.empty()) {
-        int top = st.top();
-        st.pop();
+        int top_node = st.top(); // Get the node with the highest finishing time.
+        st.pop();               // Remove it from the stack.
 
-        if(visited[top] == false) {
-            count++;
-            revDFS(top, visited, transpose);
+        // If the 'top_node' has not been visited in the transpose graph yet,
+        // it means it belongs to a new, unvisited SCC.
+        if(visited[top_node] == false) {
+            count++; // Increment SCC count.
+            // Perform DFS from this node in the transpose graph.
+            // All nodes visited in this call belong to the same SCC.
+            revDFS(top_node, visited, transpose);
         }
     }
 
-    return count;
+    return count; // Return the total number of SCCs found.
 }
 
+// Main function for input/output.
 int main() {
-    vector<vector<int>> edges;
-    int n, m;
+    vector<vector<int>> edges; // Stores input directed edges as {u, v}.
+    int n, m;                 // 'n' for nodes, 'm' for edges.
 
-    cout << "Enter the value of n : ";
+    cout << "Enter the value of n (number of nodes): ";
     cin >> n;
 
-    cout << "Enter the value of m : ";
+    cout << "Enter the value of m (number of edges): ";
     cin >> m;
 
-    cout << "Enter the edges :" << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter the edges (u v, representing u -> v):" << endl;
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        edges.push_back({u,v});
+        cin >> u >> v;         // Read u and v.
+        edges.push_back({u, v}); // Add directed edge to vector.
     }
 
-    int answer = stronglyConnectedComponents(edges, n, m);
+    // Call stronglyConnectedComponents function.
+    int scc_count = stronglyConnectedComponents(edges, n, m);
 
-    cout << "Total Strongly Connected Components : " << answer << endl;
+    cout << "Total Strongly Connected Components : " << scc_count << endl;
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
-
-
-/*
-    5 5 1 0 0 2 2 1 2 3 3 4
-    5 6 0 1 1 4 1 2 4 0 2 3 3 2
-*/
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Find all Strongly Connected Components (SCCs) in a given **directed graph**.
+  * **SCC Definition**: A strongly connected component (SCC) of a directed graph is a maximal subgraph such that for every pair of vertices $(u, v)$ in the subgraph, there is a path from $u$ to $v$ and a path from $v$ to $u$. In other words, all vertices within an SCC are reachable from each other.
+  * **Input**: List of `edges (u, v)` representing directed edges `u -> v`, total `n` nodes, total `m` edges.
+  * **Output**: The total count of SCCs in the graph. (The code currently only returns the count).
+
+### 2\. Core Idea (Kosaraju's Algorithm)
+
+Kosaraju's algorithm is a two-pass Depth-First Search (DFS) algorithm to find SCCs.
+
+  * **Pass 1 (DFS on original graph for Topological Sort Order)**:
+
+      * Perform a DFS traversal on the original graph.
+      * As each node's DFS call **finishes** (i.e., all its reachable neighbors are visited), push the node onto a stack. This stack will effectively store nodes in decreasing order of their finishing times (or roughly, a topological sort order of the graph's condensation graph).
+
+  * **Pass 2 (DFS on Transposed Graph based on Stack Order)**:
+
+      * Create a **transpose (or reverse)** graph, where all edge directions are reversed (`u -> v` becomes `v -> u`).
+      * Pop nodes one by one from the stack generated in Pass 1.
+      * For each popped node, if it hasn't been visited yet, perform a DFS starting from this node in the **transpose graph**. All nodes visited during this DFS call form one SCC. Increment the SCC count.
+
+**Why it works**:
+The nodes at the top of the stack (from Pass 1) are those that finished last, meaning they are likely part of "source" SCCs in the condensation graph (graph of SCCs). When we traverse the transpose graph, following edges in reverse effectively allows us to reach all nodes that can reach the current popped node, thus revealing an entire SCC. The topological order ensures that we process "sink" SCCs in the reversed graph first, effectively peeling off one SCC at a time.
+
+### 3\. Algorithm Steps (`stronglyConnectedComponents`, `topoSort`, `revDFS` functions)
+
+#### A. `topoSort` Function (Pass 1 DFS)
+
+  * **Purpose**: Performs a DFS on the original graph and pushes nodes onto a stack in their finishing order.
+  * **Parameters**: `node`, `visited` array, `stack<int> st`, `adjList` (original graph).
+  * **Logic**:
+    1.  Mark `node` as `visited[node] = true`.
+    2.  For each `neigh` in `adjList[node]`:
+          * If `!visited[neigh]`, recursively call `topoSort(neigh, ...)`
+    3.  **After all neighbors are visited and recursive calls return**: `st.push(node);` (This is the key step for ordering).
+
+#### B. `revDFS` Function (Pass 2 DFS on Transpose Graph)
+
+  * **Purpose**: Performs DFS on the transpose graph to identify nodes within a single SCC.
+  * **Parameters**: `node`, `visited` array, `transpose` (transposed graph's adjList).
+  * **Logic**:
+    1.  Mark `node` as `visited[node] = true`.
+    2.  For each `neigh` in `transpose[node]`:
+          * If `!visited[neigh]`, recursively call `revDFS(neigh, ...)`
+
+#### C. `stronglyConnectedComponents` Function (Main Wrapper)
+
+1.  **Build Original Adjacency List**:
+
+      * Create `adjList` (`unordered_map<int, list<int>>`) from the input directed `edges (u, v)`: `adjList[u].push_back(v);`.
+
+2.  **Pass 1: Topological Sort (DFS for finishing times)**:
+
+      * Initialize `stack<int> st` and `vector<bool> visited(n, false)`.
+      * Loop `i` from `0` to `n-1`:
+          * If `!visited[i]`, call `topoSort(i, visited, st, adjList);`. This ensures all components are covered.
+
+3.  **Create Transpose Graph**:
+
+      * Initialize `unordered_map<int, list<int>> transpose;`.
+      * Reset `visited` array to `false` for all nodes: `for(int i=0; i<n; i++) visited[i] = false;`. (Crucial for Pass 2).
+      * Iterate through the original `adjList`:
+          * For each `u` and its `neigh` in `adjList[u]`:
+              * Add edge `neigh -> u` to the transpose graph: `transpose[neigh].push_back(u);`.
+
+4.  **Pass 2: DFS on Transpose Graph (using stack order)**:
+
+      * Initialize `count = 0;` (to count SCCs).
+      * While `st` is not empty:
+          * Pop `top = st.top(); st.pop();`
+          * If `!visited[top]`: (This means `top` belongs to a new, unvisited SCC)
+              * Increment `count++;`
+              * Call `revDFS(top, visited, transpose);` (This DFS will visit all nodes in the current SCC).
+
+5.  **Return**: `count` (total number of SCCs).
+
+### 4\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)`
+      * Building `adjList`: `O(M)`.
+      * Pass 1 DFS (`topoSort`): Each vertex and edge is visited once. `O(V + E)`.
+      * Creating Transpose Graph: Each edge is processed once. `O(V + E)`.
+      * Pass 2 DFS (`revDFS`): Each vertex and edge in the transpose graph is visited once. `O(V + E)`.
+      * Total: **`O(V + E)`**.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList` and `transpose` lists: `O(V + E)`.
+      * `visited` array: `O(V)`.
+      * `stack`: `O(V)` in worst case.
+      * Recursion stack for DFS: `O(V)` in worst case (skewed graph).
+      * Total: **`O(V + E)`**.
+
+### 5\. Important Notes
+
+  * **Directed Graphs Only**: SCCs are a concept specific to directed graphs.
+  * **Connectivity**: Even if the original graph is not strongly connected, Kosaraju's algorithm correctly identifies all maximal strongly connected subgraphs.
+  * **Alternative Algorithms**: Tarjan's algorithm and Gabow's algorithm are other popular methods for finding SCCs, which are typically single-pass DFS algorithms and might be more efficient in practice (avoiding explicit transpose graph creation) but are conceptually more complex.
+
+-----
+
+

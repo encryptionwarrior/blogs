@@ -3,91 +3,210 @@ title: Prism MST
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, vector, limits.
+using namespace std;     // Use the standard namespace.
 
-vector< pair<pair<int,int>, int> > calculatePrimsMST(vector< vector<int> > &edges, int n, int m) {
-    // Creating adj list
-    unordered_map< int, list<pair<int,int>> > adjList;
-    for(int i=0; i<m; i++) {
-        int u = edges[i][0];
-        int v = edges[i][1];
-        int w = edges[i][2];
+// Function to calculate the Minimum Spanning Tree (MST) using Prim's Algorithm.
+// This is the basic O(V^2) implementation.
+// 'edges': A vector of vectors, where each inner vector {u, v, w} represents an undirected edge u-v with weight w.
+// 'n': Total number of nodes (vertices). Assumed to be 0-indexed (0 to n-1).
+// 'm': Total number of edges.
+// Returns a vector of edges forming the MST, where each edge is {{u, v}, weight}.
+vector<pair<pair<int, int>, int>> calculatePrimsMST(vector<vector<int>> &edges, int n, int m) {
+    // 1. Create Adjacency List for the undirected weighted graph.
+    // 'adjList' stores: Key: node, Value: list of pairs {neighbor_node, weight_to_neighbor}.
+    unordered_map<int, list<pair<int, int>>> adjList;
+    for(int i = 0; i < m; i++) {
+        int u = edges[i][0]; // Source node of an edge.
+        int v = edges[i][1]; // Destination node of an edge.
+        int w = edges[i][2]; // Weight of the edge.
 
-        adjList[u].push_back({v,w});
-        adjList[v].push_back({u,w});
+        adjList[u].push_back({v, w}); // Add edge u - v with weight w.
+        adjList[v].push_back({u, w}); // Add edge v - u with weight w (for undirected).
     }
 
-    // Initiaising the required data structures
+    // 2. Initialize required data structures for Prim's Algorithm.
+    // 'key' vector: Stores the minimum weight of an edge connecting node 'i' to the current MST.
+    // Initialized to INT_MAX for all nodes.
     vector<int> key(n, INT_MAX);
+
+    // 'mst' vector: Boolean flag indicating if a node is already included in the MST.
+    // Initialized to false for all nodes.
     vector<bool> mst(n, false);
+
+    // 'parent' vector: Stores the parent of each node in the MST. 'parent[i]' is the node
+    // from which 'i' was added to the MST. Used to reconstruct the MST edges.
+    // Initialized to -1.
     vector<int> parent(n, -1);
 
-    // Initialising src node
+    // 3. Initialize the starting node (e.g., node 0).
+    // The cost to include the starting node itself in the MST is 0.
     key[0] = 0;
-    
-    for(int i=0; i<n; i++) {
-        // Calculating minimum from key vector
-        int u, mini = INT_MAX;
-        for(int i=0; i<key.size(); i++) {
-            if(key[i] < mini && mst[i] == false) {
-                u = i;
-                mini = key[i];
+
+    // 4. Main loop of Prim's algorithm: Iterate 'n' times to include all 'n' nodes in the MST.
+    for(int count = 0; count < n; count++) { // 'count' represents the number of nodes added to MST so far.
+        // 4a. Find the unvisited node 'u' with the minimum 'key' value.
+        int u = -1; // 'u' will store the index of the chosen node.
+        int mini = INT_MAX; // 'mini' stores the minimum key value found.
+
+        for(int i = 0; i < n; i++) {
+            // If node 'i' is not yet in the MST AND its 'key' value is smaller than 'mini'.
+            if(mst[i] == false && key[i] < mini) {
+                u = i;      // Update 'u' to this node.
+                mini = key[i]; // Update 'mini' to its key value.
             }
         }
 
+        // 4b. Mark the chosen node 'u' as part of the MST.
         mst[u] = true;
 
-        for(pair<int,int> x : adjList[u]) {
-            if(mst[x.first] == false && x.second < key[x.first]) {
-                key[x.first] = x.second;
-                parent[x.first] = u;
+        // 4c. Update 'key' and 'parent' values for neighbors of 'u'.
+        for(pair<int, int> neighbor_pair : adjList[u]) {
+            int neighbor_node = neighbor_pair.first;   // The neighbor node ID.
+            int edge_weight = neighbor_pair.second;    // The weight of the edge from 'u' to 'neighbor_node'.
+
+            // If the neighbor is not yet in the MST AND the current edge to it is cheaper
+            // than its existing 'key' value (i.e., we found a better way to connect it to MST).
+            if(mst[neighbor_node] == false && edge_weight < key[neighbor_node]) {
+                key[neighbor_node] = edge_weight;      // Update 'key' to this new, smaller weight.
+                parent[neighbor_node] = u;             // Set 'u' as the parent of 'neighbor_node' in the MST.
             }
         }
     }
 
-    vector< pair<pair<int,int>, int> > answer;
-    for(int i=1; i<n; i++) {
+    // 5. Construct the final answer: list of MST edges.
+    vector<pair<pair<int, int>, int>> answer;
+    // Iterate from node 1 to n-1 (node 0 is the starting node and has no parent edge in the MST).
+    for(int i = 1; i < n; i++) {
+        // Add the edge {parent[i], i} with its weight key[i] to the MST result.
         answer.push_back({{parent[i], i}, key[i]});
     }
 
-    return answer;
+    return answer; // Return the MST edges.
 }
 
 int main() {
-    vector<vector<int>> edges;
-    int n, m, src;
+    vector<vector<int>> edges; // Vector to store input edges {u, v, w}.
+    int n, m;                 // 'n' for nodes, 'm' for edges.
 
     cout << "Enter the number of nodes : ";
     cin >> n;
-    
+
     cout << "Enter the number of edges : ";
     cin >> m;
 
-    cout << "Enter the edges : " << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter the edges (u v w, meaning u-v with weight w): " << endl;
+    for(int i = 0; i < m; i++) {
         int u, v, w;
-        cin >> u >> v >> w;
-        edges.push_back({u,v,w});
+        cin >> u >> v >> w;         // Read u, v, and weight w.
+        edges.push_back({u, v, w}); // Add edge to vector.
     }
 
-    vector< pair<pair<int,int>, int> >  answer = calculatePrimsMST(edges, n, m);
+    // Call calculatePrimsMST function.
+    vector<pair<pair<int, int>, int>> mst_edges = calculatePrimsMST(edges, n, m);
 
-    for(pair<pair<int,int>, int> x : answer) {
-        pair<int,int> a = x.first;
-        int b = x.second;
+    cout << "Edges in the Minimum Spanning Tree (u-v : weight):" << endl;
+    long long total_mst_weight = 0; // To calculate total MST weight.
+    for(pair<pair<int, int>, int> edge_info : mst_edges) {
+        int u_node = edge_info.first.first;  // First node of the MST edge.
+        int v_node = edge_info.first.second; // Second node of the MST edge.
+        int weight = edge_info.second;       // Weight of the MST edge.
 
-        /*
-            a.first -> u
-            a.second -> v
-            b -> weight
-        */
-        cout << a.first << "-" << a.second << " : " << b << endl;
+        cout << u_node << "-" << v_node << " : " << weight << endl;
+        total_mst_weight += weight;
     }
+    cout << "Total MST Weight: " << total_mst_weight << endl;
 
-    return 0;
+
+    return 0; // Indicate successful execution.
 }
-
-// 5 6 0 3 6 0 1 2 1 3 8 1 4 5 1 2 3 2 4 7
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Find a **Minimum Spanning Tree (MST)** of a connected, undirected, weighted graph.
+  * **MST Definition**: A spanning tree is a subgraph that connects all vertices together, without any cycles, and uses exactly `V-1` edges (where `V` is the number of vertices). A **Minimum** Spanning Tree is a spanning tree whose sum of edge weights is as small as possible.
+  * **Input**: List of weighted `edges (u, v, w)`, total `n` nodes, total `m` edges.
+  * **Output**: A list of edges that form the MST, along with their weights.
+
+### 2\. Core Idea (Prim's Algorithm - Greedy Approach)
+
+Prim's algorithm is a greedy algorithm that builds the MST one edge at a time, starting from an arbitrary initial node.
+
+  * It grows a tree from a starting vertex by iteratively adding the cheapest edge that connects a vertex already in the tree to a vertex not yet in the tree.
+  * It maintains three key pieces of information for each vertex `v`:
+      * `key[v]`: The minimum weight of an edge connecting `v` to the current MST.
+      * `mst[v]`: A boolean flag indicating whether `v` has already been included in the MST.
+      * `parent[v]`: The parent of `v` in the MST (i.e., the node from which `v` was added to the MST).
+
+### 3\. Algorithm Steps (`calculatePrimsMST` function)
+
+1.  **Build Adjacency List**:
+
+      * Create an `adjList` (`unordered_map<int, list<pair<int, int>>>`).
+      * For each edge `(u, v, w)`:
+          * Add `v` with weight `w` to `adjList[u]`.
+          * Add `u` with weight `w` to `adjList[v]` (since it's an undirected graph).
+
+2.  **Initialize Data Structures**:
+
+      * `key`: A `vector<int>` of size `n`, initialized to `INT_MAX`. `key[i]` will store the minimum weight to connect node `i` to the current MST.
+      * `mst`: A `vector<bool>` of size `n`, initialized to `false`. `mst[i] = true` means node `i` is included in the MST.
+      * `parent`: A `vector<int>` of size `n`, initialized to `-1`. `parent[i]` will store the node from which `i` was added to the MST.
+
+3.  **Start Node Initialization**:
+
+      * Choose an arbitrary starting node (e.g., node 0).
+      * Set `key[0] = 0`. (The cost to include the starting node itself is 0).
+
+4.  **Main Loop (Iterate `n` times to include all `n` nodes)**:
+
+      * Loop `i` from `0` to `n-1`: (This loop finds and adds one node to MST in each iteration)
+          * **Find Minimum Key Node**:
+              * Initialize `u` (node to be picked) and `mini = INT_MAX`.
+              * Iterate through all nodes `j` from `0` to `n-1`:
+                  * If `mst[j]` is `false` (node `j` not yet in MST) AND `key[j] < mini`:
+                      * Update `mini = key[j]`.
+                      * Set `u = j`.
+              * At the end of this inner loop, `u` will be the unvisited node with the smallest `key` value.
+          * **Include `u` in MST**: Set `mst[u] = true`.
+          * **Update Neighbors' Keys**: For each `neighbor (x.first)` with `weight (x.second)` in `adjList[u]`:
+              * If `mst[x.first]` is `false` (neighbor not yet in MST) AND `x.second < key[x.first]`:
+                  * Update `key[x.first] = x.second`. (A cheaper edge to connect `x.first` to the MST is found).
+                  * Update `parent[x.first] = u`. (Node `u` is now the best parent for `x.first`).
+
+5.  **Construct MST Edges**:
+
+      * Create an empty `vector<pair<pair<int, int>, int>> answer`. This will store edges as `{{u, v}, weight}`.
+      * Loop `i` from `1` to `n-1` (skipping the initial node 0, as it has no parent edge):
+          * Add `{{parent[i], i}, key[i]}` to `answer`. `parent[i]` is the node from which `i` was connected, and `key[i]` is the weight of that edge.
+
+6.  **Return**: The `answer` vector, which represents the edges of the MST.
+
+### 4\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V^2)`
+      * Building `adjList`: `O(M)`.
+      * Main loop runs `V` times.
+      * Inside the main loop:
+          * Finding minimum `key` node: `O(V)` linear scan.
+          * Updating neighbors: `O(degree(u))`. In total, over all iterations, `sum(degree(u))` is `O(E)`.
+      * Total: `O(V * V + E)` which simplifies to `O(V^2)` because `E` can be at most `V^2` in a dense graph.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList`: `O(V + E)`.
+      * `key` vector: `O(V)`.
+      * `mst` vector: `O(V)`.
+      * `parent` vector: `O(V)`.
+      * `answer` vector: `O(V)` (as MST has `V-1` edges).
+
+### 5\. Optimizations (Using Priority Queue)
+
+  * The `O(V)` linear scan to find the minimum `key` node in each iteration can be optimized.
+  * By using a `min-priority queue` (e.g., `std::set<pair<int, int>>` or `std::priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>>`), finding the minimum becomes `O(log V)`.
+  * This brings the time complexity down to `O(E log V)`. This is the standard competitive programming implementation for Prim's.
+
+-----
+
+
+

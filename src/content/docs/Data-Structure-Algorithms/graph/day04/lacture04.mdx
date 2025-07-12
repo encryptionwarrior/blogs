@@ -3,88 +3,188 @@ title: Shortest Path Using Dijkstras Algorithm
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, vector, set, limits.
+using namespace std;     // Use the standard namespace.
 
-vector<int> shortestPath(vector< vector<int> > &edges, int n, int m, int src) {
-    // Creating adj list
-    unordered_map< int, list<pair<int,int>> > adjList;
-    for(int i=0; i<m; i++) {
-        int u = edges[i][0];
-        int v = edges[i][1];
-        int w = edges[i][2];
+// Function to find the shortest path from a source node to all other nodes
+// in a weighted graph with NON-NEGATIVE edge weights using Dijkstra's Algorithm.
+// 'edges': A vector of vectors, where each inner vector {u, v, w} represents an edge u-v with weight w.
+//          Assumed to be undirected if edges are added bidirectionally.
+// 'n': Total number of nodes (vertices). Assumed to be 0-indexed (0 to n-1).
+// 'm': Total number of edges.
+// 'src': The source node from which to find shortest paths.
+// Returns a vector containing the shortest distances from 'src' to all nodes.
+vector<int> shortestPath(vector<vector<int>> &edges, int n, int m, int src) {
+    // 1. Create Adjacency List for the graph.
+    // 'adjList' stores: Key: node, Value: list of pairs {neighbor_node, weight_to_neighbor}.
+    unordered_map<int, list<pair<int, int>>> adjList;
+    for(int i = 0; i < m; i++) {
+        int u = edges[i][0]; // Source node of an edge.
+        int v = edges[i][1]; // Destination node of an edge.
+        int w = edges[i][2]; // Weight of the edge.
 
-        adjList[u].push_back({v,w});
-        adjList[v].push_back({u,w});
+        adjList[u].push_back({v, w}); // Add edge u -> v with weight w.
+        adjList[v].push_back({u, w}); // Add edge v -> u with weight w (for undirected graph).
     }
 
-    vector<int> distance(n,INT_MAX);
-    set<pair<int,int>> st;
+    // 2. Initialize Distance Array and Priority Set.
+    // 'distance' vector: Stores the shortest distance found so far from 'src' to each node.
+    // Initialized to INT_MAX (infinity) for all nodes except source.
+    vector<int> distance(n, INT_MAX);
 
-    distance[src] = 0;
-    st.insert({0,src});
+    // 'st' (set): Acts as a min-priority queue. Stores pairs of {current_shortest_distance, node_id}.
+    // `std::set` automatically keeps elements sorted by the first element (distance).
+    set<pair<int, int>> st;
 
+    // Initialize source node's distance.
+    distance[src] = 0;      // Distance from source to itself is 0.
+    st.insert({0, src});    // Insert the source node with its 0 distance into the set.
+
+    // 3. Dijkstra's Main Loop: Process nodes until the priority queue is empty.
     while(!st.empty()) {
-        // Fetching top pair
-        pair<int,int> curr = *(st.begin());
+        // Fetch the pair with the smallest distance from the set (which is at the beginning).
+        pair<int, int> curr = *(st.begin());
 
-        int nodeDistance = curr.first;
-        int topNode = curr.second;
+        int nodeDistance = curr.first;  // The shortest distance to 'topNode' found so far.
+        int topNode = curr.second;      // The current node being processed.
 
-        // Removing top pair
+        // Remove the processed node from the set.
         st.erase(st.begin());
 
-        for(auto neigh : adjList[topNode]) {
-            if(nodeDistance + neigh.second < distance[neigh.first]) {
-                auto record = st.find({distance[neigh.first], neigh.first});
+        // Explore neighbors of the 'topNode'.
+        for(auto neighbor_pair : adjList[topNode]) {
+            int neighbor = neighbor_pair.first;   // The neighbor node ID.
+            int edgeWeight = neighbor_pair.second; // The weight of the edge to the neighbor.
 
-                // Erasing old record
+            // Relaxation step: Check if a shorter path to 'neighbor' can be found through 'topNode'.
+            if(nodeDistance + edgeWeight < distance[neighbor]) {
+                // If the 'neighbor' was already in the set with a larger distance, remove that old record.
+                // This is specific to `std::set` based priority queue.
+                auto record = st.find({distance[neighbor], neighbor});
                 if(record != st.end()) {
                     st.erase(record);
                 }
 
-                // Upadting distance
-                distance[neigh.first] = nodeDistance + neigh.second;
-                
-                // Inserting new pair in set
-                st.insert({distance[neigh.first], neigh.first});
+                // Update the shortest distance to 'neighbor'.
+                distance[neighbor] = nodeDistance + edgeWeight;
+
+                // Insert the 'neighbor' with its new, updated shortest distance into the set.
+                st.insert({distance[neighbor], neighbor});
             }
         }
     }
 
-    return distance;
+    return distance; // Return the vector of shortest distances from 'src'.
 }
 
 int main() {
-    vector<vector<int>> edges;
-    int n, m, src;
+    vector<vector<int>> edges; // Vector to store input edges {u, v, w}.
+    int n, m;                 // 'n' for nodes, 'm' for edges.
+    int src;                  // Source node.
 
     cout << "Enter the number of nodes : ";
     cin >> n;
-    
+
     cout << "Enter the number of edges : ";
     cin >> m;
 
-    cout << "Enter the edges : " << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter the edges (u v w, meaning u-v with weight w): " << endl;
+    for(int i = 0; i < m; i++) {
         int u, v, w;
-        cin >> u >> v >> w;
-        edges.push_back({u,v,w});
+        cin >> u >> v >> w;         // Read source, destination, and weight.
+        edges.push_back({u, v, w}); // Add edge to vector.
     }
 
     cout << "Enter the source : ";
     cin >> src;
 
-    vector<int> answer = shortestPath(edges, n, m, src);
-    cout << "The shortest path : ";
-    for(int x : answer) {
-        cout << x << " ";
+    // Call the shortestPath function (Dijkstra's).
+    vector<int> answer_distances = shortestPath(edges, n, m, src);
+
+    cout << "Shortest distances from source " << src << ":" << endl;
+    for(int i = 0; i < n; i++) { // Iterate through all nodes (0 to n-1).
+        cout << "Node " << i << ": ";
+        if(answer_distances[i] == INT_MAX) {
+            cout << "INF"; // Indicate if unreachable.
+        } else {
+            cout << answer_distances[i]; // Print the distance.
+        }
+        cout << endl;
     }
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
-
-// 4 5 0 1 5 1 2 9 1 3 2 2 3 6 0 2 8
-// 5 7 2 1 3 1 4 1 0 3 2 2 0 1 1 0 7 1 3 5 3 4 7
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Find the shortest path (minimum total weight) from a given `source` node to all other reachable nodes in a **weighted graph with non-negative edge weights**.
+  * **Key Constraint**: All edge weights must be **non-negative**. Dijkstra's algorithm does not work correctly with negative edge weights. For graphs with negative weights (but no negative cycles), Bellman-Ford algorithm is used. For general graphs (possibly with negative cycles), SPFA or Bellman-Ford is used, or Floyd-Warshall for all-pairs shortest paths.
+  * **Input**: List of weighted `edges (u, v, w)`, total `n` nodes, total `m` edges, `src` (source node).
+  * **Output**: A vector `distance` where `distance[i]` is the shortest path distance from `src` to node `i`. `INT_MAX` indicates unreachable.
+
+### 2\. Core Idea
+
+Dijkstra's algorithm is a greedy algorithm that works in a similar way to BFS, but it prioritizes visiting nodes with the smallest *current shortest distance* from the source.
+
+  * It maintains a set of visited nodes (or more accurately, nodes for which the shortest path has been finalized).
+  * It uses a **min-priority queue** (implemented here using a `std::set` ordered by distance) to efficiently select the unvisited node with the smallest distance.
+  * When a node `u` is extracted from the priority queue, its distance (`distance[u]`) is considered finalized.
+  * Then, it explores all neighbors `v` of `u` and tries to "relax" the edges: if `distance[u] + weight(u,v)` is less than `distance[v]`, it means a shorter path to `v` has been found through `u`. In this case, `distance[v]` is updated, and `v` (with its new distance) is added/updated in the priority queue.
+
+### 3\. Algorithm Steps (`shortestPath` function)
+
+1.  **Build Adjacency List**:
+
+      * Create an `adjList` (`unordered_map<int, list<pair<int, int>>>`).
+      * For each edge `(u, v, w)`, add `v` with weight `w` to `adjList[u]`.
+      * Since it's an undirected graph (implied by adding both `u -> v` and `v -> u`), also add `u` with weight `w` to `adjList[v]`.
+
+2.  **Initialize Distance Array & Priority Queue**:
+
+      * `distance`: A `vector<int>` of size `n`, initialized to `INT_MAX` (representing infinity).
+      * `st` (or `pq`): A `std::set<pair<int, int>>` (or `std::priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>>`). This set stores `(current_distance, node_id)` pairs, ordered by `current_distance` (min-heap behavior).
+      * Set `distance[src] = 0`.
+      * Insert `{0, src}` into `st`.
+
+3.  **Dijkstra's Main Loop**: While `st` is not empty:
+
+      * **Extract Minimum**: Get the `(nodeDistance, topNode)` pair with the smallest `nodeDistance` from `st`.
+          * `pair<int, int> curr = *(st.begin());`
+          * `int nodeDistance = curr.first;`
+          * `int topNode = curr.second;`
+      * **Remove from Set**: `st.erase(st.begin());` (Crucial to avoid reprocessing with outdated distances).
+      * **Explore Neighbors**: For each `neighbor (neigh.first)` with `edgeWeight (neigh.second)` in `adjList[topNode]`:
+          * **Relaxation**: If `nodeDistance + neigh.second < distance[neigh.first]`:
+              * **Remove Old Record (if exists)**: If `neigh.first` was already in the `st` with a larger distance, `st.find()` and `st.erase()` that old record. This is unique to `std::set` implementation; `std::priority_queue` doesn't support this and might push redundant entries, which are handled by checking `distance[node] < nodeDistance` when extracted.
+              * **Update Distance**: `distance[neigh.first] = nodeDistance + neigh.second;`
+              * **Insert New Record**: `st.insert({distance[neigh.first], neigh.first});` (Add the neighbor with its new, smaller distance).
+
+4.  **Return**: The `distance` vector.
+
+### 4\. Time and Space Complexity
+
+  * **Time Complexity**:
+      * Building `adjList`: `O(M)`.
+      * Dijkstra's loop: Each vertex is extracted from the `set` at most once (`O(V)` extractions). For each extraction, its neighbors are iterated (`O(E)` total edge relaxations). Each `set` operation (`insert`, `erase`, `find`) takes `O(log V)` time (since the set can contain up to `V` elements).
+      * Total: `O(E log V)` if using `std::set` or `std::priority_queue`.
+          * If using a Fibonacci heap (more complex data structure), it can be `O(E + V log V)`.
+  * **Space Complexity**:
+      * `adjList`: `O(V + E)`.
+      * `distance` vector: `O(V)`.
+      * `set` (or `priority_queue`): `O(V)` in the worst case (stores all vertices).
+      * Total: `O(V + E)`.
+
+### 5\. Why `std::set` as a Priority Queue?
+
+  * `std::set` stores elements in sorted order. When pairs `(distance, node)` are inserted, they are naturally ordered by distance (first element of pair).
+  * `*(st.begin())` gives the element with the smallest distance.
+  * `st.erase(st.begin())` removes the smallest element.
+  * Crucially, `std::set` allows efficient `find` and `erase` of arbitrary elements (`log V`), which is useful when a node's distance is updated. This prevents outdated entries from accumulating in the "priority queue" and being processed unnecessarily, leading to a cleaner implementation.
+  * A standard `std::priority_queue` cannot efficiently remove arbitrary elements. When using `std::priority_queue`, you'd push new (shorter) paths, and when you extract a node, you'd check `if (nodeDistance > distance[topNode]) continue;` to skip outdated entries.
+
+-----
+
+
+

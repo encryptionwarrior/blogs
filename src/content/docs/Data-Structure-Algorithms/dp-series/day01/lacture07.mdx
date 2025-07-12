@@ -3,74 +3,238 @@ title: Cut Rod Into Segments
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, vector, limits (for INT_MIN), algorithm (for max).
+using namespace std;     // Use the standard namespace.
 
+// 1. Recursive Approach (Brute Force)
+// Finds the maximum number of segments that can be cut from a rod of length 'n'.
+// 'n': Current length of the rod to cut.
+// 'x, y, z': Allowed segment lengths.
+// Time Complexity: Exponential, O(3^N) in worst case.
+// Space Complexity: O(N) due to recursion stack depth.
 int cutSegmentsRec(int n, int x, int y, int z) {
-    if(n == 0) {return 0;}
-    if(n < 0) {return INT_MIN;}
+    // Base Case 1: If current length 'n' is 0, we have successfully cut the rod. 0 more cuts needed.
+    if(n == 0) {
+        return 0;
+    }
+    // Base Case 2: If current length 'n' is negative, it means we overshot the rod length.
+    // This path is invalid/impossible. Return INT_MIN to signify impossibility.
+    if(n < 0) {
+        return INT_MIN;
+    }
 
-    int cutx = cutSegmentsRec(n-x, x, y, z) + 1;
-    int cuty = cutSegmentsRec(n-y, x, y, z) + 1;
-    int cutz = cutSegmentsRec(n-z, x, y, z) + 1;
+    // Try cutting with segment 'x'. Add 1 to the result of the subproblem.
+    int cutx = cutSegmentsRec(n - x, x, y, z); // Recursive call for remaining length (n-x)
+    if (cutx != INT_MIN) cutx += 1; // Only add 1 if the subproblem was possible
 
-    return max(cutx, max(cuty, cutz));
+    // Try cutting with segment 'y'.
+    int cuty = cutSegmentsRec(n - y, x, y, z);
+    if (cuty != INT_MIN) cuty += 1;
+
+    // Try cutting with segment 'z'.
+    int cutz = cutSegmentsRec(n - z, x, y, z);
+    if (cutz != INT_MIN) cutz += 1;
+
+    // Return the maximum number of cuts among the three possibilities.
+    // If all are INT_MIN, max will correctly return INT_MIN.
+    return max({cutx, cuty, cutz}); // Using initializer list for max with 3 elements
 }
 
+// 2. Dynamic Programming - Top-Down Approach (Recursion + Memoization)
+// Optimizes the recursive solution by storing computed results in 'dp' table.
+// 'dp': Memoization table, dp[i] stores max cuts for length 'i'. Initialized with -1.
+// Time Complexity: O(N) - Each state 'n' is computed once.
+// Space Complexity: O(N) for 'dp' vector + O(N) for recursion stack = O(N) total.
 int cutSegmentsMem(vector<int> &dp, int n, int x, int y, int z) {
-    if(n == 0) {return 0;}
-    if(n < 0) {return INT_MIN;}
-
-    if(dp[n] != -1) {return dp[n];}
-
-    int cutx = cutSegmentsMem(dp, n-x, x, y, z) + 1;
-    int cuty = cutSegmentsMem(dp, n-y, x, y, z) + 1;
-    int cutz = cutSegmentsMem(dp, n-z, x, y, z) + 1;
-
-    dp[n] = max(cutx, max(cuty, cutz));
-    return dp[n];
-}
-
-int cutSegmentsTab(int n, int x, int y, int z) {
-    vector<int> dp(n+1, INT_MIN);
-    dp[0] = 0;
-
-    for(int i=1; i<=n; i++) {
-        if(i-x >= 0) dp[i] = max(dp[i], dp[i-x] + 1);
-        if(i-y >= 0) dp[i] = max(dp[i], dp[i-y] + 1);
-        if(i-z >= 0) dp[i] = max(dp[i], dp[i-z] + 1);
+    // Base Case 1: Length is 0, 0 cuts needed.
+    if(n == 0) {
+        return 0;
+    }
+    // Base Case 2: Length is negative, impossible path.
+    if(n < 0) {
+        return INT_MIN;
     }
 
+    // If the result for 'n' is already computed and stored, return it.
+    if(dp[n] != -1) { // Assuming -1 means not computed.
+        return dp[n];
+    }
+
+    // Try cutting with x, y, z. Check if subproblem results are valid before adding 1.
+    int cutx = cutSegmentsMem(dp, n - x, x, y, z);
+    if (cutx != INT_MIN) cutx += 1; // Add 1 only if (n-x) was possible
+
+    int cuty = cutSegmentsMem(dp, n - y, x, y, z);
+    if (cuty != INT_MIN) cuty += 1;
+
+    int cutz = cutSegmentsMem(dp, n - z, x, y, z);
+    if (cutz != INT_MIN) cutz += 1;
+
+    // Store the computed maximum cuts for 'n' in the dp table before returning.
+    return dp[n] = max({cutx, cuty, cutz});
+}
+
+// 3. Dynamic Programming - Bottom-Up Approach (Tabulation)
+// Iteratively calculates the maximum number of segments.
+// 'n': Total length of the rod.
+// 'x, y, z': Allowed segment lengths.
+// Time Complexity: O(N) - Single loop over 'n', constant operations inside.
+// Space Complexity: O(N) - For the 'dp' vector.
+int cutSegmentsTab(int n, int x, int y, int z) { // Renamed to avoid overload with recursion version
+    // Create a dp table of size (n + 1).
+    // dp[i] will store the maximum cuts for a rod of length 'i'.
+    // Initialize all entries to INT_MIN to indicate they are not yet reachable/impossible.
+    vector<int> dp(n + 1, INT_MIN);
+    // Base Case: 0 cuts are needed for a rod of length 0.
+    dp[0] = 0;
+
+    // Iterate through all possible rod lengths from 1 up to 'n'.
+    for(int i = 1; i <= n; i++) {
+        // Try to form length 'i' by taking a segment of 'x', 'y', or 'z'.
+        // If (i - x) is a valid length AND (i - x) was reachable (dp[i-x] is not INT_MIN),
+        // then we can potentially update dp[i].
+        if(i - x >= 0 && dp[i - x] != INT_MIN) {
+            dp[i] = max(dp[i], dp[i - x] + 1);
+        }
+        if(i - y >= 0 && dp[i - y] != INT_MIN) {
+            dp[i] = max(dp[i], dp[i - y] + 1);
+        }
+        if(i - z >= 0 && dp[i - z] != INT_MIN) {
+            dp[i] = max(dp[i], dp[i - z] + 1);
+        }
+    }
+
+    // After filling the dp table, dp[n] will contain the maximum cuts for length 'n'.
+    // If dp[n] is still INT_MIN, it means 'n' cannot be perfectly cut.
+    // In this case, return 0 (as per typical problem requirements for impossible cases).
     return dp[n] < 0 ? 0 : dp[n];
 }
 
-int cutSegmentsTab(int n, int x, int y, int z) {
-    vector<int> dp(n+1, INT_MIN);
-    dp[0] = 0;
 
-    for(int i=1; i<=n; i++) {
-        if(i-x >= 0) dp[i] = max(dp[i], dp[i-x] + 1);
-        if(i-y >= 0) dp[i] = max(dp[i], dp[i-y] + 1);
-        if(i-z >= 0) dp[i] = max(dp[i], dp[i-z] + 1);
-    }
-
-    return dp[n] < 0 ? 0 : dp[n];
-}
-
+// Main function for input/output and testing.
 int main() {
     int n, x, y, z;
-    cout << "Enter the value of n : ";
+    cout << "Enter the value of n (rod length): ";
     cin >> n;
 
-    cout << "Enter the value of x, y and z : ";
+    cout << "Enter the value of x, y and z (segment lengths): ";
     cin >> x >> y >> z;
-    
-    cout << "Max cuts : " << cutSegmentsRec(n, x, y, z) << endl;
 
-    vector<int> dp(n+1, -1);
-    cout << "Max cuts : " << cutSegmentsMem(dp, n, x, y, z) << endl;
-   
-    return 0;
+    cout << "--- Using Recursive Approach ---" << endl;
+    int ans_rec = cutSegmentsRec(n, x, y, z);
+    // Check for impossibility in final recursive result
+    if (ans_rec == INT_MIN) {
+        cout << "Max cuts : 0 (Impossible to cut)" << endl;
+    } else {
+        cout << "Max cuts : " << ans_rec << endl;
+    }
+
+
+    cout << "--- Using Memoization Approach ---" << endl;
+    vector<int> dp_memo(n + 1, -1); // Initialize dp table with -1
+    int ans_mem = cutSegmentsMem(dp_memo, n, x, y, z);
+    // Check for impossibility in final memoized result
+    if (ans_mem == INT_MIN) {
+        cout << "Max cuts : 0 (Impossible to cut)" << endl;
+    } else {
+        cout << "Max cuts : " << ans_mem << endl;
+    }
+
+    cout << "--- Using Tabulation Approach ---" << endl;
+    int ans_tab = cutSegmentsTab(n, x, y, z); // This function already handles returning 0 for impossible
+    cout << "Max cuts : " << ans_tab << endl;
+
+
+    return 0; // Indicate successful execution.
 }
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Given a rod of length `n` and three allowed segment lengths `x`, `y`, and `z`, find the maximum number of segments that can be cut from the rod.
+  * **Constraint**: The total length of the cut segments must exactly equal `n`. You can use any of the segment lengths `x`, `y`, or `z` any number of times.
+  * **Output**: The maximum number of segments. If it's impossible to cut the rod into segments of the given lengths such that their sum is exactly `n`, typically return `0` (or an indicator that it's impossible, like `INT_MIN` in intermediate steps).
+
+### 2\. Problem Insight (Dynamic Programming)
+
+This is an optimization problem where we want to maximize the number of segments. It's similar to the Coin Change problem (minimum coins), but instead of minimizing coins to reach a target sum, we are maximizing the count of segments.
+
+The core idea is: to find the maximum segments for a length `i`, we can try making the last cut using length `x`, `y`, or `z`.
+If the last cut was `x`, the remaining length was `i-x`, and we add 1 to the segments for `i-x`.
+Similarly for `y` and `z`. We take the maximum among these valid options.
+
+**Recurrence Relation**:
+Let `dp[i]` be the maximum number of segments that can be cut from a rod of length `i`.
+
+`dp[i] = 1 + max(dp[i-x], dp[i-y], dp[i-z])` (if `i-x, i-y, i-z` are valid lengths)
+
+**Base Cases**:
+
+  * `dp[0] = 0` (0 segments for a rod of length 0).
+  * `dp[i] = INT_MIN` (or a very small negative number) if length `i` cannot be formed by the segments, or if `i < 0`. This is crucial to propagate "impossibility" correctly. If `dp[i-x]` is `INT_MIN`, then `INT_MIN + 1` should still indicate impossibility for `dp[i]`.
+
+### 3\. Approaches to Solving
+
+#### A. Recursive Approach (Brute Force)
+
+  * **Idea**: Directly implement the recurrence relation using recursion.
+  * **`cutSegmentsRec(n, x, y, z)`**:
+      * **Base Case 1**: `if (n == 0) return 0;` (Reached target length, 0 remaining length, 0 more cuts needed).
+      * **Base Case 2**: `if (n < 0) return INT_MIN;` (Overshot the length, this path is invalid, signifies impossibility).
+      * Calculate `cutx = cutSegmentsRec(n-x, x, y, z) + 1;`
+      * Calculate `cuty = cutSegmentsRec(n-y, x, y, z) + 1;`
+      * Calculate `cutz = cutSegmentsRec(n-z, x, y, z) + 1;`
+      * Return `max(cutx, max(cuty, cutz));`
+  * **Important Note**: When adding `+1` to `INT_MIN`, it can wrap around to a large positive number if `INT_MIN` is the smallest possible integer. It's safer to check `if (ans_from_subproblem != INT_MIN)` before `ans_from_subproblem + 1`. Your recursive code doesn't explicitly check this, which could lead to issues.
+  * **Pros**: Simple and direct translation.
+  * **Cons**: Highly inefficient due to **redundant calculations** (overlapping subproblems).
+  * **Time Complexity**: Exponential, roughly $O(3^N)$ in worst case.
+  * **Space Complexity**: $O(N)$ (Due to recursion stack depth).
+
+#### B. Dynamic Programming - Top-Down (Memoization)
+
+  * **Idea**: Optimize the recursive approach by storing the results of already computed subproblems in a `dp` table.
+  * **`cutSegmentsMem(dp, n, x, y, z)`**:
+      * Same base cases as recursion.
+      * Memoization check: `if (dp[n] != -1) return dp[n];` (assuming -1 means not computed).
+      * Follow the recursive logic. **Crucially, after computing `cutx`, `cuty`, `cutz`, you need to check if they are `INT_MIN` before adding `1` and taking the max.** A safer way is to check `if (sub_result != INT_MIN)` for each `cutx`, `cuty`, `cutz` before comparing them in `max()`.
+          * `int res_x = INT_MIN, res_y = INT_MIN, res_z = INT_MIN;`
+          * `if (n - x >= 0 && dp[n-x] != INT_MIN) res_x = cutSegmentsMem(dp, n-x, ...) + 1;`
+          * Similarly for `y` and `z`.
+          * `dp[n] = max({res_x, res_y, res_z});` (Using initializer list for max for 3 elements)
+      * Store `dp[n]` before returning.
+  * **Pros**: Overcomes redundant calculations.
+  * **Cons**: Still uses a recursion stack.
+  * **Time Complexity**: $O(N)$ (Each state `dp[i]` is computed once).
+  * **Space Complexity**: $O(N)$ (For `dp` array) + $O(N)$ (For recursion stack) = $O(N)$.
+
+#### C. Dynamic Programming - Bottom-Up (Tabulation)
+
+  * **Idea**: Build the solution iteratively from the base cases upwards. This is often the most robust approach for this problem type.
+  * **`cutSegmentsTab(n, x, y, z)`**:
+      * Create `vector<int> dp(n + 1, INT_MIN);` Initialize with `INT_MIN` to signify "unreachable".
+      * Set `dp[0] = 0;` (0 segments for length 0).
+      * Outer loop `for (int i = 1; i <= n; i++)`: Iterate through all rod lengths from 1 to `n`.
+      * Inside the loop, check each segment length:
+          * `if (i - x >= 0 && dp[i - x] != INT_MIN)`: If previous length `i-x` is valid and reachable, update `dp[i] = max(dp[i], dp[i - x] + 1);`
+          * Do similarly for `y` and `z`.
+      * **Final Result Handling**: If `dp[n]` is still `INT_MIN` after the loop, it means `n` cannot be perfectly cut. In this case, return `0` as per common problem statements (or `-1` if specified). Otherwise, return `dp[n]`. Your provided `cutSegmentsTab` function correctly implements this.
+  * **Pros**: No recursion stack overhead. Efficient and robust.
+  * **Cons**: Requires an array of size `n + 1`.
+  * **Time Complexity**: $O(N)$ (Outer loop) \* $O(1)$ (constant number of choices, 3 segments) = $O(N)$.
+  * **Space Complexity**: $O(N)$ (For `dp` array).
+
+#### D. Space Optimization
+
+  * For this problem, `dp[i]` depends on `dp[i-x]`, `dp[i-y]`, `dp[i-z]`. Since `x, y, z` can be arbitrary values, we generally cannot reduce the space complexity to `O(1)` as `dp[i]` might depend on elements far back in the `dp` array. Thus, `O(N)` space is usually required for tabulation.
+
+### 4\. Important Considerations
+
+  * **`INT_MIN` vs. `INT_MAX`**: Use `INT_MIN` for "impossibility" when maximizing, and `INT_MAX` for "impossibility" when minimizing.
+  * **`INT_MIN + 1`**: Be cautious about integer overflow. Always check if the value you are adding `1` to is `INT_MIN` before performing the addition. `INT_MIN + 1` might lead to a positive number, which would incorrectly be picked as a maximum.
+  * **Return 0 for Impossible**: If `dp[n]` ends up as `INT_MIN`, it means the target length `n` cannot be perfectly formed. The problem usually expects `0` or `-1` in this case.
+
+-----
+
+

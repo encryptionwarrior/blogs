@@ -3,57 +3,80 @@ title: Cycle Detection In Undirected Graph Using DFS
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries like iostream, unordered_map, list, vector.
+using namespace std;     // Use the standard namespace.
 
-bool isCyclicDFS(unordered_map<int, list<int> > &adjList, unordered_map<int, bool> &visited, int Node, int parent) {
-    visited[Node] = true;
+// Recursive helper function for cycle detection in an UNDIRECTED graph using DFS.
+// 'adjList': The adjacency list representation of the graph.
+// 'visited': An unordered_map to keep track of globally visited nodes.
+// 'Node': The current node being visited in the DFS.
+// 'parent': The node from which 'Node' was visited in the current DFS path.
+bool isCyclicDFS(unordered_map<int, list<int>> &adjList, unordered_map<int, bool> &visited, int Node, int parent) {
+    visited[Node] = true; // Mark the current node as visited.
 
-    for(auto i : adjList[Node]) {
-        if(visited[i] == false) {
-            bool isCycle = isCyclicDFS(adjList, visited, i, Node);
-
-            if(isCycle) {
-                return true;
+    // Iterate through all neighbors of the current node.
+    for(auto neighbor : adjList[Node]) {
+        // Case 1: Neighbor is not visited.
+        // Recursively call DFS on this unvisited neighbor.
+        if(visited[neighbor] == false) {
+            bool isCycleFound = isCyclicDFS(adjList, visited, neighbor, Node); // Pass current Node as parent.
+            if(isCycleFound) {
+                return true; // If a cycle is found deeper in the recursion, propagate 'true'.
             }
-        } else if(i != parent) {
-            return true;
+        }
+        // Case 2: Neighbor is visited AND it's NOT the direct parent of the current node.
+        // This indicates a back-edge to an already visited node that is not the immediate source, hence a cycle.
+        else if(neighbor != parent) {
+            return true; // Cycle detected!
         }
     }
 
-    return false;
+    return false; // No cycle found in this DFS path starting from 'Node'.
 }
 
-string cycleDetection(vector<vector<int> > &edges, int n, int m) {
-    unordered_map<int, list<int> > adjList;
+// Main function to check for cycles in an undirected graph.
+// 'edges': A vector of vectors representing the graph edges (e.g., {{u,v}, {x,y}}).
+// 'n': Total number of nodes.
+// 'm': Total number of edges.
+// Returns "YES" if a cycle is detected, "NO" otherwise.
+string cycleDetection(vector<vector<int>> &edges, int n, int m) {
+    // Adjacency list to represent the graph.
+    unordered_map<int, list<int>> adjList;
+    // Map to keep track of visited nodes across all components.
     unordered_map<int, bool> visited;
 
-    // Creating Adjacency List
-    for(int i=0; i<m; i++) {
+    // Create Adjacency List from the input edges (for undirected graph).
+    for(int i = 0; i < m; i++) {
         int u = edges[i][0];
         int v = edges[i][1];
 
         adjList[u].push_back(v);
-        adjList[v].push_back(u);
+        adjList[v].push_back(u); // Add edge in both directions for undirected graph.
     }
 
-    for(int i=1; i<=n; i++) {
+    // Iterate through all nodes to handle disconnected graph components.
+    // Assuming nodes are 1-indexed here, based on loop 'i=1; i<=n'.
+    for(int i = 1; i <= n; i++) {
+        // If the current node 'i' has not been visited yet, start a DFS from it.
+        // The parent of the starting node of a component is -1 (or any invalid node ID).
         if(visited[i] == false) {
             bool ans = isCyclicDFS(adjList, visited, i, -1);
-            
+
+            // If a cycle is found in any component, the graph contains a cycle.
             if(ans) {
                 return "YES";
             }
         }
     }
 
+    // If no cycle was found after checking all components, the graph is acyclic.
     return "NO";
 }
 
 int main() {
     int n, m;
-    vector<vector<int> > edges;
+    vector<vector<int>> edges; // Vector to store the input edges.
 
     cout << "Enter the total number of nodes : ";
     cin >> n;
@@ -61,17 +84,67 @@ int main() {
     cout << "Enter total number of edges : ";
     cin >> m;
 
-    cout << "Enter edges : " << endl;
-    for(int i=0; i<m; i++) {
+    cout << "Enter edges (u v): " << endl;
+    for(int i = 0; i < m; i++) {
         int u, v;
-        cin >> u >> v;
-        edges.push_back({u,v});
+        cin >> u >> v;         // Read the two nodes for an edge.
+        edges.push_back({u, v}); // Add the edge to the 'edges' vector.
     }
 
+    // Call cycleDetection to check for cycles.
     string ans = cycleDetection(edges, n, m);
 
     cout << "Cycle Detection Result : " << ans << endl;
 
-    return 0;
+    return 0; // Indicate successful execution.
 }
 ```
+
+### 1\. Problem Statement
+
+  * **Goal**: Determine if an undirected graph contains any cycles.
+  * **Input**: Number of nodes `n`, number of edges `m`, and a list of edges `(u, v)`.
+  * **Output**: "YES" if a cycle is present, "NO" otherwise.
+
+### 2\. Core Idea for Undirected Graphs with DFS
+
+  * When performing a DFS traversal, we explore as deep as possible. We need to keep track of the `parent` node from which we arrived at the current node.
+  * If, during the DFS, we encounter a `visited` neighbor (`i`) of the current `Node` that is *not* the `parent` of `Node`, it implies a back-edge forming a cycle.
+      * **Why?** In an undirected graph, an edge `(U, V)` means `U` is a neighbor of `V`, and `V` is a neighbor of `U`. When we traverse `U -> V`, `U` becomes the `parent` of `V`. If `V` also sees `U` as a neighbor, it should recognize `U` as its `parent` and not flag it as a cycle. However, if `V` sees another `visited` neighbor `W` (that is not its `parent`), it means `W` was visited through a different path, forming a cycle.
+
+### 3\. Algorithm Steps (`isCyclicDFS` function)
+
+1.  **Parameters**: `adjList`, `visited` (global tracking), `Node` (current node), `parent` (the node from which `Node` was visited).
+2.  **Mark Visited**: Set `visited[Node] = true`.
+3.  **Explore Neighbors**: For each `neighbor` (`i`) in `adjList[Node]`:
+      * **Case 1: Unvisited Neighbor**: If `visited[i] == false`:
+          * Recursively call `isCyclicDFS(adjList, visited, i, Node)`.
+          * If this recursive call returns `true` (a cycle was found deeper in that path), immediately `return true`.
+      * **Case 2: Visited Neighbor AND not Parent**: If `visited[i] == true` **AND** `i != parent`:
+          * A cycle is detected. This `neighbor` was already visited, and it's not the immediate parent in the current DFS path, indicating a back-edge to an already explored part of the graph.
+          * `return true`.
+4.  **No Cycle in Path**: If the loop finishes without returning `true`, it means no cycle was found through `Node` or its descendants. `return false`.
+
+### 4\. Overall Cycle Detection (`cycleDetection` function)
+
+  * **Adjacency List Creation**: First, build the `adjList` from the input `edges`. For undirected graphs, add edges `u->v` and `v->u`.
+  * **Handling Disconnected Graphs**: Iterate through all possible nodes (`for i = 1 to n`, assuming 1-indexed nodes).
+      * If a node `i` has not been `visited` yet (meaning it's part of a new connected component):
+          * Call `isCyclicDFS(adjList, visited, i, -1)`. The `parent` for the starting node of a component is typically `-1` (a sentinel value).
+          * If `isCyclicDFS` returns `true`, then a cycle exists in the graph. Immediately return "YES".
+  * **No Cycle Found**: If the loop completes and no cycle was detected in any component, return "NO".
+
+### 5\. Time and Space Complexity
+
+  * **Time Complexity**: `O(V + E)`
+      * Building `adjList`: `O(M)`.
+      * `isCyclicDFS`: Each vertex and edge is visited at most once. `O(V + E)`.
+      * Outer loop in `cycleDetection`: Iterates `V` times, but `isCyclicDFS` only runs on unvisited components. So, the total work for all `isCyclicDFS` calls is `O(V + E)`.
+  * **Space Complexity**: `O(V + E)`
+      * `adjList`: `O(V + E)`.
+      * `visited` map: `O(V)`.
+      * Recursion stack depth: `O(V)` in the worst case (e.g., a long linear graph), as it could go `V` levels deep.
+
+-----
+
+
