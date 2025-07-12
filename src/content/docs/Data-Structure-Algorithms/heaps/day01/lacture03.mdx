@@ -3,64 +3,213 @@ title: Heap Sort
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, algorithm for swap)
+using namespace std;     // Use the standard namespace
 
+// Function to perform heapify operation for a Max Heap.
+// It ensures that the subtree rooted at 'i' satisfies the Max Heap property.
+// 'arr': The array representing the heap. (Assumes 1-based indexing)
+// 'n': The current logical size of the heap (number of valid elements).
+// 'i': The index of the root of the subtree to heapify.
+// Time Complexity: O(log N)
+// Space Complexity: O(log N) for recursion stack.
 void heapify(int arr[], int n, int i) {
-    int largest = i;
-    int left = 2*i;
-    int right = 2*i + 1;
+    int largest = i;          // Assume current node 'i' is the largest.
+    int left = 2 * i;         // Index of left child (1-based).
+    int right = 2 * i + 1;    // Index of right child (1-based).
 
+    // Check if left child exists within bounds and is greater than current 'largest'.
     if(left <= n && arr[largest] < arr[left]) {
-        largest = left;
-    }
-            
-    if(right <= n && arr[largest] < arr[right]) {
-        largest = right;
+        largest = left; // If so, left child is the new candidate for largest.
     }
 
+    // Check if right child exists within bounds and is greater than current 'largest'.
+    // (Note: 'largest' might now be 'left' if left child was larger).
+    if(right <= n && arr[largest] < arr[right]) {
+        largest = right; // If so, right child is the new candidate for largest.
+    }
+
+    // If 'largest' is not the original 'i', it means a child was larger.
     if(largest != i) {
-        swap(arr[i], arr[largest]);
-        heapify(arr, n, largest);
+        swap(arr[i], arr[largest]);     // Swap current node with the largest child.
+        heapify(arr, n, largest);       // Recursively call heapify on the affected subtree
+                                         // to ensure property is maintained downwards.
     }
 }
 
+// Function to perform Heap Sort on an array.
+// 'arr': The array to be sorted (assumes 1-based indexing for heap operations).
+// 'size': The number of elements in the array.
+// Time Complexity: O(N log N) (O(N) for build heap + O(N log N) for sorting phase)
+// Space Complexity: O(1) auxiliary space (in-place sort).
 void heapSort(int arr[], int size) {
+    // Phase 2: Sorting (Extract Max and Heapify)
+    // Loop until only one element is left in the heap (which will be sorted).
     while(size > 1) {
+        // Step 1: Swap the root (largest element) with the last element of the current heap.
         swap(arr[1], arr[size]);
 
+        // Step 2: Decrease the effective size of the heap.
+        // The swapped element at arr[size] is now in its sorted position.
         size--;
-        
+
+        // Step 3: Heapify the new root (arr[1]) to restore the Max Heap property.
+        // This brings the next largest element to the root.
         heapify(arr, size, 1);
     }
 }
 
 int main() {
+    // Example array to be sorted. arr[0] is unused as per 1-based indexing.
     int arr[6] = {-1, 54, 53, 55, 50, 52};
-    int size = 5;
-    
-    // Heap creation
-    for(int i = size/2; i>0; i--) {
+    int size = 5; // Number of actual elements to be sorted.
+
+    // Phase 1: Build a Max Heap from the initial array.
+    // Call heapify for all non-leaf nodes in reverse order (from size/2 down to 1).
+    // This phase takes O(N) time.
+    for(int i = size / 2; i > 0; i--) {
         heapify(arr, size, i);
     }
-    
-    cout << "UnSorted array : ";
-    for(int i=1; i<=size; i++) {
+
+    // Print the array after heap creation (it's now a Max Heap, not sorted yet).
+    cout << "UnSorted array (after Max Heap creation) : ";
+    for(int i = 1; i <= size; i++) {
         cout << arr[i] << " ";
     }
-    cout << endl;
+    cout << endl; // Expected: e.g., 55 54 53 50 52 (a valid Max Heap)
 
-    // Calling heap sort
+    // Call heapSort to sort the heapified array.
     heapSort(arr, size);
 
+    // Print the sorted array.
     cout << "Sorted array (Heap Sort) : ";
-    for(int i=1; i<=size; i++) {
+    for(int i = 1; i <= size; i++) {
         cout << arr[i] << " ";
     }
-    cout << endl;
+    cout << endl; // Expected: 50 52 53 54 55 (ascending order)
 
     return 0;
 }
 
+/*
+Example Array: {-1, 54, 53, 55, 50, 52}
+size = 5
+
+Phase 1: Build Max Heap
+Initial: [?, 54, 53, 55, 50, 52]
+i = size/2 = 2 (node 53)
+  heapify(arr, 5, 2): Children 50 (at 4), 52 (at 5). 53 is largest. No change.
+  Array: [?, 54, 53, 55, 50, 52]
+i = 1 (node 54)
+  heapify(arr, 5, 1): Children 53 (at 2), 55 (at 3). Largest is 55.
+  Swap arr[1] (54) and arr[3] (55). Array: [?, 55, 53, 54, 50, 52]
+  Recursively heapify(arr, 5, 3) (on new position of 54)
+    Node at 3 is 54. Children 50 (at 4), 52 (at 5). Largest among 54, 50, 52 is 54. No change.
+Heap built. Max Heap: [?, 55, 53, 54, 50, 52] (or similar permutation where root is max)
+
+Phase 2: Heap Sort
+Iteration 1:
+  size = 5
+  Swap arr[1] (55) with arr[5] (52). Array: [?, 52, 53, 54, 50, 55]
+  size = 4
+  heapify(arr, 4, 1) (on new root 52):
+    Node 52, children 53, 54. Largest is 54.
+    Swap 52 and 54. Array: [?, 54, 53, 52, 50, 55]
+    Recursively heapify(arr, 4, 3) (on new position of 52)
+      Node 52, child 50. Largest is 52. No change.
+  Heap (current): [?, 54, 53, 52, 50], Sorted part: [55]
+
+Iteration 2:
+  size = 4
+  Swap arr[1] (54) with arr[4] (50). Array: [?, 50, 53, 52, 54, 55]
+  size = 3
+  heapify(arr, 3, 1) (on new root 50):
+    Node 50, children 53, 52. Largest is 53.
+    Swap 50 and 53. Array: [?, 53, 50, 52, 54, 55]
+    Recursively heapify(arr, 3, 2) (on new position of 50)
+      Node 50, child 52. Largest is 52.
+      Swap 50 and 52. Array: [?, 53, 52, 50, 54, 55]
+      Recursively heapify(arr, 3, 3) (on new position of 50)
+        Node 50, no children in bounds. No change.
+  Heap (current): [?, 53, 52, 50], Sorted part: [54, 55]
+
+Iteration 3:
+  size = 3
+  Swap arr[1] (53) with arr[3] (50). Array: [?, 50, 52, 53, 54, 55]
+  size = 2
+  heapify(arr, 2, 1) (on new root 50):
+    Node 50, child 52. Largest is 52.
+    Swap 50 and 52. Array: [?, 52, 50, 53, 54, 55]
+    Recursively heapify(arr, 2, 2) (on new position of 50)
+      Node 50, no children in bounds. No change.
+  Heap (current): [?, 52, 50], Sorted part: [53, 54, 55]
+
+Iteration 4:
+  size = 2
+  Swap arr[1] (52) with arr[2] (50). Array: [?, 50, 52, 53, 54, 55]
+  size = 1
+  heapify(arr, 1, 1) (on new root 50):
+    Node 50, no children in bounds. No change.
+  Loop terminates as size is now 1.
+
+Final Sorted Array: [?, 50, 52, 53, 54, 55] (ignoring arr[0])
+*/
 ```
+
+### 1\. Heap Sort Algorithm Overview
+
+  * **Heap Sort** is a comparison-based sorting algorithm.
+  * It leverages the **Heap data structure** (specifically a Max Heap for ascending order sort) to efficiently sort elements.
+  * It is an **in-place** sorting algorithm (requires minimal additional memory, `O(1)` auxiliary space beyond input).
+  * **Time Complexity**: `O(N log N)` in all cases (best, average, worst). This is because building the heap takes `O(N)` and then `N-1` extractions (each `O(log N)`) are performed.
+  * **Space Complexity**: `O(1)` auxiliary space.
+
+### 2\. Max Heap (1-based Indexing) Recap
+
+  * **Max Heap Property**: For any node `i`, `value(i) >= value(children(i))`. The largest element is always at the root.
+  * **Array Representation (1-based indexing)**:
+      * Node at index `i`:
+          * Left child: `2 * i`
+          * Right child: `2 * i + 1`
+          * Parent: `i / 2`
+      * `arr[0]` is typically unused.
+
+### 3\. `heapify(int arr[], int n, int i)` Function
+
+  * **Purpose**: This is a crucial helper function. It takes a subtree rooted at index `i` (in an array `arr` of size `n`) and ensures it satisfies the **Max Heap property**, assuming its children's subtrees are already valid Max Heaps.
+  * **Process ("Percolate Down")**:
+    1.  Assume `largest = i` (current node is largest).
+    2.  Calculate indices for `left` child (`2*i`) and `right` child (`2*i + 1`).
+    3.  Compare `arr[largest]` with its `left` child: If `left` is a valid index (`<=n`) and `arr[left]` is greater, update `largest = left`.
+    4.  Compare `arr[largest]` (which might now be the left child) with its `right` child: If `right` is a valid index (`<=n`) and `arr[right]` is greater, update `largest = right`.
+    5.  If `largest` is no longer `i` (meaning a child was larger), `swap(arr[i], arr[largest])`.
+    6.  Recursively call `heapify(arr, n, largest)` on the subtree where the swap occurred to ensure the heap property is maintained further down.
+  * **Time Complexity**: `O(log N)`, as an element potentially moves from the root down to a leaf.
+
+### 4\. `heapSort(int arr[], int size)` Function
+
+  * **Purpose**: Sorts the array `arr` in ascending order.
+  * **Two Main Phases**:
+    1.  **Build Max Heap (Done in `main` function first)**: Convert the input array into a Max Heap. This is done by calling `heapify` on all non-leaf nodes in reverse order (from `size/2` down to `1`). This phase takes `O(N)` time.
+    2.  **Extract Max & Heapify**:
+          * The largest element is always at `arr[1]` (the root of the Max Heap).
+          * **Swap**: Swap `arr[1]` with `arr[size]`. This places the largest element at its correct sorted position (the end of the array).
+          * **Reduce Heap Size**: Decrement `size`. The element `arr[size+1]` is now considered sorted and out of the heap's consideration.
+          * **Heapify Root**: Call `heapify(arr, size, 1)`. The new element at `arr[1]` (which was the original `arr[size]`) needs to be percolated down to restore the Max Heap property in the reduced heap.
+          * Repeat this process `size-1` times (`while(size > 1)`).
+  * **Time Complexity**: `N-1` extractions, each taking `O(log N)` for `heapify`. Total `O(N log N)`.
+
+### 5\. Overall Heap Sort Steps
+
+1.  Given an unsorted array `A` of size `N`.
+2.  **Build a Max Heap** from `A`. This makes the largest element `A[1]`.
+3.  Repeat `N-1` times:
+      * Swap `A[1]` with `A[current_heap_size]`.
+      * Decrement `current_heap_size`.
+      * Call `heapify(A, current_heap_size, 1)` to fix the heap property at the root.
+4.  After the loop, the array `A` will be sorted in ascending order.
+
+-----
+
+

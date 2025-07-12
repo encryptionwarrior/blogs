@@ -3,65 +3,174 @@ title: Build Min Heap
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, vector, algorithm for swap)
+using namespace std;     // Use the standard namespace
 
 /*
-    0 based indexing
-    left - 2*i + 1;
-    right - 2*i + 2;    
+    Heap Array Representation (0-based indexing):
+    For a node at index 'i':
+    - Left child: 2*i + 1
+    - Right child: 2*i + 2
+    - Parent: (i - 1) / 2
 */
 
+// Function to perform heapify operation for a Min Heap.
+// It ensures that the subtree rooted at 'i' satisfies the Min Heap property.
+// 'arr': The vector representing the heap.
+// 'n': The current logical size of the heap (number of valid elements).
+// 'i': The index of the root of the subtree to heapify.
+// Time Complexity: O(log N)
+// Space Complexity: O(log N) for recursion stack.
 void heapify(vector<int>& arr, int n, int i) {
-    int smallest = i;
-    int left = 2*i + 1;
-    int right = 2*i + 2;
+    int smallest = i;         // Assume current node 'i' is the smallest.
+    int left = 2 * i + 1;     // Index of left child (0-based).
+    int right = 2 * i + 2;    // Index of right child (0-based).
 
-    
-
+    // Check if left child exists within bounds and is smaller than current 'smallest'.
     if(left < n && arr[smallest] > arr[left]) {
-        smallest = left;
+        smallest = left; // If so, left child is the new candidate for smallest.
     }
-            
+
+    // Check if right child exists within bounds and is smaller than current 'smallest'.
+    // (Note: 'smallest' might now be 'left' if left child was smaller).
     if(right < n && arr[smallest] > arr[right]) {
-        smallest = right;
+        smallest = right; // If so, right child is the new candidate for smallest.
     }
 
+    // If 'smallest' is not the original 'i', it means a child was smaller.
     if(smallest != i) {
-        swap(arr[i], arr[smallest]);
-        heapify(arr, n, smallest);
+        swap(arr[i], arr[smallest]);     // Swap current node with the smallest child.
+        heapify(arr, n, smallest);       // Recursively call heapify on the affected subtree
+                                         // to ensure property is maintained downwards.
     }
 }
 
+// Function to build a Min Heap from an arbitrary vector.
+// Time Complexity: O(N) (optimized for heap construction)
+// Space Complexity: O(log N) due to recursive heapify calls.
 vector<int> buildMinHeap(vector<int>& arr) {
-    int n = arr.size();
+    int n = arr.size(); // Get the total number of elements in the array.
 
-    for(int i=(n/2)-1; i>=0; i--) {
-        heapify(arr, n, i);
+    // Iterate backwards from the last non-leaf node up to the root (index 0).
+    // For 0-based indexing, the last non-leaf node is at (n/2) - 1.
+    // Leaves (from n/2 to n-1) are already considered trivial heaps.
+    for(int i = (n / 2) - 1; i >= 0; i--) {
+        heapify(arr, n, i); // Call heapify for each non-leaf node.
     }
 
-    return arr;
+    return arr; // Return the heapified array.
 }
 
-int  main() {
+int main() {
+    // Example array to be converted into a Min Heap.
     vector<int> arr = {90, 30, 20, 120, 50, 60, 40, 150};
 
-    // Heapifing array
+    // Print the array before building the Min Heap.
     cout << "Before building Min Heap : ";
-    for(int i=0; i<arr.size(); i++) {
+    for(int i = 0; i < arr.size(); i++) {
         cout << arr[i] << " ";
     }
     cout << endl;
 
+    // Call buildMinHeap to transform the array into a Min Heap.
     arr = buildMinHeap(arr);
-    
+
+    // Print the array after building the Min Heap.
+    // The smallest element (20) should be at index 0.
     cout << "After building Min Heap : ";
-    for(int i=0; i<arr.size(); i++) {
+    for(int i = 0; i < arr.size(); i++) {
         cout << arr[i] << " ";
     }
     cout << endl;
 
     return 0;
 }
+
+/*
+Example Input Array: {90, 30, 20, 120, 50, 60, 40, 150} (n = 8)
+
+Initial Array:
+[90, 30, 20, 120, 50, 60, 40, 150]
+
+Non-leaf nodes indices for n=8:
+(8/2) - 1 = 3. So, we iterate i from 3 down to 0.
+
+i = 3 (node 120):
+    Children: 2*3+1 = 7 (150)
+    120 is smaller than 150. Heapify(3) does nothing.
+    Array: [90, 30, 20, 120, 50, 60, 40, 150]
+
+i = 2 (node 20):
+    Children: 2*2+1 = 5 (60), 2*2+2 = 6 (40)
+    Smallest among (20, 60, 40) is 20. Heapify(2) does nothing.
+    Array: [90, 30, 20, 120, 50, 60, 40, 150]
+
+i = 1 (node 30):
+    Children: 2*1+1 = 3 (120), 2*1+2 = 4 (50)
+    Smallest among (30, 120, 50) is 30. Heapify(1) does nothing.
+    Array: [90, 30, 20, 120, 50, 60, 40, 150]
+
+i = 0 (node 90):
+    Children: 2*0+1 = 1 (30), 2*0+2 = 2 (20)
+    Smallest among (90, 30, 20) is 20.
+    Swap 90 and 20. Array: [20, 30, 90, 120, 50, 60, 40, 150]
+    Recursively call heapify(arr, 8, 2) (on new position of 90)
+        Node at 2 is 90. Children: 2*2+1 = 5 (60), 2*2+2 = 6 (40)
+        Smallest among (90, 60, 40) is 40.
+        Swap 90 and 40. Array: [20, 30, 40, 120, 50, 60, 90, 150]
+        Recursively call heapify(arr, 8, 6) (on new position of 90)
+            Node at 6 is 90. Children: 2*6+1 = 13 (out of bounds), 2*6+2 = 14 (out of bounds)
+            Heapify(6) does nothing. Returns.
+
+Final Min Heap Array (approximate, exact order depends on tie-breaking rules and build process):
+[20, 30, 40, 120, 50, 60, 90, 150]
+This is a valid Min Heap.
+*/
 ```
+
+### 1\. Heap Data Structure & Properties
+
+  * A **Heap** is a complete binary tree (all levels filled except possibly the last, which is filled left-to-right).
+  * **Min Heap Property**: For any given node `i`, the value of `i` is less than or equal to the values of its children. (Parent \<= Children). The smallest element is always at the root.
+
+### 2\. Array Representation (0-based Indexing)
+
+  * When a heap is stored in an array using **0-based indexing**:
+      * If a node is at index `i`:
+          * Its **left child** is at `2 * i + 1`.
+          * Its **right child** is at `2 * i + 2`.
+          * Its **parent** is at `(i - 1) / 2`.
+
+### 3\. `heapify(vector<int>& arr, int n, int i)` Function
+
+  * **Purpose**: This function is crucial for maintaining the Min Heap property. It takes a subtree rooted at index `i` (in an array `arr` of size `n`) and ensures it satisfies the Min Heap property, assuming its children's subtrees are already Min Heaps.
+  * **Process ("Heapify Down")**:
+    1.  Initialize `smallest = i` (assume current node is the smallest).
+    2.  Calculate indices for `left` child (`2*i + 1`) and `right` child (`2*i + 2`).
+    3.  **Compare with Left Child**: If the left child exists (`left < n`) and its value `arr[left]` is smaller than `arr[smallest]`, update `smallest = left`.
+    4.  **Compare with Right Child**: If the right child exists (`right < n`) and its value `arr[right]` is smaller than `arr[smallest]` (which might now be the left child), update `smallest = right`.
+    5.  **Swap and Recurse**:
+          * If `smallest` is no longer `i` (meaning a child was smaller), swap `arr[i]` with `arr[smallest]`.
+          * Recursively call `heapify(arr, n, smallest)` on the subtree where the swap occurred to ensure the heap property is maintained further down.
+  * **Time Complexity**: `O(log N)`, as an element potentially moves from the root down to a leaf.
+
+### 4\. `buildMinHeap(vector<int>& arr)` Function
+
+  * **Purpose**: Converts an arbitrary input array (vector) into a Min Heap.
+  * **Logic**:
+    1.  Get the size `n` of the array.
+    2.  Iterate backwards from the **last non-leaf node** up to the root.
+          * For 0-based indexing, non-leaf nodes are from index `(n/2) - 1` down to `0`. (Nodes from `n/2` to `n-1` are leaves, which are inherently valid heaps of size 1).
+    3.  For each non-leaf node `i` in this range, call `heapify(arr, n, i)`.
+  * **Why this order?**: When `heapify(i)` is called, its children (`2*i+1`, `2*i+2`) are guaranteed to be either leaves or roots of subtrees that have already been heapified. This ensures the correct bottom-up construction.
+  * **Time Complexity**: `O(N)`. Although individual `heapify` calls are `O(log N)`, the specific way `buildMinHeap` calls `heapify` on `N/2` nodes results in an optimized `O(N)` overall time complexity for heap construction.
+
+### 5\. Main Function Usage
+
+  * An example `vector<int>` is initialized.
+  * `buildMinHeap` is called to convert it into a Min Heap.
+  * The array is printed before and after heapification to demonstrate the change.
+
+-----
+

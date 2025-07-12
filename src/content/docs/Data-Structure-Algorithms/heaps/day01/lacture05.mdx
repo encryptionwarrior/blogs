@@ -3,34 +3,119 @@ title: Min Heap By Priority Queue
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
-
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries, including <queue> for priority_queue
+using namespace std;     // Use the standard namespace
 
 int main() {
+    // Declares a priority_queue of integers configured as a MIN HEAP.
+    // Template parameters:
+    // 1. int: The type of elements stored.
+    // 2. vector<int>: The underlying container (default for priority_queue is vector).
+    // 3. greater<int>: The comparator. std::greater<int> makes the smallest element have the highest priority.
     priority_queue<int, vector<int>, greater<int> > minHeap;
 
+    // --- Insertion Operations ---
+    // push() adds an element to the heap, maintaining the min-heap property.
+    // Time complexity for push: O(log N)
     minHeap.push(52);
     minHeap.push(50);
     minHeap.push(54);
     minHeap.push(40);
-    minHeap.push(35);
+    minHeap.push(35); // After this, 35 is the smallest, so it should be at the top.
     minHeap.push(65);
 
-    cout << "Top element : " << minHeap.top() << endl;
+    // --- Accessing Top Element ---
+    // top() returns a reference to the element at the top (highest priority, which is the smallest).
+    // It does NOT remove the element.
+    // Time complexity for top: O(1)
+    cout << "Top element : " << minHeap.top() << endl; // Expected: 35 (the smallest value)
 
-    minHeap.pop();
-    cout << "Top element : " << minHeap.top() << endl;
+    // --- Deletion Operation ---
+    // pop() removes the element at the top (highest priority, i.e., the smallest).
+    // It does NOT return the element. Call top() first if you need its value.
+    // Time complexity for pop: O(log N)
+    minHeap.pop(); // Removes 35. The next smallest (40) will become the new top.
+    cout << "Top element : " << minHeap.top() << endl; // Expected: 40
 
-    minHeap.pop();
-    minHeap.pop();
-    cout << "Top element : " << minHeap.top() << endl;
+    minHeap.pop(); // Removes 40.
+    minHeap.pop(); // Removes 50. The next smallest (52) will become the new top.
+    cout << "Top element : " << minHeap.top() << endl; // Expected: 52
 
+    // --- Checking if empty ---
+    // empty() returns true if the priority queue contains no elements, false otherwise.
+    // Time complexity for empty: O(1)
     if(minHeap.empty()) {
         cout << "Min Heap is empty!" << endl;
+    } else {
+        cout << "Min Heap is NOT empty! Current size: " << minHeap.size() << endl; // Expected: 3 elements remaining (52, 54, 65)
+    }
+
+    // --- Demonstrate emptying and checking again ---
+    minHeap.pop(); // Removes 52
+    minHeap.pop(); // Removes 54
+    minHeap.pop(); // Removes 65
+    if(minHeap.empty()) {
+        cout << "Min Heap is now empty after popping all elements!" << endl; // Expected: Min Heap is now empty!
     }
 
     return 0;
 }
+
+/*
+Sample Output:
+
+Top element : 35
+Top element : 40
+Top element : 52
+Min Heap is NOT empty! Current size: 3
+Min Heap is now empty after popping all elements!
+*/
 ```
+
+### 1\. `std::priority_queue` Recap
+
+  * `std::priority_queue` is an STL container adapter that provides a max-heap by default. It always arranges its elements so that the element with the highest priority is at the top.
+  * It's typically built upon a `std::vector` and uses heap algorithms (`std::make_heap`, etc.) internally.
+
+### 2\. Creating a Min Heap with `std::priority_queue`
+
+  * By default, `priority_queue<Type>` gives you a **Max Heap**.
+
+  * To create a **Min Heap** (where the **smallest** element has the highest priority and is at the top), you need to explicitly specify two additional template parameters:
+
+    1.  The **underlying container**: Typically `std::vector<Type>`.
+    2.  The **comparator**: `std::greater<Type>`. This comparator defines an "is greater than" relationship, which inverts the default "is less than" behavior, making the smallest element "prioritized" to the top.
+
+  * **Syntax for Min Heap**:
+
+    ```cpp
+    priority_queue<DataType, std::vector<DataType>, std::greater<DataType>> minHeap;
+    ```
+
+### 3\. Key Operations & Behavior (Min Heap)
+
+  * **`push(value)`**:
+      * Inserts `value` into the min-heap.
+      * Maintains the min-heap property.
+      * Time Complexity: `O(log N)`.
+  * **`top()`**:
+      * Returns a `const reference` to the element with the highest priority, which is the **smallest** element in a Min Heap.
+      * Does **not** remove the element.
+      * Time Complexity: `O(1)`.
+      * **Caution**: Calling `top()` on an empty priority queue is undefined behavior.
+  * **`pop()`**:
+      * Removes the element with the highest priority (the **smallest** element).
+      * Maintains the min-heap property.
+      * Time Complexity: `O(log N)`.
+      * **Caution**: Calling `pop()` on an empty priority queue is undefined behavior.
+  * **`empty()`**:
+      * Returns `true` if the min-heap is empty, `false` otherwise.
+      * Time Complexity: `O(1)`.
+  * **`size()`**:
+      * Returns the number of elements in the min-heap.
+      * Time Complexity: `O(1)`.
+
+-----
+
+

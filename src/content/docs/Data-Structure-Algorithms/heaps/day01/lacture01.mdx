@@ -3,125 +3,126 @@ title: Introduction
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, algorithm for swap, etc.)
+using namespace std;     // Use the standard namespace
 
+// Define a Heap class for Max Heap implementation.
 class Heap {
-    public:
-        int arr[100];
-        int size;
+public:
+    int arr[100]; // Array to store heap elements. Using 1-based indexing for simplicity.
+    int size;     // Current number of elements in the heap.
 
-        Heap() {
-            arr[0] = -1;
-            size = 0;
+    // Constructor: Initializes the heap.
+    Heap() {
+        arr[0] = -1; // Placeholder, arr[0] is unused.
+        size = 0;    // Heap is initially empty.
+    }
+
+    // Inserts a new value into the Max Heap.
+    // Time Complexity: O(log N)
+    void insert(int val) {
+        size++;          // Increment size to get the next available index.
+        int index = size; // Get the index where the new value will be placed.
+        arr[index] = val; // Place the new value at the end of the heap.
+
+        // "Heapify Up" (percolate up) the new element to maintain Max Heap property.
+        while(index > 1) { // Continue until the root or proper position is found.
+            int parent = index / 2; // Calculate parent index.
+
+            if(arr[parent] < arr[index]) { // If parent is smaller than current element (Max Heap violation).
+                swap(arr[parent], arr[index]); // Swap them.
+                index = parent;                // Move up to the parent's position.
+            } else {
+                return; // Heap property satisfied, stop.
+            }
+        }
+    }
+
+    // Deletes the maximum element (root) from the Max Heap.
+    // Time Complexity: O(log N)
+    void deleteHeap() {
+        // Handle empty heap case.
+        if(size == 0) {
+            cout << "Heap is empty!" << endl;
+            return;
         }
 
-        void insert(int val) {
-            int index = ++size;
-            arr[index] = val;
+        // Step 1: Replace the root (arr[1]) with the last element (arr[size]).
+        arr[1] = arr[size];
+        size--; // Step 2: Decrement size, effectively removing the last element.
 
-            while(index > 1) {
-                int parent = index/2;
+        // Step 3: "Heapify Down" (percolate down) the new root to maintain Max Heap property.
+        int i = 1; // Start from the new root.
+        while(i <= size) { // Loop while 'i' has at least one child within current heap size.
+            int leftChild = 2 * i;     // Index of left child.
+            int rightChild = (2 * i) + 1; // Index of right child.
+            int largest = i;           // Assume current node is the largest among itself and its children.
 
-                if(arr[parent] < arr[index]) {
-                    swap(arr[parent], arr[index]);
-                    index = parent;
-                } else {
-                    return;
-                }
-            }   
-        }
+            // Compare with left child.
+            if(leftChild <= size && arr[largest] < arr[leftChild]) {
+                largest = leftChild;
+            }
 
-        // void deleteHeap() {
-        //     if(size == 0) {
-        //         cout << "Heap is empty!" << endl;
-        //         return;
-        //     }
+            // Compare with right child (if it exists and is larger).
+            if(rightChild <= size && arr[largest] < arr[rightChild]) {
+                largest = rightChild;
+            }
 
-        //     arr[1] = arr[size];
-        //     size--;
-
-        //     int i = 1;
-        //     while(i < size) {
-        //         int leftChild = 2*i;
-        //         int rightChild = (2*i) + 1;
-
-        //         if(leftChild < size && arr[i] < arr[leftChild]) {
-        //             swap(arr[i], arr[leftChild]);
-        //             i = leftChild;
-        //         } else if(rightChild < size && arr[i] < arr[rightChild]) {
-        //             swap(arr[i], arr[rightChild]);
-        //             i = rightChild;
-        //         } else {
-        //             return;
-        //         }
-        //     }
-        // }
-
-        void deleteHeap() {
-            if(size == 0) {
-                cout << "Heap is empty!" << endl;
+            // If the largest is still the current node 'i', heap property is satisfied.
+            if(largest == i) {
                 return;
-            }
-
-            arr[1] = arr[size];
-            size--;
-
-            int i = 1;
-            while(i < size) {
-                int leftChild = 2*i;
-                int rightChild = (2*i) + 1;
-                int largest = i;
-
-                if(leftChild <= size && arr[largest] < arr[leftChild]) {
-                    largest = leftChild;
-                }
-                
-                if(rightChild <= size && arr[largest] < arr[rightChild]) {
-                    largest = rightChild;
-                }
-
-                if(largest == i) {
-                    return;
-                } else {
-                    swap(arr[i], arr[largest]);
-                    i = largest;
-                }
+            } else { // Else, swap and continue heapifying down.
+                swap(arr[i], arr[largest]);
+                i = largest; // Move 'i' to the position where the swap occurred.
             }
         }
+    }
 
-        void print() {
-            cout << "Max Heap : ";
-            for(int i=1; i<=size; i++) {
-                cout << arr[i] << " ";
-            }
-            cout << endl;
+    // Prints the elements of the Max Heap.
+    void print() {
+        cout << "Max Heap : ";
+        for(int i = 1; i <= size; i++) {
+            cout << arr[i] << " ";
         }
+        cout << endl;
+    }
 };
 
+// Global function to perform heapify on a subtree rooted at index 'i'.
+// This is used for building a heap from an arbitrary array.
+// 'arr': The array representing the heap.
+// 'n': The current logical size of the heap (number of valid elements).
+// 'i': The index of the root of the subtree to heapify.
+// Time Complexity: O(log N)
+// Space Complexity: O(log N) for recursion stack
 void heapify(int arr[], int n, int i) {
-    int largest = i;
-    int left = 2*i;
-    int right = 2*i + 1;
+    int largest = i;          // Assume current node is the largest.
+    int left = 2 * i;         // Index of left child.
+    int right = 2 * i + 1;    // Index of right child.
 
+    // Compare 'largest' with its left child.
     if(left <= n && arr[largest] < arr[left]) {
         largest = left;
     }
-            
+
+    // Compare 'largest' (potentially updated to left child) with its right child.
     if(right <= n && arr[largest] < arr[right]) {
         largest = right;
     }
 
+    // If 'largest' is not the original 'i', it means a child was larger.
     if(largest != i) {
-        swap(arr[i], arr[largest]);
-        heapify(arr, n, largest);
+        swap(arr[i], arr[largest]); // Swap current node with the largest child.
+        heapify(arr, n, largest);   // Recursively heapify the affected subtree.
     }
 }
 
 int main() {
+    // --- Heap Class Usage ---
     Heap h;
-    
+
+    cout << "Inserting elements into Heap:" << endl;
     h.insert(50);
     h.insert(40);
     h.insert(60);
@@ -129,24 +130,112 @@ int main() {
     h.insert(55);
     h.insert(70);
     h.insert(20);
+    h.print(); // Expected: 70 55 60 40 50 30 20 (or similar valid max heap arrangement)
 
-    h.print();
-
+    cout << "Deleting root from Heap:" << endl;
     h.deleteHeap();
-    h.print();
+    h.print(); // Expected: 60 55 20 40 50 30 (or similar valid max heap after 70 is removed)
 
+    // --- Building Heap from an Array using heapify ---
+    // Note: arr[0] is unused, so actual elements start from index 1.
     int arr[6] = {-1, 54, 53, 55, 52, 50};
-    int n = 5;
-    for(int i = n/2; i>0; i--) {
-        heapify(arr, n, i);
-    }
+    int n = 5; // Number of actual elements in the array (excluding arr[0]).
 
-    cout << "Heapified array : ";
-    for(int i=1; i<=n; i++) {
+    cout << "\nBuilding Heap from array using heapify:" << endl;
+    cout << "Original array: ";
+    for(int i = 1; i <= n; i++) {
         cout << arr[i] << " ";
     }
     cout << endl;
 
+    // Call heapify for all non-leaf nodes in reverse order (from n/2 down to 1).
+    // This is the efficient O(N) way to build a heap.
+    for(int i = n / 2; i > 0; i--) {
+        heapify(arr, n, i);
+    }
+
+    cout << "Heapified array : ";
+    for(int i = 1; i <= n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl; // Expected: 55 54 53 52 50 (or another valid max heap arrangement)
+
     return 0;
 }
 ```
+
+### 1\. Heap Data Structure Basics
+
+  * A **Heap** is a complete binary tree that satisfies the heap property.
+      * **Complete Binary Tree**: All levels are completely filled, except possibly the last level, which is filled from left to right.
+  * **Heap Property**:
+      * **Max Heap**: For any given node `i`, the value of `i` is greater than or equal to the values of its children. (Parent \>= Children)
+      * **Min Heap**: For any given node `i`, the value of `i` is less than or equal to the values of its children. (Parent \<= Children)
+  * **Array Representation**: Heaps are commonly implemented using an array, leveraging the complete binary tree property.
+      * If a node is at index `i`:
+          * Its left child is at `2*i`.
+          * Its right child is at `2*i + 1`.
+          * Its parent is at `i/2`.
+      * Conventionally, `arr[0]` is often left unused to simplify these index calculations (1-based indexing).
+
+### 2\. `Heap` Class Implementation (Max Heap)
+
+  * **`arr[100]`**: A fixed-size array to store heap elements. `arr[0]` is intentionally unused.
+  * **`size`**: Tracks the current number of elements in the heap. It represents the last valid index.
+
+#### a. `Heap()` Constructor
+
+  * Initializes `arr[0] = -1` (placeholder) and `size = 0` (empty heap).
+
+#### b. `insert(int val)` Operation
+
+  * **Purpose**: Adds a new element (`val`) to the Max Heap while maintaining the heap property.
+  * **Process ("Heapify Up" / "Percolate Up")**:
+    1.  Increment `size` and place `val` at the new `index = size` (`arr[index] = val`). This ensures completeness.
+    2.  Start from `index` and move upwards towards the root (`while(index > 1)`).
+    3.  Compare `arr[index]` with its `parent = index/2`.
+    4.  If `arr[parent] < arr[index]` (Max Heap property violated), swap them.
+    5.  Update `index = parent` and repeat.
+    6.  Stop when `index` is 1 (root) or `arr[parent] >= arr[index]` (heap property satisfied).
+  * **Time Complexity**: `O(log N)`, where N is the number of elements, as in the worst case, an element might travel from a leaf to the root.
+
+#### c. `deleteHeap()` Operation (Removes Max Element - Root)
+
+  * **Purpose**: Removes the maximum element (which is always at the root, `arr[1]`) from the Max Heap.
+  * **Process ("Heapify Down" / "Percolate Down")**:
+    1.  **Handle Empty Heap**: If `size == 0`, print error and return.
+    2.  **Replace Root**: Copy the last element (`arr[size]`) to the root position (`arr[1]`).
+    3.  **Decrement Size**: Decrease `size` by 1.
+    4.  **Heapify Down**: Start from `i = 1` (the new root).
+          * Loop `while(i < size)`:
+              * Calculate `leftChild = 2*i` and `rightChild = 2*i + 1`.
+              * Find the `largest` among `arr[i]`, `arr[leftChild]` (if it exists and is larger), and `arr[rightChild]` (if it exists and is larger).
+              * If `largest` is still `i`, it means the current node is already greater than or equal to its children; heap property is satisfied. Break.
+              * Otherwise, `swap(arr[i], arr[largest])` and update `i = largest` to continue heapifying down from the new position.
+  * **Time Complexity**: `O(log N)`, as the new root might travel from the root to a leaf.
+
+#### d. `print()`
+
+  * Simple utility to print elements from `arr[1]` to `arr[size]`.
+
+### 3\. `heapify(int arr[], int n, int i)` Function (External Function for Build Heap)
+
+  * **Purpose**: This is a core recursive function used to **restore the heap property for a subtree** rooted at index `i` within an array `arr` of size `n`. It assumes its children's subtrees are already valid heaps.
+  * **Process**:
+    1.  Assume `largest` element is at `i`.
+    2.  Calculate `left = 2*i` and `right = 2*i + 1`.
+    3.  Compare `arr[largest]` with its `left` child: If `left` is a valid index (`<=n`) and `arr[left]` is greater, update `largest = left`.
+    4.  Compare `arr[largest]` (which might have been updated to `left`) with its `right` child: If `right` is a valid index (`<=n`) and `arr[right]` is greater, update `largest = right`.
+    5.  If `largest` is no longer `i` (meaning a child was larger), swap `arr[i]` with `arr[largest]`.
+    6.  Recursively call `heapify` on the subtree where the swap occurred (`heapify(arr, n, largest)`) to ensure that subtree also maintains the heap property.
+  * **Time Complexity**: `O(log N)`, as it involves percolating down one element.
+
+### 4\. Building a Heap from an Array
+
+  * **Logic (`main` function example)**: To convert an arbitrary array into a heap (Max Heap in this case), `heapify` is called on all **non-leaf nodes** in **reverse order** (from `n/2` down to `1`).
+  * **Why `n/2` to `1`?**: Leaves (`n/2 + 1` to `n`) are already trivial heaps of size 1. By starting from the last non-leaf node and moving up, we ensure that when `heapify(i)` is called, its children (`2*i`, `2*i+1`) are either leaves or roots of already heapified subtrees.
+  * **Time Complexity for Building Heap**: `O(N)`. Although `heapify` is `O(log N)`, when applied to `N/2` nodes in this specific order, the total complexity works out to be `O(N)`.
+
+-----
+
+
