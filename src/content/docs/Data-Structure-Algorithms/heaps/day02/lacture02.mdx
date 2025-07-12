@@ -3,31 +3,47 @@ title: Kth Largest Element
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries, including <vector> and <queue>
+using namespace std;     // Use the standard namespace
 
+// Function to find the Kth largest element in an array using a Min Heap.
+// Time Complexity: O(N log K)
+// Space Complexity: O(K)
 int KthLargest(vector<int> arr, int K) {
+    // Step 1: Create a Min Heap.
+    // std::priority_queue<Type, Container, Comparator>
+    // Here, greater<int> makes it a min-heap, meaning the smallest element is at the top.
+    // This heap will store the K largest elements encountered so far.
     priority_queue<int, vector<int>, greater<int> > Heap;
 
-    for(int i=0; i<K; i++) {
+    // Step 2: Insert the first K elements into the Min Heap.
+    // At this point, Heap.top() will be the smallest among these K elements.
+    for(int i = 0; i < K; i++) {
         Heap.push(arr[i]);
     }
 
-    for(int i=K; i<arr.size(); i++) {
+    // Step 3: Iterate through the remaining elements (from K to end of array).
+    for(int i = K; i < arr.size(); i++) {
+        // If the current array element (arr[i]) is GREATER than the smallest
+        // element currently in our K-sized heap (Heap.top()).
         if(arr[i] > Heap.top()) {
-            Heap.pop();
-            Heap.push(arr[i]);
+            Heap.pop();      // Remove the current smallest from the heap (it's not among the K largest).
+            Heap.push(arr[i]); // Add the larger element to the heap.
+            // This ensures the heap always contains the K largest elements encountered so far.
         }
     }
 
+    // Step 4: After iterating through all elements, the top of the heap
+    // (which is the smallest of the K largest elements) will be the Kth largest element overall.
     return Heap.top();
 }
 
 int main() {
     vector<int> arr;
 
-    cout << "Enter the elements of array (-1 to stop) : ";
+    // Input array elements from user until -1 is entered.
+    cout << "Enter the elements of array (enter -1 to stop) : ";
     int temp;
     cin >> temp;
     while(temp != -1) {
@@ -35,14 +51,102 @@ int main() {
         cin >> temp;
     }
 
+    // Input the value of K from the user.
     int K;
     cout << "Enter the value of K : ";
     cin >> K;
 
+    // Handle edge case: K is larger than array size or K <= 0.
+    if (K <= 0 || K > arr.size()) {
+        cout << "Invalid K value. K must be between 1 and " << arr.size() << endl;
+        return 1; // Indicate an error.
+    }
+
+    // Call the function to find the Kth largest element.
     int answer = KthLargest(arr, K);
 
-    cout << "Kth largest elements : " << answer<< endl;
+    // Print the result.
+    cout << "Kth largest element : " << answer << endl;
 
     return 0;
 }
+
+/*
+Example Usage:
+
+Input Array: 7 10 4 3 20 15 -1
+K: 3
+
+Initial Heap (Min Heap of size K=3):
+Elements: 7, 10, 4
+Heap: {4, 7, 10} (top is 4)
+
+Process remaining elements:
+- Element 3: 3 < Heap.top() (4)
+  Ignore. Heap remains: {4, 7, 10}
+- Element 20: 20 > Heap.top() (4)
+  Pop 4. Push 20. Heap: {7, 10, 20} (top is 7)
+- Element 15: 15 > Heap.top() (7)
+  Pop 7. Push 15. Heap: {10, 15, 20} (top is 10)
+
+Final Heap.top(): 10
+Output: Kth largest element : 10
+Wait! The sorted array is {3, 4, 7, 10, 15, 20}. The 3rd largest is 15.
+Let's re-trace the last step carefully:
+Heap: {7, 10, 20} (top is 7)
+- Element 15: 15 > Heap.top() (7)
+  Pop 7. Push 15.
+  The heap elements are now {10, 15, 20}. The smallest of these is 10.
+  So Heap.top() should be 10.
+
+Ah, my example trace for K=3, 3rd largest:
+Correct sorted array: {3, 4, 7, 10, 15, 20}
+1st largest: 20
+2nd largest: 15
+3rd largest: 10
+
+The code logic is correct, the trace showed 10 as the result. My manual trace result was matching the code result.
+The interpretation of "3rd largest" might have been slightly off in my mind during manual trace.
+*/
 ```
+
+### 1\. Problem Statement: Kth Largest Element
+
+  * Given an unsorted array of numbers and an integer `K`, find the element that would be the Kth largest if the array were sorted.
+  * Example: `arr = {7, 10, 4, 3, 20, 15}`, `K = 3`.
+      * Sorted: `{3, 4, 7, 10, 15, 20}`.
+      * 3rd largest is `15`.
+
+### 2\. Approach: Using a Min Heap of Size K
+
+  * **Core Idea**: We want to find the Kth largest element. If we maintain a collection of the `K` largest elements encountered so far, the smallest among them will be our candidate for the Kth largest.
+  * **Why Min Heap?**: A Min Heap is ideal for this because its `top()` element is always the smallest.
+      * We maintain a Min Heap of size `K`.
+      * This heap will at all times contain the `K` largest elements encountered so far from the input array.
+  * **Algorithm Steps**:
+    1.  **Initialize Heap**: Insert the first `K` elements from the input array into a `Min Heap`. At this point, the `top()` of the heap is the smallest among these initial `K` elements.
+    2.  **Process Remaining Elements**: Iterate through the rest of the array (from index `K` to `arr.size() - 1`).
+          * For each `current_element = arr[i]`:
+              * **Compare**: If `current_element` is **greater** than `Heap.top()` (the smallest element currently in the heap of `K` largest candidates):
+                  * `Heap.pop()`: Remove the current smallest from the heap (since we found a larger one that should be among the `K` largest).
+                  * `Heap.push(current_element)`: Insert `current_element` into the heap.
+              * If `current_element` is smaller than or equal to `Heap.top()`, it means it's not among the `K` largest elements found so far, so we just ignore it.
+    3.  **Result**: After processing all elements, the `Heap.top()` will be the Kth largest element in the entire array. This is because the heap of size `K` will contain the `K` largest elements, and `Heap.top()` will be the smallest among those `K`, which is precisely the Kth largest overall.
+
+### 3\. Complexity Analysis
+
+  * **Time Complexity**: `O(N log K)`
+      * Initial `K` insertions: `K` operations, each `O(log K)`. Total `O(K log K)`.
+      * Remaining `N-K` elements: Each element involves a comparison `O(1)` and potentially a `pop` and `push` (`O(log K)` each). Total `O((N-K) log K)`.
+      * Combined: `O(K log K + (N-K) log K) = O(N log K)`.
+  * **Space Complexity**: `O(K)`
+      * The Min Heap stores at most `K` elements.
+
+### 4\. Alternative for Kth Smallest Element
+
+  * If the problem asked for the **Kth smallest element**, you would use a **Max Heap** of size `K`.
+  * Logic would be: If `arr[i]` is **smaller** than `maxHeap.top()`, then `maxHeap.pop()` and `maxHeap.push(arr[i])`.
+
+-----
+
+

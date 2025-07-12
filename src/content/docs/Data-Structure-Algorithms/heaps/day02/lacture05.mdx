@@ -3,37 +3,58 @@ title: Minimum cost of Ropes
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-using namespace std;
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (vector, iostream, queue for priority_queue)
+using namespace std;     // Use the standard namespace
 
+// Function to calculate the minimum cost to join all ropes.
+// Uses a greedy approach with a Min Heap.
+// Time Complexity: O(N log N)
+// Space Complexity: O(N)
 int minimumCost(vector<int> arr) {
+    // Step 1: Create a Min Heap.
+    // std::priority_queue<Type, Container, Comparator>
+    // Here, greater<int> makes it a min-heap, meaning the smallest element is always at the top.
     priority_queue<int, vector<int>, greater<int> > minHeap;
-    int cost = 0;
+    int cost = 0; // Initialize total cost to 0.
 
+    // Step 2: Push all initial rope lengths into the Min Heap.
+    // Each push operation takes O(log N) time. Total O(N log N) for this loop.
     for(auto i : arr) {
         minHeap.push(i);
     }
 
+    // Step 3: Continuously join the two smallest ropes until only one remains.
+    // The loop runs (N-1) times if there are N ropes initially.
     while(minHeap.size() > 1) {
+        // Step 3a: Extract the two smallest ropes from the heap.
+        // Each pop operation takes O(log N) time.
         int a = minHeap.top();
         minHeap.pop();
 
         int b = minHeap.top();
         minHeap.pop();
 
+        // Step 3b: Calculate the sum of their lengths. This is the cost for this specific join.
         int sum = a + b;
+        
+        // Step 3c: Add this cost to the total cost.
         cost += sum;
+        
+        // Step 3d: Insert the new combined rope's length back into the heap.
+        // This sum will participate in future joins. Takes O(log N) time.
         minHeap.push(sum);
     }
 
+    // Step 4: Return the accumulated minimum total cost.
     return cost;
 }
 
 int main() {
     vector<int> arr;
 
-    cout << "Enter the elements of array (-1 to stop) : ";
+    // Input rope lengths from the user until -1 is entered.
+    cout << "Enter the lengths of ropes (enter -1 to stop) : ";
     int temp;
     cin >> temp;
     while(temp != -1) {
@@ -41,10 +62,96 @@ int main() {
         cin >> temp;
     }
 
+    // Call the function to calculate the minimum cost.
     int cost = minimumCost(arr);
 
+    // Print the result.
     cout << "Minimum cost to join all ropes = " << cost << endl;
 
     return 0;
 }
+
+/*
+Example Usage:
+
+Input: 4 3 2 6 -1
+
+Initial Ropes: {4, 3, 2, 6}
+
+Step-by-step Execution:
+
+1. Heap: {2, 3, 4, 6} (after pushing all elements, smallest is 2)
+   Cost = 0
+
+2. Loop 1: minHeap.size() = 4 (>1)
+   a = 2 (pop)
+   b = 3 (pop)
+   sum = 2 + 3 = 5
+   cost = 0 + 5 = 5
+   Push 5. Heap: {4, 5, 6}
+
+3. Loop 2: minHeap.size() = 3 (>1)
+   a = 4 (pop)
+   b = 5 (pop)
+   sum = 4 + 5 = 9
+   cost = 5 + 9 = 14
+   Push 9. Heap: {6, 9}
+
+4. Loop 3: minHeap.size() = 2 (>1)
+   a = 6 (pop)
+   b = 9 (pop)
+   sum = 6 + 9 = 15
+   cost = 14 + 15 = 29
+   Push 15. Heap: {15}
+
+5. Loop 4: minHeap.size() = 1 (not >1). Loop terminates.
+
+Result: Minimum cost to join all ropes = 29
+*/
 ```
+
+### 1\. Problem Statement: Minimum Cost to Connect Ropes
+
+  * **Scenario**: You are given a set of ropes of various lengths. Your goal is to connect all these ropes into a single rope.
+  * **Cost**: The cost of connecting two ropes is equal to the sum of their lengths.
+  * **Objective**: Find the minimum total cost to connect all ropes into one.
+
+### 2\. Greedy Approach & Why it Works
+
+  * **The Greedy Choice**: At each step, to minimize the overall cost, we should always pick the **two shortest ropes available** and join them.
+  * **Intuition**: When you join two ropes, their sum becomes the new rope's length, and this sum will contribute to all subsequent joining operations. To keep this contribution as small as possible, you want the initial sums to be as small as possible. By always combining the smallest available ropes, you ensure that the cost incurred at each step is minimized, and this local optimal choice leads to a global optimal solution.
+
+### 3\. Data Structure Choice: Min Heap
+
+  * **Requirement**: We need to efficiently find and extract the two smallest elements repeatedly.
+  * **Solution**: A **Min Heap** (`std::priority_queue<int, vector<int>, greater<int>>` in C++) is the perfect data structure for this.
+      * It allows `O(1)` access to the smallest element (`top()`).
+      * It allows `O(log N)` removal of the smallest element (`pop()`).
+      * It allows `O(log N)` insertion of new elements (`push()`).
+
+### 4\. `minimumCost(vector<int> arr)` Function Logic
+
+1.  **Initialization**:
+      * Create a `minHeap`.
+      * Initialize `cost = 0`.
+2.  **Populate Heap**: Insert all initial rope lengths from the input `arr` into the `minHeap`.
+3.  **Iterative Joining**:
+      * Loop while the `minHeap` contains more than one rope (`minHeap.size() > 1`).
+      * **Extract Smallest Two**: `pop` the two smallest elements (`a` and `b`) from the `minHeap`. These are the two ropes we'll join.
+      * **Calculate Current Join Cost**: Calculate `sum = a + b`. This is the cost of this specific connection.
+      * **Accumulate Total Cost**: Add `sum` to `cost`.
+      * **Re-insert Combined Rope**: `push` the `sum` back into the `minHeap`. This `sum` represents the new combined rope that can be further joined.
+4.  **Return Total Cost**: Once the loop finishes (meaning only one rope remains in the heap), `cost` holds the minimum total cost.
+
+### 5\. Complexity Analysis
+
+  * **Time Complexity**: `O(N log N)`
+      * **Initial Population**: Pushing `N` elements into the min-heap takes `N * O(log N) = O(N log N)`.
+      * **Joining Loop**: The loop runs `N-1` times (each time reducing the number of ropes by one). In each iteration, there are two `pop` operations and one `push` operation. Each of these takes `O(log K)` time, where `K` is the current size of the heap (at most `N`). So, `(N-1) * O(log N) = O(N log N)`.
+      * Total: `O(N log N)`.
+  * **Space Complexity**: `O(N)`
+      * The `minHeap` will store up to `N` elements initially.
+
+-----
+
+

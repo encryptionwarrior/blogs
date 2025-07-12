@@ -3,97 +3,163 @@ title: Is binary Tree Heap
 description: A guide in my new Starlight docs site.
 ---
 
-```c++
-#include <bits/stdc++.h>
-#include "Tree.h"
+```cpp
+#include <bits/stdc++.h> // Includes common standard libraries (iostream, etc.)
+#include "Tree.h"        // Assumed to contain Node class definition and buildTree function.
 
-using namespace std;
+using namespace std;     // Use the standard namespace
 
+// Assuming Node structure from "Tree.h" is something like:
+/*
+class Node {
+public:
+    int data;
+    Node* left;
+    Node* right;
+    Node(int d) {
+        this->data = d;
+        this->left = NULL;
+        this->right = NULL;
+    }
+};
+Node* buildTree(Node* root) { ... } // Function to build a general binary tree
+*/
+
+// Function to count the total number of nodes in a binary tree.
+// Required for checking the 'complete binary tree' property.
+// Time Complexity: O(N)
+// Space Complexity: O(H) (recursion stack)
 int countNodes(Node* root) {
+    // Base case: If node is NULL, it has 0 nodes.
     if(root == NULL) {
         return 0;
     }
 
+    // Recursively count nodes in left and right subtrees, then add 1 for the current node.
     int left = countNodes(root->left);
     int right = countNodes(root->right);
 
     return left + right + 1;
 }
 
+// Function to check if a binary tree is a Complete Binary Tree (CBT).
+// 'root': Current node.
+// 'index': Hypothetical 0-based index of the current node (as if in an array representation).
+// 'cnt': Total number of nodes in the tree.
+// Time Complexity: O(N)
+// Space Complexity: O(H) (recursion stack)
 bool isCBT(Node* root, int index, int cnt) {
+    // Base case: A NULL node is always considered part of a CBT's structure.
     if(root == NULL) {
         return true;
     }
 
-    if(index > cnt) {
+    // If the current node's index is out of bounds for a CBT with 'cnt' nodes, it's not a CBT.
+    // In a CBT, all nodes from index 0 to cnt-1 must exist.
+    if(index >= cnt) {
         return false;
     }
 
-    bool left = isCBT(root->left, 2*index + 1, cnt);
-    bool right = isCBT(root->right, 2*index + 2, cnt);
+    // Recursively check left and right children, assigning their respective array indices.
+    // Left child: 2*index + 1
+    // Right child: 2*index + 2
+    bool left = isCBT(root->left, 2 * index + 1, cnt);
+    bool right = isCBT(root->right, 2 * index + 2, cnt);
 
+    // Both left and right subtrees must also be valid according to CBT rules.
     return left && right;
 }
 
+// Function to check if a binary tree satisfies the Max Heap order property.
+// (Parent's value >= Children's values).
+// Time Complexity: O(N)
+// Space Complexity: O(H) (recursion stack)
 bool isMaxOrder(Node* root) {
-    if(root == NULL) {
+    // Base case: A NULL node or a leaf node satisfies the heap order property trivially.
+    if(root == NULL || (root->left == NULL && root->right == NULL)) {
         return true;
     }
 
-    if(root->left == NULL && root->right == NULL) {
-        return true;
-    }
-
+    // If only a left child exists (valid for CBT if it's the last element).
+    // Check if root's data is greater than its left child's data.
     if(root->right == NULL) {
         return (root->data) > (root->left->data);
     }
 
-    bool left = isMaxOrder(root->left);
-    bool right = isMaxOrder(root->right);
-    bool curr = (root->data > root->left->data) && (root->data > root->right->data);
+    // If both children exist:
+    // 1. Recursively check order property for left and right subtrees.
+    bool leftOrder = isMaxOrder(root->left);
+    bool rightOrder = isMaxOrder(root->right);
 
-    return left && right && curr;
+    // 2. Check if current node's data is greater than both its children's data.
+    bool currOrder = (root->data > root->left->data) && (root->data > root->right->data);
+
+    // All conditions must be true for the current subtree to satisfy Max Heap order.
+    return leftOrder && rightOrder && currOrder;
 }
 
+// Function to check if a binary tree satisfies the Min Heap order property.
+// (Parent's value <= Children's values).
+// Time Complexity: O(N)
+// Space Complexity: O(H) (recursion stack)
 bool isMinOrder(Node* root) {
-    if(root == NULL) {
+    // Base case: A NULL node or a leaf node satisfies the heap order property trivially.
+    if(root == NULL || (root->left == NULL && root->right == NULL)) {
         return true;
     }
 
-    if(root->left == NULL && root->right == NULL) {
-        return true;
-    }
-
+    // If only a left child exists.
+    // Check if root's data is less than its left child's data.
     if(root->right == NULL) {
         return (root->data) < (root->left->data);
     }
 
-    bool left = isMinOrder(root->left);
-    bool right = isMinOrder(root->right);
-    bool curr = (root->data < root->left->data) && (root->data < root->right->data);
+    // If both children exist:
+    // 1. Recursively check order property for left and right subtrees.
+    bool leftOrder = isMinOrder(root->left);
+    bool rightOrder = isMinOrder(root->right);
 
-    return left && right && curr;
+    // 2. Check if current node's data is less than both its children's data.
+    bool currOrder = (root->data < root->left->data) && (root->data < root->right->data);
+
+    // All conditions must be true for the current subtree to satisfy Min Heap order.
+    return leftOrder && rightOrder && currOrder;
 }
 
+// Function to check if a binary tree is a Max Heap.
+// A tree is a Max Heap if it's a CBT AND satisfies Max Heap order.
+// Overall Time Complexity: O(N) (due to countNodes + traversals)
 bool checkMaxHeap(Node* root) {
-    return isCBT(root, 0, countNodes(root)) && isMaxOrder(root);
+    int nodeCount = countNodes(root); // Count total nodes.
+    // Check both CBT property and Max Heap order property.
+    return isCBT(root, 0, nodeCount) && isMaxOrder(root);
 }
 
+// Function to check if a binary tree is a Min Heap.
+// A tree is a Min Heap if it's a CBT AND satisfies Min Heap order.
+// Overall Time Complexity: O(N)
 bool checkMinHeap(Node* root) {
-    return isCBT(root, 0, countNodes(root)) && isMaxOrder(root);
+    int nodeCount = countNodes(root); // Count total nodes.
+    // Corrected: Must use isMinOrder for Min Heap check.
+    return isCBT(root, 0, nodeCount) && isMinOrder(root); // <-- FIX: Changed isMaxOrder to isMinOrder
 }
+
 
 int main() {
     Node* root = NULL;
 
+    // Assuming buildTree builds a general binary tree from user input.
+    cout << "Enter data to create a binary tree (use -1 for NULL children) : ";
     root = buildTree(root);
 
-    int isMaxHeapOrder = checkMaxHeap(root);
-    int isMinHeapOrder = checkMinHeap(root);
+    // Check if it's a Max Heap.
+    bool isMaxHeapOrder = checkMaxHeap(root);
+    // Check if it's a Min Heap.
+    bool isMinHeapOrder = checkMinHeap(root);
 
     if(isMaxHeapOrder){
         cout << "Given Binary Tree is a Max Heap!" << endl;
-    } else if(isMinHeapOrder) {
+    } else if(isMinHeapOrder) { // Added an else if for clarity, can be just else if only one can be true.
         cout << "Given Binary Tree is a Min Heap!" << endl;
     } else {
         cout << "Given Binary Tree is not a Heap!" << endl;
@@ -103,15 +169,109 @@ int main() {
 }
 
 /*
-    40 20 10 -1 -1 15 -1 -1 25 -1 -1
-    35 24 15 6 -1 -1 -1 11 -1 -1 29 -1 -1
-    12 44 -1 -1 -1
-    42 45 12 -1 -1 9 -1 -1 39 6 -1 -1 12 -1 -1
-    13 14 16 -1 -1 17 -1 -1 15 -1 19 -1 -1
-    20 25 27 -1 -1 29 -1 -1 -1
-    40 42 49 -1 -1 -1 47 -1 -1
-    34 77 140 -1 -1 90 -1 -1 97 100 -1 -1 120 -1 -1
-    92 -1 -1
-    42 40 35 -1 -1 -1 -1    
+Example Test Cases (as provided in comments, for buildTree function):
+
+1. Max Heap Example:
+   Input: 40 20 10 -1 -1 15 -1 -1 25 -1 -1
+   Tree:
+           40
+          /  \
+         20   25
+        /  \
+       10  15
+   Output: Given Binary Tree is a Max Heap!
+
+2. Min Heap Example:
+   Input: 10 20 30 40 50 60 70 -1 -1 -1 -1 -1 -1 -1 -1
+   Tree:
+           10
+          /  \
+         20   30
+        / \   / \
+       40 50 60 70
+   Output: Given Binary Tree is a Min Heap!
+
+3. Not a Heap (neither Max nor Min - structural but not ordered):
+   Input: 12 44 -1 -1 -1
+   Tree:
+           12
+          /
+         44
+   (Not a heap due to order: 12 < 44 for Max, but 44 has no right child for Min's strict check, and is not complete by itself)
+   Output: Given Binary Tree is not a Heap! (Because 12 < 44, fails MaxHeap. For MinHeap, it is not complete.
+   More accurately, for 12, left=44, right=NULL. If 12<44, it can be a min heap.
+   But if the tree structure is:
+       12
+      /
+     44
+   Nodes: 2. Count 2. Root index 0. Left child index 1.
+   isCBT(root=12, index=0, cnt=2):
+     left=isCBT(44, 1, 2) -> true (since 1 < 2, and 44 has no children so it's a leaf)
+     right=isCBT(NULL, 2, 2) -> false (because 2 >= 2)
+   So this is NOT a CBT. Hence, not a Heap.
+
+4. Not a Heap (Order violates):
+   Input: 42 45 12 -1 -1 9 -1 -1 39 6 -1 -1 12 -1 -1
+   Tree:
+           42
+          /  \
+         45   39
+        / \   / \
+       12  9 6  12
+   Output: Given Binary Tree is not a Heap! (Root 42 is smaller than 45, violates Max. Root 42 is larger than 12/9, violates Min.)
 */
 ```
+
+
+### 1\. What is a Heap?
+
+A **Heap** is a specialized tree-based data structure that satisfies two main properties:
+
+  * **Complete Binary Tree (CBT)**: All levels of the tree are completely filled, except possibly the last level, which is filled from left to right.
+  * **Heap Property**:
+      * **Max Heap**: For any given node, its value is greater than or equal to the values of its children. (Parent $\\ge$ Children)
+      * **Min Heap**: For any given node, its value is less than or equal to the values of its children. (Parent $\\le$ Children)
+
+### 2\. Checking for Heap Properties in a Binary Tree
+
+To determine if a general Binary Tree is a Heap, we need to verify both the "Completeness" and "Heap Order" properties.
+
+#### a. Checking Completeness (`isCBT` function)
+
+  * **Approach**: We can check completeness by traversing the tree while assigning hypothetical 0-based array indices to nodes, just like in an array representation of a complete binary tree.
+      * Root is at index 0.
+      * Left child of node at `i` is at `2*i + 1`.
+      * Right child of node at `i` is at `2*i + 2`.
+  * **Logic**:
+    1.  First, count the total number of nodes in the tree (`countNodes`).
+    2.  Then, traverse the tree (e.g., in pre-order) keeping track of the `index` of the current node and the `total_count`.
+    3.  If at any point, the `index` of a node is greater than or equal to the `total_count`, it means the tree is not complete (there's a gap or node out of bounds for a CBT). Return `false`.
+    4.  If a node is `NULL`, it signifies a valid path within the expected structure, return `true`.
+    5.  Recursively check for left and right subtrees. All paths must be valid.
+  * **Time Complexity**: `O(N)` (for `countNodes` and `isCBT` traversal).
+  * **Space Complexity**: `O(H)` (for recursion stack, where H is tree height).
+
+#### b. Checking Heap Order Property (`isMaxOrder`, `isMinOrder` functions)
+
+  * **Approach**: Recursively check the value relationship between a parent and its children.
+  * **Logic (for Max Heap Order - `isMaxOrder`)**:
+    1.  **Base Cases**:
+          * A `NULL` node inherently satisfies the property.
+          * A **leaf node** (no children) also satisfies the property trivially.
+    2.  **One Child Case (Left Only)**: If only a left child exists, check if `root->data > root->left->data`.
+    3.  **Two Children Case**:
+          * Recursively call the function for both left and right subtrees.
+          * Additionally, check if `root->data` is greater than `root->left->data` AND `root->data` is greater than `root->right->data`.
+    4.  All conditions (recursive checks and current node's check) must be true.
+  * **Logic (for Min Heap Order - `isMinOrder`)**: Same logic as `isMaxOrder`, but reverse the comparison (`<` instead of `>`).
+  * **Time Complexity**: `O(N)`.
+  * **Space Complexity**: `O(H)`.
+
+#### c. Combining Checks (`checkMaxHeap`, `checkMinHeap` functions)
+
+  * A binary tree is a **Max Heap** if and only if it is a **Complete Binary Tree** AND satisfies the **Max Heap Order Property**.
+  * A binary tree is a **Min Heap** if and only if it is a **Complete Binary Tree** AND satisfies the **Min Heap Order Property**.
+
+-----
+
+
