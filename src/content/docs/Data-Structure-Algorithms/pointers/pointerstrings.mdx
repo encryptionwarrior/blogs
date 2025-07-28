@@ -37,19 +37,26 @@ int main() {
 
 ### More Examples:
 ```c++
-  int arr[5] = {1,2,3,4,5};
-    char ch[6] = "abcde";
+int arr[5] = {1,2,3,4,5};
+char ch[6] = "abcde";
 
-    cout << arr << endl;
-    //attention here
-    cout << ch << endl;
-    
-    char *c = &ch[0];
-    //prints entire string
-    cout << c << endl;
+cout << arr << endl;            // Prints address of arr (e.g., 0x61fefc)
+                               // For int arrays, prints address—not the contents!
 
-    char temp = 'z';
-    char *p = &temp;
+// attention here
+cout << ch << endl;             // Prints the string "abcde"
+                               // For char arrays, prints characters until null terminator
 
-    cout << p << endl;
+char *c = &ch[0];
+// prints entire string
+cout << c << endl;              // Prints the string "abcde"
+                               // Points to first character: behaves like "cout << ch"
+
+char temp = 'z';
+char *p = &temp;
+
+cout << p << endl;              // Prints garbage or "z" followed by garbage chars
+                               // Interprets memory at p as a string until null terminator is found
+                               // This is unsafe/undefined: 'temp' is not null-terminated
+
 ```

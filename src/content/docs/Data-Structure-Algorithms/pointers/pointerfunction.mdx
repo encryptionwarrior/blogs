@@ -6,11 +6,13 @@ description: A guide in my new Starlight docs site.
 - Pointers can also store the address of a function. This allows functions to be passed as arguments to other functions.
 
 #### Syntax:
+
 ```c++
 returnType (*functionPointer)(parameterTypes);
 ```
 
 #### Example:
+
 ```c++
 void printHello() {
     cout << "Hello, World!";
@@ -22,10 +24,13 @@ int main() {
     return 0;
 }
 ```
+
 - Function pointers allow for callback mechanisms, where functions can be passed and invoked later.
 
 #### Pointers as Function Arguments (Pass by Reference):
+
 - Instead of passing a copy of a variable, you can pass a pointer to a function, allowing the function to modify the original variable (pass by reference).
+
 ```c++
 void increment(int *ptr) {
     (*ptr)++;  // Dereference pointer and increment value
@@ -38,39 +43,46 @@ int main() {
     return 0;
 }
 ```
+
 - Using pointers in function arguments allows for efficient manipulation of arrays and large data structures, as only the address is passed, not the actual data.
 
 ### More Examples:
+
 ```c++
 void print(int *p) {
-    cout << *p << endl; 
+    cout << *p << endl;                 // Will print the value pointed by p
 }
 
 void update(int *p) {
    // p = p + 1;
-   //cout << "inside "<< p <<endl;
-   *p = *p + 1;
+   // cout << "inside "<< p <<endl;
+   *p = *p + 1;                         // Increments the value pointed by p by 1
 }
 
 int getSum(int *arr, int n) {
-    cout << endl << "Size : " << sizeof(arr) << endl;
+    cout << endl << "Size : " << sizeof(arr) << endl; // 8 (size of pointer on 64-bit system)
     int sum = 0;
     for(int i=0;i<n;i++) {
-        sum += arr[i];
+        sum += arr[i];                  // Adds n elements starting from arr
     }
     return sum;
 }
 
+int main() {
     int value = 5;
     int *p = &value;
 
-    //print(p);
-    cout <<" Before " << *p << endl;
+    // print(p);
+    cout << " Before " << *p << endl;    // Before 5
     update(p);
-    cout <<" After " << *p << endl;
+    cout << " After " << *p << endl;     // After 6
 
     int arr[6] = {1,2,3,4,5,8};
 
-    cout << "Sum is " << getSum(arr+3 ,3) << endl ;  
-
+    cout << "Sum is " << getSum(arr+3, 3) << endl ; //
+    // Inside getSum:
+    // Size : 8
+    // sum = 4 (arr[3]) + 5 (arr[4]) + 8 (arr[5]) = 17
+    // Output: Sum is 17
+}
 ```
