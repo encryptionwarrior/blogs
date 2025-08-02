@@ -5,152 +5,201 @@ description: A guide in my new Starlight docs site.
 
 ### Introduction 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for competitive programming
+using namespace std;     // Standard namespace
 
+// Hero Class: Defines attributes of a hero character
 class Hero {
     public:
-        string name;
-        int health;
-        char level;
+        string name;  // Name of the hero
+        int health;   // Health points of the hero
+        char level;   // Level classification of the hero (e.g., 'A', 'B')
 };
 
 int main() {
-    Hero h1;
-    
-    h1.name = "Akash Gautam";
-    h1.health = 100;
-    h1.level  = 'A';
+    Hero h1; // Creating an object h1 of class Hero
 
+    h1.name = "Akash Gautam"; // Assigning name to hero h1
+    h1.health = 100;          // Assigning health value to hero h1
+    h1.level  = 'A';          // Assigning level to hero h1
+
+    // Outputting the attributes of hero h1
     cout << "h1.name : " << h1.name << endl;
     cout << "h1.health : " << h1.health << endl;
     cout << "h1.level : " << h1.level << endl;
 
-    return 0;
+    return 0; // End of program
 }
+
 ```
 
 ### Class Dyanamic Allocation 
 ```c++ 
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Hero Class: Defines attributes of a hero character
 class Hero {
     public:
-        string name;
-        int health;
-        char level;
+        string name;  // Name of the hero
+        int health;   // Health points of the hero
+        char level;   // Level classification of the hero (e.g., 'A', 'B')
 };
 
 int main() {
-    Hero *h1 = new Hero;
-    
-    h1->name = "Akash Gautam";
-    h1->health = 100;
-    h1->level  = 'A';
+    Hero *h1 = new Hero; // Dynamically creating an object h1 of class Hero
 
-    cout << "h1->name : " << h1->name << endl;
-    cout << "h1->health : " << h1->health << endl;
-    cout << "h1->level : " << h1->level << endl;
+    h1->name = "Akash Gautam"; // Assigning name to hero h1
+    h1->health = 100;          // Assigning health value to hero h1
+    h1->level  = 'A';          // Assigning level to hero h1
 
-    return 0;
+    // Outputting the attributes of hero h1
+    cout << "h1->name : " << h1->name << endl;      // Prints the name of h1
+    cout << "h1->health : " << h1->health << endl;  // Prints the health of h1
+    cout << "h1->level : " << h1->level << endl;    // Prints the level of h1
+
+    /*
+      Output:
+      h1->name : Akash Gautam
+      h1->health : 100
+      h1->level : A
+    */
+
+    return 0; // End of program
 }
+
 ```
 
 ### Constructor 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Hero Class: Defines attributes and various constructors for a hero character
 class Hero {
     public:
-        string name;
-        int health;
-        char level;
+        string name;  // Name of the hero
+        int health;   // Health points of the hero
+        char level;   // Level classification of the hero (e.g., 'A', 'B')
 
+        // Default Constructor: Initializes a Hero object with no initial values
         Hero() {
         }
 
+        // Constructor with health parameter
         Hero(int health) {
-            this->health = health;
+            this->health = health; // Sets health
         }
 
+        // Constructor with health and level parameters
         Hero(int health, char level) {
-            this->health = health;
-            this->level = level;
+            this->health = health;  // Sets health
+            this->level = level;    // Sets level
         }
 
+        // Constructor with health, level, and name parameters
         Hero(int health, char level, string name) {
-            this->health = health;
-            this->level = level;
-            this->name = name;
+            this->health = health;  // Sets health
+            this->level = level;    // Sets level
+            this->name = name;      // Sets name
         }
 };
 
 int main() {
-    Hero *h1 = new Hero();
+    Hero *h1 = new Hero(); // h1: Default constructor
     cout << "For h1 : " << endl;
-    cout << "h1->health = " << h1->health << endl;
-    cout << "h1->level = " << h1->level << endl;
-    cout << "h1->name = " << h1->name << endl << endl;
-    
-    Hero *h2 = new Hero(30);
+    cout << "h1->health = " << h1->health << endl; // Prints default/uninitialized health of h1
+    cout << "h1->level = " << h1->level << endl;   // Prints default/uninitialized level of h1
+    cout << "h1->name = " << h1->name << endl << endl; // Prints default/uninitialized name of h1
+
+    Hero *h2 = new Hero(30); // h2: Constructor with health
     cout << "For h2 : " << endl;
-    cout << "h2->health = " << h2->health << endl;
-    cout << "h2->level = " << h2->level << endl;
-    cout << "h2->name = " << h2->name << endl << endl;
+    cout << "h2->health = " << h2->health << endl; // Prints health of h2 (should be 30)
+    cout << "h2->level = " << h2->level << endl;   // Prints default/uninitialized level of h2
+    cout << "h2->name = " << h2->name << endl << endl; // Prints default/uninitialized name of h2
 
-    Hero *h3 = new Hero(40, 'A');
+    Hero *h3 = new Hero(40, 'A'); // h3: Constructor with health and level
     cout << "For h3 : " << endl;
-    cout << "h3->health = " << h3->health << endl;
-    cout << "h3->level = " << h3->level << endl;
-    cout << "h3->name = " << h3->name << endl << endl;
+    cout << "h3->health = " << h3->health << endl; // Prints health of h3 (should be 40)
+    cout << "h3->level = " << h3->level << endl;   // Prints level of h3 (should be 'A')
+    cout << "h3->name = " << h3->name << endl << endl; // Prints default/uninitialized name of h3
 
-    Hero *h4 = new Hero(50, 'B', "Akash");
+    Hero *h4 = new Hero(50, 'B', "Akash"); // h4: Constructor with all data members
     cout << "For h4 : " << endl;
-    cout << "h4->health = " << h4->health << endl;
-    cout << "h4->level = " << h4->level << endl;
-    cout << "h4->name = " << h4->name << endl << endl;
+    cout << "h4->health = " << h4->health << endl; // Prints health of h4 (should be 50)
+    cout << "h4->level = " << h4->level << endl;   // Prints level of h4 (should be 'B')
+    cout << "h4->name = " << h4->name << endl << endl; // Prints name of h4 (should be "Akash")
 
-    return 0;
+    /*
+      Sample output (uninitialized fields may have garbage/default values):
+      For h1 : 
+      h1->health = <garbage>
+      h1->level = <garbage>
+      h1->name = 
+
+      For h2 : 
+      h2->health = 30
+      h2->level = <garbage>
+      h2->name = 
+
+      For h3 : 
+      h3->health = 40
+      h3->level = A
+      h3->name = 
+
+      For h4 : 
+      h4->health = 50
+      h4->level = B
+      h4->name = Akash
+    */
+
+    return 0; // End of program
 }
+
 ```
 
 ### Copy Constructor 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Hero Class: Defines attributes, constructors (including copy constructor), and display method for a hero character
 class Hero {
     public:
-        string name;
-        int health;
-        char level;
+        string name;  // Name of the hero
+        int health;   // Health points of the hero
+        char level;   // Level classification of the hero (e.g., 'A', 'B')
 
+        // Default Constructor: Initializes a Hero object with no initial values
         Hero() {
         }
 
+        // Constructor with health parameter
         Hero(int health) {
-            this->health = health;
+            this->health = health; // Sets health
         }
 
+        // Constructor with health and level parameters
         Hero(int health, char level) {
-            this->health = health;
-            this->level = level;
+            this->health = health;  // Sets health
+            this->level = level;    // Sets level
         }
 
+        // Constructor with health, level, and name parameters
         Hero(int health, char level, string name) {
-            this->health = health;
-            this->level = level;
-            this->name = name;
+            this->health = health;  // Sets health
+            this->level = level;    // Sets level
+            this->name = name;      // Sets name
         }
 
+        // Copy Constructor: Creates a new object as a copy of an existing Hero object
         Hero(Hero &temp) {
-            this->health = temp.health;
-            this->level = temp.level;
-            this->name = temp.name;
+            this->health = temp.health;  // Copies health from temp
+            this->level = temp.level;    // Copies level from temp
+            this->name = temp.name;      // Copies name from temp
         }
 
+        // Print method: Outputs the details of the Hero object
         void print() {
             cout << "[Name : " << this->name << " , Health : ";
             cout << this->health << " , Level : " << this->level << "]" << endl;
@@ -158,57 +207,75 @@ class Hero {
 };
 
 int main() {
-    Hero *h1 = new Hero(80, 'A', "Akash");
+    Hero *h1 = new Hero(80, 'A', "Akash"); // Dynamically create h1 using parameterized constructor
     cout << "For h1 : ";
-    h1->print();
-    
-    Hero *h2 = new Hero(*h1);
+    h1->print(); // Prints: [Name : Akash , Health : 80 , Level : A]
+
+    Hero *h2 = new Hero(*h1); // Dynamically create h2 using copy constructor (copy of h1)
     cout << "For h2 : ";
-    h2->print();
+    h2->print(); // Prints: [Name : Akash , Health : 80 , Level : A]
 
-    Hero h3(*h2);
+    Hero h3(*h2); // Creates h3 on stack using copy constructor (copy of h2)
     cout << "For h3 : ";
-    h3.print();
+    h3.print(); // Prints: [Name : Akash , Health : 80 , Level : A]
 
-    return 0;
+    /*
+      Output:
+      For h1 : [Name : Akash , Health : 80 , Level : A]
+      For h2 : [Name : Akash , Health : 80 , Level : A]
+      For h3 : [Name : Akash , Health : 80 , Level : A]
+    */
+
+    return 0; // End of program
 }
+
 ```
 
 ### Deep and Shallow Copy 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Hero Class: Defines attributes, constructors, and print method for a hero character
+// Note: Uses raw char* name pointer, which requires careful handling to avoid shallow copy issues
 class Hero {
     public:
-        char *name;
-        int health;
-        char level;
+        char *name;   // Pointer to character array for hero's name
+        int health;   // Health points of the hero
+        char level;   // Level classification of the hero (e.g., 'A', 'B')
 
+        // Default Constructor: Does nothing, members are uninitialized
         Hero() {
         }
 
+        // Constructor with health parameter
         Hero(int health) {
-            this->health = health;
+            this->health = health; // Sets health
         }
 
+        // Constructor with health and level parameters
         Hero(int health, char level) {
-            this->health = health;
-            this->level = level;
+            this->health = health;  // Sets health
+            this->level = level;    // Sets level
         }
 
+        // Constructor with health, level and name pointer parameters
         Hero(int health, char level, char *name) {
-            this->health = health;
-            this->level = level;
-            this->name = name;
+            this->health = health;  // Sets health
+            this->level = level;    // Sets level
+            this->name = name;      // Assigns pointer to name (shallow copy)
         }
 
-        // Hero(Hero &temp) {
-        //     this->health = temp.health;
-        //     this->level = temp.level;
-        //     this->name = temp.name;
-        // }
+        /*
+        // Copy constructor commented out - default shallow copy is performed here
+        Hero(Hero &temp) {
+            this->health = temp.health;
+            this->level = temp.level;
+            this->name = temp.name;  // Shallow copy of pointer
+        }
+        */
 
+        // Print method: Outputs the details of the Hero object
         void print() {
             cout << "[Name : " << this->name << " , Health : ";
             cout << this->health << " , Level : " << this->level << "]" << endl;
@@ -216,54 +283,75 @@ class Hero {
 };
 
 int main() {
-    // cout << "Hello";
+    // Creating Hero object h1 with health and level initialized
     Hero h1(80, 'A');
+
+    // Temporary character array with name "Akash"
     char temp[6] = "Akash";
-    strcpy(h1.name, temp);
+
+    // WARNING: name is a raw pointer and not allocated before strcpy.
+    // This causes undefined behavior (likely crash or corruption) because h1.name does not point to allocated memory.
+    // Proper fix: Allocate memory for h1.name before strcpy, e.g., h1.name = new char[strlen(temp)+1];
+    strcpy(h1.name, temp); 
+
     cout << "h1 before update : ";
     h1.print();
-    
-    Hero h2(h1);
+
+    // Use of default copy constructor here (shallow copy)
+    Hero h2(h1); // h2.name points to the same memory as h1.name
+
     cout << "h2 before update : ";
     h2.print();
-// cout << h1.name[0]
+
+    // Modifying the first character of h1's name
+    // Due to shallow copy, this will also affect h2.name
     h1.name[0] = 'B';
-    
+
     cout << "h1 after update : ";
     h1.print();
+
     cout << "h2 after update : ";
     h2.print();
 
-    return 0;
+    // No deletion of dynamically allocated memory here since none was allocated properly,
+    // leading to potential memory issues if fixed.
+
+    return 0; // End of program
 }
+
 ```
 
 ### Destructor 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Hero Class: Defines attributes, multiple constructors, a destructor, and a print method
 class Hero {
     public:
-        string name;
-        int health;
-        char level;
+        string name;  // Name of the hero
+        int health;   // Health points of the hero
+        char level;   // Level classification of the hero (e.g., 'A', 'B')
 
+        // Default Constructor: Prints when called, no initialization of members
         Hero() {
             cout << "\tConstructor Called !" << endl;
         }
 
+        // Constructor with health parameter: Initializes health and prints a message
         Hero(int health) {
             cout << "\tConstructor Called !" << endl;
             this->health = health;
         }
 
+        // Constructor with health and level parameters: Initializes health and level, prints message
         Hero(int health, char level) {
             cout << "\tConstructor Called !" << endl;
             this->health = health;
             this->level = level;
         }
 
+        // Constructor with health, level, and name parameters: Initializes all attributes
         Hero(int health, char level, string name) {
             cout << "\tConstructor Called !" << endl;
             this->health = health;
@@ -271,10 +359,12 @@ class Hero {
             this->name = name;
         }
 
+        // Destructor: Prints when called, invoked automatically for stack objects and manually for pointers
         ~Hero() {
             cout << "\tDestructor Called !" << endl;
         }
 
+        // Print method: Outputs the hero's details in a formatted way
         void print() {
             cout << "[Name : " << this->name << " , Health : ";
             cout << this->health << " , level : " << this->level;
@@ -284,50 +374,73 @@ class Hero {
 
 int main() {
 
-    // Dynamic Allocation
+    // Dynamic Allocation:
+    // Creating a Hero object dynamically using the constructor with parameters
     Hero *h1 = new Hero(150, 'A', "Akash");
-    h1->print();
-    delete h1;      // Calling destructor manually
+    h1->print();       // Prints details of dynamically created hero
 
-    cout << endl;
+    delete h1;         // Manually calls the destructor for the dynamically allocated object
+                       // It is the programmer's responsibility to free dynamic memory
 
-    // Static Allocation
+    cout << endl;      // Just for clearer output separation
+
+    // Static Allocation:
+    // Creating a Hero object on the stack (automatic storage duration)
     Hero h2(250, 'G', "Gautam");
-    h2.print();
-    // Destructor called automatically
+    h2.print();        // Prints details of the statically created hero
 
-    return 0;
+    // Destructor for h2 is called automatically here, when h2 goes out of scope (end of main)
+
+    /*
+      Expected Output:
+
+      Constructor Called !
+      [Name : Akash , Health : 150 , level : A]
+      Destructor Called !
+
+      Constructor Called !
+      [Name : Gautam , Health : 250 , level : G]
+      Destructor Called !
+    */
+
+    return 0; // End of program
 }
+
 ```
 
 ### Static Keyword 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Hero Class: Defines attributes, constructors, destructor, print method, and static members
 class Hero {
     public:
-        string name;
-        int health;
-        char level;
+        string name;   // Name of the hero
+        int health;    // Health points of the hero
+        char level;    // Level classification of the hero (e.g., 'A', 'B')
 
-        static int time;
+        static int time; // Static member variable shared by all Hero objects
 
+        // Default Constructor: Prints message when called, no explicit initialization
         Hero() {
             cout << "\tConstructor Called !" << endl;
         }
 
+        // Constructor with health parameter
         Hero(int health) {
             cout << "\tConstructor Called !" << endl;
             this->health = health;
         }
 
+        // Constructor with health and level parameters
         Hero(int health, char level) {
             cout << "\tConstructor Called !" << endl;
             this->health = health;
             this->level = level;
         }
 
+        // Constructor with health, level, and name parameters
         Hero(int health, char level, string name) {
             cout << "\tConstructor Called !" << endl;
             this->health = health;
@@ -335,29 +448,41 @@ class Hero {
             this->name = name;
         }
 
+        // Destructor: Prints message when called
         ~Hero() {
             cout << "\tDestructor Called !" << endl;
         }
 
+        // Print method: Outputs the hero's details
         void print() {
             cout << "[Name : " << this->name << " , Health : ";
             cout << this->health << " , level : " << this->level;
             cout << "]" << endl;
         }
 
+        // Static method: Can be called without an object, returns the static variable 'time'
         static int random() {
             return time;
         }
 };
 
+// Definition of the static member variable outside the class
 int Hero::time = 10;
 
 int main() {
-
+    // Accessing and printing the static member variable using the class name
     cout << "Hero::time -> " << Hero::time << endl;
 
+    // Calling the static method using the class name, which returns the static member 'time'
     cout << "Hero::random() -> " << Hero::random() << endl;
 
-    return 0;
+    /*
+      Output:
+      Hero::time -> 10
+      Hero::random() -> 10
+    */
+
+    return 0; // End of program
 }
+
 ```
