@@ -5,392 +5,598 @@ description: A guide in my new Starlight docs site.
 
 ### Inheritance 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Human Class: Base class with common data members
 class Human {
     public:
-    int height;
-    int weight;
-    int age;
+        int height; // Height attribute of a Human
+        int weight; // Weight attribute of a Human
+        int age;    // Age attribute of a Human
 };
 
+// Male Class: Inherits publicly from Human
 class Male : public Human {
-
+    // All public members of Human become public in Male
 };
 
+// Female Class: Inherits protectedly from Human
 class Female : protected Human {
-
+    // All public members of Human become protected in Female
 };
 
 int main() {
-    Male m;
+    Male m; // Creating an object of class Male
 
-    cout << "m.height : " << m.height << endl;
-    cout << "m.weight : " << m.weight << endl;
-    cout << "m.age : " << m.age << endl;
+    // Accessing Human's public members through Male object
+    cout << "m.height : " << m.height << endl; // Prints height of m (default-initialized, may be garbage)
+    cout << "m.weight : " << m.weight << endl; // Prints weight of m (may be garbage)
+    cout << "m.age : " << m.age << endl;       // Prints age of m (may be garbage)
 
-    Female f;
-    // Not possible
+    Female f; // Creating an object of class Female
+
+    // The following lines are commented out because:
+    // - height, weight, and age in Female are protected (due to protected inheritance).
+    // - They can't be accessed directly from main().
     // cout << "f.height : " << f.height << endl;
     // cout << "f.weight : " << f.weight << endl;
     // cout << "f.age : " << f.age << endl;
 
-    return 0;
+    /*
+      Output (uninitialized members may show garbage values):
+      m.height : <garbage>
+      m.weight : <garbage>
+      m.age : <garbage>
+    */
+
+    return 0; // End of program
 }
+
 ```
 
 ### Singl Inheritance 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Base Class: A
+// Defines basic properties that can be inherited by other classes
 class A {
     public:
-    int base_property1;
-    int base_property2;
+        int base_property1; // First property of base class A
+        int base_property2; // Second property of base class A
 };
 
+// Derived Class: B
+// Publicly inherits from class A, and adds its own properties
 class B : public A {
     public:
-    int child_property1;
-    int child_property2;
+        int child_property1; // First property specific to class B
+        int child_property2; // Second property specific to class B
 };
 
 int main() {
-    B b1;
-    
-    b1.base_property1 = 10;
-    b1.base_property2 = 15;
-    b1.child_property1 = 20;
-    b1.child_property2 = 25;
+    B b1; // Create an object b1 of class B
 
-    cout << "b1.base_property1 : " << b1.base_property1 << endl;
-    cout << "b1.base_property2 : " << b1.base_property2 << endl;
-    cout << "b1.child_property1 : " << b1.child_property1 << endl;
-    cout << "b1.child_property2 : " << b1.child_property2 << endl;
+    // Assign values to the inherited base class properties
+    b1.base_property1 = 10;            // Set base_property1 (inherited from A) to 10
+    b1.base_property2 = 15;            // Set base_property2 (inherited from A) to 15
 
-    return 0;
+    // Assign values to the derived class properties
+    b1.child_property1 = 20;           // Set child_property1 (defined in B) to 20
+    b1.child_property2 = 25;           // Set child_property2 (defined in B) to 25
+
+    // Output all property values
+    cout << "b1.base_property1 : " << b1.base_property1 << endl;   // Prints 10
+    cout << "b1.base_property2 : " << b1.base_property2 << endl;   // Prints 15
+    cout << "b1.child_property1 : " << b1.child_property1 << endl; // Prints 20
+    cout << "b1.child_property2 : " << b1.child_property2 << endl; // Prints 25
+
+    /*
+      Output:
+      b1.base_property1 : 10
+      b1.base_property2 : 15
+      b1.child_property1 : 20
+      b1.child_property2 : 25
+    */
+
+    return 0; // End of program
 }
 ```
 
 ### Multilevel Inheritance 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Base Class: A
+// Defines basic properties that can be inherited by other classes
 class A {
     public:
-    int base_property1;
-    int base_property2;
+        int base_property1; // First property of base class A
+        int base_property2; // Second property of base class A
 };
 
+// Derived Class: B (inherits from A)
+// Adds its own properties and inherits all public members from A
 class B : public A {
     public:
-    int child_property1;
-    int child_property2;
+        int child_property1; // First property specific to class B
+        int child_property2; // Second property specific to class B
 };
 
+// Further Derived Class: C (inherits from B, which itself inherits from A)
+// Multilevel inheritance: C inherits everything from B and A, and adds its own members
 class C : public B {
     public:
-    int new_child_property1;
-    int new_child_property2;
+        int new_child_property1; // First property specific to class C
+        int new_child_property2; // Second property specific to class C
 };
 
 int main() {
-    C c1;
-    
-    c1.base_property1 = 10;
-    c1.base_property2 = 15;
-    c1.child_property1 = 20;
-    c1.child_property2 = 25;
-    c1.new_child_property1 = 30;
-    c1.new_child_property2 = 35;
+    C c1; // Create an object c1 of class C
 
-    cout << "c1.base_property1 : " << c1.base_property1 << endl;
-    cout << "c1.base_property2 : " << c1.base_property2 << endl << endl;
-    cout << "c1.child_property1 : " << c1.child_property1 << endl;
-    cout << "c1.child_property2 : " << c1.child_property2 << endl << endl;
-    cout << "c1.new_child_property1 : " << c1.new_child_property1 << endl;
-    cout << "c1.new_child_property2 : " << c1.new_child_property2 << endl;
+    // Assign values to properties from all levels of the hierarchy
+    c1.base_property1 = 10;         // Inherited from class A
+    c1.base_property2 = 15;         // Inherited from class A
+    c1.child_property1 = 20;        // Inherited from class B
+    c1.child_property2 = 25;        // Inherited from class B
+    c1.new_child_property1 = 30;    // Defined in class C
+    c1.new_child_property2 = 35;    // Defined in class C
 
-    return 0;
+    // Output all property values
+    cout << "c1.base_property1 : " << c1.base_property1 << endl;       // Prints 10
+    cout << "c1.base_property2 : " << c1.base_property2 << endl << endl;  // Prints 15
+
+    cout << "c1.child_property1 : " << c1.child_property1 << endl;     // Prints 20
+    cout << "c1.child_property2 : " << c1.child_property2 << endl << endl; // Prints 25
+
+    cout << "c1.new_child_property1 : " << c1.new_child_property1 << endl; // Prints 30
+    cout << "c1.new_child_property2 : " << c1.new_child_property2 << endl; // Prints 35
+
+    /*
+      Output:
+      c1.base_property1 : 10
+      c1.base_property2 : 15
+
+      c1.child_property1 : 20
+      c1.child_property2 : 25
+
+      c1.new_child_property1 : 30
+      c1.new_child_property2 : 35
+    */
+
+    return 0; // End of program
 }
 ```
 
 ### Multiple Inheritance 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Base Class: A
+// Defines first set of properties that can be inherited
 class A {
     public:
-    int base1_property1;
-    int base1_property2;
+        int base1_property1; // First property of base class A
+        int base1_property2; // Second property of base class A
 };
 
+// Base Class: B
+// Defines a different set of properties
 class B {
     public:
-    int base2_property1;
-    int base2_property2;
+        int base2_property1; // First property of base class B
+        int base2_property2; // Second property of base class B
 };
 
+// Derived Class: C (inherits from both A and B)
+// Demonstrates multiple inheritance. C now has all public members of A and B
 class C : public A, public B {
     public:
-    int child_property1;
-    int child_property2;
+        int child_property1;   // First property specific to C
+        int child_property2;   // Second property specific to C
 };
 
 int main() {
-    C c1;
-    
-    c1.base1_property1 = 10;
-    c1.base1_property2 = 15;
-    c1.base2_property1 = 20;
-    c1.base2_property2 = 25;
-    c1.child_property1 = 30;
-    c1.child_property2 = 35;
+    C c1; // Create an object c1 of class C
 
-    cout << "c1.base1_property1 : " << c1.base1_property1 << endl;
-    cout << "c1.base1_property2 : " << c1.base1_property2 << endl << endl;
-    cout << "c1.base2_property1 : " << c1.base2_property1 << endl;
-    cout << "c1.base2_property2 : " << c1.base2_property2 << endl << endl;
-    cout << "c1.child_property1 : " << c1.child_property1 << endl;
-    cout << "c1.child_property2 : " << c1.child_property2 << endl;
+    // Assign values to properties inherited from both bases and from C itself
+    c1.base1_property1 = 10;     // Inherited from class A
+    c1.base1_property2 = 15;     // Inherited from class A
+    c1.base2_property1 = 20;     // Inherited from class B
+    c1.base2_property2 = 25;     // Inherited from class B
+    c1.child_property1 = 30;     // Defined in class C
+    c1.child_property2 = 35;     // Defined in class C
 
-    return 0;
+    // Output all property values
+    cout << "c1.base1_property1 : " << c1.base1_property1 << endl;       // Prints 10
+    cout << "c1.base1_property2 : " << c1.base1_property2 << endl << endl; // Prints 15
+
+    cout << "c1.base2_property1 : " << c1.base2_property1 << endl;       // Prints 20
+    cout << "c1.base2_property2 : " << c1.base2_property2 << endl << endl; // Prints 25
+
+    cout << "c1.child_property1 : " << c1.child_property1 << endl;       // Prints 30
+    cout << "c1.child_property2 : " << c1.child_property2 << endl;       // Prints 35
+
+    /*
+      Output:
+      c1.base1_property1 : 10
+      c1.base1_property2 : 15
+
+      c1.base2_property1 : 20
+      c1.base2_property2 : 25
+
+      c1.child_property1 : 30
+      c1.child_property2 : 35
+    */
+
+    return 0; // End of program
 }
+
 ```
 
 ### Hybrid Inheritance 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Base Class: A
+// Provides two base properties
 class A {
     public:
-    int base_property1;
-    int base_property2;
+        int base_property1; // First property of base class A
+        int base_property2; // Second property of base class A
 };
 
+// Derived Class: B (inherits from A)
+// Adds its own properties to those inherited from A
 class B : public A {
     public:
-    int child1_property1;
-    int child1_property2;
+        int child1_property1; // First property specific to class B
+        int child1_property2; // Second property specific to class B
 };
 
+// Derived Class: C (inherits from A independently from B)
+// Adds its own properties to those inherited from A
 class C : public A {
     public:
-    int child2_property1;
-    int child2_property2;
+        int child2_property1; // First property specific to class C
+        int child2_property2; // Second property specific to class C
 };
 
+// Derived Class: D (inherits from both B and C)
+// Demonstrates the diamond problem: D has two copies of A as its base
 class D : public B, public C {
     public:
-    int new_child_property1;
-    int new_child_property2;
+        int new_child_property1; // First property specific to class D
+        int new_child_property2; // Second property specific to class D
 };
 
 int main() {
-    D d1;
-    
-    // d1.base_property1 = 50;
-    // d1.base_property2 = 55;
-    d1.child1_property1 = 60;
-    d1.child1_property2 = 65;
-    d1.child2_property1 = 70;
-    d1.child2_property2 = 75;
-    d1.new_child_property1 = 80;
-    d1.new_child_property2 = 85;
+    D d1; // Create an object d1 of class D (multiple inheritance from B and C)
 
+    // Trying to set base_property1 or base_property2 directly is ambiguous:
+    // d1.base_property1 = 50;    // Error: which base_property1? (from B->A or C->A?)
+    // d1.base_property2 = 55;    // Ambiguous
+
+    // Assign values to members of B side
+    d1.child1_property1 = 60;    // Inherited from class B
+    d1.child1_property2 = 65;    // Inherited from class B
+
+    // Assign values to members of C side
+    d1.child2_property1 = 70;    // Inherited from class C
+    d1.child2_property2 = 75;    // Inherited from class C
+
+    // Assign values to members of D
+    d1.new_child_property1 = 80; // Defined in class D
+    d1.new_child_property2 = 85; // Defined in class D
+
+    // Ambiguous access - commented out for correctness
     // cout << "d1.base_property1 : " << d1.base_property1 << endl;
     // cout << "d1.base_property2 : " << d1.base_property2 << endl << endl;
-    cout << "d1.child1_property1 : " << d1.child1_property1 << endl;
-    cout << "d1.child1_property2 : " << d1.child1_property2 << endl << endl;
-    cout << "d1.child2_property1 : " << d1.child2_property1 << endl;
-    cout << "d1.child2_property2 : " << d1.child2_property2 << endl << endl;
-    cout << "d1.new_child_property1 : " << d1.new_child_property1 << endl;
-    cout << "d1.new_child_property2 : " << d1.new_child_property2 << endl;
+    // Above lines will result in compilation error due to ambiguity
 
-    return 0;
+    // Output values of B's properties
+    cout << "d1.child1_property1 : " << d1.child1_property1 << endl; // Prints 60
+    cout << "d1.child1_property2 : " << d1.child1_property2 << endl << endl; // Prints 65
+
+    // Output values of C's properties
+    cout << "d1.child2_property1 : " << d1.child2_property1 << endl; // Prints 70
+    cout << "d1.child2_property2 : " << d1.child2_property2 << endl << endl; // Prints 75
+
+    // Output values of D's own properties
+    cout << "d1.new_child_property1 : " << d1.new_child_property1 << endl; // Prints 80
+    cout << "d1.new_child_property2 : " << d1.new_child_property2 << endl; // Prints 85
+
+    /*
+      Output:
+      d1.child1_property1 : 60
+      d1.child1_property2 : 65
+
+      d1.child2_property1 : 70
+      d1.child2_property2 : 75
+
+      d1.new_child_property1 : 80
+      d1.new_child_property2 : 85
+    */
+
+    return 0; // End of program
 }
 ```
 
 ### Hierarchiral Inheritance 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Base Class: A
+// Defines properties common to derived classes
 class A {
     public:
-    int base_property1;
-    int base_property2;
+        int base_property1; // First property of the base class A
+        int base_property2; // Second property of the base class A
 };
 
+// Derived Class: B (inherits publicly from A)
+// Adds its own specific properties
 class B : public A {
     public:
-    int child1_property1;
-    int child1_property2;
+        int child1_property1; // First property specific to class B
+        int child1_property2; // Second property specific to class B
 };
 
+// Derived Class: C (inherits publicly from A)
+// Adds its own specific properties independent from B
 class C : public A {
     public:
-    int child2_property1;
-    int child2_property2;
+        int child2_property1; // First property specific to class C
+        int child2_property2; // Second property specific to class C
 };
 
 int main() {
-    B b1;
-    C c1;
-    
-    b1.base_property1 = 50;
-    b1.base_property2 = 55;
+    B b1; // Create object b1 of class B
+    C c1; // Create object c1 of class C
+
+    // Assign values to the base class properties in b1
+    b1.base_property1 = 50;       // b1's own copy of base_property1
+    b1.base_property2 = 55;       // b1's own copy of base_property2
+
+    // Assign values to B's own properties
     b1.child1_property1 = 60;
     b1.child1_property2 = 65;
 
-    c1.base_property1 = 10;
-    c1.base_property2 = 15;
+    // Assign values to the base class properties in c1
+    c1.base_property1 = 10;       // c1's own copy of base_property1
+    c1.base_property2 = 15;       // c1's own copy of base_property2
+
+    // Assign values to C's own properties
     c1.child2_property1 = 20;
     c1.child2_property2 = 25;
 
-    cout << "b1.base_property1 : " << b1.base_property1 << endl;
-    cout << "b1.base_property2 : " << b1.base_property2 << endl << endl;
-    cout << "b1.child1_property1 : " << b1.child1_property1 << endl;
-    cout << "b1.child1_property2 : " << b1.child1_property2 << endl << endl;
-    
-    cout << "c1.base_property1 : " << c1.base_property1 << endl;
-    cout << "c1.base_property2 : " << c1.base_property2 << endl << endl;
-    cout << "c1.child2_property1 : " << c1.child2_property1 << endl;
-    cout << "c1.child2_property2 : " << c1.child2_property2 << endl << endl;
+    // Output values of b1's base class properties
+    cout << "b1.base_property1 : " << b1.base_property1 << endl;       // Prints 50
+    cout << "b1.base_property2 : " << b1.base_property2 << endl << endl; // Prints 55
 
-    return 0;
+    // Output values of b1's own properties
+    cout << "b1.child1_property1 : " << b1.child1_property1 << endl;   // Prints 60
+    cout << "b1.child1_property2 : " << b1.child1_property2 << endl << endl; // Prints 65
+
+    // Output values of c1's base class properties
+    cout << "c1.base_property1 : " << c1.base_property1 << endl;       // Prints 10
+    cout << "c1.base_property2 : " << c1.base_property2 << endl << endl; // Prints 15
+
+    // Output values of c1's own properties
+    cout << "c1.child2_property1 : " << c1.child2_property1 << endl;   // Prints 20
+    cout << "c1.child2_property2 : " << c1.child2_property2 << endl << endl; // Prints 25
+
+    /*
+      Output:
+      b1.base_property1 : 50
+      b1.base_property2 : 55
+
+      b1.child1_property1 : 60
+      b1.child1_property2 : 65
+
+      c1.base_property1 : 10
+      c1.base_property2 : 15
+
+      c1.child2_property1 : 20
+      c1.child2_property2 : 25
+    */
+
+    return 0; // End of program
 }
+
 ```
 
 ### Inheritance Ambiguity 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Base Class: A
+// Provides base properties that are inherited by both B and C separately
 class A {
     public:
-    int base_property1;
-    int base_property2;
+        int base_property1; // First property of class A
+        int base_property2; // Second property of class A
 };
 
+// Derived Class: B (inherits publicly from A)
+// Adds its own properties, inherits A's properties
 class B : public A {
     public:
-    int child1_property1;
-    int child1_property2;
+        int child1_property1; // Specific to class B
+        int child1_property2; // Specific to class B
 };
 
+// Derived Class: C (inherits publicly from A)
+// Adds its own properties, inherits A's properties
 class C : public A {
     public:
-    int child2_property1;
-    int child2_property2;
+        int child2_property1; // Specific to class C
+        int child2_property2; // Specific to class C
 };
 
+// Derived Class: D (inherits from both B and C)
+// Multiple inheritance leads to two copies of A's members (diamond problem)
+// Needs explicit scope resolution to access base class members from B or C
 class D : public B, public C {
     public:
-    int new_child_property1;
-    int new_child_property2;
+        int new_child_property1; // Specific to class D
+        int new_child_property2; // Specific to class D
 };
 
 int main() {
-    D d1;
-    
-    d1.B::base_property1 = 50;
-    d1.B::base_property2 = 55;
-    d1.C::base_property1 = 60;
-    d1.C::base_property2 = 65;
+    D d1; // Create object d1 of class D
+
+    // Assign values to A's members inherited via B and C separately using scope resolution
+    d1.B::base_property1 = 50;  // Sets base_property1 from B's inheritance path
+    d1.B::base_property2 = 55;  // Sets base_property2 from B's inheritance path
+    d1.C::base_property1 = 60;  // Sets base_property1 from C's inheritance path
+    d1.C::base_property2 = 65;  // Sets base_property2 from C's inheritance path
+
+    // Assign values to B's own members
     d1.child1_property1 = 70;
     d1.child1_property2 = 75;
+
+    // Assign values to C's own members
     d1.child2_property1 = 80;
     d1.child2_property2 = 85;
+
+    // Assign values to D's own members
     d1.new_child_property1 = 90;
     d1.new_child_property2 = 95;
 
+    // Output base properties accessed through B side
     cout << "d1.B::base_property1 : " << d1.B::base_property1 << endl;
     cout << "d1.B::base_property2 : " << d1.B::base_property2 << endl << endl;
+
+    // Output base properties accessed through C side
     cout << "d1.C::base_property1 : " << d1.C::base_property1 << endl;
     cout << "d1.C::base_property2 : " << d1.C::base_property2 << endl << endl;
-    cout << "d1.child1_propertn y1 : " << d1.child1_property1 << endl;
+
+    // Output properties from B
+    cout << "d1.child1_property1 : " << d1.child1_property1 << endl;
     cout << "d1.child1_property2 : " << d1.child1_property2 << endl << endl;
+
+    // Output properties from C
     cout << "d1.child2_property1 : " << d1.child2_property1 << endl;
     cout << "d1.child2_property2 : " << d1.child2_property2 << endl << endl;
+
+    // Output properties from D
     cout << "d1.new_child_property1 : " << d1.new_child_property1 << endl;
     cout << "d1.new_child_property2 : " << d1.new_child_property2 << endl;
 
-    return 0;
+    /*
+      Output:
+      d1.B::base_property1 : 50
+      d1.B::base_property2 : 55
+
+      d1.C::base_property1 : 60
+      d1.C::base_property2 : 65
+
+      d1.child1_property1 : 70
+      d1.child1_property2 : 75
+
+      d1.child2_property1 : 80
+      d1.child2_property2 : 85
+
+      d1.new_child_property1 : 90
+      d1.new_child_property2 : 95
+    */
+
+    return 0; // End of program
 }
+
 ```
 
 ### Function Overloading 
 
 ### Operator Overloading 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Class A: Demonstrates member variables, a member function, and operator overloading
 class A {
     public:
-    int a, b;
+        int a, b; // Two integer data members
 
-    int add() {
-        return a+b;
-    }
+        // add(): Returns the sum of members a and b
+        int add() {
+            return a + b;
+        }
 
-    void operator + (A &obj) {
-        int value1 = this->a;
-        int value2 = obj.a;
-        cout << "Output : " << value2 - value1 << endl;
-    }
+        // Overloaded binary '+' operator taking another A object as parameter
+        // Instead of returning the sum, it prints the difference of 'a' members: obj.a - this->a
+        void operator + (A &obj) {
+            int value1 = this->a;  // 'a' of the left-hand object
+            int value2 = obj.a;    // 'a' of the right-hand object
+            cout << "Output : " << value2 - value1 << endl;    // Prints the difference
+        }
 
-    void operator () () {
-        cout << "Bracket is called by " << this->a << endl;
-    }
+        // Overloaded function call operator '()'
+        // Prints a message showing the value of 'a' for the current object
+        void operator () () {
+            cout << "Bracket is called by " << this->a << endl;
+        }
 };
 
 int main() {
-    A obj1, obj2;
+    A obj1, obj2;  // Create two objects of class A
 
-    obj1.a = 2;
-    obj2.a = 7;
+    obj1.a = 2;    // Initialize obj1.a to 2
+    obj2.a = 7;    // Initialize obj2.a to 7
 
-    obj1 + obj2;
+    obj1 + obj2;   // Calls obj1.operator+(obj2)
+                   // Outputs: Output : 5  (because 7 - 2 = 5)
 
-    obj1();
+    obj1();        // Calls obj1.operator()()
+                   // Outputs: Bracket is called by 2
 
-    return 0;
+    return 0;      // End of the program
 }
 ```
 
 ### Runtime Polymorphism 
 ```c++
-#include <bits/stdc++.h>
-using namespace std;
+#include <bits/stdc++.h> // Common includes for C++ (useful for competitive programming)
+using namespace std;     // Standard namespace
 
+// Base Class: A
+// Contains a member function func() that prints a message
 class A {
     public:
-    void func() {
-        cout << "Inside Parent Class" << endl;
-    }
+        // func() method for class A
+        // Prints message indicating it is inside the Parent class
+        void func() {
+            cout << "Inside Parent Class" << endl;
+        }
 };
 
+// Derived Class: B inherits publicly from A
+// Overrides the func() method with its own implementation
 class B : public A {
     public:
-    void func() {
-        cout << "Inside Child Class" << endl;
-    }
+        // Overridden func() method for class B
+        // Prints message indicating it is inside the Child class
+        void func() {
+            cout << "Inside Child Class" << endl;
+        }
 };
 
 int main() {
-    A obj1;
-    B obj2;
+    A obj1; // Create an object of base class A
+    B obj2; // Create an object of derived class B
 
-    obj1.func();
-    obj2.func();
+    obj1.func(); // Calls A::func(), prints "Inside Parent Class"
+    obj2.func(); // Calls B::func(), prints "Inside Child Class" — overridden method
 
-    return 0;
+    return 0; // End of program
 }
+
 ```
